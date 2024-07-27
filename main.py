@@ -2,36 +2,20 @@ import asyncio
 import logging
 import sys
 from pathlib import Path
+import websockets
 
 # 配置功能模块的路径
-feature_paths = {
-    "test": "scripts/test.py",
-    "forbidden_word_detector": "scripts/forbidden_word_detector/forbidden_word_detector.py",
-}
-
-
-# 动态添加功能模块路径并导入模块
-def dynamic_import(feature_name, feature_path):
-    feature_dir = Path(feature_path).parent
-    sys.path.append(str(feature_dir))
-    module_name = Path(feature_path).stem
-    try:
-        module = __import__(module_name)
-        if hasattr(module, "run"):
-            return module.run
-        else:
-            logging.error(f"模块 {module_name} 不包含 'run' 函数")
-            return None
-    except ImportError as e:
-        logging.error(f"导入模块 {module_name} 时出错: {e}")
-        return None
-
+ws_url = "ws://127.0.0.1:3001"  # napcatQQ 的 WebSocket API 地址
+from scripts.forbidden_word_detector.forbidden_word_detector import (
+    run as run_forbidden_word_detector,
+)
+from scripts.test import run as run_test
 
 # 启用的功能列表
-enabled_features = [
-    "test",
-    "forbidden_word_detector",
-]  # 如果不想启用某个功能，只需移除对应的名称
+enabled_features = {
+    "test": run_test,
+    "forbidden_word_detector": run_forbidden_word_detector,
+}  # 如果不想启用某个功能，只需移除对应的名称
 
 logging.basicConfig(level=logging.INFO)
 
@@ -39,18 +23,16 @@ logging.basicConfig(level=logging.INFO)
 async def main():
     tasks = []
 
-    for feature in enabled_features:
-        if feature in feature_paths:
-            run_function = dynamic_import(feature, feature_paths[feature])
-            if run_function:
-                tasks.append(run_function())
-        else:
-            logging.warning(f"功能 {feature} 不存在，已跳过。")
+    async with websockets.connect(ws_url) as websocket:
+        logging.info("成功连接到 bot...")
 
-    if tasks:
-        await asyncio.gather(*tasks)
-    else:
-        logging.info("没有启用任何功能。")
+        for feature_name, feature_func in enabled_features.items():
+            tasks.append(feature_func(websocket))
+
+        if tasks:
+            await asyncio.gather(*tasks)
+        else:
+            logging.info("没有启用任何功能。")
 
 
 if __name__ == "__main__":
