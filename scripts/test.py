@@ -1,11 +1,7 @@
 import json
 import logging
-import asyncio
-import websockets
 
 # 配置
-ws_url = "ws://127.0.0.1:3001"  # napcatQQ 的 WebSocket API 地址
-token = None  # 如果需要认证，请填写认证 token
 owner = 2769731875  # 机器人管理员 QQ 号
 
 logging.basicConfig(level=logging.DEBUG)
@@ -34,9 +30,3 @@ async def send_message(websocket, group_id, content):
     }
     await websocket.send(json.dumps(message))
     logging.info(f"已发送消息: {content} 到群 {group_id}.")
-
-
-async def run(websocket):
-    async for message in websocket:
-        logging.debug(f"收到消息: {message}")
-        await handle_message(websocket, message)

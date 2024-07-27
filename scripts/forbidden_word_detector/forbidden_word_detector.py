@@ -18,7 +18,8 @@ def load_forbidden_words(file_path):
     return patterns
 
 
-async def handle_message(websocket, message, forbidden_patterns):
+async def handle_message(websocket, message):
+    forbidden_patterns = load_forbidden_words(forbidden_words_file)
     msg = json.loads(message)
 
     # 检查消息类型和内容
@@ -74,10 +75,3 @@ async def send_message(websocket, group_id, content):
     }
     await websocket.send(json.dumps(message))
     logging.info(f"已发送消息: {content} 到群 {group_id}.")
-
-
-async def run(websocket):
-    forbidden_patterns = load_forbidden_words(forbidden_words_file)
-    async for message in websocket:
-        logging.debug(f"收到消息: {message}")
-        await handle_message(websocket, message, forbidden_patterns)
