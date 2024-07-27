@@ -65,9 +65,13 @@ async def authenticate(websocket):
 async def handle_message(websocket, message):
 
     msg = json.loads(message)
+
+    # 处理心跳包
     if msg["post_type"] == "meta_event":
         logging.debug(f"心跳包事件: {msg}")
-    else:
+
+    # 处理群聊消息
+    elif msg["post_type"] == "message" and msg["message_type"] == "group":
         # 获取消息相关信息
         user_id = msg["sender"]["user_id"]
         group_id = msg["group_id"]
@@ -104,6 +108,8 @@ async def handle_message(websocket, message):
                     await send_message(websocket, group_id, warning_message)
             else:
                 logging.debug(f"群 {group_id} 未启用违禁词检测。")
+    else:
+        logging.debug(f"收到消息: {msg}")
 
 
 # 撤回消息
