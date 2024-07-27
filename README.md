@@ -1,2 +1,3 @@
 # bot
-基于Python和napcatQQ的QQ机器人
+
+基于 Python 和 NapcatQQ 的 QQ 机器人
