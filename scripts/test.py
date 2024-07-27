@@ -57,7 +57,11 @@ async def send_message(websocket, group_id, content):
     logging.info(f"已发送消息: {content} 到群 {group_id}.")
 
 
+async def run():
+    await connect_to_bot()
+
+
 # 主函数
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(connect_to_bot())
+    loop.run_until_complete(run())
