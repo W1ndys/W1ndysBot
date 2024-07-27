@@ -62,9 +62,16 @@ async def authenticate(websocket):
         logging.info("未提供 token，跳过认证。")
 
 
+import json
+import re
+import logging
+
+
 # 处理消息
 async def handle_message(websocket, message):
     msg = json.loads(message)
+
+    logging.debug(f"\n\n{msg}\n\n")
 
     # 处理心跳包
     if "post_type" in msg and msg["post_type"] == "meta_event":
@@ -86,7 +93,28 @@ async def handle_message(websocket, message):
             logging.debug("收到主人的测试消息。")
             await send_message(websocket, group_id, "测试成功")
 
-        logging.debug(f"收到群消息: {msg}")
+        # 禁言命令
+        if user_id == owner and re.match(r"ban.*", raw_message):
+            logging.debug("收到主人的禁言消息。")
+            ban_qq = None
+            ban_duration = None
+
+            # 遍历message列表，查找type为'at'的项并读取qq字段
+            for i, item in enumerate(msg["message"]):
+                if item["type"] == "at":
+                    ban_qq = item["data"]["qq"]
+                    # 检查下一个元素是否存在且类型为'text'
+                    if (
+                        i + 1 < len(msg["message"])
+                        and msg["message"][i + 1]["type"] == "text"
+                    ):
+                        ban_duration = int(
+                            msg["message"][i + 1]["data"]["text"].strip()
+                        )
+                    break
+
+            if ban_qq and ban_duration:
+                await set_group_ban(websocket, group_id, ban_qq, ban_duration * 60)
 
         # 检查群号是否在启用列表中
         if group_id in enabled_groups:
