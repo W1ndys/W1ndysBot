@@ -1,52 +1,63 @@
-# main.py
-from flask import Flask, request
-import requests
+import json
+import logging
+import asyncio
+import websockets
 
-app = Flask(__name__)
+# 配置
+ws_url = "ws://127.0.0.1:3001"  # napcatQQ 的 WebSocket API 地址
+token = None  # 如果需要认证，请填写认证 token
+owner = 2769731875  # 机器人管理员 QQ 号
 
-# NapCatQQ API的基础URL
-base_url = "http://服务器IP:HTTP监听端口"
+logging.basicConfig(level=logging.DEBUG)
 
 
-# 发送群聊消息的函数
-def send_group_message(group_id, message):
-    url = f"{base_url}/send_group_msg"
-    params = {"group_id": group_id, "message": message, "access_token": "你的token值"}
-    response = requests.get(url, params=params)
+async def connect_to_bot():
+    logging.info("正在连接到 bot...")
+    async with websockets.connect(ws_url) as websocket:
+        logging.info("成功连接到 bot...")
+        # 发送认证信息，如果需要的话
+        await authenticate(websocket)
 
-    if response.status_code == 200:
-        print("Message sent successfully")
+        async for message in websocket:
+            logging.debug(f"收到消息: {message}")
+            await handle_message(websocket, message)
+
+
+async def authenticate(websocket):
+    if token:
+        auth_message = {"action": "authenticate", "params": {"token": token}}
+        await websocket.send(json.dumps(auth_message))
+        logging.info("认证成功")
     else:
-        print("Failed to send message")
-        print(response.status_code, response.text)
+        logging.info("token 为空，不需要认证.")
 
 
-@app.route("/", methods=["POST"])
-def receive_event():
-    指定群聊 = 1234567
-    data = request.json
-    print("Received event:", data)
+async def handle_message(websocket, message):
+    msg = json.loads(message)
 
-    # 检查是否是群消息事件并且是目标群消息
-    if (
-        data["post_type"] == "message"
-        and data["message_type"] == "group"
-        and data["group_id"] == 指定群聊
-    ):
-        # 提取消息内容并确保是字符串
-        message_objects = data["message"]
-        message = "".join(
-            [m["data"]["text"] for m in message_objects if m["type"] == "text"]
-        )
+    # 检查消息类型和内容
+    if msg.get("post_type") == "message" and msg.get("message_type") == "group":
+        logging.debug(f"收到群消息: {msg}")
+        user_id = msg["user_id"]
+        group_id = msg["group_id"]
+        raw_message = msg.get("raw_message", "")
 
-        print(f"Processed message: {message}")
-
-        # 检查消息内容是否包含“肘子”
-        if "肘子" in message:
-            send_group_message(指定群聊, "hello world")
-
-    return "OK", 200
+        # 检查是否为主人发送的"测试"消息
+        if user_id == owner and raw_message == "测试":
+            logging.debug("收到主人的测试消息.")
+            await send_message(websocket, group_id, "测试成功")
 
 
+async def send_message(websocket, group_id, content):
+    message = {
+        "action": "send_group_msg",
+        "params": {"group_id": group_id, "message": content},
+    }
+    await websocket.send(json.dumps(message))
+    logging.info(f"已发送消息: {content} 到群 {group_id}.")
+
+
+# 主函数
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=7777)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(connect_to_bot())
