@@ -128,12 +128,16 @@ async def send_message(websocket, group_id, content):
 
 
 # 主函数
-if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    enabled_groups = loop.run_until_complete(
-        load_enabled_groups(enabled_groups_file)
+async def main():
+    global enabled_groups, forbidden_patterns
+    enabled_groups = await load_enabled_groups(
+        enabled_groups_file
     )  # 加载启用的群聊群号
-    forbidden_patterns = loop.run_until_complete(
-        load_forbidden_words(forbidden_words_file)
+    forbidden_patterns = await load_forbidden_words(
+        forbidden_words_file
     )  # 加载违禁词列表
-    loop.run_until_complete(connect_to_bot())
+    await connect_to_bot()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
