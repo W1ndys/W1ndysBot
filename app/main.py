@@ -64,7 +64,6 @@ async def authenticate(websocket):
 
 # 处理消息
 async def handle_message(websocket, message):
-
     msg = json.loads(message)
 
     # 处理心跳包
@@ -77,7 +76,6 @@ async def handle_message(websocket, message):
         and msg["post_type"] == "message"
         and msg["message_type"] == "group"
     ):
-        # 获取消息相关信息
         user_id = msg["sender"]["user_id"]
         group_id = msg["group_id"]
         message_id = msg["message_id"]
@@ -88,31 +86,23 @@ async def handle_message(websocket, message):
             logging.debug("收到主人的测试消息。")
             await send_message(websocket, group_id, "测试成功")
 
-        # 检查消息类型和内容
-        if msg.get("post_type") == "message" and msg.get("message_type") == "group":
-            logging.debug(f"收到群消息: {msg}")
+        logging.debug(f"收到群消息: {msg}")
 
-            group_id = msg["group_id"]
-            message_id = msg["message_id"]
-            raw_message = msg.get("raw_message", "")
+        # 检查群号是否在启用列表中
+        if group_id in enabled_groups:
+            logging.debug(f"群 {group_id} 已启用违禁词检测。")
+            # 检测违禁词
+            if any(re.search(pattern, raw_message) for pattern in forbidden_patterns):
+                logging.debug(f"在消息中检测到违禁词: {raw_message}")
 
-            # 检查群号是否在启用列表中
-            if group_id in enabled_groups:
-                logging.debug(f"群 {group_id} 已启用违禁词检测。")
-                # 检测违禁词
-                if any(
-                    re.search(pattern, raw_message) for pattern in forbidden_patterns
-                ):
-                    logging.debug(f"在消息中检测到违禁词: {raw_message}")
+                # 撤回消息
+                await delete_message(websocket, message_id)
 
-                    # 撤回消息
-                    await delete_message(websocket, message_id)
+                # 发送警告消息
+                await send_message(websocket, group_id, warning_message)
 
-                    # 发送警告消息
-                    await send_message(websocket, group_id, warning_message)
-
-                    # 执行禁言
-                    await set_group_ban(websocket, group_id, user_id, 60)
+                # 执行禁言
+                await set_group_ban(websocket, group_id, user_id, 60)
     else:
         logging.debug(f"收到消息: {msg}")
 
