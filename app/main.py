@@ -116,6 +116,26 @@ async def handle_message(websocket, message):
             if ban_qq and ban_duration:
                 await set_group_ban(websocket, group_id, ban_qq, ban_duration * 60)
 
+        # 解除禁言命令
+        if user_id == owner and re.match(r"unban.*", raw_message):
+            logging.debug("收到主人的解除禁言消息。")
+            unban_qq = None
+
+            # 遍历message列表，查找type为'at'的项并读取qq字段
+            for i, item in enumerate(msg["message"]):
+                if item["type"] == "at":
+                    unban_qq = item["data"]["qq"]
+                    break
+
+            if unban_qq:
+                await set_group_ban(websocket, group_id, unban_qq, 0)
+
+        # 撤回消息命令
+        if user_id == owner and "recall" in raw_message:
+            logging.debug("收到主人的撤回消息命令。")
+            message_id = int(msg["message"][0]["data"]["id"])
+            await delete_message(websocket, message_id)
+
         # 检查群号是否在启用列表中
         if group_id in enabled_groups:
             logging.debug(f"群 {group_id} 已启用违禁词检测。")
@@ -152,7 +172,7 @@ async def delete_message(websocket, message_id):
         "params": {"message_id": message_id},
     }
     await websocket.send(json.dumps(delete_msg))
-    logging.info(f"消息 {message_id} 已删除。")
+    logging.info(f"消息 {message_id} 已撤回。")
 
 
 # 发送消息
