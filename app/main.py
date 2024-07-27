@@ -65,41 +65,45 @@ async def authenticate(websocket):
 async def handle_message(websocket, message):
 
     msg = json.loads(message)
-
-    # 获取消息相关信息
-    user_id = msg["sender"]["user_id"]
-    group_id = msg["group_id"]
-    message_id = msg["message_id"]
-
-    raw_message = msg.get("raw_message", "")
-
-    # 检查是否为主人发送的"测试"消息
-    if user_id == owner and raw_message == "测试":
-        logging.debug("[test.py] 收到主人的测试消息。")
-        await send_message(websocket, group_id, "测试成功")
-
-    # 检查消息类型和内容
-    if msg.get("post_type") == "message" and msg.get("message_type") == "group":
-        logging.debug(f"收到群消息: {msg}")
-
+    if msg["post_type"] == "meta_event":
+        logging.debug(f"心跳包事件: {msg}")
+    else:
+        # 获取消息相关信息
+        user_id = msg["sender"]["user_id"]
         group_id = msg["group_id"]
         message_id = msg["message_id"]
+
         raw_message = msg.get("raw_message", "")
 
-        # 检查群号是否在启用列表中
-        if group_id in enabled_groups:
-            logging.debug(f"群 {group_id} 已启用违禁词检测。")
-            # 检测违禁词
-            if any(re.search(pattern, raw_message) for pattern in forbidden_patterns):
-                logging.debug(f"在消息中检测到违禁词: {raw_message}")
+        # 检查是否为主人发送的"测试"消息
+        if user_id == owner and raw_message == "测试":
+            logging.debug("[test.py] 收到主人的测试消息。")
+            await send_message(websocket, group_id, "测试成功")
 
-                # 撤回消息
-                await delete_message(websocket, message_id)
+        # 检查消息类型和内容
+        if msg.get("post_type") == "message" and msg.get("message_type") == "group":
+            logging.debug(f"收到群消息: {msg}")
 
-                # 发送警告消息
-                await send_message(websocket, group_id, warning_message)
-        else:
-            logging.debug(f"群 {group_id} 未启用违禁词检测。")
+            group_id = msg["group_id"]
+            message_id = msg["message_id"]
+            raw_message = msg.get("raw_message", "")
+
+            # 检查群号是否在启用列表中
+            if group_id in enabled_groups:
+                logging.debug(f"群 {group_id} 已启用违禁词检测。")
+                # 检测违禁词
+                if any(
+                    re.search(pattern, raw_message) for pattern in forbidden_patterns
+                ):
+                    logging.debug(f"在消息中检测到违禁词: {raw_message}")
+
+                    # 撤回消息
+                    await delete_message(websocket, message_id)
+
+                    # 发送警告消息
+                    await send_message(websocket, group_id, warning_message)
+            else:
+                logging.debug(f"群 {group_id} 未启用违禁词检测。")
 
 
 # 撤回消息
