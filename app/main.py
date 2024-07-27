@@ -105,10 +105,22 @@ async def handle_message(websocket, message):
 
                     # 发送警告消息
                     await send_message(websocket, group_id, warning_message)
+
+                    # 执行禁言
+                    await set_group_ban(websocket, group_id, user_id, 60)
             else:
                 logging.debug(f"群 {group_id} 未启用违禁词检测。")
     else:
         logging.debug(f"收到消息: {msg}")
+
+
+async def set_group_ban(websocket, group_id, user_id, duration):
+    ban_msg = {
+        "action": "set_group_ban",
+        "params": {"group_id": group_id, "user_id": user_id, "duration": duration},
+    }
+    await websocket.send(json.dumps(ban_msg))
+    logging.info(f"已禁止用户 {user_id} {duration} 秒。")
 
 
 # 撤回消息
