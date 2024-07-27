@@ -72,7 +72,11 @@ async def handle_message(websocket, message):
         logging.debug(f"心跳包事件: {msg}")
 
     # 处理群聊消息
-    elif msg["post_type"] == "message" and msg["message_type"] == "group":
+    elif (
+        "post_type" in msg
+        and msg["post_type"] == "message"
+        and msg["message_type"] == "group"
+    ):
         # 获取消息相关信息
         user_id = msg["sender"]["user_id"]
         group_id = msg["group_id"]
