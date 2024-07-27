@@ -1,9 +1,11 @@
 import json
 import logging
 import re
+import os
 
 # 配置
-forbidden_words_file = "forbidden_words.txt"  # 违禁词文件路径
+module_dir = os.path.dirname(__file__)
+forbidden_words_file = os.path.join(module_dir, "forbidden_words.txt")  # 违禁词文件路径
 warning_message = "警告：请不要发送违禁词！"
 enabled_groups = [728077087, 236562801, 781550983]  # 需要开启检测功能的群聊群号
 
