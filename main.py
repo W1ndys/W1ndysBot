@@ -1,52 +1,51 @@
-# main.py
-from flask import Flask, request
-import requests
+import asyncio
+import logging
+import sys
+from pathlib import Path
 
-app = Flask(__name__)
+# 配置功能模块的路径
+feature_paths = {
+    "test": "scripts/test.py",
+    "forbidden_word_detector": "scripts/forbidden_word_detector/forbidden_word_detector.py",
+}
 
-# NapCatQQ API的基础URL
-base_url = "http://127.0.0.1:30000"
+
+# 动态添加功能模块路径并导入模块
+def dynamic_import(feature_name, feature_path):
+    feature_dir = Path(feature_path).parent
+    sys.path.append(str(feature_dir))
+    module_name = Path(feature_path).stem
+    module = __import__(module_name)
+    return module.run
 
 
-# 发送群聊消息的函数
-def send_group_message(group_id, message):
-    url = f"{base_url}/send_group_msg"
-    params = {"group_id": group_id, "message": message, "access_token": "你的token值"}
-    response = requests.get(url, params=params)
+# 启用的功能列表
+enabled_features = [
+    "test",
+    "forbidden_word_detector",
+]  # 如果不想启用某个功能，只需移除对应的名称
 
-    if response.status_code == 200:
-        print("Message sent successfully")
+logging.basicConfig(level=logging.INFO)
+
+
+async def main():
+    tasks = []
+
+    for feature in enabled_features:
+        if feature in feature_paths:
+            run_function = dynamic_import(feature, feature_paths[feature])
+            tasks.append(run_function())
+        else:
+            logging.warning(f"功能 {feature} 不存在，已跳过。")
+
+    if tasks:
+        await asyncio.gather(*tasks)
     else:
-        print("Failed to send message")
-        print(response.status_code, response.text)
-
-
-@app.route("/", methods=["POST"])
-def receive_event():
-    指定群聊 = 728077087
-    data = request.json
-    print("Received event:", data)
-
-    # 检查是否是群消息事件并且是目标群消息
-    if (
-        data["post_type"] == "message"
-        and data["message_type"] == "group"
-        and data["group_id"] == 指定群聊
-    ):
-        # 提取消息内容并确保是字符串
-        message_objects = data["message"]
-        message = "".join(
-            [m["data"]["text"] for m in message_objects if m["type"] == "text"]
-        )
-
-        print(f"Processed message: {message}")
-
-        # 检查消息内容是否包含“卷卷”
-        if "卷卷" in message:
-            send_group_message(指定群聊, "hello world")
-
-    return "OK", 200
+        logging.info("没有启用的功能，退出。")
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=7777)
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logging.info("已关机...")
