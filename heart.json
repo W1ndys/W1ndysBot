@@ -1,0 +1,11 @@
+{
+    "time": 1722077130,
+    "self_id": 3649056059,
+    "post_type": "meta_event",
+    "meta_event_type": "heartbeat",
+    "status": {
+        "online": true,
+        "good": true
+    },
+    "interval": 30000
+}
