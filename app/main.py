@@ -24,7 +24,7 @@ forbidden_words_file = "forbidden_word_detector/forbidden_words.txt"  # 违禁�
 async def load_forbidden_words(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         patterns = [line.strip() for line in file if line.strip()]
-    logging.info(f"Loaded forbidden words: {patterns}")
+    logging.info(f"加载的违禁词: {patterns}")
     return patterns
 
 
@@ -32,6 +32,7 @@ async def load_forbidden_words(file_path):
 async def load_enabled_groups(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         groups = [int(line.strip()) for line in file if line.strip()]
+    logging.info(f"加载的启用的群聊群号: {groups}")
     return groups
 
 
@@ -40,14 +41,14 @@ logging.basicConfig(level=logging.DEBUG)
 
 # 连接到 QQ 机器人
 async def connect_to_bot():
-    logging.info("Connecting to bot...")
+    logging.info("正在连接到机器人...")
     async with websockets.connect(ws_url) as websocket:
-        logging.info("Connected to bot.")
+        logging.info("已连接到机器人。")
         # 发送认证信息，如果需要的话
         await authenticate(websocket)
 
         async for message in websocket:
-            logging.debug(f"Received message: {message}")
+            logging.debug(f"收到消息: {message}")
             await handle_message(websocket, message)
 
 
@@ -56,9 +57,9 @@ async def authenticate(websocket):
     if token:
         auth_message = {"action": "authenticate", "params": {"token": token}}
         await websocket.send(json.dumps(auth_message))
-        logging.info("Sent authentication message.")
+        logging.info("已发送认证信息。")
     else:
-        logging.info("No token provided, skipping authentication.")
+        logging.info("未提供 token，跳过认证。")
 
 
 # 处理消息
@@ -73,7 +74,7 @@ async def handle_message(websocket, message):
 
     # 检查是否为主人发送的"测试"消息
     if user_id == owner and raw_message == "测试":
-        logging.debug("[test.py] 收到主人的测试消息.")
+        logging.debug("[test.py] 收到主人的测试消息。")
         await send_message(websocket, group_id, "测试成功")
 
     # 检查消息类型和内容
@@ -86,10 +87,10 @@ async def handle_message(websocket, message):
 
         # 检查群号是否在启用列表中
         if group_id in enabled_groups:
-            logging.debug(f"Group {group_id} is enabled for forbidden word detection.")
+            logging.debug(f"群 {group_id} 已启用违禁词检测。")
             # 检测违禁词
             if any(re.search(pattern, raw_message) for pattern in forbidden_patterns):
-                logging.debug(f"Forbidden word detected in message: {raw_message}")
+                logging.debug(f"在消息中检测到违禁词: {raw_message}")
 
                 # 撤回消息
                 await delete_message(websocket, message_id)
@@ -97,9 +98,7 @@ async def handle_message(websocket, message):
                 # 发送警告消息
                 await send_message(websocket, group_id, warning_message)
         else:
-            logging.debug(
-                f"Group {group_id} is not enabled for forbidden word detection."
-            )
+            logging.debug(f"群 {group_id} 未启用违禁词检测。")
 
 
 # 撤回消息
@@ -109,7 +108,7 @@ async def delete_message(websocket, message_id):
         "params": {"message_id": message_id},
     }
     await websocket.send(json.dumps(delete_msg))
-    logging.info(f"Message {message_id} deleted.")
+    logging.info(f"消息 {message_id} 已删除。")
 
 
 # 发送消息
@@ -119,7 +118,7 @@ async def send_message(websocket, group_id, content):
         "params": {"group_id": group_id, "message": content},
     }
     await websocket.send(json.dumps(message))
-    logging.info(f"Message sent to group {group_id}: {content}")
+    logging.info(f"已发送消息到群 {group_id}: {content}")
 
 
 # 主函数
