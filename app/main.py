@@ -32,6 +32,7 @@ async def load_forbidden_words(file_path):
 async def load_enabled_groups(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         groups = [int(line.strip()) for line in file if line.strip()]
+    logging.info(f"加载的启用的群聊群号: {groups}")
     return groups
 
 
@@ -67,7 +68,7 @@ async def handle_message(websocket, message):
     msg = json.loads(message)
 
     # 处理心跳包
-    if msg["post_type"] == "meta_event":
+    if "post_type" in msg and msg["post_type"] == "meta_event":
         logging.debug(f"心跳包事件: {msg}")
 
     # 处理群聊消息
@@ -80,7 +81,7 @@ async def handle_message(websocket, message):
 
         # 检查是否为主人发送的"测试"消息
         if user_id == owner and raw_message == "测试":
-            logging.debug("[test.py] 收到主人的测试消息。")
+            logging.debug("收到主人的测试消息。")
             await send_message(websocket, group_id, "测试成功")
 
         # 检查消息类型和内容
@@ -108,12 +109,11 @@ async def handle_message(websocket, message):
 
                     # 执行禁言
                     await set_group_ban(websocket, group_id, user_id, 60)
-            else:
-                logging.debug(f"群 {group_id} 未启用违禁词检测。")
     else:
         logging.debug(f"收到消息: {msg}")
 
 
+# 禁言用户
 async def set_group_ban(websocket, group_id, user_id, duration):
     ban_msg = {
         "action": "set_group_ban",
