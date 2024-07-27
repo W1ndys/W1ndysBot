@@ -76,8 +76,7 @@ async def handle_message(websocket, message):
         user_id = msg["sender"]["user_id"]
         group_id = msg["group_id"]
         message_id = msg["message_id"]
-
-        raw_message = msg.get("raw_message", "")
+        raw_message = msg["raw_message"]
 
         # 检查是否为主人发送的"测试"消息
         if user_id == owner and raw_message == "测试":
