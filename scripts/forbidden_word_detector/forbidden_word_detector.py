@@ -24,7 +24,7 @@ async def handle_message(websocket, message):
 
     # 检查消息类型和内容
     if msg.get("post_type") == "message" and msg.get("message_type") == "group":
-        logging.debug(f"收到群消息: {msg}")
+        logging.debug(f"[forbidden_word_detector.py] "收到群消息: {msg}")
         user_id = msg["user_id"]
         group_id = msg["group_id"]
         message_id = msg["message_id"]
@@ -32,10 +32,10 @@ async def handle_message(websocket, message):
 
         # 检查群号是否在启用列表中
         if group_id in enabled_groups:
-            logging.debug(f"群 {group_id} 已开启检测功能.")
+            logging.debug(f"[forbidden_word_detector.py] "群 {group_id} 已开启检测功能.")
             # 检测违禁词
             if any(re.search(pattern, raw_message) for pattern in forbidden_patterns):
-                logging.debug(f"发现违禁词: {raw_message}")
+                logging.debug(f"[forbidden_word_detector.py] "发现违禁词: {raw_message}")
 
                 await set_group_ban(websocket, group_id, user_id, 60 * 5)
 
@@ -47,7 +47,7 @@ async def handle_message(websocket, message):
                 # 发送警告消息
                 await send_message(websocket, group_id, warning_message)
         else:
-            logging.debug(f"群 {group_id} 未开启检测功能，忽略该消息.")
+            logging.debug(f"[forbidden_word_detector.py] "群 {group_id} 未开启检测功能，忽略该消息.")
 
 
 async def set_group_ban(websocket, group_id, user_id, duration):
@@ -56,7 +56,9 @@ async def set_group_ban(websocket, group_id, user_id, duration):
         "params": {"group_id": group_id, "user_id": user_id, "duration": duration},
     }
     await websocket.send(json.dumps(ban_msg))
-    logging.info(f"User {user_id} banned from group {group_id} for {duration} seconds.")
+    logging.info(
+        f"[forbidden_word_detector.py] User {user_id} banned from group {group_id} for {duration} seconds."
+    )
 
 
 async def delete_message(websocket, message_id):
@@ -65,7 +67,7 @@ async def delete_message(websocket, message_id):
         "params": {"message_id": message_id},
     }
     await websocket.send(json.dumps(delete_msg))
-    logging.info(f"消息 {message_id} 已撤回.")
+    logging.info(f"[forbidden_word_detector.py] 消息 {message_id} 已撤回.")
 
 
 async def send_message(websocket, group_id, content):
@@ -74,4 +76,4 @@ async def send_message(websocket, group_id, content):
         "params": {"group_id": group_id, "message": content},
     }
     await websocket.send(json.dumps(message))
-    logging.info(f"已发送消息: {content} 到群 {group_id}.")
+    logging.info(f"[forbidden_word_detector.py] 已发送消息: {content} 到群 {group_id}.")
