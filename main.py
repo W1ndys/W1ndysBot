@@ -15,8 +15,16 @@ def dynamic_import(feature_name, feature_path):
     feature_dir = Path(feature_path).parent
     sys.path.append(str(feature_dir))
     module_name = Path(feature_path).stem
-    module = __import__(module_name)
-    return module.run
+    try:
+        module = __import__(module_name)
+        if hasattr(module, "run"):
+            return module.run
+        else:
+            logging.error(f"模块 {module_name} 不包含 'run' 函数")
+            return None
+    except ImportError as e:
+        logging.error(f"导入模块 {module_name} 时出错: {e}")
+        return None
 
 
 # 启用的功能列表
@@ -34,14 +42,15 @@ async def main():
     for feature in enabled_features:
         if feature in feature_paths:
             run_function = dynamic_import(feature, feature_paths[feature])
-            tasks.append(run_function())
+            if run_function:
+                tasks.append(run_function())
         else:
             logging.warning(f"功能 {feature} 不存在，已跳过。")
 
     if tasks:
         await asyncio.gather(*tasks)
     else:
-        logging.info("没有启用的功能，退出。")
+        logging.info("没有启用任何功能。")
 
 
 if __name__ == "__main__":

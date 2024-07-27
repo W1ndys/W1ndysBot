@@ -100,8 +100,13 @@ async def send_message(websocket, group_id, content):
     logging.info(f"已发送消息: {content} 到群 {group_id}.")
 
 
+async def run():
+    global forbidden_patterns
+    forbidden_patterns = load_forbidden_words(forbidden_words_file)
+    await connect_to_bot()
+
+
 # 主函数
 if __name__ == "__main__":
-    forbidden_patterns = load_forbidden_words(forbidden_words_file)
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(connect_to_bot())
+    loop.run_until_complete(run())
