@@ -252,6 +252,8 @@ async def handle_message(websocket, message):
 
                     # 执行禁言
                     await set_group_ban(websocket, group_id, user_id, 60)
+
+        # 处理私聊消息
         elif "post_type" in msg and msg["message_type"] == "private":  # 私聊消息
             user_id = msg["sender"]["user_id"]
             message_id = msg["message_id"]
@@ -267,8 +269,12 @@ async def handle_message(websocket, message):
                     params = command_json.get("params", {})
                     logging.info(f"即将执行API命令: {action} {params}")
                     await run_api(websocket, action, params)
+
+        # 其他消息类型
         else:
             logging.info(f"收到消息: {msg}")
+
+    # 处理异常
     except Exception as e:
         logging.error(f"处理消息时出错: {e}")
 
