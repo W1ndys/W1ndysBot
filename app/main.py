@@ -122,147 +122,155 @@ async def send_group_message(websocket, group_id, content):
     logging.info(f"已发送消息到群 {group_id}: {content}")
 
 
-# 处理消息
+# 执行API调用
+async def run_api(websocket, action, params):
+    api_message = {"action": action, "params": params}
+    await websocket.send(json.dumps(api_message))
+    logging.info(f"已调用 API {action}。")
+
+
 async def handle_message(websocket, message):
-    msg = json.loads(message)
+    try:
+        msg = json.loads(message)
+        logging.info(f"\n\n{msg}\n\n")
 
-    logging.info(f"\n\n{msg}\n\n")
+        # 处理心跳包
+        if "post_type" in msg and msg["post_type"] == "meta_event":
+            logging.info(f"心跳包事件: {msg}")
 
-    # 处理心跳包
-    if "post_type" in msg and msg["post_type"] == "meta_event":
-        logging.info(f"心跳包事件: {msg}")
-
-    # 处理群聊消息
-    elif (
-        "post_type" in msg
-        and msg["post_type"] == "message"
-        and msg["message_type"] == "group"
-    ):
-        user_id = msg["sender"]["user_id"]
-        group_id = msg["group_id"]
-        message_id = msg["message_id"]
-        raw_message = msg["raw_message"]
-
-        # 检查是否为管理员发送的"测试"消息
-        if user_id in owner and (raw_message == "测试" or raw_message == "test"):
-            logging.info("收到管理员的测试消息。")
-            await send_group_message(websocket, group_id, "测试成功")
-
-        # 全员禁言命令
-        if user_id in owner and (
-            re.match(r"全员禁言.*", raw_message) or re.match(r"ban-all.*", raw_message)
+        # 处理群聊消息
+        elif (
+            "post_type" in msg
+            and msg["post_type"] == "message"
+            and msg["message_type"] == "group"
         ):
-            logging.info("收到管理员的全员禁言消息。")
-            await set_group_whole_ban(websocket, group_id, True)  # 全员禁言
+            user_id = msg["sender"]["user_id"]
+            group_id = msg["group_id"]
+            message_id = msg["message_id"]
+            raw_message = msg["raw_message"]
 
-        # 全员解禁命令
-        if user_id in owner and (
-            re.match(r"全员解禁.*", raw_message)
-            or re.match(r"unban-all.*", raw_message)
-        ):
-            logging.info("收到管理员的全员解禁消息。")
-            await set_group_whole_ban(websocket, group_id, False)  # 全员解禁
+            # 检查是否为管理员发送的"测试"消息
+            if user_id in owner and (raw_message == "测试" or raw_message == "test"):
+                logging.info("收到管理员的测试消息。")
+                await send_group_message(websocket, group_id, "测试成功")
 
-        # 踢人命令
-        if user_id in owner and (
-            re.match(r"kick.*", raw_message)
-            or re.match(r"t.*", raw_message)
-            or re.match(r"踢.*", raw_message)
-        ):
-            logging.info("收到管理员的踢人消息。")
-            kick_qq = None
-
-            # 遍历message列表，查找type为'at'的项并读取qq字段
-            for i, item in enumerate(msg["message"]):
-                if item["type"] == "at":
-                    kick_qq = item["data"]["qq"]
-                    break
-
-            if kick_qq:
-                await set_group_kick(websocket, group_id, kick_qq)
-
-        # 禁言命令
-        if user_id in owner and re.match(r"ban.*", raw_message):
-            logging.info("收到管理员的禁言消息。")
-            ban_qq = None
-            ban_duration = None
-
-            # 遍历message列表，查找type为'at'的项并读取qq字段
-            for i, item in enumerate(msg["message"]):
-                if item["type"] == "at":
-                    ban_qq = item["data"]["qq"]
-                    # 检查下一个元素是否存在且类型为'text'
-                    if (
-                        i + 1 < len(msg["message"])
-                        and msg["message"][i + 1]["type"] == "text"
-                    ):
-                        ban_duration = int(
-                            msg["message"][i + 1]["data"]["text"].strip()
-                        )
-                    break
-
-            if ban_duration is None:
-                ban_duration = 1  # 默认禁言 1 分钟
-
-            if ban_qq and ban_duration:
-                await set_group_ban(websocket, group_id, ban_qq, ban_duration * 60)
-
-        # 解除禁言命令
-        if user_id in owner and re.match(r"unban.*", raw_message):
-            logging.info("收到管理员的解除禁言消息。")
-            unban_qq = None
-
-            # 遍历message列表，查找type为'at'的项并读取qq字段
-            for i, item in enumerate(msg["message"]):
-                if item["type"] == "at":
-                    unban_qq = item["data"]["qq"]
-                    break
-
-            if unban_qq:
-                await set_group_ban(websocket, group_id, unban_qq, 0)
-
-        # 撤回消息命令
-        if user_id in owner and ("recall" in raw_message or "撤回" in raw_message):
-            logging.info("收到管理员的撤回消息命令。")
-            message_id = int(msg["message"][0]["data"]["id"])
-            await delete_message(websocket, message_id)
-
-        # 检查群号是否在启用列表中
-        if group_id in forbidden_words_enabled_groups:
-            logging.info(f"群 {group_id} 启用了违禁词检测。")
-            # 检测违禁词
-            if any(
-                re.search(pattern, raw_message) for pattern in forbidden_words_patterns
+            # 全员禁言命令
+            if user_id in owner and (
+                re.match(r"全员禁言.*", raw_message)
+                or re.match(r"ban-all.*", raw_message)
             ):
-                logging.info(f"在消息中检测到违禁词: {raw_message}")
+                logging.info("收到管理员的全员禁言消息。")
+                await set_group_whole_ban(websocket, group_id, True)  # 全员禁言
 
-                # 撤回消息
+            # 全员解禁命令
+            if user_id in owner and (
+                re.match(r"全员解禁.*", raw_message)
+                or re.match(r"unban-all.*", raw_message)
+            ):
+                logging.info("收到管理员的全员解禁消息。")
+                await set_group_whole_ban(websocket, group_id, False)  # 全员解禁
+
+            # 踢人命令
+            if user_id in owner and (
+                re.match(r"kick.*", raw_message)
+                or re.match(r"t.*", raw_message)
+                or re.match(r"踢.*", raw_message)
+            ):
+                logging.info("收到管理员的踢人消息。")
+                kick_qq = None
+
+                # 遍历message列表，查找type为'at'的项并读取qq字段
+                for i, item in enumerate(msg["message"]):
+                    if item["type"] == "at":
+                        kick_qq = item["data"]["qq"]
+                        break
+
+                if kick_qq:
+                    await set_group_kick(websocket, group_id, kick_qq)
+
+            # 禁言命令
+            if user_id in owner and re.match(r"ban.*", raw_message):
+                logging.info("收到管理员的禁言消息。")
+                ban_qq = None
+                ban_duration = None
+
+                # 遍历message列表，查找type为'at'的项并读取qq字段
+                for i, item in enumerate(msg["message"]):
+                    if item["type"] == "at":
+                        ban_qq = item["data"]["qq"]
+                        # 检查下一个元素是否存在且类型为'text'
+                        if (
+                            i + 1 < len(msg["message"])
+                            and msg["message"][i + 1]["type"] == "text"
+                        ):
+                            ban_duration = int(
+                                msg["message"][i + 1]["data"]["text"].strip()
+                            )
+                        break
+
+                if ban_duration is None:
+                    ban_duration = 1  # 默认禁言 1 分钟
+
+                if ban_qq and ban_duration:
+                    await set_group_ban(websocket, group_id, ban_qq, ban_duration * 60)
+
+            # 解除禁言命令
+            if user_id in owner and re.match(r"unban.*", raw_message):
+                logging.info("收到管理员的解除禁言消息。")
+                unban_qq = None
+
+                # 遍历message列表，查找type为'at'的项并读取qq字段
+                for i, item in enumerate(msg["message"]):
+                    if item["type"] == "at":
+                        unban_qq = item["data"]["qq"]
+                        break
+
+                if unban_qq:
+                    await set_group_ban(websocket, group_id, unban_qq, 0)
+
+            # 撤回消息命令
+            if user_id in owner and ("recall" in raw_message or "撤回" in raw_message):
+                logging.info("收到管理员的撤回消息命令。")
+                message_id = int(msg["message"][0]["data"]["id"])
                 await delete_message(websocket, message_id)
 
-                # 发送警告消息
-                await send_group_message(websocket, group_id, warning_message)
+            # 检查群号是否在启用列表中
+            if group_id in forbidden_words_enabled_groups:
+                logging.info(f"群 {group_id} 启用了违禁词检测。")
+                # 检测违禁词
+                if any(
+                    re.search(pattern, raw_message)
+                    for pattern in forbidden_words_patterns
+                ):
+                    logging.info(f"在消息中检测到违禁词: {raw_message}")
 
-                # 执行禁言
-                await set_group_ban(websocket, group_id, user_id, 60)
-    # elif "post_type" in msg and msg["post_type"] == "private":  # 私聊消息
-    #     user_id = msg["sender"]["user_id"]
-    #     message_id = msg["message_id"]
-    #     raw_message = msg["raw_message"]
-    #     if user_id == 2769731875:  # 机器人管理员
-    #         match = re.search(r"执行.*", raw_message)
-    #         if match:
-    #             json_content = msg["message"][0]["data"]["text"]
-    #             try:
-    #                 # 先将转义字符转换为实际的 JSON 字符串
-    #                 json_content = json.loads(json_content)
-    #                 # 再将 JSON 数据转换为单行字符串
-    #                 single_line_json = json.dumps(json_content, separators=(",", ":"))
-    #                 # 处理单行 JSON 数据
-    #                 logging.info(f"执行命令: {single_line_json}")
-    #             except json.JSONDecodeError:
-    #                 logging.error(f"命令格式错误: {json_content}")
-    else:
-        logging.info(f"收到消息: {msg}")
+                    # 撤回消息
+                    await delete_message(websocket, message_id)
+
+                    # 发送警告消息
+                    await send_group_message(websocket, group_id, warning_message)
+
+                    # 执行禁言
+                    await set_group_ban(websocket, group_id, user_id, 60)
+        elif "post_type" in msg and msg["message_type"] == "private":  # 私聊消息
+            user_id = msg["sender"]["user_id"]
+            message_id = msg["message_id"]
+            raw_message = msg["raw_message"]
+            logging.info(f"收到私聊消息: {raw_message}")
+            if user_id == 2769731875:  # 机器人管理员
+                match = re.search(r"执行(.*)", raw_message)
+                if match:
+                    command = match.group(1).strip()  # 提取“执行”后面的语句
+                    # 解析command的json，解析出actions和params
+                    command_json = json.loads(command)
+                    action = command_json.get("action", [])
+                    params = command_json.get("params", {})
+                    logging.info(f"即将执行API命令: {action} {params}")
+                    await run_api(websocket, action, params)
+        else:
+            logging.info(f"收到消息: {msg}")
+    except Exception as e:
+        logging.error(f"处理消息时出错: {e}")
 
 
 # 主函数
