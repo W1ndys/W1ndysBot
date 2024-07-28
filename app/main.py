@@ -99,6 +99,11 @@ async def set_group_whole_ban(websocket, group_id, enable):
         "params": {"group_id": group_id, "enable": enable},
     }
     await websocket.send(json.dumps(whole_ban_msg))
+    await send_group_message(
+        websocket,
+        group_id,
+        f"已{'开启' if enable else '解除'}群 {group_id} 的全员禁言。",
+    )
     logging.info(f"已{'' if enable else '解除'}群 {group_id} 的全员禁言。")
 
 
