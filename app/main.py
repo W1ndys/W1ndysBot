@@ -244,6 +244,23 @@ async def handle_message(websocket, message):
 
                 # 执行禁言
                 await set_group_ban(websocket, group_id, user_id, 60)
+    # elif "post_type" in msg and msg["post_type"] == "private":  # 私聊消息
+    #     user_id = msg["sender"]["user_id"]
+    #     message_id = msg["message_id"]
+    #     raw_message = msg["raw_message"]
+    #     if user_id == 2769731875:  # 机器人管理员
+    #         match = re.search(r"执行.*", raw_message)
+    #         if match:
+    #             json_content = msg["message"][0]["data"]["text"]
+    #             try:
+    #                 # 先将转义字符转换为实际的 JSON 字符串
+    #                 json_content = json.loads(json_content)
+    #                 # 再将 JSON 数据转换为单行字符串
+    #                 single_line_json = json.dumps(json_content, separators=(",", ":"))
+    #                 # 处理单行 JSON 数据
+    #                 logging.info(f"执行命令: {single_line_json}")
+    #             except json.JSONDecodeError:
+    #                 logging.error(f"命令格式错误: {json_content}")
     else:
         logging.info(f"收到消息: {msg}")
 
