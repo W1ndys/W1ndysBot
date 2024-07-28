@@ -155,13 +155,13 @@ async def handle_message(websocket, message):
             logging.info("收到管理员的全员禁言消息。")
             await set_group_whole_ban(websocket, group_id, True)  # 全员禁言
 
-        # 解除全员禁言命令
+        # 全员解禁命令
         if user_id in owner and (
-            re.match(r"解除全员禁言.*", raw_message)
+            re.match(r"全员解禁.*", raw_message)
             or re.match(r"unban-all.*", raw_message)
         ):
-            logging.info("收到管理员的解除全员禁言消息。")
-            await set_group_whole_ban(websocket, group_id, False)  # 解除全员禁言
+            logging.info("收到管理员的全员解禁消息。")
+            await set_group_whole_ban(websocket, group_id, False)  # 全员解禁
 
         # 踢人命令
         if user_id in owner and (
@@ -222,7 +222,7 @@ async def handle_message(websocket, message):
                 await set_group_ban(websocket, group_id, unban_qq, 0)
 
         # 撤回消息命令
-        if user_id in owner and "recall" in raw_message:
+        if user_id in owner and ("recall" or "撤回") in raw_message:
             logging.info("收到管理员的撤回消息命令。")
             message_id = int(msg["message"][0]["data"]["id"])
             await delete_message(websocket, message_id)
