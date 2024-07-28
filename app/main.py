@@ -3,6 +3,7 @@ import logging
 import asyncio
 import websockets
 import re
+import colorlog
 
 # 全局配置
 global owner, ws_url, token, forbidden_words_file, warning_message, forbidden_words_enabled_groups
@@ -17,8 +18,22 @@ forbidden_words_enabled_groups_file = "forbidden_word_detector/forbidden_words_e
 
 forbidden_words_file = "forbidden_word_detector/forbidden_words.txt"  # 违禁词文件路径
 
+
 # 日志等级配置
-logging.basicConfig(level=logging.DEBUG)
+handler = colorlog.StreamHandler()
+handler.setFormatter(
+    colorlog.ColoredFormatter(
+        "%(log_color)s%(levelname)s:%(name)s:%(message)s",
+        log_colors={
+            "DEBUG": "cyan",
+            "INFO": "green",
+            "WARNING": "yellow",
+            "ERROR": "red",
+            "CRITICAL": "red,bg_white",
+        },
+    )
+)
+logging.basicConfig(level=logging.DEBUG, handlers=[handler])
 
 
 # 加载违禁词列表
@@ -217,8 +232,6 @@ async def set_group_anonymous(websocket, group_id, enable):
     }
     await websocket.send(json.dumps(anonymous_msg))
     logging.info(f"已{'开启' if enable else '关闭'}群 {group_id} 的匿名。")
-
-
 
 
 # 执行API调用
