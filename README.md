@@ -4,11 +4,13 @@
 
 ## 开发文档
 
-[NapCatQQ (napneko.github.io)](https://napneko.github.io/zh-CN/#/)
+NapCatQQ [NapCatQQ (napneko.github.io)](https://napneko.github.io/zh-CN/#/)
 
-[botuniverse /onebot-11: OneBot 11 标准 (github.com)](https://github.com/botuniverse/onebot-11#/)
+OneBot 11 标准 [botuniverse /onebot-11: OneBot 11 标准 (github.com)](https://github.com/botuniverse/onebot-11#/)
 
-[API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
+go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
+
+> 备注：本机器人实现基于 **Python** 做核心开发，使用 **NapCatQQ** 作为消息平台，**OneBot 11** 作为 QQ 机器人 API 实现。
 
 ## 已实现功能
 
@@ -18,7 +20,7 @@
   - [x] 自定义敏感词库
 - [x] 禁言解禁
 - [x] 踢人
-- [ ] 测试语句
+- [x] 测试语句
 - [ ] 监控群名片
 - [ ] 入群欢迎
 - [ ] 退群欢送
@@ -50,7 +52,9 @@
 
 ### QQ 内部 API 调用
 
-API 格式详情：[botuniverse /onebot-11: OneBot 11 标准 (github.com)](https://github.com/botuniverse/onebot-11#/)
+API 参考文档：[botuniverse /onebot-11: OneBot 11 标准 (github.com)](https://github.com/botuniverse/onebot-11#/)
+
+正向 WebSocket 连接参考文档：[onebot-11/communication/ws.md at master · botuniverse/onebot-11 (github.com)](https://github.com/botuniverse/onebot-11/blob/master/communication/ws.md)
 
 使用方法：
 
