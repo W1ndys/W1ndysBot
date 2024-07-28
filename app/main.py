@@ -234,6 +234,23 @@ async def set_group_anonymous(websocket, group_id, enable):
     logging.info(f"已{'开启' if enable else '关闭'}群 {group_id} 的匿名。")
 
 
+# 解析并执行命令
+async def execute_command(websocket, action, params):
+    try:
+        params_json = json.loads(params)
+
+        if not action:
+            logging.error("无效的命令: 缺少 action")
+            return
+
+        logging.info(f"即将执行API命令: {action} {params_json}")
+        await run_api(websocket, action, params_json)
+    except json.JSONDecodeError:
+        logging.error("参数解析失败: 无效的 JSON 格式")
+    except Exception as e:
+        logging.error(f"执行命令时出错: {e}")
+
+
 # 执行API调用
 async def run_api(websocket, action, params):
     api_message = {"action": action, "params": params}
@@ -372,15 +389,15 @@ async def handle_message(websocket, message):
             raw_message = msg["raw_message"]
             logging.info(f"收到私聊消息: {raw_message}")
             if user_id == 2769731875:  # 机器人管理员
-                match = re.search(r"执行(.*)", raw_message)
+                match = re.search(r"执行API(.*)参数(.*)", raw_message)
                 if match:
-                    command = match.group(1).strip()  # 提取“执行”后面的语句
-                    # 解析command的json，解析出actions和params
-                    command_json = json.loads(command)
-                    action = command_json.get("action", [])
-                    params = command_json.get("params", {})
-                    logging.info(f"即将执行API命令: {action} {params}")
-                    await run_api(websocket, action, params)
+                    action = match.group(1).strip()  # 提取“执行API:”后面的action
+                    params = match.group(2).strip()  # 提取“参数:”后面的params
+                    try:
+                        # 解析并执行命令
+                        await execute_command(websocket, action, params)
+                    except Exception as e:
+                        logging.error(f"执行命令时出错: {e}")
 
         # 其他消息类型
         else:
