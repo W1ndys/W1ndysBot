@@ -81,6 +81,16 @@ async def set_group_ban(websocket, group_id, user_id, duration):
     logging.info(f"已禁止用户 {user_id} {duration} 秒。")
 
 
+# 全员禁言
+async def set_group_whole_ban(websocket, group_id, enable):
+    whole_ban_msg = {
+        "action": "set_group_whole_ban",
+        "params": {"group_id": group_id, "enable": enable},
+    }
+    await websocket.send(json.dumps(whole_ban_msg))
+    logging.info(f"已{'' if enable else '解除'}群 {group_id} 的全员禁言。")
+
+
 # 撤回消息
 async def delete_message(websocket, message_id):
     delete_msg = {
@@ -123,9 +133,24 @@ async def handle_message(websocket, message):
         raw_message = msg["raw_message"]
 
         # 检查是否为管理员发送的"测试"消息
-        if user_id == owner and raw_message == "测试":
+        if user_id == owner and (raw_message == "测试" or raw_message == "test"):
             logging.debug("收到管理员的测试消息。")
             await send_message(websocket, group_id, "测试成功")
+
+        # 全员禁言命令
+        if user_id == owner and (
+            re.match(r"全员禁言.*", raw_message) or re.match(r"ban-all.*", raw_message)
+        ):
+            logging.debug("收到管理员的全员禁言消息。")
+            await set_group_whole_ban(websocket, group_id, True)  # 全员禁言
+
+        # 解除全员禁言命令
+        if user_id == owner and (
+            re.match(r"解除全员禁言.*", raw_message)
+            or re.match(r"unban-all.*", raw_message)
+        ):
+            logging.debug("收到管理员的解除全员禁言消息。")
+            await set_group_whole_ban(websocket, group_id, False)  # 解除全员禁言
 
         # 踢人命令
         if user_id == owner and (
