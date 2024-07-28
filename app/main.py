@@ -254,6 +254,242 @@ async def set_group_name(websocket, group_id, group_name):
     logging.info(f"已设置群 {group_id} 的群名为 {group_name}。")
 
 
+# 退出群组
+async def set_group_leave(websocket, group_id, is_dismiss):
+    leave_msg = {
+        "action": "set_group_leave",
+        "params": {"group_id": group_id, "is_dismiss": is_dismiss},
+    }
+    await websocket.send(json.dumps(leave_msg))
+    logging.info(f"已退出群 {group_id}。")
+
+
+# 设置群组专属头衔
+async def set_group_special_title(
+    websocket, group_id, user_id, special_title, duration
+):
+    special_title_msg = {
+        "action": "set_group_special_title",
+        "params": {
+            "group_id": group_id,
+            "user_id": user_id,
+            "special_title": special_title,
+            "duration": duration,
+        },
+    }
+    await websocket.send(json.dumps(special_title_msg))
+    logging.info(f"已设置群 {group_id} 的用户 {user_id} 的专属头衔为 {special_title}。")
+
+
+# 处理加好友请求
+async def set_friend_add_request(websocket, flag, approve):
+    request_msg = {
+        "action": "set_friend_add_request",
+        "params": {"flag": flag, "approve": approve},
+    }
+    await websocket.send(json.dumps(request_msg))
+    logging.info(f"已{'同意' if approve else '拒绝'}好友请求。")
+
+
+# 处理加群请求／邀请
+async def set_group_add_request(websocket, flag, type, approve, reason):
+    request_msg = {
+        "action": "set_group_add_request",
+        "params": {"flag": flag, "type": type, "approve": approve, "reason": reason},
+    }
+    await websocket.send(json.dumps(request_msg))
+    logging.info(f"已{'同意' if approve else '拒绝'}群 {type} 请求。")
+
+
+# 获取登录号信息
+async def get_login_info(websocket):
+    login_info_msg = {
+        "action": "get_login_info",
+        "params": {},
+    }
+    await websocket.send(json.dumps(login_info_msg))
+    logging.info("已获取登录号信息。")
+
+
+# 获取陌生人信息
+async def get_stranger_info(websocket, user_id, no_cache=False):
+    stranger_info_msg = {
+        "action": "get_stranger_info",
+        "params": {"user_id": user_id, "no_cache": no_cache},
+    }
+    await websocket.send(json.dumps(stranger_info_msg))
+    logging.info(f"已获取陌生人 {user_id} 信息。")
+
+
+# 获取好友列表
+async def get_friend_list(websocket):
+    friend_list_msg = {
+        "action": "get_friend_list",
+        "params": {},
+    }
+    await websocket.send(json.dumps(friend_list_msg))
+    logging.info("已获取好友列表。")
+
+
+# 获取群信息
+async def get_group_info(websocket, group_id):
+    group_info_msg = {
+        "action": "get_group_info",
+        "params": {"group_id": group_id},
+    }
+    await websocket.send(json.dumps(group_info_msg))
+    logging.info(f"已获取群 {group_id} 信息。")
+
+
+# 获取群列表
+async def get_group_list(websocket):
+    group_list_msg = {
+        "action": "get_group_list",
+        "params": {},
+    }
+    await websocket.send(json.dumps(group_list_msg))
+    logging.info("已获取群列表。")
+
+
+# 获取群成员信息
+async def get_group_member_info(websocket, group_id, user_id, no_cache=False):
+    group_member_info_msg = {
+        "action": "get_group_member_info",
+        "params": {"group_id": group_id, "user_id": user_id, "no_cache": no_cache},
+    }
+    await websocket.send(json.dumps(group_member_info_msg))
+
+
+# 获取群成员列表
+async def get_group_member_list(websocket, group_id):
+    group_member_list_msg = {
+        "action": "get_group_member_list",
+        "params": {"group_id": group_id},
+    }
+    await websocket.send(json.dumps(group_member_list_msg))
+    logging.info(f"已获取群 {group_id} 的成员列表。")
+
+
+# 获取群荣誉信息
+async def get_group_honor_info(websocket, group_id, type):
+    honor_info_msg = {
+        "action": "get_group_honor_info",
+        "params": {"group_id": group_id, "type": type},
+    }
+    await websocket.send(json.dumps(honor_info_msg))
+    logging.info(f"已获取群 {group_id} 的 {type} 荣誉信息。")
+
+
+# 获取 Cookies
+async def get_cookies(websocket):
+    cookies_msg = {
+        "action": "get_cookies",
+        "params": {},
+    }
+    await websocket.send(json.dumps(cookies_msg))
+    logging.info("已获取 Cookies。")
+
+
+# 获取 CSRF Token
+async def get_csrf_token(websocket):
+    csrf_token_msg = {
+        "action": "get_csrf_token",
+        "params": {},
+    }
+    await websocket.send(json.dumps(csrf_token_msg))
+    logging.info("已获取 CSRF Token。")
+
+
+# 获取 QQ 相关接口凭证
+async def get_credentials(websocket):
+    credentials_msg = {
+        "action": "get_credentials",
+        "params": {},
+    }
+    await websocket.send(json.dumps(credentials_msg))
+    logging.info("已获取 QQ 相关接口凭证。")
+
+
+# 获取语音
+async def get_record(websocket, file, out_format, full_path):
+    record_msg = {
+        "action": "get_record",
+        "params": {"file": file, "out_format": out_format, "full_path": full_path},
+    }
+    await websocket.send(json.dumps(record_msg))
+    logging.info(f"已获取语音 {file}。")
+
+
+# 获取图片
+async def get_image(websocket, file, out_format, full_path):
+    image_msg = {
+        "action": "get_image",
+        "params": {"file": file, "out_format": out_format, "full_path": full_path},
+    }
+    await websocket.send(json.dumps(image_msg))
+    logging.info(f"已获取图片 {file}。")
+
+
+# 检查是否可以发送图片
+async def can_send_image(websocket):
+    can_send_image_msg = {
+        "action": "can_send_image",
+        "params": {},
+    }
+    await websocket.send(json.dumps(can_send_image_msg))
+    logging.info("已检查是否可以发送图片。")
+
+
+# 检查是否可以发送语音
+async def can_send_record(websocket):
+    can_send_record_msg = {
+        "action": "can_send_record",
+        "params": {},
+    }
+    await websocket.send(json.dumps(can_send_record_msg))
+    logging.info("已检查是否可以发送语音。")
+
+
+# 获取运行状态
+async def get_status(websocket):
+    status_msg = {
+        "action": "get_status",
+        "params": {},
+    }
+    await websocket.send(json.dumps(status_msg))
+    logging.info("已获取运行状态。")
+
+
+# 获取版本信息
+async def get_version_info(websocket):
+    version_info_msg = {
+        "action": "get_version_info",
+        "params": {},
+    }
+    await websocket.send(json.dumps(version_info_msg))
+    logging.info("已获取版本信息。")
+
+
+# 重启 OneBot 实现
+async def set_restart(websocket, delay=0):
+    restart_onebot_msg = {
+        "action": "set_restart",
+        "params": {"delay": delay},
+    }
+    await websocket.send(json.dumps(restart_onebot_msg))
+    logging.info("已重启 OneBot 实现。")
+
+
+# 清理缓存
+async def clean_cache(websocket):
+    clean_cache_msg = {
+        "action": "clean_cache",
+        "params": {},
+    }
+    await websocket.send(json.dumps(clean_cache_msg))
+    logging.info("已清理缓存。")
+
+
 # 解析并执行命令
 async def execute_command(websocket, action, params):
     try:
