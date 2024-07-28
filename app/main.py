@@ -138,7 +138,7 @@ async def handle_message(websocket, message):
 
         # 检查群号是否在启用列表中
         if group_id in enabled_groups:
-            logging.debug(f"群 {group_id} 已启用违禁词检测。")
+            logging.debug(f"群 {group_id} 启用了违禁词检测。")
             # 检测违禁词
             if any(re.search(pattern, raw_message) for pattern in forbidden_patterns):
                 logging.debug(f"在消息中检测到违禁词: {raw_message}")
