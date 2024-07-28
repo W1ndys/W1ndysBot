@@ -5,17 +5,15 @@ import websockets
 import re
 
 # 全局配置
-global owner, ws_url, token, forbidden_words_file, warning_message, enabled_groups
+global owner, ws_url, token, forbidden_words_file, warning_message, forbidden_words_enabled_groups
 
 owner = 2769731875  # 机器人管理员 QQ 号
 ws_url = "ws://127.0.0.1:3001"  # napcatQQ 的 WebSocket API 地址
 token = None  # 如果需要认证，请填写认证 token
 
-warning_message = "警告：请不要发送违禁词！"  # 警告消息
+warning_message = "警告：请不要发送违禁词！\n视频形式的广告检测难度大，请及时联系管理员处理。\n如有误删是发的内容触发了违禁词，请及时联系管理员处理。"  # 警告消息
 
-enabled_groups_file = (
-    "forbidden_word_detector/enabled_groups.txt"  # 启用的群聊群号文件路径
-)
+forbidden_words_enabled_groups_file = "forbidden_word_detector/forbidden_words_enabled_groups.txt"  # 启用的群聊群号文件路径
 
 forbidden_words_file = "forbidden_word_detector/forbidden_words.txt"  # 违禁词文件路径
 
@@ -29,7 +27,7 @@ async def load_forbidden_words(file_path):
 
 
 # 加载开启违禁词检测的群聊群号
-async def load_enabled_groups(file_path):
+async def load_forbidden_words_enabled_groups(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         groups = [int(line.strip()) for line in file if line.strip()]
     logging.info(f"加载的启用的群聊群号: {groups}")
@@ -62,9 +60,45 @@ async def authenticate(websocket):
         logging.info("未提供 token，跳过认证。")
 
 
-import json
-import re
-import logging
+# 踢人
+async def set_group_kick(websocket, group_id, user_id):
+    kick_msg = {
+        "action": "set_group_kick",
+        "params": {"group_id": group_id, "user_id": user_id},
+    }
+    await websocket.send(json.dumps(kick_msg))
+    logging.info(f"已踢出用户 {user_id}。")
+    await send_message(websocket, group_id, f"已踢出用户 {user_id}。")
+
+
+# 禁言用户
+async def set_group_ban(websocket, group_id, user_id, duration):
+    ban_msg = {
+        "action": "set_group_ban",
+        "params": {"group_id": group_id, "user_id": user_id, "duration": duration},
+    }
+    await websocket.send(json.dumps(ban_msg))
+    logging.info(f"已禁止用户 {user_id} {duration} 秒。")
+
+
+# 撤回消息
+async def delete_message(websocket, message_id):
+    delete_msg = {
+        "action": "delete_msg",
+        "params": {"message_id": message_id},
+    }
+    await websocket.send(json.dumps(delete_msg))
+    logging.info(f"消息 {message_id} 已撤回。")
+
+
+# 发送消息
+async def send_message(websocket, group_id, content):
+    message = {
+        "action": "send_group_msg",
+        "params": {"group_id": group_id, "message": content},
+    }
+    await websocket.send(json.dumps(message))
+    logging.info(f"已发送消息到群 {group_id}: {content}")
 
 
 # 处理消息
@@ -92,6 +126,24 @@ async def handle_message(websocket, message):
         if user_id == owner and raw_message == "测试":
             logging.debug("收到主人的测试消息。")
             await send_message(websocket, group_id, "测试成功")
+
+        # 踢人命令
+        if user_id == owner and (
+            re.match(r"kick.*", raw_message)
+            or re.match(r"t.*", raw_message)
+            or re.match(r"踢.*", raw_message)
+        ):
+            logging.debug("收到主人的踢人消息。")
+            kick_qq = None
+
+            # 遍历message列表，查找type为'at'的项并读取qq字段
+            for i, item in enumerate(msg["message"]):
+                if item["type"] == "at":
+                    kick_qq = item["data"]["qq"]
+                    break
+
+            if kick_qq:
+                await set_group_kick(websocket, group_id, kick_qq)
 
         # 禁言命令
         if user_id == owner and re.match(r"ban.*", raw_message):
@@ -137,10 +189,12 @@ async def handle_message(websocket, message):
             await delete_message(websocket, message_id)
 
         # 检查群号是否在启用列表中
-        if group_id in enabled_groups:
+        if group_id in forbidden_words_enabled_groups:
             logging.debug(f"群 {group_id} 启用了违禁词检测。")
             # 检测违禁词
-            if any(re.search(pattern, raw_message) for pattern in forbidden_patterns):
+            if any(
+                re.search(pattern, raw_message) for pattern in forbidden_words_patterns
+            ):
                 logging.debug(f"在消息中检测到违禁词: {raw_message}")
 
                 # 撤回消息
@@ -155,43 +209,13 @@ async def handle_message(websocket, message):
         logging.debug(f"收到消息: {msg}")
 
 
-# 禁言用户
-async def set_group_ban(websocket, group_id, user_id, duration):
-    ban_msg = {
-        "action": "set_group_ban",
-        "params": {"group_id": group_id, "user_id": user_id, "duration": duration},
-    }
-    await websocket.send(json.dumps(ban_msg))
-    logging.info(f"已禁止用户 {user_id} {duration} 秒。")
-
-
-# 撤回消息
-async def delete_message(websocket, message_id):
-    delete_msg = {
-        "action": "delete_msg",
-        "params": {"message_id": message_id},
-    }
-    await websocket.send(json.dumps(delete_msg))
-    logging.info(f"消息 {message_id} 已撤回。")
-
-
-# 发送消息
-async def send_message(websocket, group_id, content):
-    message = {
-        "action": "send_group_msg",
-        "params": {"group_id": group_id, "message": content},
-    }
-    await websocket.send(json.dumps(message))
-    logging.info(f"已发送消息到群 {group_id}: {content}")
-
-
 # 主函数
 async def main():
-    global enabled_groups, forbidden_patterns
-    enabled_groups = await load_enabled_groups(
-        enabled_groups_file
+    global forbidden_words_enabled_groups, forbidden_words_patterns
+    forbidden_words_enabled_groups = await load_forbidden_words_enabled_groups(
+        forbidden_words_enabled_groups_file
     )  # 加载启用的群聊群号
-    forbidden_patterns = await load_forbidden_words(
+    forbidden_words_patterns = await load_forbidden_words(
         forbidden_words_file
     )  # 加载违禁词列表
     await connect_to_bot()
