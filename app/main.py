@@ -7,11 +7,11 @@ import re
 # 全局配置
 global owner, ws_url, token, forbidden_words_file, warning_message, forbidden_words_enabled_groups
 
-owner = 2769731875  # 机器人管理员 QQ 号
+owner = [2769731875, 1044420589]  # 机器人管理员 QQ 号
 ws_url = "ws://127.0.0.1:3001"  # napcatQQ 的 WebSocket API 地址
 token = None  # 如果需要认证，请填写认证 token
 
-warning_message = "警告：请不要发送违禁词！\n视频形式的广告检测难度大，请及时联系管理员处理。\n如有误删是发的内容触发了违禁词，请及时联系管理员处理。"  # 警告消息
+warning_message = "警告：请不要发送违禁词！\n视频形式的广告检测难度大，请及时联系管理员处理。\n如有误删是发的内容触发了违禁词，请及时联系管理员处理。\n有新的事件被处理了，请查看是否正常处理[CQ:at,qq=2769731875]"  # 警告消息
 
 forbidden_words_enabled_groups_file = "forbidden_word_detector/forbidden_words_enabled_groups.txt"  # 启用的群聊群号文件路径
 
@@ -144,19 +144,19 @@ async def handle_message(websocket, message):
         raw_message = msg["raw_message"]
 
         # 检查是否为管理员发送的"测试"消息
-        if user_id == owner and (raw_message == "测试" or raw_message == "test"):
+        if user_id in owner and (raw_message == "测试" or raw_message == "test"):
             logging.info("收到管理员的测试消息。")
             await send_group_message(websocket, group_id, "测试成功")
 
         # 全员禁言命令
-        if user_id == owner and (
+        if user_id in owner and (
             re.match(r"全员禁言.*", raw_message) or re.match(r"ban-all.*", raw_message)
         ):
             logging.info("收到管理员的全员禁言消息。")
             await set_group_whole_ban(websocket, group_id, True)  # 全员禁言
 
         # 解除全员禁言命令
-        if user_id == owner and (
+        if user_id in owner and (
             re.match(r"解除全员禁言.*", raw_message)
             or re.match(r"unban-all.*", raw_message)
         ):
@@ -164,7 +164,7 @@ async def handle_message(websocket, message):
             await set_group_whole_ban(websocket, group_id, False)  # 解除全员禁言
 
         # 踢人命令
-        if user_id == owner and (
+        if user_id in owner and (
             re.match(r"kick.*", raw_message)
             or re.match(r"t.*", raw_message)
             or re.match(r"踢.*", raw_message)
@@ -182,7 +182,7 @@ async def handle_message(websocket, message):
                 await set_group_kick(websocket, group_id, kick_qq)
 
         # 禁言命令
-        if user_id == owner and re.match(r"ban.*", raw_message):
+        if user_id in owner and re.match(r"ban.*", raw_message):
             logging.info("收到管理员的禁言消息。")
             ban_qq = None
             ban_duration = None
@@ -201,11 +201,14 @@ async def handle_message(websocket, message):
                         )
                     break
 
+            if ban_duration is None:
+                ban_duration = 1  # 默认禁言 1 分钟
+
             if ban_qq and ban_duration:
                 await set_group_ban(websocket, group_id, ban_qq, ban_duration * 60)
 
         # 解除禁言命令
-        if user_id == owner and re.match(r"unban.*", raw_message):
+        if user_id in owner and re.match(r"unban.*", raw_message):
             logging.info("收到管理员的解除禁言消息。")
             unban_qq = None
 
@@ -219,7 +222,7 @@ async def handle_message(websocket, message):
                 await set_group_ban(websocket, group_id, unban_qq, 0)
 
         # 撤回消息命令
-        if user_id == owner and "recall" in raw_message:
+        if user_id in owner and "recall" in raw_message:
             logging.info("收到管理员的撤回消息命令。")
             message_id = int(msg["message"][0]["data"]["id"])
             await delete_message(websocket, message_id)
