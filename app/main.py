@@ -17,6 +17,9 @@ forbidden_words_enabled_groups_file = "forbidden_word_detector/forbidden_words_e
 
 forbidden_words_file = "forbidden_word_detector/forbidden_words.txt"  # 违禁词文件路径
 
+# 日志等级配置
+logging.basicConfig(level=logging.DEBUG)
+
 
 # 加载违禁词列表
 async def load_forbidden_words(file_path):
@@ -32,6 +35,12 @@ async def load_forbidden_words_enabled_groups(file_path):
         groups = [int(line.strip()) for line in file if line.strip()]
     logging.info(f"加载的启用的群聊群号: {groups}")
     return groups
+
+
+# 加载配置文件
+async def load_config():
+    await load_forbidden_words_enabled_groups(forbidden_words_enabled_groups_file)
+    await load_forbidden_words(forbidden_words_file)
 
 
 # 连接到 QQ 机器人
@@ -234,13 +243,8 @@ async def handle_message(websocket, message):
 # 主函数
 async def main():
     global forbidden_words_enabled_groups, forbidden_words_patterns
-    forbidden_words_enabled_groups = await load_forbidden_words_enabled_groups(
-        forbidden_words_enabled_groups_file
-    )  # 加载启用的群聊群号
-    forbidden_words_patterns = await load_forbidden_words(
-        forbidden_words_file
-    )  # 加载违禁词列表
-    await connect_to_bot()
+    await load_config()  # 加载配置文件
+    await connect_to_bot()  # 连接到 QQ 机器人
 
 
 if __name__ == "__main__":
