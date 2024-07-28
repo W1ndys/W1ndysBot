@@ -8,7 +8,7 @@ import re
 global owner, ws_url, token, forbidden_words_file, warning_message, forbidden_words_enabled_groups
 
 owner = [2769731875, 1044420589]  # 机器人管理员 QQ 号
-ws_url = "ws://127.0.0.1:3001"  # napcatQQ 的 WebSocket API 地址
+ws_url = "ws://127.0.0.1:3001"  # napcatQQ 监听的 WebSocket API 地址
 token = None  # 如果需要认证，请填写认证 token
 
 warning_message = "警告：请不要发送违禁词！\n视频形式的广告检测难度大，请及时联系管理员处理。\n如有误删是发的内容触发了违禁词，请及时联系管理员处理。\n有新的事件被处理了，请查看是否正常处理[CQ:at,qq=2769731875]"  # 警告消息
@@ -71,7 +71,82 @@ async def authenticate(websocket):
         logging.info("未提供 token，跳过认证。")
 
 
-# 踢人
+# 发送私聊消息
+async def send_private_msg(websocket, user_id, content):
+    message = {
+        "action": "send_private_msg",
+        "params": {"user_id": user_id, "message": content},
+    }
+    await websocket.send(json.dumps(message))
+    logging.info(f"已发送消息到用户 {user_id}: {content}")
+
+
+# 发送群消息
+async def send_group_msg(websocket, group_id, content):
+    message = {
+        "action": "send_group_msg",
+        "params": {"group_id": group_id, "message": content},
+    }
+    await websocket.send(json.dumps(message))
+    logging.info(f"已发送消息到群 {group_id}: {content}")
+
+
+# 发送消息
+async def send_msg(websocket, message_type, user_id, group_id, message):
+    message = {
+        "action": "send_msg",
+        "params": {
+            "message_type": message_type,
+            "user_id": user_id,
+            "group_id": group_id,
+            "message": message,
+        },
+    }
+    await websocket.send(json.dumps(message))
+    logging.info(f"已发送消息: {message}")
+
+
+# 撤回消息
+async def delete_msg(websocket, message_id):
+    delete_msg = {
+        "action": "delete_msg",
+        "params": {"message_id": message_id},
+    }
+    await websocket.send(json.dumps(delete_msg))
+    logging.info(f"消息 {message_id} 已撤回。")
+
+
+# 获取消息
+async def get_msg(websocket, message_id):
+    get_msg = {
+        "action": "get_msg",
+        "params": {"message_id": message_id},
+    }
+    await websocket.send(json.dumps(get_msg))
+    logging.info(f"已获取消息 {message_id}。")
+
+
+# 获取合并转发消息
+async def get_forward_msg(websocket, id):
+    get_forward_msg = {
+        "action": "get_forward_msg",
+        "params": {"message_id": id},
+    }
+    await websocket.send(json.dumps(get_forward_msg))
+    logging.info(f"已获取合并转发消息 {id}。")
+
+
+# 发送好友赞
+async def send_like(websocket, user_id, times):
+    like_msg = {
+        "action": "send_like",
+        "params": {"user_id": user_id, "times": times},
+    }
+    await websocket.send(json.dumps(like_msg))
+    logging.info(f"已发送好友赞 {user_id} {times} 次。")
+
+
+# 群组踢人
 async def set_group_kick(websocket, group_id, user_id):
     kick_msg = {
         "action": "set_group_kick",
@@ -79,10 +154,10 @@ async def set_group_kick(websocket, group_id, user_id):
     }
     await websocket.send(json.dumps(kick_msg))
     logging.info(f"已踢出用户 {user_id}。")
-    await send_group_message(websocket, group_id, f"已踢出用户 {user_id}。")
+    await send_group_msg(websocket, group_id, f"已踢出用户 {user_id}。")
 
 
-# 禁言用户
+# 群组单人禁言
 async def set_group_ban(websocket, group_id, user_id, duration):
     ban_msg = {
         "action": "set_group_ban",
@@ -92,39 +167,58 @@ async def set_group_ban(websocket, group_id, user_id, duration):
     logging.info(f"已禁止用户 {user_id} {duration} 秒。")
 
 
-# 全员禁言
+# 群组匿名用户禁言
+# 此功能需要从群消息上报的数据中获得数据，暂未测试，慎用
+# 此功能需要从群消息上报的数据中获得数据，暂未测试，慎用
+# 此功能需要从群消息上报的数据中获得数据，暂未测试，慎用
+# 此功能需要从群消息上报的数据中获得数据，暂未测试，慎用
+# 此功能需要从群消息上报的数据中获得数据，暂未测试，慎用
+async def set_group_anonymous_ban(websocket, group_id, anonymous_flag, duration):
+    anonymous_ban_msg = {
+        "action": "set_group_anonymous_ban",
+        "params": {"group_id": group_id, "flag": anonymous_flag, "duration": duration},
+    }
+    await websocket.send(json.dumps(anonymous_ban_msg))
+    logging.info(f"已禁止匿名用户 {anonymous_flag} {duration} 秒。")
+
+
+# 群组全员禁言
 async def set_group_whole_ban(websocket, group_id, enable):
     whole_ban_msg = {
         "action": "set_group_whole_ban",
         "params": {"group_id": group_id, "enable": enable},
     }
     await websocket.send(json.dumps(whole_ban_msg))
-    await send_group_message(
+    await send_group_msg(
         websocket,
         group_id,
         f"已{'开启' if enable else '解除'}群 {group_id} 的全员禁言。",
     )
-    logging.info(f"已{'' if enable else '解除'}群 {group_id} 的全员禁言。")
+    logging.info(f"已{'开启' if enable else '解除'}群 {group_id} 的全员禁言。")
 
 
-# 撤回消息
-async def delete_message(websocket, message_id):
-    delete_msg = {
-        "action": "delete_msg",
-        "params": {"message_id": message_id},
+# 群组设置管理员
+async def set_group_admin(websocket, group_id, user_id, enable):
+    admin_msg = {
+        "action": "set_group_admin",
+        "params": {"group_id": group_id, "user_id": user_id, "enable": enable},
     }
-    await websocket.send(json.dumps(delete_msg))
-    logging.info(f"消息 {message_id} 已撤回。")
+    await websocket.send(json.dumps(admin_msg))
+    logging.info(
+        f"已{'授予' if enable else '解除'}群 {group_id} 的管理员 {user_id} 的权限。"
+    )
 
 
-# 发送群消息
-async def send_group_message(websocket, group_id, content):
-    message = {
-        "action": "send_group_msg",
-        "params": {"group_id": group_id, "message": content},
+# 群组匿名
+async def set_group_anonymous(websocket, group_id, enable):
+    anonymous_msg = {
+        "action": "set_group_anonymous",
+        "params": {"group_id": group_id, "enable": enable},
     }
-    await websocket.send(json.dumps(message))
-    logging.info(f"已发送消息到群 {group_id}: {content}")
+    await websocket.send(json.dumps(anonymous_msg))
+    logging.info(f"已{'开启' if enable else '关闭'}群 {group_id} 的匿名。")
+
+
 
 
 # 执行API调用
@@ -157,7 +251,7 @@ async def handle_message(websocket, message):
             # 检查是否为管理员发送的"测试"消息
             if user_id in owner and (raw_message == "测试" or raw_message == "test"):
                 logging.info("收到管理员的测试消息。")
-                await send_group_message(websocket, group_id, "测试成功")
+                await send_group_msg(websocket, group_id, "测试成功")
 
             # 全员禁言命令
             if user_id in owner and (
@@ -237,7 +331,7 @@ async def handle_message(websocket, message):
             if user_id in owner and ("recall" in raw_message or "撤回" in raw_message):
                 logging.info("收到管理员的撤回消息命令。")
                 message_id = int(msg["message"][0]["data"]["id"])
-                await delete_message(websocket, message_id)
+                await delete_msg(websocket, message_id)
 
             # 检查群号是否在启用列表中
             if group_id in forbidden_words_enabled_groups:
@@ -250,10 +344,10 @@ async def handle_message(websocket, message):
                     logging.info(f"在消息中检测到违禁词: {raw_message}")
 
                     # 撤回消息
-                    await delete_message(websocket, message_id)
+                    await delete_msg(websocket, message_id)
 
                     # 发送警告消息
-                    await send_group_message(websocket, group_id, warning_message)
+                    await send_group_msg(websocket, group_id, warning_message)
 
                     # 执行禁言
                     await set_group_ban(websocket, group_id, user_id, 60)
