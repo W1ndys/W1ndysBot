@@ -122,9 +122,9 @@ async def handle_message(websocket, message):
         message_id = msg["message_id"]
         raw_message = msg["raw_message"]
 
-        # 检查是否为主人发送的"测试"消息
+        # 检查是否为管理员发送的"测试"消息
         if user_id == owner and raw_message == "测试":
-            logging.debug("收到主人的测试消息。")
+            logging.debug("收到管理员的测试消息。")
             await send_message(websocket, group_id, "测试成功")
 
         # 踢人命令
@@ -133,7 +133,7 @@ async def handle_message(websocket, message):
             or re.match(r"t.*", raw_message)
             or re.match(r"踢.*", raw_message)
         ):
-            logging.debug("收到主人的踢人消息。")
+            logging.debug("收到管理员的踢人消息。")
             kick_qq = None
 
             # 遍历message列表，查找type为'at'的项并读取qq字段
@@ -147,7 +147,7 @@ async def handle_message(websocket, message):
 
         # 禁言命令
         if user_id == owner and re.match(r"ban.*", raw_message):
-            logging.debug("收到主人的禁言消息。")
+            logging.debug("收到管理员的禁言消息。")
             ban_qq = None
             ban_duration = None
 
@@ -170,7 +170,7 @@ async def handle_message(websocket, message):
 
         # 解除禁言命令
         if user_id == owner and re.match(r"unban.*", raw_message):
-            logging.debug("收到主人的解除禁言消息。")
+            logging.debug("收到管理员的解除禁言消息。")
             unban_qq = None
 
             # 遍历message列表，查找type为'at'的项并读取qq字段
@@ -184,7 +184,7 @@ async def handle_message(websocket, message):
 
         # 撤回消息命令
         if user_id == owner and "recall" in raw_message:
-            logging.debug("收到主人的撤回消息命令。")
+            logging.debug("收到管理员的撤回消息命令。")
             message_id = int(msg["message"][0]["data"]["id"])
             await delete_message(websocket, message_id)
 
