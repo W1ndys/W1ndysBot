@@ -234,6 +234,26 @@ async def set_group_anonymous(websocket, group_id, enable):
     logging.info(f"已{'开启' if enable else '关闭'}群 {group_id} 的匿名。")
 
 
+# 设置群名片（群备注）
+async def set_group_card(websocket, group_id, user_id, card):
+    card_msg = {
+        "action": "set_group_card",
+        "params": {"group_id": group_id, "user_id": user_id, "card": card},
+    }
+    await websocket.send(json.dumps(card_msg))
+    logging.info(f"已设置群 {group_id} 的用户 {user_id} 的群名片为 {card}。")
+
+
+# 设置群名
+async def set_group_name(websocket, group_id, group_name):
+    name_msg = {
+        "action": "set_group_name",
+        "params": {"group_id": group_id, "group_name": group_name},
+    }
+    await websocket.send(json.dumps(name_msg))
+    logging.info(f"已设置群 {group_id} 的群名为 {group_name}。")
+
+
 # 解析并执行命令
 async def execute_command(websocket, action, params):
     try:
