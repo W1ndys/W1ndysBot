@@ -39,8 +39,13 @@ async def load_forbidden_words_enabled_groups(file_path):
 
 # 加载配置文件
 async def load_config():
-    await load_forbidden_words_enabled_groups(forbidden_words_enabled_groups_file)
-    await load_forbidden_words(forbidden_words_file)
+    global forbidden_words_enabled_groups, forbidden_words_patterns
+    forbidden_words_enabled_groups = await load_forbidden_words_enabled_groups(
+        forbidden_words_enabled_groups_file
+    )  # 加载启用的群聊群号
+    forbidden_words_patterns = await load_forbidden_words(
+        forbidden_words_file
+    )  # 加载违禁词列表
 
 
 # 连接到 QQ 机器人
