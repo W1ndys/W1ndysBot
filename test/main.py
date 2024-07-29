@@ -145,7 +145,8 @@ async def handle_message(websocket, message):
 
         # 其他消息类型
         else:
-            logging.info(f"收到消息: {msg}")
+            # logging.info(f"收到消息: {msg}")
+            pass
 
     # 处理异常
     except Exception as e:
