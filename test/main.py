@@ -6,7 +6,7 @@ import re
 import colorlog
 
 # 全局配置
-global owner_id, ws_url, token, test_group_id, forbidden_words_patterns, forbidden_words_enabled_groups, admin_id
+global owner_id, ws_url, token, test_group_id, forbidden_words_patterns, forbidden_words_enabled_groups, admin_id, send_group_msgs_group_ids
 
 owner_id = [2769731875]  # 机器人管理员 QQ 号
 ws_url = "ws://127.0.0.1:3001"  # napcatQQ 监听的 WebSocket API 地址
@@ -15,6 +15,15 @@ test_group_id = 728077087  # 测试群群号
 forbidden_words_file = "forbidden_config/forbidden_words.txt"
 forbidden_words_enabled_groups_file = "forbidden_config/enable_groups.txt"
 admin_id_file = "admin/admin_id.txt"  # 管理员 QQ 号文件
+send_group_msgs_group_ids_file = "send_group_msgs/group_ids.txt"  # 群发消息的群号文件
+
+
+# 加载群发消息的群号
+async def load_send_group_msgs_group_ids(file_path):
+    with open(file_path, "r", encoding="utf-8") as file:
+        group_ids = [int(line.strip()) for line in file if line.strip()]
+    logging.info(f"加载的群发消息的群号: {group_ids}")
+    return group_ids
 
 
 # 加载违禁词列表
@@ -43,7 +52,7 @@ async def load_admin_id(file_path):
 
 # 加载配置文件
 async def load_config():
-    global forbidden_words_enabled_groups, forbidden_words_patterns, admin_id
+    global forbidden_words_enabled_groups, forbidden_words_patterns, admin_id, send_group_msgs_group_ids
     forbidden_words_enabled_groups = await load_forbidden_words_enabled_groups(
         forbidden_words_enabled_groups_file
     )  # 加载启用的群聊群号
@@ -51,6 +60,10 @@ async def load_config():
         forbidden_words_file
     )  # 加载违禁词列表
     admin_id = await load_admin_id(admin_id_file)  # 加载管理员 QQ 号
+    send_group_msgs_group_ids = await load_send_group_msgs_group_ids(
+        send_group_msgs_group_ids_file
+    )  # 加载群发消息的群号
+    logging.info("配置文件加载完毕。")
 
 
 # 日志等级配置
@@ -265,6 +278,14 @@ async def handle_message(websocket, message):
                     await send_group_msg(websocket, group_id, f"检测到违禁词: {word}")
                     await set_group_ban(websocket, group_id, user_id, 60)  # 禁言 60 秒
                     break
+            ################################################ 群发消息 ################################################
+
+            if (user_id in owner_id or user_id in admin_id) and re.match(
+                r"send.*", raw_message
+            ):
+                logging.info("收到管理员的群发消息。")
+                content = re.findall(r"send (.*)", raw_message)[0]
+                await send_group_msgs(websocket, send_group_msgs_group_ids, content)
 
             ################################################ 群管 ################################################
 
