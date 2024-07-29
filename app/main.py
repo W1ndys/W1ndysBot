@@ -5,6 +5,7 @@ import websockets
 import re
 import colorlog
 import os
+import random
 
 # 全局配置
 global owner, ws_url, token, forbidden_words_file, warning_message, forbidden_words_enabled_groups
@@ -563,7 +564,7 @@ async def handle_message(websocket, message):
                 or re.match(r"t.*", raw_message)
                 or re.match(r"踢.*", raw_message)
             ):
-                logging.info("收到管理员的踢人消息。")
+                logging.info("收到管理员的踢人消息。\n注：群主及管理员无法被踢。")
                 kick_qq = None
 
                 # 遍历message列表，查找type为'at'的项并读取qq字段
@@ -574,6 +575,17 @@ async def handle_message(websocket, message):
 
                 if kick_qq:
                     await set_group_kick(websocket, group_id, kick_qq)
+
+            # 禁言自己，随机1-10分钟
+            if raw_message == "banme":
+                logging.info("收到禁言自己消息。")
+                ban_duration = random.randint(1, 10)  # 随机禁言1-10分钟
+                await set_group_ban(websocket, group_id, user_id, ban_duration * 60)
+                await send_group_msg(
+                    websocket,
+                    group_id,
+                    f"你已被禁言 {ban_duration} 分钟\n如需解除，请私信我unbanme+所在群号\n注：群主及管理员无法被禁言。",
+                )
 
             # 禁言命令
             if (user_id in owner or role == "owner" or role == "admin") and re.match(
@@ -602,6 +614,12 @@ async def handle_message(websocket, message):
 
                 if ban_qq and ban_duration:
                     await set_group_ban(websocket, group_id, ban_qq, ban_duration * 60)
+
+                await send_group_msg(
+                    websocket,
+                    group_id,
+                    f"已禁言 {ban_qq} {ban_duration} 分钟\n注：群主及管理员无法被禁言。",
+                )
 
             # 解除禁言命令
             if (user_id in owner or role == "owner" or role == "admin") and re.match(
@@ -659,7 +677,7 @@ async def handle_message(websocket, message):
                     await set_group_ban(websocket, group_id, user_id, 60)
 
             ################################################ 关键词回复 ################################################
-            
+
             # 添加关键词
             if (user_id in owner) and re.match(r"addkeyword.*", raw_message):
                 logging.info("收到管理员的添加关键词消息。")
@@ -674,6 +692,8 @@ async def handle_message(websocket, message):
                 keyword, reply = keyword_reply.split(":", 1)
                 logging.info(f"关键词: {keyword}")
                 logging.info(f"回复: {reply}")
+                # 替换两个斜杠为一个斜杠
+                reply = reply.replace("\\n", "\n")
                 # 保存关键词和回复
                 keywords_file = "keywords/keywords.json"
                 # 确保目录存在
@@ -692,7 +712,9 @@ async def handle_message(websocket, message):
                         )
                         return
                 # 添加新关键词
-                keywords.append({"group_id": group_id, "keyword": keyword, "reply": reply})
+                keywords.append(
+                    {"group_id": group_id, "keyword": keyword, "reply": reply}
+                )
                 with open(keywords_file, "w", encoding="utf-8") as file:
                     json.dump(keywords, file, ensure_ascii=False, indent=4)
                 await send_group_msg(
@@ -710,7 +732,13 @@ async def handle_message(websocket, message):
                     with open(keywords_file, "r", encoding="utf-8") as file:
                         keywords = json.load(file)
                     # 查找并删除关键词
-                    keywords = [item for item in keywords if not (item["group_id"] == group_id and item["keyword"] == keyword)]
+                    keywords = [
+                        item
+                        for item in keywords
+                        if not (
+                            item["group_id"] == group_id and item["keyword"] == keyword
+                        )
+                    ]
                     with open(keywords_file, "w", encoding="utf-8") as file:
                         json.dump(keywords, file, ensure_ascii=False, indent=4)
                     await send_group_msg(
@@ -738,7 +766,10 @@ async def handle_message(websocket, message):
             user_id = msg["sender"]["user_id"]
             message_id = msg["message_id"]
             raw_message = msg["raw_message"]
-            logging.info(f"收到私聊消息: {raw_message}")
+            logging.info(f"收到私聊消息: ")
+            logging.info(f"用户ID: {user_id}")
+            logging.info(f"消息ID: {message_id}")
+            logging.info(f"消息内容: {raw_message}")
             if user_id == 2769731875:  # 机器人管理员
                 match = re.search(r"执行API(.*)参数(.*)", raw_message)
                 if match:
@@ -749,6 +780,21 @@ async def handle_message(websocket, message):
                         await execute_command(websocket, action, params)
                     except Exception as e:
                         logging.error(f"执行命令时出错: {e}")
+
+            # 处理私聊解禁命令
+            if raw_message.startswith("unbanme"):
+                try:
+                    group_id = int(raw_message.split("unbanme")[1].strip())
+                    await set_group_ban(websocket, group_id, user_id, 0)
+                    await send_private_msg(
+                        websocket, user_id, f"你在群 {group_id} 已被解除禁言"
+                    )
+                    logging.info(f"用户 {user_id} 在群 {group_id} 已被解除禁言")
+                except Exception as e:
+                    logging.error(f"处理私聊解禁命令时出错: {e}")
+                    await send_private_msg(
+                        websocket, user_id, "解禁命令格式错误，请使用unbanme+群号"
+                    )
 
         # 其他消息类型
         else:
