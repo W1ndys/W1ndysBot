@@ -5,6 +5,9 @@ import websockets
 import colorlog
 import requests
 import os
+from urllib3 import PoolManager
+from requests.adapters import HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context
 
 # 全局配置
 global owner, ws_url, token
@@ -12,7 +15,7 @@ global owner, ws_url, token
 owner = [2769731875]  # 机器人管理员 QQ 号
 ws_url = "ws://127.0.0.1:3001"  # napcatQQ 监听的 WebSocket API 地址
 token = None  # 如果需要认证，请填写认证 token
-group_status_file = "group_status.json"  # 保存群解析状态的文件
+group_status_file = "group_status.txt"  # 保存群解析状态的文件
 
 # 日志等级配置
 handler = colorlog.StreamHandler()
@@ -38,14 +41,30 @@ group_parse_status = {}
 def load_group_status():
     if os.path.exists(group_status_file):
         with open(group_status_file, "r") as f:
-            return json.load(f)
+            status = {}
+            for line in f:
+                group_id, parse_status = line.strip().split(":")
+                status[int(group_id)] = parse_status == "True"
+            logging.info(f"加载的群解析状态: {status}")
+            return status
     return {}
 
 
 # 保存群解析状态
 def save_group_status():
     with open(group_status_file, "w") as f:
-        json.dump(group_parse_status, f)
+        for group_id, parse_status in group_parse_status.items():
+            f.write(f"{group_id}:{parse_status}\n")
+
+
+# 自定义TLS适配器
+class TLSAdapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        context = create_urllib3_context()
+        context.check_hostname = False
+        context.verify_mode = False
+        kwargs["ssl_context"] = context
+        self.poolmanager = PoolManager(*args, **kwargs)
 
 
 # 连接到 QQ 机器人
@@ -172,7 +191,9 @@ async def handle_message(websocket, message):
 
 # 保存图片到本地
 def save_image_locally(image_url, local_path):
-    response = requests.get(image_url)
+    session = requests.Session()
+    session.mount("https://", TLSAdapter())
+    response = session.get(image_url, verify=False)
     if response.status_code == 200:
         with open(local_path, "wb") as f:
             f.write(response.content)
@@ -183,8 +204,10 @@ def save_image_locally(image_url, local_path):
 
 # 解码二维码
 def decode_qr_code(image_url):
-    response = requests.post(
-        "https://api.uomg.com/api/qr.encode", data={"url": image_url}
+    session = requests.Session()
+    session.mount("https://", TLSAdapter())
+    response = session.post(
+        "https://api.uomg.com/api/qr.encode", data={"url": image_url}, verify=False
     )
     if response.status_code == 200:
         data = response.json()
