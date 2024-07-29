@@ -199,14 +199,15 @@ async def handle_message(websocket, message):
             "post_type" in msg
             and msg["post_type"] == "message"
             and msg["message_type"] == "group"
-            and msg["group_id"]
-            in forbidden_words_enabled_groups  # 仅处理启用违禁词检测的群
+            and msg["group_id"] in test_group_id  # 仅处理测试群聊
         ):
             logging.info(f"\n\n收到消息:\n{msg}\n\n")
             user_id = msg["sender"]["user_id"]
             group_id = msg["group_id"]
             message_id = msg["message_id"]
             raw_message = msg["raw_message"]
+
+            ################################################ 测试消息 ################################################
 
             # 检查是否为管理员发送的"测试"消息
             if (user_id in owner_id or user_id in admin_id) and (
@@ -217,6 +218,8 @@ async def handle_message(websocket, message):
 
             # 提取被@的用户ID
             mentioned_users = re.findall(r"\[CQ:at,qq=(\d+)\]", msg["raw_message"])
+
+            ################################################ 授权用区 ################################################
 
             # 添加管理员
             if user_id in owner_id and "add-admin" in raw_message:
@@ -254,12 +257,16 @@ async def handle_message(websocket, message):
                             websocket, group_id, f"管理员 {remove_admin_id} 不存在"
                         )
 
+            ################################################ 违禁词检测用区 ################################################
+
             # 违禁词检测
             for word in forbidden_words_patterns:
                 if word in raw_message:
                     await send_group_msg(websocket, group_id, f"检测到违禁词: {word}")
                     await set_group_ban(websocket, group_id, user_id, 60)  # 禁言 60 秒
                     break
+
+            ################################################ 群管 ################################################
 
             # 禁言命令
             if (user_id in owner_id or user_id in admin_id) and re.match(
