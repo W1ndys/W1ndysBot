@@ -11,7 +11,7 @@ global owner_id, ws_url, token, test_group_id, forbidden_words_patterns, forbidd
 owner_id = [2769731875]  # 机器人管理员 QQ 号
 ws_url = "ws://127.0.0.1:3001"  # napcatQQ 监听的 WebSocket API 地址
 token = None  # 如果需要认证，请填写认证 token
-test_group_id = 728077087  # 测试群群号
+test_group_id = [728077087]  # 测试群群号
 forbidden_words_file = "forbidden_config/forbidden_words.txt"
 forbidden_words_enabled_groups_file = "forbidden_config/enable_groups.txt"
 admin_id_file = "admin/admin_id.txt"  # 管理员 QQ 号文件
@@ -119,6 +119,8 @@ async def send_group_msg(websocket, group_id, content):
 # 群发消息
 async def send_group_msgs(websocket, group_ids, content):
     for group_id in group_ids:
+        group_id = int(group_id)
+        logging.info(f"正在向群 {group_id} 发送消息: {content}")
         await send_group_msg(websocket, group_id, content)
 
 
@@ -284,8 +286,90 @@ async def handle_message(websocket, message):
                 r"send.*", raw_message
             ):
                 logging.info("收到管理员的群发消息。")
-                content = re.findall(r"send (.*)", raw_message)[0]
+                content = re.findall(r"send(.*)", raw_message)[0]
+                logging.info(f"群发消息内容: {content}")
+                logging.info(f"群发消息群号: {send_group_msgs_group_ids}")
                 await send_group_msgs(websocket, send_group_msgs_group_ids, content)
+
+            ################################################ 关键词回复 ################################################
+
+            # 关键词回复
+            if raw_message in [
+                line.strip().split(":")[0]
+                for line in open(f"keywords/{group_id}/keywords.txt")
+            ]:
+                logging.info("关键词匹配成功。")
+                # 读取文件
+                with open(
+                    f"keywords/{group_id}/keywords.txt", "r", encoding="utf-8"
+                ) as file:
+                    lines = file.readlines()
+                # 遍历文件，查找是否存在相同关键词
+                for line in lines:
+                    if line.strip().split(":")[0] == raw_message:
+                        reply = line.strip().split(":")[1]
+                        await send_msg(websocket, "group", user_id, group_id, reply)
+                        break
+
+            # 添加关键词
+            if (user_id in owner_id or user_id in admin_id) and re.match(
+                r"addkeyword.*", raw_message
+            ):
+                logging.info("收到管理员的添加关键词消息。")
+                keyword_reply = re.findall(r"add-keyword(.*)", raw_message)[0].strip()
+                if ":" not in keyword_reply:
+                    await send_group_msg(
+                        websocket,
+                        group_id,
+                        "格式错误，请使用【关键词】:【回复】格式\n例如：add-keyword关键词:回复",
+                    )
+                    return
+                keyword, reply = keyword_reply.split(":", 1)
+                logging.info(f"关键词: {keyword}")
+                logging.info(f"回复: {reply}")
+                # 保存关键词和回复
+                keywords_file = f"keywords/{group_id}/keywords.txt"
+                # 读取文件
+                with open(keywords_file, "r", encoding="utf-8") as file:
+                    lines = file.readlines()
+                # 遍历文件，查找是否存在相同关键词
+                for line in lines:
+                    if line.strip().split(":")[0] == keyword:
+                        await send_group_msg(
+                            websocket, group_id, f"关键词 {keyword} 已存在"
+                        )
+                        return
+                # 写入文件
+                with open(keywords_file, "a", encoding="utf-8") as file:
+                    file.write(f"{keyword}:{reply}\n")
+                await send_group_msg(
+                    websocket, group_id, f"添加关键词 {keyword} 成功，回复: {reply}"
+                )
+
+            # 删除关键词
+            if (user_id in owner_id or user_id in admin_id) and re.match(
+                r"del-keyword.*", raw_message
+            ):
+                logging.info("收到管理员的删除关键词消息。")
+                keyword = re.findall(r"del-keyword (.*)", raw_message)[0].strip()
+                logging.info(f"关键词: {keyword}")
+                keywords_file = f"keywords/{group_id}/keywords.txt"
+                # 读取文件
+                with open(keywords_file, "r", encoding="utf-8") as file:
+                    lines = file.readlines()
+                # 遍历文件，查找是否存在相同关键词
+                for i, line in enumerate(lines):
+                    if line.strip().split(":")[0] == keyword:
+                        # 删除该行
+                        lines.pop(i)
+                        # 写入文件
+                        with open(keywords_file, "w", encoding="utf-8") as file:
+                            file.write("".join(lines))
+                        await send_group_msg(
+                            websocket, group_id, f"删除关键词 {keyword} 成功"
+                        )
+                        return
+                await send_group_msg(websocket, group_id, f"关键词 {keyword} 不存在")
 
             ################################################ 群管 ################################################
 
