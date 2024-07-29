@@ -629,6 +629,18 @@ async def handle_message(websocket, message):
             # 检查群号是否在启用列表中
             if group_id in forbidden_words_enabled_groups:
                 logging.info(f"群 {group_id} 启用了违禁词检测。")
+                # 检测视频
+
+                if re.search(r"\[CQ:video.*\]", raw_message):
+                    logging.info(f"群 {group_id} 禁止发送视频。")
+                    # 撤回消息
+                    await delete_msg(websocket, message_id)
+
+                    # 发送警告消息
+                    await send_group_msg(
+                        websocket, group_id, "为防止广告，本群禁止发送视频。"
+                    )
+
                 # 检测违禁词
                 if any(
                     re.search(pattern, raw_message)
