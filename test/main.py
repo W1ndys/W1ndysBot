@@ -1,3 +1,6 @@
+# author: W1ndys
+# https://w1ndys.top/
+
 import json
 import logging
 import asyncio
@@ -9,12 +12,17 @@ import os
 # 全局配置
 global owner_id, ws_url, token, test_group_id, forbidden_words_patterns, forbidden_words_enabled_groups, admin_id, send_group_msgs_group_ids
 
-owner_id = [2769731875]  # 机器人管理员 QQ 号
+owner_id = [123456789]  # 机器人root管理员 QQ 号
 ws_url = "ws://127.0.0.1:3001"  # napcatQQ 监听的 WebSocket API 地址
 token = None  # 如果需要认证，请填写认证 token
-test_group_id = [728077087]  # 测试群群号
-forbidden_words_file = "forbidden_config/forbidden_words.txt"
-forbidden_words_enabled_groups_file = "forbidden_config/enable_groups.txt"
+enable_groups = [
+    123456789,
+    987654321,
+]  # 机器人总开关，要开启机器人的群号，用英文逗号分隔
+forbidden_words_file = "forbidden_config/forbidden_words.txt"  # 违禁词配置文件
+forbidden_words_enabled_groups_file = (
+    "forbidden_config/enable_groups.txt"  # 启用违禁词检测的群聊群号配置文件
+)
 admin_id_file = "admin/admin_id.txt"  # 管理员 QQ 号文件
 send_group_msgs_group_ids_file = "send_group_msgs/group_ids.txt"  # 群发消息的群号文件
 
@@ -215,7 +223,7 @@ async def handle_message(websocket, message):
             "post_type" in msg
             and msg["post_type"] == "message"
             and msg["message_type"] == "group"
-            and msg["group_id"] in test_group_id  # 仅处理测试群聊
+            and msg["group_id"] in enable_groups  # 开启的群聊群号
         ):
             logging.info(f"\n\n收到消息:\n{msg}\n\n")
             user_id = msg["sender"]["user_id"]
