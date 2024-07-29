@@ -1,3 +1,8 @@
+# __author__ = "W1ndys"
+#
+# 该脚本仅用于测试，已限制超级管理员和测试群的权限。
+# 发布之前记得数据脱敏以及删除注释。
+
 import json
 import logging
 import asyncio
@@ -8,7 +13,8 @@ import colorlog
 # 全局配置
 global owner, ws_url, token
 
-owner = []  # 机器人管理员 QQ 号
+owner = [2769731875]  # 机器人管理员 QQ 号
+owner_group = 728077087  # 机器人管理员群号
 ws_url = "ws://127.0.0.1:3001"  # napcatQQ 监听的 WebSocket API 地址
 token = None  # 如果需要认证，请填写认证 token
 
@@ -92,6 +98,7 @@ async def handle_message(websocket, message):
             "post_type" in msg
             and msg["post_type"] == "message"
             and msg["message_type"] == "group"
+            and msg["group_id"] == owner_group  # 仅处理管理员群的消息
         ):
             user_id = msg["sender"]["user_id"]
             group_id = msg["group_id"]
