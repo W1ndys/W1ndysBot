@@ -9,7 +9,7 @@ import os
 # 全局配置
 global owner, ws_url, token
 
-owner = [1921017959]  # 机器人管理员 QQ 号
+owner = [2769731875]  # 机器人管理员 QQ 号
 ws_url = "ws://127.0.0.1:3001"  # napcatQQ 监听的 WebSocket API 地址
 token = None  # 如果需要认证，请填写认证 token
 group_status_file = "group_status.json"  # 保存群解析状态的文件
@@ -126,14 +126,14 @@ async def handle_message(websocket, message):
                     group_parse_status[group_id] = False
                     save_group_status()
                     await send_group_msg(websocket, group_id, "解析功能已关闭")
-            elif group_parse_status.get(group_id, False):
+            if group_parse_status.get(group_id, False):
                 # 检查是否包含图片
                 for segment in msg["message"]:
                     if segment["type"] == "image":
                         image_url = segment["data"]["url"]
-                        local_path = "/opt/1panel/apps/openresty/openresty/www/sites/8.140.196.157/index/temp.jpg"
+                        local_path = "/opt/1panel/apps/openresty/openresty/www/sites/47.104.173.131/index/temp.jpg"
                         save_image_locally(image_url, local_path)
-                        decoded_text = decode_qr_code("http://8.140.196.157/temp.jpg")
+                        decoded_text = decode_qr_code("http://47.104.173.131/temp.jpg")
                         await send_group_msg(
                             websocket,
                             group_id,
@@ -150,9 +150,9 @@ async def handle_message(websocket, message):
             for segment in msg["message"]:
                 if segment["type"] == "image":
                     image_url = segment["data"]["url"]
-                    local_path = "/opt/1panel/apps/openresty/openresty/www/sites/8.140.196.157/index/temp.jpg"
+                    local_path = "/opt/1panel/apps/openresty/openresty/www/sites/47.104.173.131/index/temp.jpg"
                     save_image_locally(image_url, local_path)
-                    decoded_text = decode_qr_code("http://8.140.196.157/temp.jpg")
+                    decoded_text = decode_qr_code("http://47.104.173.131/temp.jpg")
                     await send_msg(
                         websocket,
                         "private",
