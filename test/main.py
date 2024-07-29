@@ -219,7 +219,7 @@ async def handle_message(websocket, message):
             mentioned_users = re.findall(r"\[CQ:at,qq=(\d+)\]", msg["raw_message"])
 
             # 添加管理员
-            if user_id in owner_id and "添加管理员" in raw_message:
+            if user_id in owner_id and "add-admin" in raw_message:
                 if mentioned_users:
                     new_admin_id = int(mentioned_users[0])
                     if new_admin_id not in admin_id:
@@ -236,7 +236,7 @@ async def handle_message(websocket, message):
                         )
 
             # 移除管理员
-            if user_id in owner_id and "移除管理员" in raw_message:
+            if user_id in owner_id and "del-admin" in raw_message:
                 if mentioned_users:
                     remove_admin_id = int(mentioned_users[0])
                     if remove_admin_id in admin_id:
@@ -306,16 +306,14 @@ async def handle_message(websocket, message):
                     await set_group_ban(websocket, group_id, unban_qq, 0)
 
             # 全员禁言
-            if (
-                user_id in owner_id or user_id in admin_id
-            ) and "全员禁言" in raw_message:
+            if (user_id in owner_id or user_id in admin_id) and "banall" in raw_message:
                 await mute_all_members(websocket, group_id)
                 await send_group_msg(websocket, group_id, "已开启全员禁言")
 
             # 解除全员禁言
             if (
                 user_id in owner_id or user_id in admin_id
-            ) and "解除全员禁言" in raw_message:
+            ) and "unbanall" in raw_message:
                 await unmute_all_members(websocket, group_id)
                 await send_group_msg(websocket, group_id, "已解除全员禁言")
 
