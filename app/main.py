@@ -12,7 +12,7 @@ owner = [2769731875]  # 机器人管理员 QQ 号
 ws_url = "ws://127.0.0.1:3001"  # napcatQQ 监听的 WebSocket API 地址
 token = None  # 如果需要认证，请填写认证 token
 
-warning_message = "警告：请不要发送违禁词！\n视频消息无法处理，请及时联系管理员处理。\n如有误删是发的内容触发了违禁词，请及时联系管理员处理。\n有新的事件被处理了，请查看是否正常处理[CQ:at,qq=2769731875]"  # 警告消息
+warning_message = "警告：请不要发送违禁词！\n如有误删是发的内容触发了违禁词，请及时联系管理员处理。\n有新的事件被处理了，请查看是否正常处理[CQ:at,qq=2769731875]"  # 警告消息
 
 forbidden_words_enabled_groups_file = "forbidden_word_detector/forbidden_words_enabled_groups.txt"  # 启用的群聊群号文件路径
 
