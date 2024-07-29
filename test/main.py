@@ -6,12 +6,52 @@ import re
 import colorlog
 
 # 全局配置
-global owner, ws_url, token, test_group_id
+global owner_id, ws_url, token, test_group_id, forbidden_words_patterns, forbidden_words_enabled_groups, admin_id
 
-owner = [2769731875]  # 机器人管理员 QQ 号
+owner_id = [2769731875]  # 机器人管理员 QQ 号
 ws_url = "ws://127.0.0.1:3001"  # napcatQQ 监听的 WebSocket API 地址
 token = None  # 如果需要认证，请填写认证 token
 test_group_id = 728077087  # 测试群群号
+forbidden_words_file = "forbidden_config/forbidden_words.txt"
+forbidden_words_enabled_groups_file = "forbidden_config/enable_groups.txt"
+admin_id_file = "admin/admin_id.txt"  # 管理员 QQ 号文件
+
+
+# 加载违禁词列表
+async def load_forbidden_words(file_path):
+    with open(file_path, "r", encoding="utf-8") as file:
+        patterns = [line.strip() for line in file if line.strip()]
+    logging.info(f"加载的违禁词: {patterns}")
+    return patterns
+
+
+# 加载开启违禁词检测的群聊群号
+async def load_forbidden_words_enabled_groups(file_path):
+    with open(file_path, "r", encoding="utf-8") as file:
+        groups = [int(line.strip()) for line in file if line.strip()]
+    logging.info(f"加载的启用的群聊群号: {groups}")
+    return groups
+
+
+# 加载管理员 QQ 号
+async def load_admin_id(file_path):
+    with open(file_path, "r", encoding="utf-8") as file:
+        admin_id = [int(line.strip()) for line in file if line.strip()]
+    logging.info(f"加载的管理员 QQ 号: {admin_id}")
+    return admin_id
+
+
+# 加载配置文件
+async def load_config():
+    global forbidden_words_enabled_groups, forbidden_words_patterns, admin_id
+    forbidden_words_enabled_groups = await load_forbidden_words_enabled_groups(
+        forbidden_words_enabled_groups_file
+    )  # 加载启用的群聊群号
+    forbidden_words_patterns = await load_forbidden_words(
+        forbidden_words_file
+    )  # 加载违禁词列表
+    admin_id = await load_admin_id(admin_id_file)  # 加载管理员 QQ 号
+
 
 # 日志等级配置
 handler = colorlog.StreamHandler()
@@ -119,7 +159,8 @@ async def handle_message(websocket, message):
             "post_type" in msg
             and msg["post_type"] == "message"
             and msg["message_type"] == "group"
-            and msg["group_id"] == test_group_id  # 仅处理测试群内的消息
+            and msg["group_id"]
+            in forbidden_words_enabled_groups  # 仅处理启用违禁词检测的群
         ):
             logging.info(f"\n\n收到消息:\n{msg}\n\n")
             user_id = msg["sender"]["user_id"]
@@ -128,13 +169,61 @@ async def handle_message(websocket, message):
             raw_message = msg["raw_message"]
 
             # 检查是否为管理员发送的"测试"消息
-            if user_id in owner and (raw_message == "测试" or raw_message == "test"):
+            if (user_id in owner_id or user_id in admin_id) and (
+                raw_message == "测试" or raw_message == "test"
+            ):
                 logging.info("收到管理员的测试消息。")
                 await send_group_msg(websocket, group_id, "测试成功")
+
+            # 提取被@的用户ID
+            mentioned_users = re.findall(r"\[CQ:at,qq=(\d+)\]", msg["raw_message"])
+
+            # 添加管理员
+            if user_id in owner_id and "添加管理员" in raw_message:
+                if mentioned_users:
+                    new_admin_id = int(mentioned_users[0])
+                    if new_admin_id not in admin_id:
+                        admin_id.append(new_admin_id)
+                        with open(admin_id_file, "w", encoding="utf-8") as file:
+                            file.write("\n".join(map(str, admin_id)))
+                        await send_group_msg(
+                            websocket, group_id, f"添加管理员成功: {new_admin_id}"
+                        )
+                        await load_admin_id(admin_id_file)
+                    else:
+                        await send_group_msg(
+                            websocket, group_id, f"管理员 {new_admin_id} 已存在"
+                        )
+
+            # 移除管理员
+            if user_id in owner_id and "移除管理员" in raw_message:
+                if mentioned_users:
+                    remove_admin_id = int(mentioned_users[0])
+                    if remove_admin_id in admin_id:
+                        admin_id.remove(remove_admin_id)
+                        with open(admin_id_file, "w", encoding="utf-8") as file:
+                            file.write("\n".join(map(str, admin_id)))
+                        await send_group_msg(
+                            websocket,
+                            group_id,
+                            f"移除管理员成功: {remove_admin_id}",
+                        )
+                        await load_admin_id(admin_id_file)
+                    else:
+                        await send_group_msg(
+                            websocket, group_id, f"管理员 {remove_admin_id} 不存在"
+                        )
 
             # 关键词回复
             if "你好" in raw_message:
                 await send_group_msg(websocket, group_id, "你好！有什么可以帮你的吗？")
+
+            # 违禁词检测
+            for word in forbidden_words_patterns:
+                if word in raw_message:
+                    await send_group_msg(websocket, group_id, f"检测到违禁词: {word}")
+                    await mute_member(websocket, group_id, user_id, 60)  # 禁言 60 秒
+                    break
 
         # 处理私聊消息
         elif "post_type" in msg and msg["message_type"] == "private":  # 私聊消息
@@ -155,6 +244,7 @@ async def handle_message(websocket, message):
 
 # 主函数
 async def main():
+    await load_config()  # 加载配置文件
     await connect_to_bot()  # 连接到 QQ 机器人
 
 
