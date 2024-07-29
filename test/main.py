@@ -289,6 +289,7 @@ async def handle_message(websocket, message):
                     await send_group_msg(websocket, group_id, f"检测到违禁词: {word}")
                     await set_group_ban(websocket, group_id, user_id, 60)  # 禁言 60 秒
                     break
+
             ################################################ 群发消息 ################################################
 
             if (user_id in owner_id or user_id in admin_id) and re.match(
