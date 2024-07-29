@@ -108,7 +108,7 @@ async def unmute_member(websocket, group_id, user_id):
 async def handle_message(websocket, message):
     try:
         msg = json.loads(message)
-        logging.info(f"\n\n收到消息: {msg}\n\n")
+        # logging.info(f"\n收到消息:\n{msg}\n\n")
 
         # 处理心跳包
         if "post_type" in msg and msg["post_type"] == "meta_event":
@@ -121,6 +121,7 @@ async def handle_message(websocket, message):
             and msg["message_type"] == "group"
             and msg["group_id"] == test_group_id  # 仅处理测试群内的消息
         ):
+            logging.info(f"\n收到消息:\n{msg}\n\n")
             user_id = msg["sender"]["user_id"]
             group_id = msg["group_id"]
             message_id = msg["message_id"]
