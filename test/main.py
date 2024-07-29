@@ -171,7 +171,7 @@ async def unmute_all_members(websocket, group_id):
 
 
 # 踢出群成员
-async def kick_member(websocket, group_id, user_id):
+async def set_group_kick(websocket, group_id, user_id):
     message = {
         "action": "set_group_kick",
         "params": {
@@ -306,9 +306,7 @@ async def handle_message(websocket, message):
                     await set_group_ban(websocket, group_id, unban_qq, 0)
 
             # 全员禁言
-            if (
-                user_id in owner_id or user_id in admin_id
-            ) and raw_message == "banall":
+            if (user_id in owner_id or user_id in admin_id) and raw_message == "banall":
                 await mute_all_members(websocket, group_id)
                 await send_group_msg(websocket, group_id, "已开启全员禁言")
 
@@ -319,14 +317,21 @@ async def handle_message(websocket, message):
                 await unmute_all_members(websocket, group_id)
                 await send_group_msg(websocket, group_id, "已解除全员禁言")
 
-            # 踢出群成员
-            if (user_id in owner_id or user_id in admin_id) and "踢出群" in raw_message:
-                if mentioned_users:
-                    kick_user_id = int(mentioned_users[0])
-                    await kick_member(websocket, group_id, kick_user_id)
-                    await send_group_msg(
-                        websocket, group_id, f"已将用户 {kick_user_id} 踢出群"
-                    )
+            # 踢人命令
+            if (user_id in owner_id or user_id in admin_id) and re.match(
+                r"t.*", raw_message
+            ):
+                logging.info("收到管理员的踢人消息。")
+                kick_qq = None
+
+                # 遍历message列表，查找type为'at'的项并读取qq字段
+                for i, item in enumerate(msg["message"]):
+                    if item["type"] == "at":
+                        kick_qq = item["data"]["qq"]
+                        break
+
+                if kick_qq:
+                    await set_group_kick(websocket, group_id, kick_qq)
 
         # 处理私聊消息
         elif "post_type" in msg and msg["message_type"] == "private":  # 私聊消息
