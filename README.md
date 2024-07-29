@@ -27,6 +27,7 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 - [ ] 邀请链检索
 - [x] 全员禁言
 - [x] 全员解禁
+- [x] 关键词回复（可存换行符）
 - [ ] 宵禁
 - [x] QQ 内部实现 API 调用
 
