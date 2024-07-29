@@ -305,17 +305,19 @@ async def handle_message(websocket, message):
                 if unban_qq:
                     await set_group_ban(websocket, group_id, unban_qq, 0)
 
-            # 全员禁言
-            if (user_id in owner_id or user_id in admin_id) and "banall" in raw_message:
-                await mute_all_members(websocket, group_id)
-                await send_group_msg(websocket, group_id, "已开启全员禁言")
+                # 全员禁言
+                if (
+                    user_id in owner_id or user_id in admin_id
+                ) and raw_message == "banall":
+                    await mute_all_members(websocket, group_id)
+                    await send_group_msg(websocket, group_id, "已开启全员禁言")
 
-            # 解除全员禁言
-            if (
-                user_id in owner_id or user_id in admin_id
-            ) and "unbanall" in raw_message:
-                await unmute_all_members(websocket, group_id)
-                await send_group_msg(websocket, group_id, "已解除全员禁言")
+                # 解除全员禁言
+                if (
+                    user_id in owner_id or user_id in admin_id
+                ) and raw_message == "unbanall":
+                    await unmute_all_members(websocket, group_id)
+                    await send_group_msg(websocket, group_id, "已解除全员禁言")
 
             # 踢出群成员
             if (user_id in owner_id or user_id in admin_id) and "踢出群" in raw_message:
