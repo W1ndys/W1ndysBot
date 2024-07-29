@@ -125,7 +125,7 @@ async def send_msg(websocket, message_type, user_id, group_id, message):
 
 
 # 禁言
-async def mute_member(websocket, group_id, user_id, duration):
+async def set_group_ban(websocket, group_id, user_id, duration):
     message = {
         "action": "set_group_ban",
         "params": {
@@ -139,9 +139,49 @@ async def mute_member(websocket, group_id, user_id, duration):
 
 
 # 解禁
-async def unmute_member(websocket, group_id, user_id):
-    await mute_member(websocket, group_id, user_id, 0)
+async def unban(websocket, group_id, user_id):
+    await set_group_ban(websocket, group_id, user_id, 0)
     logging.info(f"已解除用户 {user_id} 在群 {group_id} 中的禁言")
+
+
+# 全员禁言
+async def mute_all_members(websocket, group_id):
+    message = {
+        "action": "set_group_whole_ban",
+        "params": {
+            "group_id": group_id,
+            "enable": True,
+        },
+    }
+    await websocket.send(json.dumps(message))
+    logging.info(f"已在群 {group_id} 中开启全员禁言")
+
+
+# 解除全员禁言
+async def unmute_all_members(websocket, group_id):
+    message = {
+        "action": "set_group_whole_ban",
+        "params": {
+            "group_id": group_id,
+            "enable": False,
+        },
+    }
+    await websocket.send(json.dumps(message))
+    logging.info(f"已在群 {group_id} 中解除全员禁言")
+
+
+# 踢出群成员
+async def kick_member(websocket, group_id, user_id):
+    message = {
+        "action": "set_group_kick",
+        "params": {
+            "group_id": group_id,
+            "user_id": user_id,
+            "reject_add_request": False,  # 是否拒绝此人再次加群
+        },
+    }
+    await websocket.send(json.dumps(message))
+    logging.info(f"已将用户 {user_id} 踢出群 {group_id}")
 
 
 # 处理消息
@@ -214,16 +254,79 @@ async def handle_message(websocket, message):
                             websocket, group_id, f"管理员 {remove_admin_id} 不存在"
                         )
 
-            # 关键词回复
-            if "你好" in raw_message:
-                await send_group_msg(websocket, group_id, "你好！有什么可以帮你的吗？")
-
             # 违禁词检测
             for word in forbidden_words_patterns:
                 if word in raw_message:
                     await send_group_msg(websocket, group_id, f"检测到违禁词: {word}")
-                    await mute_member(websocket, group_id, user_id, 60)  # 禁言 60 秒
+                    await set_group_ban(websocket, group_id, user_id, 60)  # 禁言 60 秒
                     break
+
+            # 禁言命令
+            if (user_id in owner_id or user_id in admin_id) and re.match(
+                r"ban.*", raw_message
+            ):
+                logging.info("收到管理员的禁言消息。")
+                ban_qq = None
+                ban_duration = None
+
+                # 遍历message列表，查找type为'at'的项并读取qq字段
+                for i, item in enumerate(msg["message"]):
+                    if item["type"] == "at":
+                        ban_qq = item["data"]["qq"]
+                        # 检查下一个元素是否存在且类型为'text'
+                        if (
+                            i + 1 < len(msg["message"])
+                            and msg["message"][i + 1]["type"] == "text"
+                        ):
+                            ban_duration = int(
+                                msg["message"][i + 1]["data"]["text"].strip()
+                            )
+                        break
+
+                if ban_duration is None:
+                    ban_duration = 1  # 默认禁言 1 分钟
+
+                if ban_qq and ban_duration:
+                    await set_group_ban(websocket, group_id, ban_qq, ban_duration * 60)
+
+            # 解除禁言命令
+            if (user_id in owner_id or user_id in admin_id) and re.match(
+                r"unban.*", raw_message
+            ):
+                logging.info("收到管理员的解除禁言消息。")
+                unban_qq = None
+
+                # 遍历message列表，查找type为'at'的项并读取qq字段
+                for i, item in enumerate(msg["message"]):
+                    if item["type"] == "at":
+                        unban_qq = item["data"]["qq"]
+                        break
+
+                if unban_qq:
+                    await set_group_ban(websocket, group_id, unban_qq, 0)
+
+            # 全员禁言
+            if (
+                user_id in owner_id or user_id in admin_id
+            ) and "全员禁言" in raw_message:
+                await mute_all_members(websocket, group_id)
+                await send_group_msg(websocket, group_id, "已开启全员禁言")
+
+            # 解除全员禁言
+            if (
+                user_id in owner_id or user_id in admin_id
+            ) and "解除全员禁言" in raw_message:
+                await unmute_all_members(websocket, group_id)
+                await send_group_msg(websocket, group_id, "已解除全员禁言")
+
+            # 踢出群成员
+            if (user_id in owner_id or user_id in admin_id) and "踢出群" in raw_message:
+                if mentioned_users:
+                    kick_user_id = int(mentioned_users[0])
+                    await kick_member(websocket, group_id, kick_user_id)
+                    await send_group_msg(
+                        websocket, group_id, f"已将用户 {kick_user_id} 踢出群"
+                    )
 
         # 处理私聊消息
         elif "post_type" in msg and msg["message_type"] == "private":  # 私聊消息
