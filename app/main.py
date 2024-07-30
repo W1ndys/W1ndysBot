@@ -576,105 +576,90 @@ async def handle_message(websocket, message):
                 if kick_qq:
                     await set_group_kick(websocket, group_id, kick_qq)
 
-            # 随机禁言一个有缘人
-            if (user_id in owner or role == "owner" or role == "admin") and re.match(
-                r"ban个有缘人.*", raw_message
-            ):
-                logging.info("收到管理员的随机禁言一个有缘人消息。")
-                try:
-                    # 获取群成员列表
-                    await websocket.send(
-                        json.dumps(
-                            {
-                                "action": "get_group_member_list",
-                                "params": {"group_id": group_id},
-                            }
-                        )
-                    )
-                    response = await websocket.recv()
-                    response_data = json.loads(response)
-
-                    if (
-                        response_data["status"] == "ok"
-                        and response_data["retcode"] == 0
-                    ):
-                        members = response_data["data"]
-                        if members:
-                            # 过滤掉群主和管理员
-                            members = [
-                                member
-                                for member in members
-                                if member["role"] not in ["owner", "admin"]
-                            ]
-                            if members:
-                                # 随机选择一个成员
-                                random_member = random.choice(members)
-                                random_member_id = random_member["user_id"]
-
-                                # 禁言该成员1分钟
-                                await set_group_ban(
-                                    websocket, group_id, random_member_id, 60
-                                )
-                                await send_group_msg(
-                                    websocket,
-                                    group_id,
-                                    f"已随机禁言 {random_member_id} 1 分钟",
-                                )
-                            else:
-                                logging.info("没有可禁言的成员。")
-                        else:
-                            logging.info("群成员列表为空。")
-                    else:
-                        logging.error(f"处理消息时出错: {response_data}")
-                except Exception as e:
-                    logging.error(f"处理消息时出错: {e}")
-                return
-
-            # 禁言自己，随机1-10分钟
-            if raw_message == "banme":
-                logging.info("收到禁言自己消息。")
-                ban_duration = random.randint(1, 10)  # 随机禁言1-10分钟
-                await set_group_ban(websocket, group_id, user_id, ban_duration * 60)
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"你已被禁言 {ban_duration} 分钟\n如需解除，请私信我unbanme+所在群号\n注：群主及管理员无法被禁言。",
-                )
-                return
-
             # 禁言命令
-            if (user_id in owner or role == "owner" or role == "admin") and re.match(
-                r"ban.*", raw_message
+            if raw_message == "banme" or (
+                (user_id in owner or role == "owner" or role == "admin")
+                and re.match(r"ban.*", raw_message)
             ):
-                logging.info("收到管理员的禁言消息。")
+                # 初始化变量
                 ban_qq = None
-                ban_duration = None
+                ban_duration = 1  # 默认禁言1分钟
+                ban_message = (
+                    f"已禁言 {ban_qq} {ban_duration} 分钟\n注：群主及管理员无法被禁言。"
+                )
 
-                # 遍历message列表，查找type为'at'的项并读取qq字段
-                for i, item in enumerate(msg["message"]):
-                    if item["type"] == "at":
-                        ban_qq = item["data"]["qq"]
-                        # 检查下一个元素是否存在且类型为'text'
+                # 禁言自己
+                if raw_message == "banme":
+                    logging.info("收到禁言自己消息。")
+                    ban_qq = user_id
+                    ban_duration = random.randint(1, 10)  # 随机禁言1-10分钟
+                    ban_message = f" [CQ:at,qq={user_id}] 行了行了，知道你是抖m了，你被禁言了 {ban_duration} 分钟。\n注：群主及管理员无法被禁言。"
+
+                    # 随机禁言一个有缘人
+                elif re.match(r"ban一个有缘人.*", raw_message):
+                    logging.info("收到管理员的随机禁言一个有缘人消息。")
+                    try:
+                        # 获取群成员列表
+                        await get_group_member_list(websocket, group_id)
+                        response = await websocket.recv()
+                        response_data = json.loads(response)
+
                         if (
-                            i + 1 < len(msg["message"])
-                            and msg["message"][i + 1]["type"] == "text"
+                            response_data["status"] == "ok"
+                            and response_data["retcode"] == 0
                         ):
-                            ban_duration = int(
-                                msg["message"][i + 1]["data"]["text"].strip()
-                            )
-                        break
+                            members = response_data["data"]
+                            if members:
+                                # 过滤掉群主和管理员
+                                members = [
+                                    member
+                                    for member in members
+                                    if member["role"] not in ["owner", "admin"]
+                                ]
+                                if members:
+                                    # 随机选择一个成员
+                                    random_member = random.choice(members)
+                                    ban_qq = random_member["user_id"]
+                                    ban_duration = 1  # 禁言该成员1分钟
+                                    ban_message = f"让我们恭喜 [CQ:at,qq={ban_qq}] 被禁言了 {ban_duration} 分钟。\n注：群主及管理员无法被禁言。"
+                                else:
+                                    logging.info("没有可禁言的成员。")
+                                    ban_message = "没有可禁言的成员。"
+                            else:
+                                logging.info("群成员列表为空。")
+                                ban_message = "群成员列表为空。"
+                        else:
+                            logging.error(f"处理消息时出错: {response_data}")
+                    except Exception as e:
+                        logging.error(f"处理消息时出错: {e}")
+                else:
 
-                if ban_duration is None:
-                    ban_duration = 1  # 默认禁言 1 分钟
+                    # 禁言指定成员
+                    logging.info("收到管理员的禁言消息。")
+
+                    # 遍历message列表，查找type为'at'的项并读取qq字段
+                    for i, item in enumerate(msg["message"]):
+                        if item["type"] == "at":
+                            ban_qq = item["data"]["qq"]
+                            # 检查下一个元素是否存在且类型为'text'
+                            if (
+                                i + 1 < len(msg["message"])
+                                and msg["message"][i + 1]["type"] == "text"
+                            ):
+                                ban_duration = int(
+                                    msg["message"][i + 1]["data"]["text"].strip()
+                                )
+                            break
+                    ban_message = f"已禁言 [CQ:at,qq={ban_qq}] {ban_duration} 分钟\n注：群主及管理员无法被禁言。"
 
                 if ban_qq and ban_duration:
                     await set_group_ban(websocket, group_id, ban_qq, ban_duration * 60)
 
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"已禁言 {ban_qq} {ban_duration} 分钟\n注：群主及管理员无法被禁言。",
-                )
+                    await send_group_msg(
+                        websocket,
+                        group_id,
+                        ban_message,
+                    )
 
             # 解除禁言命令
             if (user_id in owner or role == "owner" or role == "admin") and re.match(
