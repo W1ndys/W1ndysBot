@@ -586,6 +586,7 @@ async def handle_message(websocket, message):
                     group_id,
                     f"你已被禁言 {ban_duration} 分钟\n如需解除，请私信我unbanme+所在群号\n注：群主及管理员无法被禁言。",
                 )
+                return
 
             # 禁言命令
             if (user_id in owner or role == "owner" or role == "admin") and re.match(
