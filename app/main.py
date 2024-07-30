@@ -542,6 +542,12 @@ async def handle_message(websocket, message):
                 logging.info("收到管理员的测试消息。")
                 await send_group_msg(websocket, group_id, "测试成功")
 
+            if "硕神" in raw_message:
+                logging.info("收到有人叫硕神。")
+                await send_group_msg(
+                    websocket, group_id, "[CQ:at,qq=2769731875]有人叫你，滚过来"
+                )
+
             # 全员禁言命令
             if (user_id in owner or role == "owner" or role == "admin") and (
                 re.match(r"全员禁言.*", raw_message)
