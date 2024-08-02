@@ -170,8 +170,10 @@ async def ban_random_user(websocket, group_id, message):
 async def check_banned_words(websocket, group_id, msg):
     if not load_banned_words_status(group_id):
         return False  # 如果违禁词检测关闭，直接返回
+
     banned_words = load_banned_words(group_id)
     raw_message = msg["raw_message"]
+
     for word in banned_words:
         if word in raw_message:
             # 撤回消息
@@ -187,6 +189,15 @@ async def check_banned_words(websocket, group_id, msg):
             user_id = msg["sender"]["user_id"]
             await set_group_ban(websocket, group_id, user_id, 60)
             return True
+    # 检查是否包含视频
+    if any(item["type"] == "video" for item in msg["message"]):
+
+        # 撤回消息
+        message_id = int(msg["message_id"])
+        await delete_msg(websocket, message_id)
+        await send_group_msg(websocket, group_id, "为防止广告，本群禁止发送视频")
+        return True
+
     return False
 
 
