@@ -10,7 +10,7 @@ async def main():
             await connect_to_bot()
         except Exception as e:
             print(f"连接失败，正在重试: {e}")
-            await asyncio.sleep(1)  # 每秒重试一次
+            await asyncio.sleep(1000)  # 每秒重试一次
 
 
 if __name__ == "__main__":
