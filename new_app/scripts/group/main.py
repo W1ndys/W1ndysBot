@@ -38,14 +38,24 @@ async def handle_group_message(websocket, msg):
 
     # 读取消息信息
     user_id = msg["sender"]["user_id"]
-    group_id = msg["sender"]["group_id"]
+    group_id = msg["group_id"]
     raw_message = msg["raw_message"]
     role = msg["sender"]["role"]
 
     # 全员禁言
     if "全员禁言" in raw_message:
-        is_admin = await is_qq_admin(role)  # 修改变量名
-        is_owner = await is_qq_owner(role)  # 修改变量名
+        is_admin = await is_qq_admin(role)
+        is_owner = await is_qq_owner(role)
 
-        if (is_admin or is_owner) or user_id in owner_id:
-            await set_group_whole_ban(websocket, group_id, True)
+        if (is_admin or is_owner) or (user_id in owner_id):
+            await set_group_whole_ban(websocket, group_id, True)  # 全员禁言
+
+    # 全员解禁
+    if "全员解禁" in raw_message:
+        is_admin = await is_qq_admin(role)
+        is_owner = await is_qq_owner(role)
+
+        if (is_admin or is_owner) or (user_id in owner_id):
+            await set_group_whole_ban(websocket, group_id, False)  # 全员解禁
+            
+    

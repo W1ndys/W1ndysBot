@@ -117,21 +117,14 @@ async def set_group_whole_ban(websocket, group_id, enable):
         "params": {"group_id": group_id, "enable": enable},
     }
     await websocket.send(json.dumps(whole_ban_msg))
+    logging.info("已发送命令，等待响应")
 
     response = await websocket.recv()
     response_data = json.loads(response)
 
-    if response_data.get("status") == "ok":
-
-        await send_group_msg(
-            websocket,
-            group_id,
-            f"已{'开启' if enable else '解除'}群 {group_id} 的全员禁言。",
-        )
-        logging.info(f"已{'开启' if enable else '解除'}群 {group_id} 的全员禁言。")
-
-    else:
-        logging.error(f"群 {group_id} 的全员禁言 {'开启' if enable else '解除'}失败。")
+    await check_response_and_notify(
+        websocket, group_id, "全员禁言", enable, response_data
+    )
 
 
 # 群组设置管理员
@@ -434,3 +427,24 @@ async def run_api(websocket, action, params):
     api_message = {"action": action, "params": params}
     await websocket.send(json.dumps(api_message))
     logging.info(f"已调用 API {action}。")
+
+
+# 检查响应并通知
+async def check_response_and_notify(websocket, group_id, action, enable, response_data):
+    if response_data:
+        logging.info(f"响应成功: {response_data}")
+
+    if response_data.get("status") == "ok":
+        await send_group_msg(
+            websocket,
+            group_id,
+            f"已成功执行 {action} 操作。",
+        )
+        logging.info(f"已成功执行 {action} 操作。")
+    else:
+        logging.error(f"{action} 操作失败。")
+        await send_group_msg(
+            websocket,
+            group_id,
+            f"{action} 操作失败。",
+        )

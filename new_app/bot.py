@@ -26,13 +26,14 @@ async def connect_to_bot():
         async with websockets.connect(ws_url) as websocket:
             current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             logging.info(f"已连接到机器人。当前时间: {current_time}")
-            await authenticate(websocket)
+            if authenticate is not None:
+                await authenticate(websocket)
             await send_private_msg(
                 websocket, owner_id, f"机器人已连接。当前时间: {current_time}"
             )
 
             async for message in websocket:
-                logging.info(f"收到消息: {message}")
+                # 处理事件
                 await handle_message(websocket, message)
     except Exception as e:
         logging.error(f"连接到机器人时出错: {e}")

@@ -17,7 +17,7 @@ async def handle_message_event(websocket, msg):
         # 处理群消息
         if msg["message_type"] == "group":
             group_id = msg["group_id"]
-            logging.info(f"处理群消息, 群ID: {group_id}")
+            logging.info(f"处理群消息, 群ID: {group_id}\n原消息内容:\n {msg}")
             await handle_group_message(websocket, msg)
         # 处理私聊消息
         elif msg["message_type"] == "private":
@@ -64,5 +64,6 @@ async def handle_message(websocket, message):
         elif msg["post_type"] == "meta_event":
             # 处理元事件
             await handle_meta_event(websocket, msg)
+    # 收到非事件消息
     else:
-        logging.info(f"收到消息: {msg}")
+        pass
