@@ -1,0 +1,41 @@
+{
+    "self_id": 3249474653,
+    "user_id": 2769731875,
+    "time": 1722609829,
+    "message_id": 1575244608,
+    "message_seq": 1575244608,
+    "real_id": 1575244608,
+    "message_type": "group",
+    "sender": {
+        "user_id": 2769731875,
+        "nickname": "𝐖𝟏𝐧𝐝𝐲𝐬",
+        "card": "",
+        "role": "owner"
+    },
+    "raw_message": "[CQ:reply,id=-1394323552][CQ:at,qq=3249474653] recall",
+    "font": 14,
+    "sub_type": "normal",
+    "message": [
+        {
+            "data": {
+                "id": "-1394323552"
+            },
+            "type": "reply"
+        },
+        {
+            "data": {
+                "qq": "3249474653"
+            },
+            "type": "at"
+        },
+        {
+            "data": {
+                "text": " recall"
+            },
+            "type": "text"
+        }
+    ],
+    "message_format": "array",
+    "post_type": "message",
+    "group_id": 914802812
+}
