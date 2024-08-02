@@ -31,6 +31,7 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 - [ ] 踢人
 - [ ] 撤回消息
 - [ ] 撤回指定消息
+- [ ] 扫描邀请链
 
 ## 使用手册
 

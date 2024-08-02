@@ -8,6 +8,7 @@ import colorlog
 import os
 import random
 import sys
+from datetime import datetime
 
 sys.path.append(
     os.path.dirname(
@@ -201,10 +202,197 @@ async def check_banned_words(websocket, group_id, msg):
     return False
 
 
+# 读取入群欢迎状态
+def load_welcome_status(group_id):
+    try:
+        with open(
+            f"{os.path.dirname(os.path.abspath(__file__))}/welcome_status_{group_id}.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            return json.load(f).get("status", True)
+    except FileNotFoundError:
+        return True  # 默认开启
+
+
+# 保存入群欢迎状态
+def save_welcome_status(group_id, status):
+    with open(
+        f"{os.path.dirname(os.path.abspath(__file__))}/welcome_status_{group_id}.json",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        json.dump({"status": status}, f, ensure_ascii=False, indent=4)
+    # 同步设置退群欢送状态
+    save_farewell_status(group_id, status)
+
+
+# 保存退群欢送状态
+def save_farewell_status(group_id, status):
+    with open(
+        f"{os.path.dirname(os.path.abspath(__file__))}/farewell_status_{group_id}.json",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        json.dump({"status": status}, f, ensure_ascii=False, indent=4)
+
+
+# 读取退群欢送状态
+def load_farewell_status(group_id):
+    try:
+        with open(
+            f"{os.path.dirname(os.path.abspath(__file__))}/farewell_status_{group_id}.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            return json.load(f).get("status", True)
+    except FileNotFoundError:
+        return True  # 默认开启
+
+
+# 扫描邀请链
+async def view_invite_chain(websocket, group_id, target_user_id):
+    invite_chain = load_invite_chain(group_id)
+    if not invite_chain:
+        await send_group_msg(websocket, group_id, "没有找到邀请链。")
+        return
+
+    def find_invite_chain(target_user_id, chain, visited):
+        for inviter in invite_chain:
+            if (
+                inviter["user_id"] == target_user_id
+                and inviter["user_id"] not in visited
+            ):
+                chain.append(inviter)
+                visited.add(inviter["user_id"])
+                find_invite_chain(inviter["operator_id"], chain, visited)
+
+    chain = []
+    visited = set()
+    find_invite_chain(target_user_id, chain, visited)
+
+    if chain:
+        invite_chain_message = "邀请链:\n\n"
+        for inviter in chain:
+            invite_chain_message += f"【{inviter['operator_id']}】邀请了【{inviter['user_id']}】\n邀请时间：{inviter['date']}\n\n"
+    else:
+        invite_chain_message = "没有找到相关的邀请链。"
+
+    await send_group_msg(websocket, group_id, invite_chain_message)
+
+
+# 记录邀请链
+async def save_invite_chain(group_id, user_id, operator_id):
+    # 加载整个群的邀请链
+    invite_chain = load_invite_chain(group_id)
+
+    # 更新特定用户的邀请链
+    invite_chain.append(
+        {
+            "user_id": str(user_id),
+            "operator_id": str(operator_id),
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        }
+    )
+
+    # 保存整个群的邀请链
+    with open(
+        f"{os.path.dirname(os.path.abspath(__file__))}/invite_chain_{group_id}.json",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        json.dump(invite_chain, f, ensure_ascii=False, indent=4)
+
+
+# 删除邀请链
+async def delete_invite_chain(group_id, user_id):
+    invite_chain = load_invite_chain(group_id)
+    if user_id in invite_chain:
+        invite_chain.remove(user_id)
+        with open(
+            f"{os.path.dirname(os.path.abspath(__file__))}/invite_chain_{group_id}.json",
+            "w",
+            encoding="utf-8",
+        ) as f:
+            json.dump(invite_chain, f, ensure_ascii=False, indent=4)
+
+
+# 读取邀请链
+def load_invite_chain(group_id):
+    try:
+        with open(
+            f"{os.path.dirname(os.path.abspath(__file__))}/invite_chain_{group_id}.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+
+# 处理入群欢迎
+async def handle_welcome_message(
+    websocket,
+    group_id,
+    user_id,
+):
+    if load_welcome_status(group_id):
+        welcome_message = f"欢迎[CQ:at,qq={user_id}]入群"
+        if welcome_message:
+            await send_group_msg(websocket, group_id, f"{welcome_message}")
+
+
+# 处理退群欢送
+async def handle_farewell_message(websocket, group_id, user_id, sub_type):
+    if load_farewell_status(group_id):
+        if sub_type == "kick":
+            farewell_message = f"{user_id} 已被踢出群聊🎉"
+            if farewell_message:
+                await send_group_msg(websocket, group_id, f"{farewell_message}")
+        elif sub_type == "leave":
+            farewell_message = f"{user_id} 退群了😭"
+            if farewell_message:
+                await send_group_msg(websocket, group_id, f"{farewell_message}")
+
+
+# 处理群事件
+async def handle_group_notice(websocket, msg):
+    operator_id = msg["operator_id"]  # 入群操作者id
+    sub_type = msg["sub_type"]  # 事件子类型
+    user_id = msg["user_id"]
+    group_id = msg["group_id"]
+
+    # 入群消息
+    if msg["notice_type"] == "group_increase":
+        # 处理入群欢迎
+        await handle_welcome_message(websocket, group_id, user_id)
+        # 记录邀请链
+        if sub_type == "invite":
+            await save_invite_chain(group_id, user_id, operator_id)
+            await send_group_msg(
+                websocket,
+                group_id,
+                f"已记录[CQ:at,qq={user_id}]的邀请链，邀请者为[CQ:at,qq={operator_id}]，请勿在群内发送违规信息",
+            )
+
+    # 退群消息
+    if msg["notice_type"] == "group_decrease":
+        await handle_farewell_message(websocket, group_id, user_id, sub_type)
+        # 删除邀请链
+        # 由于删除会导致邀请链断开, 所以不设置退群删除
+        # await delete_invite_chain(group_id, user_id)
+        # await send_group_msg(
+        #     websocket,
+        #     group_id,
+        #     f"已删除{user_id}的邀请链",
+        # )
+
+
+# 处理群消息
 async def handle_group_message(websocket, msg):
     try:
         # 读取消息信息
-        user_id = msg["sender"]["user_id"]
+        user_id = msg["user_id"]
         group_id = msg["group_id"]
         raw_message = msg["raw_message"]
         role = msg["sender"]["role"]
@@ -304,6 +492,22 @@ async def handle_group_message(websocket, msg):
             elif raw_message == "disable_banned_words":
                 save_banned_words_status(group_id, False)
                 await send_group_msg(websocket, group_id, "已关闭违禁词检测。")
+
+        # 管理入群欢迎信息
+        if is_authorized:
+            if raw_message == "enable_welcome_message":
+                save_welcome_status(group_id, True)
+                await send_group_msg(websocket, group_id, "已开启入群欢迎和退群欢送。")
+            elif raw_message == "disable_welcome_message":
+                save_welcome_status(group_id, False)
+                await send_group_msg(websocket, group_id, "已关闭入群欢迎和退群欢送。")
+
+        # 扫描邀请链
+        if raw_message.startswith("view_invite_chain ") or raw_message.startswith(
+            "查看邀请链 "
+        ):
+            target_user_id = raw_message.split(" ", 1)[1].strip()
+            await view_invite_chain(websocket, group_id, target_user_id)
 
     except Exception as e:
         logging.error(f"处理群消息时出错: {e}")
