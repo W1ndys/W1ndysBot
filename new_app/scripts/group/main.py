@@ -34,6 +34,11 @@ async def is_qq_admin(role):
         return False
 
 
+# 踢人
+async def kick_group_member(websocket, group_id, target_id):
+    await set_group_kick(websocket, group_id, target_id)
+
+
 async def handle_group_message(websocket, msg):
 
     # 读取消息信息
@@ -57,5 +62,12 @@ async def handle_group_message(websocket, msg):
 
         if (is_admin or is_owner) or (user_id in owner_id):
             await set_group_whole_ban(websocket, group_id, False)  # 全员解禁
-            
-    
+
+    # 踢人
+    if (user_id in owner_id or role == "owner" or role == "admin") and (
+        re.match(r"kick.*", raw_message)
+        or re.match(r"t.*", raw_message)
+        or re.match(r"踢.*", raw_message)
+    ):
+        target_id = re.findall(r"\d+", raw_message)[0]
+        await kick_group_member(websocket, group_id, target_id)
