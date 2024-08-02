@@ -86,8 +86,9 @@ async def set_group_kick(websocket, group_id, user_id):
         "params": {"group_id": group_id, "user_id": user_id},
     }
     await websocket.send(json.dumps(kick_msg))
-    logging.info(f"已踢出用户 {user_id}。")
-    await send_group_msg(websocket, group_id, f"已踢出用户 {user_id}。")
+    response = await websocket.recv()
+    response_data = json.loads(response)
+    await check_response_and_notify(websocket, "踢人", response_data)
 
 
 # 群组单人禁言
@@ -122,9 +123,7 @@ async def set_group_whole_ban(websocket, group_id, enable):
     response = await websocket.recv()
     response_data = json.loads(response)
 
-    await check_response_and_notify(
-        websocket, group_id, "全员禁言", enable, response_data
-    )
+    await check_response_and_notify(websocket, "全员禁言", response_data)
 
 
 # 群组设置管理员
@@ -430,21 +429,10 @@ async def run_api(websocket, action, params):
 
 
 # 检查响应并通知
-async def check_response_and_notify(websocket, group_id, action, enable, response_data):
+async def check_response_and_notify(websocket, action, response_data):
     if response_data:
         logging.info(f"响应成功: {response_data}")
-
     if response_data.get("status") == "ok":
-        await send_group_msg(
-            websocket,
-            group_id,
-            f"已成功执行 {action} 操作。",
-        )
         logging.info(f"已成功执行 {action} 操作。")
     else:
         logging.error(f"{action} 操作失败。")
-        await send_group_msg(
-            websocket,
-            group_id,
-            f"{action} 操作失败。",
-        )
