@@ -28,7 +28,7 @@ async def handle_message_event(websocket, msg):
             logging.info(f"收到未知消息类型: {msg}")
 
     except KeyError as e:
-        logging.error(f"消息中缺少键: {e}")
+        logging.error(f"{e}")
 
 
 # 处理通知事件的逻辑
