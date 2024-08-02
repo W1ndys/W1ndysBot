@@ -97,8 +97,13 @@ async def set_group_ban(websocket, group_id, user_id, duration):
         "params": {"group_id": group_id, "user_id": user_id, "duration": duration},
     }
     await websocket.send(json.dumps(ban_msg))
-    logging.info(f"已禁言用户 {user_id} {duration} 秒。")
-    await send_group_msg(websocket, group_id, f"已禁言用户 {user_id} {duration} 秒。")
+    if duration == 0:
+        logging.info(f"已解除 [CQ:at,qq={user_id}] 禁言。")
+        message = f"已解除 [CQ:at,qq={user_id}] 禁言。"
+    else:
+        logging.info(f"已禁言 [CQ:at,qq={user_id}] {duration} 秒。")
+        message = f"已禁言 [CQ:at,qq={user_id}] {duration} 秒。"
+    await send_group_msg(websocket, group_id, message)
 
 
 # 群组匿名用户禁言
@@ -108,7 +113,13 @@ async def set_group_anonymous_ban(websocket, group_id, anonymous_flag, duration)
         "params": {"group_id": group_id, "flag": anonymous_flag, "duration": duration},
     }
     await websocket.send(json.dumps(anonymous_ban_msg))
-    logging.info(f"已禁止匿名用户 {anonymous_flag} {duration} 秒。")
+    if duration == 0:
+        logging.info(f"已解除 [CQ:anonymous,flag={anonymous_flag}] 禁言。")
+        message = f"已解除 [CQ:anonymous,flag={anonymous_flag}] 禁言。"
+    else:
+        logging.info(f"已禁止匿名用户 {anonymous_flag} {duration} 秒。")
+        message = f"已禁止匿名用户 {anonymous_flag} {duration} 秒。"
+    await send_group_msg(websocket, group_id, message)
 
 
 # 群组全员禁言
@@ -275,13 +286,18 @@ async def get_group_member_info(websocket, group_id, user_id, no_cache=False):
 
 
 # 获取群成员列表
-async def get_group_member_list(websocket, group_id):
+async def get_group_member_list(websocket, group_id, no_cache=False):
     group_member_list_msg = {
         "action": "get_group_member_list",
         "params": {"group_id": group_id},
     }
     await websocket.send(json.dumps(group_member_list_msg))
+
+    response = await websocket.recv()
+    response_data = json.loads(response)
     logging.info(f"已获取群 {group_id} 的成员列表。")
+
+    return response_data
 
 
 # 获取群荣誉信息
