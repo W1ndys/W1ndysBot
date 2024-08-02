@@ -4,6 +4,12 @@
 
 ## 开发文档
 
+> [!warning]
+>
+> 该项目原来的代码已经出现屎山气息，正在重构新代码结构，采用模块化编程
+>
+> [W1ndys-bot GitHub 仓库](https://github.com/your-repo/W1ndys-bot)
+
 NapCatQQ [NapCatQQ (napneko.github.io)](https://napneko.github.io/zh-CN/#/)
 
 OneBot 11 标准 [botuniverse /onebot-11: OneBot 11 标准 (github.com)](https://github.com/botuniverse/onebot-11#/)
