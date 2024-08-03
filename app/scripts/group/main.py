@@ -397,7 +397,11 @@ async def handle_group_notice(websocket, msg):
         # 处理入群欢迎
         await handle_welcome_message(websocket, group_id, user_id)
         # 记录邀请链
-        if sub_type == "invite" and load_invite_chain_status(group_id):
+        if (
+            sub_type == "invite"
+            or sub_type == "approve"
+            and load_invite_chain_status(group_id)
+        ):
             await save_invite_chain(group_id, user_id, operator_id)
             await send_group_msg(
                 websocket,
