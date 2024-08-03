@@ -7,6 +7,7 @@ from config import *
 import os
 import sys
 import datetime
+from dingtalk import dingtalk
 import json
 from config import owner_id
 
@@ -22,21 +23,22 @@ setup_logger()
 
 async def connect_to_bot():
     logging.info("正在连接到机器人...")
-    try:
-        async with websockets.connect(ws_url) as websocket:
-            current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            logging.info(f"已连接到机器人。当前时间: {current_time}")
-            if authenticate is not None:
-                await authenticate(websocket)
-            await send_private_msg(
-                websocket, owner_id, f"机器人已连接。当前时间: {current_time}"
-            )
 
-            async for message in websocket:
-                # 处理事件
-                await handle_message(websocket, message)
-    except Exception as e:
-        logging.error(f"连接到机器人时出错: {e}")
+    async with websockets.connect(ws_url) as websocket:
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        logging.info(f"已连接到机器人。当前时间: {current_time}")
+        if authenticate is not None:
+            await authenticate(websocket)
+        await send_private_msg(
+            websocket, owner_id, f"机器人已连接。当前时间: {current_time}"
+        )
+        await dingtalk(
+            f"机器人已连接。",
+            f"当前时间: {current_time}",
+        )
+        async for message in websocket:
+            # 处理事件
+            await handle_message(websocket, message)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
 __pycache__/
-app/dingtalk.py
 *.py[cod]
 *.pyo
 *.pyd
