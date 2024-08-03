@@ -42,3 +42,14 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 - [x] 启用邀请链功能
 - [x] 禁用邀请链功能
 - [x] 查看邀请链
+
+### 网络工具
+
+#### 自己实现
+
+- [ ] base家族解密
+- [ ] 进制转换
+
+#### 调用api
+
+- [ ] IP地址查询
