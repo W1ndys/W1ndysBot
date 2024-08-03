@@ -17,8 +17,8 @@ sys.path.append(
         )  # 获取了文件上级四层路径
     )
 )
-from new_app.api import *
-from new_app.config import owner_id
+from app.api import *
+from app.config import owner_id
 
 
 # 读取违禁词列表
