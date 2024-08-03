@@ -8,7 +8,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # from app.scripts.anonymous_handler.main import handle_anonymous_message
-from scripts.group.main import handle_group_message, handle_group_notice
+from scripts.GroupManager.main import handle_group_message, handle_group_notice
 
 
 # 处理消息事件的逻辑
