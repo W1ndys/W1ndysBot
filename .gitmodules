@@ -1,0 +1,3 @@
+[submodule "app/scripts/GroupManager"]
+	path = app/scripts/GroupManager
+	url = https://github.com/W1ndys-bot/GroupManager.git
