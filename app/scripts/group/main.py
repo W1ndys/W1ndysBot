@@ -20,12 +20,15 @@ sys.path.append(
 from app.api import *
 from app.config import owner_id
 
+# 定义数据目录
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+
 
 # 读取违禁词列表
 def load_banned_words(group_id):
     try:
         with open(
-            f"{os.path.dirname(os.path.abspath(__file__))}/banned_words_{group_id}.json",
+            f"{DATA_DIR}/banned_words_{group_id}.json",
             "r",
             encoding="utf-8",
         ) as f:
@@ -37,7 +40,7 @@ def load_banned_words(group_id):
 # 保存违禁词列表
 def save_banned_words(group_id, banned_words):
     with open(
-        f"{os.path.dirname(os.path.abspath(__file__))}/banned_words_{group_id}.json",
+        f"{DATA_DIR}/banned_words_{group_id}.json",
         "w",
         encoding="utf-8",
     ) as f:
@@ -48,7 +51,7 @@ def save_banned_words(group_id, banned_words):
 def load_banned_words_status(group_id):
     try:
         with open(
-            f"{os.path.dirname(os.path.abspath(__file__))}/banned_words_status_{group_id}.json",
+            f"{DATA_DIR}/banned_words_status_{group_id}.json",
             "r",
             encoding="utf-8",
         ) as f:
@@ -60,7 +63,7 @@ def load_banned_words_status(group_id):
 # 保存违禁词检测状态
 def save_banned_words_status(group_id, status):
     with open(
-        f"{os.path.dirname(os.path.abspath(__file__))}/banned_words_status_{group_id}.json",
+        f"{DATA_DIR}/banned_words_status_{group_id}.json",
         "w",
         encoding="utf-8",
     ) as f:
@@ -206,7 +209,7 @@ async def check_banned_words(websocket, group_id, msg):
 def load_welcome_status(group_id):
     try:
         with open(
-            f"{os.path.dirname(os.path.abspath(__file__))}/welcome_status_{group_id}.json",
+            f"{DATA_DIR}/welcome_status_{group_id}.json",
             "r",
             encoding="utf-8",
         ) as f:
@@ -218,7 +221,7 @@ def load_welcome_status(group_id):
 # 保存入群欢迎状态
 def save_welcome_status(group_id, status):
     with open(
-        f"{os.path.dirname(os.path.abspath(__file__))}/welcome_status_{group_id}.json",
+        f"{DATA_DIR}/welcome_status_{group_id}.json",
         "w",
         encoding="utf-8",
     ) as f:
@@ -230,7 +233,7 @@ def save_welcome_status(group_id, status):
 # 保存退群欢送状态
 def save_farewell_status(group_id, status):
     with open(
-        f"{os.path.dirname(os.path.abspath(__file__))}/farewell_status_{group_id}.json",
+        f"{DATA_DIR}/farewell_status_{group_id}.json",
         "w",
         encoding="utf-8",
     ) as f:
@@ -241,7 +244,7 @@ def save_farewell_status(group_id, status):
 def load_farewell_status(group_id):
     try:
         with open(
-            f"{os.path.dirname(os.path.abspath(__file__))}/farewell_status_{group_id}.json",
+            f"{DATA_DIR}/farewell_status_{group_id}.json",
             "r",
             encoding="utf-8",
         ) as f:
@@ -254,7 +257,7 @@ def load_farewell_status(group_id):
 def load_invite_chain_status(group_id):
     try:
         with open(
-            f"{os.path.dirname(os.path.abspath(__file__))}/invite_chain_status_{group_id}.json",
+            f"{DATA_DIR}/invite_chain_status_{group_id}.json",
             "r",
             encoding="utf-8",
         ) as f:
@@ -266,7 +269,7 @@ def load_invite_chain_status(group_id):
 # 保存邀请链状态
 def save_invite_chain_status(group_id, status):
     with open(
-        f"{os.path.dirname(os.path.abspath(__file__))}/invite_chain_status_{group_id}.json",
+        f"{DATA_DIR}/invite_chain_status_{group_id}.json",
         "w",
         encoding="utf-8",
     ) as f:
@@ -327,7 +330,7 @@ async def save_invite_chain(group_id, user_id, operator_id):
 
     # 保存整个群的邀请链
     with open(
-        f"{os.path.dirname(os.path.abspath(__file__))}/invite_chain_{group_id}.json",
+        f"{DATA_DIR}/invite_chain_{group_id}.json",
         "w",
         encoding="utf-8",
     ) as f:
@@ -340,7 +343,7 @@ async def delete_invite_chain(group_id, user_id):
     if user_id in invite_chain:
         invite_chain.remove(user_id)
         with open(
-            f"{os.path.dirname(os.path.abspath(__file__))}/invite_chain_{group_id}.json",
+            f"{DATA_DIR}/invite_chain_{group_id}.json",
             "w",
             encoding="utf-8",
         ) as f:
@@ -351,7 +354,7 @@ async def delete_invite_chain(group_id, user_id):
 def load_invite_chain(group_id):
     try:
         with open(
-            f"{os.path.dirname(os.path.abspath(__file__))}/invite_chain_{group_id}.json",
+            f"{DATA_DIR}/invite_chain_{group_id}.json",
             "r",
             encoding="utf-8",
         ) as f:
