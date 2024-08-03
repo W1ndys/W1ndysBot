@@ -1,3 +1,6 @@
 [submodule "app/scripts/GroupManager"]
 	path = app/scripts/GroupManager
 	url = https://github.com/W1ndys-bot/GroupManager.git
+[submodule "Bot-json"]
+	path = Bot-json
+	url = https://github.com/W1ndys-bot/Bot-json
