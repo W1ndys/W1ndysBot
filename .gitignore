@@ -1,5 +1,5 @@
 __pycache__/
-app/dingtalk_notifier.py
+app/dingtalk.py
 *.py[cod]
 *.pyo
 *.pyd
