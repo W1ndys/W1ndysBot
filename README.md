@@ -1,6 +1,6 @@
 # W1ndys-bot
 
-基于 Python 和 NapCatQQ 的机器人实现
+基于 Python 和 OneBot 11 的 QQ 机器人实现
 
 ## 开发文档
 
