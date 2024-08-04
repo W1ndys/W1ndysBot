@@ -10,6 +10,3 @@
 [submodule "app/scripts/Crypto"]
 	path = app/scripts/Crypto
 	url = https://github.com/W1ndys-bot/Crypto.git
-[submodule "app/scripts/Tools"]
-	path = app/scripts/Tools
-	url = https://github.com/W1ndys-bot/Tools
