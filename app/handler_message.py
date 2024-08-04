@@ -34,11 +34,11 @@ async def handle_message_event(websocket, msg):
         # 处理群通知
         if msg.get("post_type") == "notice":
             group_id = msg["group_id"]
-            logging.info(f"处理群通知事件, 群ID: {group_id}\n原消息内容:\n {msg}")
+            logging.info(f"处理群通知事件, 群ID: {group_id}")
             await handle_group_notice(websocket, msg)
 
         # 处理私聊消息
-        elif msg["message_type"] == "private":
+        elif msg.get("message_type") == "private":
 
             # 编解码功能
             await handle_crypto_private_message(websocket, msg)
