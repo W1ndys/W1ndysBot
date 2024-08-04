@@ -9,6 +9,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # from app.scripts.anonymous_handler.main import handle_anonymous_message
 from scripts.GroupManager.main import handle_group_message, handle_group_notice
+from scripts.Crypto.main import handle_crypto_group_message, handle_crypto_private_message
 
 
 # 处理消息事件的逻辑
@@ -16,21 +17,29 @@ async def handle_message_event(websocket, msg):
     try:
         # 处理群消息
         if msg.get("message_type") == "group":
-            group_id = msg["group_id"]
-            logging.info(f"处理群消息,群ID:{group_id}")
-            logging.info(f"原消息内容:{msg}")
-            await handle_group_message(websocket, msg)
 
-        # 处理群通知事件
-        elif msg.get("post_type") == "notice":
-            group_id = msg["group_id"]
-            logging.info(f"处理群通知事件, 群ID: {group_id}\n原消息内容:\n {msg}")
-            await handle_group_notice(websocket, msg)
+            # 处理群消息
+            if msg.get("post_type") == "message":
+                group_id = msg["group_id"]
+                logging.info(f"处理群消息,群ID:{group_id}")
+                logging.info(f"原消息内容:{msg}")
+                await handle_group_message(websocket, msg)
+                
+                # 编解码功能
+                await handle_crypto_group_message(websocket, msg)
+
+            # 处理群通知
+            if msg.get("post_type") == "notice":
+                group_id = msg["group_id"]
+                logging.info(f"处理群通知事件, 群ID: {group_id}\n原消息内容:\n {msg}")
+                await handle_group_notice(websocket, msg)
+
         # 处理私聊消息
         elif msg["message_type"] == "private":
-            pass
-            # await handle_private_message()
-            # await handle_anonymous_message(websocket, user_id, raw_message) # 关闭匿名系统
+
+            # 编解码功能
+            await handle_crypto_private_message(websocket, msg)
+
         else:
             logging.info(f"收到未知消息类型: {msg}")
 
