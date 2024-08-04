@@ -3,4 +3,7 @@
 	url = https://github.com/W1ndys-bot/GroupManager.git
 [submodule "Bot-json"]
 	path = Bot-json
-	url = https://github.com/W1ndys-bot/Bot-json
+	url = https://github.com/W1ndys-bot/Bot-json.git
+[submodule "Crypto"]
+	path = app/scripts/Crypto
+	url = https://github.com/W1ndys-bot/Crypto.git
