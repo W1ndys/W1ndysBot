@@ -5,6 +5,7 @@ from bot import connect_to_bot
 from dingtalk import dingtalk
 import logging
 import datetime
+from anpush import send_push_notification
 
 
 async def main():
@@ -21,6 +22,7 @@ async def main():
                     f"机器人断开连接，当前时间:{current_time}", f"错误信息: {e}"
                 )
                 main.notified = True
+                await send_push_notification()
             await asyncio.sleep(1)  # 每秒重试一次
 
 

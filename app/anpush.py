@@ -1,8 +1,8 @@
 import requests
-from _secret import anpush_token
+from secret import anpush_token
 
 
-def send_push_notification():
+async def send_push_notification():
     token = anpush_token
     title = "机器人掉线通知"
     content = "你的机器人掉线了！"
