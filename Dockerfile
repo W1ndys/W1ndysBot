@@ -2,10 +2,10 @@
 FROM python:3.9-slim
 
 # 设置工作目录
-WORKDIR /app
+WORKDIR /home/bot
 
 # 复制当前目录内容到工作目录
-COPY . /app
+COPY . /home/bot
 
 # 安装依赖
 RUN pip install --no-cache-dir -r requirements.txt
