@@ -43,13 +43,19 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 - [x] 禁用邀请链功能
 - [x] 查看邀请链
 
-### 网络工具
+### Crypto
 
-#### 自己实现
+编解码系统
 
-- [ ] base家族解密
-- [ ] 进制转换
+- [x] 支持私聊编解码
+- [x] 支持群聊编解码
+- [x] base64 编解码
+- [x] MD5 编码
+- [x] 进制转换
+- [x] hash 计算
+- [x] 密码生成
 
-#### 调用api
+### Tools
 
-- [ ] IP地址查询
+- [ ] IP 地址查询
+- [ ] 快递查询
