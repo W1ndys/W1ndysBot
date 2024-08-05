@@ -4,8 +4,8 @@ services:
   w1ndys-bot:
     image: w1ndys/w1ndys-bot
     volumes:
-      - /f/Github-projects/W1ndys-bot/W1ndys-bot/app/data:/home/bot/app/data
-      - /f/Github-projects/W1ndys-bot/W1ndys-bot/app/logs:/home/bot/app/logs
+      - F:\Github-projects\W1ndys-bot\W1ndys-bot\app\data:/home/bot/app/data
+      - F:\Github-projects\W1ndys-bot\W1ndys-bot\app\logs:/home/bot/app/logs
     environment:
       - PYTHONUNBUFFERED=1
       - DOCKER_ENV=true
