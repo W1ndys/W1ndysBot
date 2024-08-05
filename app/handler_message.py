@@ -24,6 +24,7 @@ async def handle_message_event(websocket, msg):
     try:
         # 处理群消息
         if msg.get("message_type") == "group":
+
             group_id = msg["group_id"]
             logging.info(f"处理群消息,群ID:{group_id}")
             logging.info(f"原消息内容:{msg}")
