@@ -2,3 +2,5 @@ requests
 colorlog
 websockets
 aiohttp
+openai
+dashscope
