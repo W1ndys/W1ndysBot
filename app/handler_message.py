@@ -2,7 +2,6 @@
 
 import json
 import logging
-import asyncio
 import os
 import sys
 
@@ -17,6 +16,8 @@ from scripts.Tools.main import (
     handle_group_message as handle_tools_group_message,
     handle_private_message as handle_tools_private_message,
 )
+
+from scripts.AI.qwen import handle_qwen_message_private, handle_qwen_message_group
 
 
 # 处理消息事件的逻辑
@@ -36,14 +37,20 @@ async def handle_message_event(websocket, msg):
             # 实用的API工具功能
             await handle_tools_group_message(websocket, msg)
 
+            # 处理通义千问
+            await handle_qwen_message_group(websocket, msg)
+
         # 处理私聊消息
         elif msg.get("message_type") == "private":
-
+            user_id = msg.get("user_id")
             # 编解码功能
             await handle_crypto_private_message(websocket, msg)
 
             # 实用的API工具功能
             await handle_tools_private_message(websocket, msg)
+
+            # 处理通义千问
+            await handle_qwen_message_private(websocket, user_id, msg)
 
         else:
             logging.info(f"收到未知消息类型: {msg}")
