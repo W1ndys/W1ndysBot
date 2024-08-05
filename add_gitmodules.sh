@@ -12,9 +12,8 @@ git submodule add $SUBMODULE_URL $SUBMODULE_PATH
 # 初始化并更新子模块
 git submodule update --init --recursive
 
-# 提交更改
-git add .gitmodules $SUBMODULE_PATH
-git commit -m "添加子模块 $SUBMODULE_PATH"
-git push origin master
 
-echo "子模块 $SUBMODULE_PATH 已成功添加并推送。"
+# 五秒后自动退出
+echo "五秒后自动退出..."
+sleep 5
+exit 0
