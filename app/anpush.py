@@ -16,6 +16,3 @@ async def send_push_notification():
             "error": "Failed to send push notification",
             "status_code": response.status_code,
         }
-
-
-print(send_push_notification())
