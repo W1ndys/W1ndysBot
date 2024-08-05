@@ -13,6 +13,10 @@ from scripts.Crypto.main import (
     handle_crypto_group_message,
     handle_crypto_private_message,
 )
+from scripts.Tools.main import (
+    handle_group_message as handle_tools_group_message,
+    handle_private_message as handle_tools_private_message,
+)
 
 
 # 处理消息事件的逻辑
@@ -28,11 +32,17 @@ async def handle_message_event(websocket, msg):
             # 编解码功能
             await handle_crypto_group_message(websocket, msg)
 
+            # 实用的API工具功能
+            await handle_tools_group_message(websocket, msg)
+
         # 处理私聊消息
         elif msg.get("message_type") == "private":
 
             # 编解码功能
             await handle_crypto_private_message(websocket, msg)
+
+            # 实用的API工具功能
+            await handle_tools_private_message(websocket, msg)
 
         else:
             logging.info(f"收到未知消息类型: {msg}")
