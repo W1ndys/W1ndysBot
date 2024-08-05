@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  w1ndys-bot:
+    image: w1ndys/w1ndys-bot
+    volumes:
+      - F:\Github-projects\W1ndys-bot\W1ndys-bot\app\data:/app/data
+      - F:\Github-projects\W1ndys-bot\W1ndys-bot\app\logs:/app/logs
+      # - /home/bot/app/data:/app/data
+      # - /home/bot/app/logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DOCKER_ENV=true

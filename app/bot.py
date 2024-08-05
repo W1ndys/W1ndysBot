@@ -8,7 +8,6 @@ import os
 import sys
 import datetime
 from dingtalk import dingtalk
-import json
 from config import owner_id
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -23,7 +22,7 @@ setup_logger()
 
 async def connect_to_bot():
     logging.info("正在连接到机器人...")
-
+    logging.info(f"连接地址: {ws_url}")
     async with websockets.connect(ws_url) as websocket:
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         logging.info(f"已连接到机器人。当前时间: {current_time}")

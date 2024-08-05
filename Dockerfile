@@ -15,6 +15,7 @@ EXPOSE 3001
 
 # 设置环境变量
 ENV PYTHONUNBUFFERED=1
+ENV DOCKER_ENV=true
 
 # 运行应用
 CMD ["python", "app/main.py"]
