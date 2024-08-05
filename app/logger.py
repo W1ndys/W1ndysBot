@@ -3,7 +3,7 @@
 import logging
 import colorlog
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 
 def setup_logger():
@@ -30,8 +30,9 @@ def setup_logger():
     if not os.path.exists("logs"):
         os.makedirs("logs")
 
-    # 以当前启动时间为文件名
-    log_filename = datetime.now().strftime("logs/%Y-%m-%d_%H-%M-%S.log")
+    # 以当前启动时间为文件名，使用东八区时间
+    tz = timezone(timedelta(hours=8))
+    log_filename = datetime.now(tz).strftime("logs/%Y-%m-%d_%H-%M-%S.log")
 
     # 添加 FileHandler 将日志保存到本地文件
     file_handler = logging.FileHandler(log_filename, encoding="utf-8")
