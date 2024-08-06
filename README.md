@@ -2,6 +2,8 @@
 
 基于 Python 和 OneBot 11 的 QQ 机器人实现
 
+W1ndys 开发的 QQ 机器人，励志成为功能丰富，使用方便的 QQ 机器人。
+
 ## 开发文档
 
 NapCatQQ [NapCatQQ (napneko.github.io)](https://napneko.github.io/zh-CN/#/)
