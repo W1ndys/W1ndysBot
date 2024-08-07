@@ -13,3 +13,6 @@
 [submodule "app/scripts/Tools"]
 	path = app/scripts/Tools
 	url = https://github.com/W1ndys-bot/Tools
+[submodule "app/scripts/QASystem"]
+	path = app/scripts/QASystem
+	url = https://github.com/W1ndys-bot/QASystem
