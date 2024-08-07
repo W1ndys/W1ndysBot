@@ -37,7 +37,7 @@ async def connect_to_bot():
         )
         async for message in websocket:
             # 处理事件
-            await handle_message(websocket, message)
+            asyncio.create_task(handle_message(websocket, message))
 
 
 if __name__ == "__main__":
