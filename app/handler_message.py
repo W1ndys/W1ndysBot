@@ -6,8 +6,11 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# from app.scripts.anonymous_handler.main import handle_anonymous_message
-from scripts.GroupManager.main import handle_group_message, handle_group_notice
+
+from scripts.GroupManager.main import (
+    handle_GroupManager_group_message,
+    handle_GroupManager_group_notice,
+)
 from scripts.Crypto.main import (
     handle_crypto_group_message,
     handle_crypto_private_message,
@@ -17,7 +20,8 @@ from scripts.Tools.main import (
     handle_private_message as handle_tools_private_message,
 )
 
-from scripts.AI.qwen import handle_qwen_message_private, handle_qwen_message_group
+# from scripts.AI.qwen import handle_qwen_message_private, handle_qwen_message_group
+from scripts.QASystem.main import handle_qasystem_message_group
 
 
 # 处理消息事件的逻辑
@@ -29,7 +33,9 @@ async def handle_message_event(websocket, msg):
             group_id = msg["group_id"]
             logging.info(f"处理群消息,群ID:{group_id}")
             logging.info(f"原消息内容:{msg}")
-            await handle_group_message(websocket, msg)
+
+            # 群管系统
+            await handle_GroupManager_group_message(websocket, msg)
 
             # 编解码功能
             await handle_crypto_group_message(websocket, msg)
@@ -38,7 +44,10 @@ async def handle_message_event(websocket, msg):
             await handle_tools_group_message(websocket, msg)
 
             # 处理通义千问
-            await handle_qwen_message_group(websocket, msg)
+            # await handle_qwen_message_group(websocket, msg)
+
+            # 处理知识库问答系统
+            await handle_qasystem_message_group(websocket, msg)
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
@@ -66,10 +75,9 @@ async def handle_notice_event(websocket, msg):
     if msg.get("post_type") == "notice":
         group_id = msg["group_id"]
         logging.info(f"处理群通知事件, 群ID: {group_id}")
-        if handle_group_notice is not None:
-            await handle_group_notice(websocket, msg)
-        else:
-            logging.error("handle_group_notice is None")
+
+        # 群管系统
+        await handle_GroupManager_group_notice(websocket, msg)
 
 
 # 处理请求事件的逻辑
