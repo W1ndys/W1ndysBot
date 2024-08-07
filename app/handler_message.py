@@ -59,7 +59,7 @@ async def handle_message_event(websocket, msg):
             await handle_tools_private_message(websocket, msg)
 
             # 处理通义千问
-            await handle_qwen_message_private(websocket, user_id, msg)
+            # await handle_qwen_message_private(websocket, user_id, msg)
 
         else:
             logging.info(f"收到未知消息类型: {msg}")
