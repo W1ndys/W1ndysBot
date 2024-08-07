@@ -21,6 +21,7 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 - [x] 机器人连接成功通知到 root 管理员 QQ
 - [x] 机器人断开通知到钉钉
 - [x] 机器人断线自动重连
+- [ ] 菜单
 
 ### 群管
 
