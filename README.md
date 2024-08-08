@@ -26,6 +26,7 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 ### 群管
 
 - [x] 禁言
+- [x] 禁言自己
 - [x] 禁言指定用户
 - [x] 禁言随机用户
 - [x] 禁言指定用户指定秒
@@ -46,6 +47,17 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 - [x] 禁用邀请链功能
 - [x] 查看邀请链
 
+### 知识库问答系统
+
+- [x] 开启知识库
+- [x] 关闭知识库
+- [x] 添加知识库
+- [x] 删除知识库某关键词下的某个问题
+- [x] 删除知识库关键词下所有问题
+- [x] 无效命令提示
+- [x] 关键词识别
+- [x] 问题识别
+
 ### Crypto
 
 编解码系统
@@ -61,4 +73,6 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 ### Tools
 
 - [ ] IP 地址查询
-- [ ] 快递查询
+- [x] 快递查询
+
+###
