@@ -23,7 +23,7 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 - [x] 机器人断线自动重连
 - [ ] 菜单
 
-### 群管
+### 群管系统
 
 - [x] 禁言
 - [x] 禁言自己
