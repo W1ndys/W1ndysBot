@@ -19,3 +19,6 @@
 [submodule "app/scripts/Menu"]
 	path = app/scripts/Menu
 	url = https://github.com/W1ndys-bot/Menu.git
+[submodule "app/scripts/BlacklistSystem"]
+	path = app/scripts/BlacklistSystem
+	url = https://github.com/W1ndys-bot/BlacklistSystem
