@@ -4,6 +4,7 @@ import os
 
 owner_id = [2769731875]  # 机器人root管理员 QQ 号
 
+
 if os.getenv("DOCKER_ENV") == "true":
     ws_url = "ws://host.docker.internal:3001"  # napcatQQ 监听的 WebSocket API 地址
 else:
