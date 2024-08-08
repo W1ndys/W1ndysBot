@@ -16,6 +16,7 @@ async def send_private_msg(websocket, user_id, content):
 
 # 发送群消息
 async def send_group_msg(websocket, group_id, content):
+    content = "呱！" + content
     message = {
         "action": "send_group_msg",
         "params": {"group_id": group_id, "message": content},

@@ -47,6 +47,10 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 - [x] 禁用邀请链功能
 - [x] 查看邀请链
 
+### 黑名单系统
+
+开发中
+
 ### 知识库问答系统
 
 - [x] 开启知识库
@@ -75,4 +79,6 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 - [ ] IP 地址查询
 - [x] 快递查询
 
-###
+### 计划中的系统
+
+- 词云统计
