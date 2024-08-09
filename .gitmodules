@@ -25,3 +25,6 @@
 [submodule "app/scripts/Example"]
 	path = app/scripts/Example
 	url = https://github.com/W1ndys-bot/Example
+[submodule "app/scripts/GroupSwitch"]
+	path = app/scripts/GroupSwitch
+	url = https://github.com/W1ndys-bot/GroupSwitch
