@@ -121,3 +121,8 @@ async def handle_message(websocket, message):
     # 收到非事件消息
     else:
         pass
+
+
+# 处理定时任务
+async def handle_cron_task(websocket):
+    pass
