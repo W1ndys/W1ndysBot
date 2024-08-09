@@ -31,3 +31,6 @@
 [submodule "app/scripts/BanWords"]
 	path = app/scripts/BanWords
 	url = https://github.com/W1ndys-bot/BanWords
+[submodule "app/scripts/InviteChain"]
+	path = app/scripts/InviteChain
+	url = https://github.com/W1ndys-bot/InviteChain
