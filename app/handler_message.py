@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sys
+import asyncio
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -22,6 +23,10 @@ from scripts.Tools.main import (
 
 # from scripts.AI.qwen import handle_qwen_message_private, handle_qwen_message_group
 from scripts.QASystem.main import handle_qasystem_message_group
+from scripts.BlacklistSystem.main import (
+    handle_blacklist_message_group,
+    handle_blacklist_request_event,
+)
 
 
 # 处理消息事件的逻辑
@@ -32,7 +37,6 @@ async def handle_message_event(websocket, msg):
 
             group_id = msg["group_id"]
             logging.info(f"处理群消息,群ID:{group_id}")
-            logging.info(f"原消息内容:{msg}")
 
             # 群管系统
             await handle_GroupManager_group_message(websocket, msg)
@@ -48,6 +52,9 @@ async def handle_message_event(websocket, msg):
 
             # 处理知识库问答系统
             await handle_qasystem_message_group(websocket, msg)
+
+            # 处理黑名单系统
+            asyncio.create_task(handle_blacklist_message_group(websocket, msg))
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
@@ -82,7 +89,8 @@ async def handle_notice_event(websocket, msg):
 
 # 处理请求事件的逻辑
 async def handle_request_event(websocket, msg):
-    pass
+
+    asyncio.create_task(handle_blacklist_request_event(websocket, msg))
 
 
 # 处理元事件的逻辑
