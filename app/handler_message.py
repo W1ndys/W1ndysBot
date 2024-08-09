@@ -26,6 +26,7 @@ from scripts.QASystem.main import handle_qasystem_message_group
 from scripts.BlacklistSystem.main import (
     handle_blacklist_message_group,
     handle_blacklist_request_event,
+    handle_blacklist_cron_task,
 )
 
 
@@ -125,4 +126,7 @@ async def handle_message(websocket, message):
 
 # 处理定时任务
 async def handle_cron_task(websocket):
+
+    # 处理黑名单定时任务
+    asyncio.create_task(handle_blacklist_cron_task(websocket))
     pass
