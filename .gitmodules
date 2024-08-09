@@ -28,3 +28,6 @@
 [submodule "app/scripts/GroupSwitch"]
 	path = app/scripts/GroupSwitch
 	url = https://github.com/W1ndys-bot/GroupSwitch
+[submodule "app/scripts/BanWords"]
+	path = app/scripts/BanWords
+	url = https://github.com/W1ndys-bot/BanWords
