@@ -22,3 +22,6 @@
 [submodule "app/scripts/BlacklistSystem"]
 	path = app/scripts/BlacklistSystem
 	url = https://github.com/W1ndys-bot/BlacklistSystem
+[submodule "app/scripts/Example"]
+	path = app/scripts/Example
+	url = https://github.com/W1ndys-bot/Example
