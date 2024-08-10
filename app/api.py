@@ -424,27 +424,3 @@ async def clean_cache(websocket):
     }
     await websocket.send(json.dumps(clean_cache_msg))
     logging.info("已清理缓存。")
-
-
-# 解析并执行命令
-async def execute_command(websocket, action, params):
-    try:
-        params_json = json.loads(params)
-
-        if not action:
-            logging.error("无效的命令: 缺少 action")
-            return
-
-        logging.info(f"即将执行API命令: {action} {params_json}")
-        await run_api(websocket, action, params_json)
-    except json.JSONDecodeError:
-        logging.error("参数解析失败: 无效的 JSON 格式")
-    except Exception as e:
-        logging.error(f"执行命令时出错: {e}")
-
-
-# 执行API调用
-async def run_api(websocket, action, params):
-    api_message = {"action": action, "params": params}
-    await websocket.send(json.dumps(api_message))
-    logging.info(f"已调用 API {action}。")
