@@ -8,10 +8,8 @@ import asyncio
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from scripts.GroupManager.main import (
-    handle_GroupManager_group_message,
-    handle_GroupManager_group_notice,
-)
+from scripts.GroupManager.main import handle_GroupManager_group_message
+
 from scripts.Crypto.main import (
     handle_crypto_group_message,
     handle_crypto_private_message,
@@ -21,13 +19,20 @@ from scripts.Tools.main import (
     handle_private_message as handle_tools_private_message,
 )
 
-# from scripts.AI.qwen import handle_qwen_message_private, handle_qwen_message_group
+
 from scripts.QASystem.main import handle_qasystem_message_group
 from scripts.BlacklistSystem.main import (
     handle_blacklist_message_group,
     handle_blacklist_request_event,
-    handle_blacklist_cron_task,
 )
+
+from scripts.WelcomeFarewell.main import WelcomeFarewell_main, WelcomeFarewell_manage
+
+from scripts.GroupSwitch.main import handle_GroupSwitch_group_message
+
+from scripts.BanWords.main import BanWords_main
+
+from scripts.Menu.main import handle_Menu_group_message
 
 
 # 处理消息事件的逻辑
@@ -39,35 +44,28 @@ async def handle_message_event(websocket, msg):
             group_id = msg["group_id"]
             logging.info(f"处理群消息,群ID:{group_id}")
 
-            # 群管系统
-            await handle_GroupManager_group_message(websocket, msg)
-
-            # 编解码功能
-            await handle_crypto_group_message(websocket, msg)
-
-            # 实用的API工具功能
-            await handle_tools_group_message(websocket, msg)
-
-            # 处理通义千问
-            # await handle_qwen_message_group(websocket, msg)
-
-            # 处理知识库问答系统
-            await handle_qasystem_message_group(websocket, msg)
-
-            # 处理黑名单系统
-            asyncio.create_task(handle_blacklist_message_group(websocket, msg))
+            # 并发执行群消息处理函数
+            await asyncio.gather(
+                handle_GroupManager_group_message(websocket, msg),  # 群管系统
+                handle_crypto_group_message(websocket, msg),  # 编解码功能
+                handle_tools_group_message(websocket, msg),  # 实用的API工具功能
+                handle_qasystem_message_group(websocket, msg),  # 处理知识库问答系统
+                handle_blacklist_message_group(websocket, msg),  # 处理黑名单系统
+                handle_GroupSwitch_group_message(websocket, msg),  # 处理群组开关
+                BanWords_main(websocket, msg),  # 处理违禁词系统
+                WelcomeFarewell_manage(websocket, msg),  # 处理入群欢迎和退群欢送的管理
+                handle_Menu_group_message(websocket, msg),  # 处理菜单
+            )
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
             user_id = msg.get("user_id")
-            # 编解码功能
-            await handle_crypto_private_message(websocket, msg)
-
-            # 实用的API工具功能
-            await handle_tools_private_message(websocket, msg)
-
-            # 处理通义千问
-            # await handle_qwen_message_private(websocket, user_id, msg)
+            # 并发执行私聊消息处理函数
+            await asyncio.gather(
+                handle_crypto_private_message(websocket, msg),  # 编解码功能
+                handle_tools_private_message(websocket, msg),  # 实用的API工具功能
+                # handle_qwen_message_private(websocket, user_id, msg)  # 处理通义千问
+            )
 
         else:
             logging.info(f"收到未知消息类型: {msg}")
@@ -84,14 +82,15 @@ async def handle_notice_event(websocket, msg):
         group_id = msg["group_id"]
         logging.info(f"处理群通知事件, 群ID: {group_id}")
 
-        # 群管系统
-        await handle_GroupManager_group_notice(websocket, msg)
+        await asyncio.gather(WelcomeFarewell_main(websocket, msg))  # 群管系统
 
 
 # 处理请求事件的逻辑
 async def handle_request_event(websocket, msg):
 
-    asyncio.create_task(handle_blacklist_request_event(websocket, msg))
+    await asyncio.gather(
+        handle_blacklist_request_event(websocket, msg)  # 处理黑名单请求事件
+    )
 
 
 # 处理元事件的逻辑
@@ -128,5 +127,5 @@ async def handle_message(websocket, message):
 async def handle_cron_task(websocket):
 
     # 处理黑名单定时任务
-    asyncio.create_task(handle_blacklist_cron_task(websocket))
+    # asyncio.create_task(handle_blacklist_cron_task(websocket))
     pass
