@@ -34,3 +34,6 @@
 [submodule "app/scripts/InviteChain"]
 	path = app/scripts/InviteChain
 	url = https://github.com/W1ndys-bot/InviteChain
+[submodule "app/scripts/WelcomeFarewell"]
+	path = app/scripts/WelcomeFarewell
+	url = https://github.com/W1ndys-bot/WelcomeFarewell
