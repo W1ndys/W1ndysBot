@@ -49,7 +49,11 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 
 ### 黑名单系统
 
-开发中
+- [x] 添加黑名单
+- [x] 删除黑名单
+- [x] 列出黑名单
+- [x] 禁用黑名单
+- [x] 启用黑名单
 
 ### 知识库问答系统
 
