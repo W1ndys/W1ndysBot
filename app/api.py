@@ -106,17 +106,9 @@ async def set_group_ban(websocket, group_id, user_id, duration):
     }
     await websocket.send(json.dumps(ban_msg))
     if duration == 0:
-        logging.info(f"已解除 [CQ:at,qq={user_id}] 禁言。")
-        message = f"已解除 [CQ:at,qq={user_id}] 禁言。"
+        logging.info(f"执行解除 [CQ:at,qq={user_id}] 禁言。")
     else:
-        minutes = duration / 60
-        hours = duration / 3600
-        days = duration / 86400
-        logging.info(
-            f"已禁言 [CQ:at,qq={user_id}] {duration} 秒，相当于 {minutes:.2f} 分钟，{hours:.2f} 小时，{days:.2f} 天。"
-        )
-        message = f"已禁言 [CQ:at,qq={user_id}] {duration} 秒，相当于 {minutes:.2f} 分钟，{hours:.2f} 小时，{days:.2f} 天。"
-    await send_group_msg(websocket, group_id, message)
+        logging.info(f"执行禁言 [CQ:at,qq={user_id}] {duration} 秒。")
 
 
 # 群组匿名用户禁言
