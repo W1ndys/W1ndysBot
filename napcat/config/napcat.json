@@ -1,0 +1,8 @@
+{
+  "name": "napcat",
+  "pathName": null,
+  "fileLog": true,
+  "consoleLog": true,
+  "fileLogLevel": "debug",
+  "consoleLogLevel": "info"
+}
