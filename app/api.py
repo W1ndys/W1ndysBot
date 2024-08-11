@@ -22,7 +22,6 @@ async def send_group_msg(websocket, group_id, content):
         "params": {"group_id": group_id, "message": content},
     }
     await websocket.send(json.dumps(message))
-    logging.info(f"已发送消息到群 {group_id}: {content}")
 
 
 # 发送消息
@@ -38,6 +37,16 @@ async def send_msg(websocket, message_type, user_id, group_id, message):
     }
     await websocket.send(json.dumps(message))
     logging.info(f"已发送消息: {message}")
+
+
+# 发送合并转发消息
+async def send_forward_msg(websocket, group_id, content):
+    message = {
+        "action": "send_forward_msg",
+        "params": {"group_id": group_id, "message": content},
+    }
+    await websocket.send(json.dumps(message))
+    logging.info(f"已发送合并转发消息: {content}")
 
 
 # 撤回消息
@@ -87,8 +96,6 @@ async def set_group_kick(websocket, group_id, user_id):
         "params": {"group_id": group_id, "user_id": user_id},
     }
     await websocket.send(json.dumps(kick_msg))
-    logging.info(f"已踢出用户 {user_id}。")
-    await send_group_msg(websocket, group_id, f"已踢出用户 {user_id}。")
 
 
 # 群组单人禁言

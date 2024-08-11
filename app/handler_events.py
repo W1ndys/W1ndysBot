@@ -26,11 +26,17 @@ from scripts.BlacklistSystem.main import (
     handle_blacklist_request_event,
 )
 
-from scripts.WelcomeFarewell.main import WelcomeFarewell_main, WelcomeFarewell_manage
+from scripts.WelcomeFarewell.main import (
+    handle_WelcomeFarewell_group_notice,
+    WelcomeFarewell_manage,
+)
 
 from scripts.GroupSwitch.main import handle_GroupSwitch_group_message
-
-from scripts.BanWords.main import BanWords_main
+from scripts.InviteChain.main import (
+    handle_InviteChain_group_message,
+    handle_InviteChain_group_notice,
+)
+from scripts.BanWords.main import handle_BanWords_group_message
 
 from scripts.Menu.main import handle_Menu_group_message
 
@@ -52,9 +58,10 @@ async def handle_message_event(websocket, msg):
                 handle_qasystem_message_group(websocket, msg),  # 处理知识库问答系统
                 handle_blacklist_message_group(websocket, msg),  # 处理黑名单系统
                 handle_GroupSwitch_group_message(websocket, msg),  # 处理群组开关
-                BanWords_main(websocket, msg),  # 处理违禁词系统
+                handle_BanWords_group_message(websocket, msg),  # 处理违禁词系统
                 WelcomeFarewell_manage(websocket, msg),  # 处理入群欢迎和退群欢送的管理
                 handle_Menu_group_message(websocket, msg),  # 处理菜单
+                handle_InviteChain_group_message(websocket, msg),  # 处理邀请链
             )
 
         # 处理私聊消息
@@ -82,7 +89,12 @@ async def handle_notice_event(websocket, msg):
         group_id = msg["group_id"]
         logging.info(f"处理群通知事件, 群ID: {group_id}")
 
-        await asyncio.gather(WelcomeFarewell_main(websocket, msg))  # 群管系统
+        await asyncio.gather(
+            handle_WelcomeFarewell_group_notice(
+                websocket, msg
+            ),  # 处理入群欢迎和退群欢送的管理
+            handle_InviteChain_group_notice(websocket, msg),  # 处理邀请链
+        )
 
 
 # 处理请求事件的逻辑
