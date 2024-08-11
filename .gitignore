@@ -4,3 +4,4 @@ __pycache__/
 *$py.class
 logs
 .vscode
+**/node_modules/
