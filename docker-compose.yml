@@ -8,7 +8,7 @@ services:
       - "3001:3001"
       - "6099:6099"
     environment:
-      - "ACCOUNT=3249474653" # 更新机器人的qq号
+      - "ACCOUNT=3649056059" # 更新机器人的qq号
       - "WS_ENABLE=true"
     volumes:
       - "./napcat/app:/usr/src/app/napcat"
