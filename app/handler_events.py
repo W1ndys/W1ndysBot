@@ -122,7 +122,7 @@ async def handle_meta_event(websocket, msg):
     pass
 
 
-# 处理定时任务，程序开机自动执行的函数，会在每个心跳周期检查一次
+# 处理定时任务，每个心跳周期检查一次
 async def handle_cron_task(websocket):
     try:
         await start_qfnujwc_tracker(websocket)
@@ -151,5 +151,5 @@ async def handle_message(websocket, message):
         elif msg["post_type"] == "meta_event":
             # 处理元事件
             await handle_meta_event(websocket, msg)
-            # 处理定时任务，程序开机自动执行的函数，会在每个心跳周期检查一次
+            # 处理定时任务，每个心跳周期检查一次
             await handle_cron_task(websocket)
