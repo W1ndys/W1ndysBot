@@ -10,7 +10,6 @@ sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from app.config import owner_id
 from app.api import *
 
-
 SWITCH_DATA_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "app",
@@ -18,7 +17,7 @@ SWITCH_DATA_DIR = os.path.join(
     "GroupSwitch",
 )
 
-print(SWITCH_DATA_DIR)
+logging.info(f"群组开关数据目录: {SWITCH_DATA_DIR}")
 
 
 # 是否是群主
@@ -129,10 +128,8 @@ async def handle_GroupSwitch_group_message(websocket, msg):
     # 确保数据目录存在
     os.makedirs(SWITCH_DATA_DIR, exist_ok=True)
 
-    user_id = msg["user_id"]
     group_id = msg["group_id"]
     raw_message = msg["raw_message"]
-    role = msg["sender"]["role"]
     message_id = int(msg["message_id"])
 
     await view_group_status(websocket, group_id, raw_message, message_id)

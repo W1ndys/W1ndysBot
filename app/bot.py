@@ -13,11 +13,9 @@ from config import owner_id
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from authentication import authenticate
-from handler_events import handle_message, handle_cron_task
-from logger import setup_logger
-from api import send_private_msg
+from handler_events import handle_message
 
-setup_logger()
+from api import send_private_msg
 
 
 async def connect_to_bot():

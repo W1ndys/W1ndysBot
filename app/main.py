@@ -5,6 +5,9 @@ from bot import connect_to_bot
 from dingtalk import dingtalk
 import logging
 import datetime
+from logger import setup_logger
+
+setup_logger()
 
 
 async def main():
