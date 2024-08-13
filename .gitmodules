@@ -34,3 +34,6 @@
 [submodule "app/scripts/QFNUJWCTracker"]
 	path = app/scripts/QFNUJWCTracker
 	url = https://github.com/W1ndys-bot/QFNUJWCTracker
+[submodule "app/scripts/SoftBan"]
+	path = app/scripts/SoftBan
+	url = https://github.com/W1ndys-bot/SoftBan.git
