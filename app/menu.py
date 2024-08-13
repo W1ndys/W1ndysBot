@@ -152,7 +152,7 @@ async def handle_Menu_group_message(websocket, msg):
         raw_message = msg.get("raw_message")
         message_id = msg.get("message_id")
         self_id = msg.get("self_id")
-        if raw_message == "menu" or f"[CQ:at,qq={self_id}" in raw_message:
+        if raw_message == "menu":
             await menu(websocket, group_id, message_id)
         elif raw_message == "groupmanager":
             await GroupManager(websocket, group_id, message_id)
