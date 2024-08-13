@@ -2,7 +2,7 @@
 
 import os
 
-owner_id = [2769731875]  # 机器人root管理员 QQ 号
+owner_id = ["2769731875"]  # 机器人root管理员 QQ 号
 
 
 if os.getenv("DOCKER_ENV") == "true":

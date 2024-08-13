@@ -40,10 +40,32 @@ def save_function_status(group_id, status):
     )  # 注意：function_status 是开关名称，请根据实际情况修改
 
 
+# 菜单
+async def menu(websocket, group_id, message_id):
+    message = (
+        f"[CQ:reply,id={message_id}]\n"
+        + """
+卷卷bot功能列表
+
+groupswitch 查看群功能开关
+groupmanager 群管理命令
+blacklist 黑名单系统
+banwords 违禁词系统
+invitechain 邀请链系统
+qasystem 问答系统
+qfnu 曲阜师范大学定制服务
+
+join 加入内测群
+"""
+    )
+
+    await send_group_msg(websocket, group_id, message)
+
+
 # 群管系统菜单
 async def GroupManager(websocket, group_id, message_id):
     message = (
-        f"[CQ:reply,id={message_id}]"
+        f"[CQ:reply,id={message_id}]\n"
         + """
 GroupManager 群管理系统
 
@@ -65,28 +87,9 @@ wf-set 设置欢迎词
     await send_group_msg(websocket, group_id, message)
 
 
-async def menu(websocket, group_id, message_id):
-    message = (
-        f"[CQ:reply,id={message_id}]"
-        + """
-卷卷bot功能列表
-
-groupswitch 查看群功能开关
-groupmanager 群管理命令
-blacklist 黑名单系统
-banwords 违禁词系统
-invitechain 邀请链系统
-qasystem 问答系统
-qfnu QFNU定制服务
-"""
-    )
-
-    await send_group_msg(websocket, group_id, message)
-
-
 async def Blacklist(websocket, group_id, message_id):
     message = (
-        f"[CQ:reply,id={message_id}]"
+        f"[CQ:reply,id={message_id}]\n"
         + """
 黑名单系统
 
@@ -103,7 +106,7 @@ bl-check 检查黑名单
 
 async def BanWords(websocket, group_id, message_id):
     message = (
-        f"[CQ:reply,id={message_id}]"
+        f"[CQ:reply,id={message_id}]\n"
         + """
 违禁词系统
 
@@ -119,7 +122,7 @@ bw-rm 删除违禁词
 
 async def InviteChain(websocket, group_id, message_id):
     message = (
-        f"[CQ:reply,id={message_id}]"
+        f"[CQ:reply,id={message_id}]\n"
         + """
 邀请链系统
 
@@ -133,7 +136,7 @@ ic-list @ 查看邀请链
 
 async def QASystem(websocket, group_id, message_id):
     message = (
-        f"[CQ:reply,id={message_id}]"
+        f"[CQ:reply,id={message_id}]\n"
         + """
 问答系统
 
@@ -149,7 +152,7 @@ qa-rm 删除问答
 # QFNU定制服务
 async def QFNU(websocket, group_id, message_id):
     message = (
-        f"[CQ:reply,id={message_id}]"
+        f"[CQ:reply,id={message_id}]\n"
         + """
 QFNU定制服务
 
@@ -160,6 +163,22 @@ qfnujwc-off 关闭监控
 更多内容更新中...（鸽）
 
 技术支持：W1ndys
+"""
+    )
+    await send_group_msg(websocket, group_id, message)
+
+
+# 软封禁
+async def SoftBan(websocket, group_id, message_id):
+    message = (
+        f"[CQ:reply,id={message_id}]\n"
+        + """
+软封禁系统
+(指不封禁，但是会撤回每条消息)
+
+sb-add 添加软封禁
+sb-rm 删除软封禁
+sb-list 查看本群软封禁
 """
     )
     await send_group_msg(websocket, group_id, message)
@@ -185,6 +204,14 @@ async def handle_Menu_group_message(websocket, msg):
             await QASystem(websocket, group_id, message_id)
         elif raw_message == "qfnu":
             await QFNU(websocket, group_id, message_id)
+        elif raw_message == "softban":
+            await SoftBan(websocket, group_id, message_id)
+        elif raw_message == "join":
+            await send_group_msg(
+                websocket,
+                group_id,
+                f"[CQ:reply,id={message_id}]\n卷卷bot内测群：728077087\n新功能测试的地方",
+            )
 
     except Exception as e:
         logging.error(f"处理Menu群消息失败: {e}")

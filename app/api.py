@@ -56,7 +56,6 @@ async def delete_msg(websocket, message_id):
         "params": {"message_id": message_id},
     }
     await websocket.send(json.dumps(delete_msg))
-    logging.info(f"消息 {message_id} 已撤回。")
 
 
 # 获取消息

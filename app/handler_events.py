@@ -38,10 +38,8 @@ from app.scripts.InviteChain.main import (
     handle_InviteChain_group_notice,
 )
 from app.scripts.BanWords.main import handle_BanWords_group_message
-from app.scripts.QFNUJWCTracker.main import (
-    handle_QFNUJWCTracker_group_message,
-    start_qfnujwc_tracker,
-)
+from app.scripts.QFNUJWCTracker.main import start_qfnujwc_tracker
+from app.scripts.SoftBan.main import SoftBan_main
 
 # 总开关
 from app.switch import handle_GroupSwitch_group_message
@@ -71,9 +69,7 @@ async def handle_message_event(websocket, msg):
                 WelcomeFarewell_manage(websocket, msg),  # 处理入群欢迎和退群欢送的管理
                 handle_Menu_group_message(websocket, msg),  # 处理菜单
                 handle_InviteChain_group_message(websocket, msg),  # 处理邀请链
-                handle_QFNUJWCTracker_group_message(
-                    websocket, msg
-                ),  # 处理教务处公告监控
+                SoftBan_main(websocket, msg),  # 处理软封禁
             )
 
         # 处理私聊消息
