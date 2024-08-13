@@ -86,9 +86,9 @@ def get_all_group_switches():
                     switches = json.load(f)
                     all_switches[group_id] = switches
             except json.JSONDecodeError:
-                logging.error(f"无法解析 {filename} 的JSON内容")
+                logging.error(f"无法解析 {filename} 的开关内容")
             except Exception as e:
-                logging.error(f"读取 {filename} 时发生错误: {str(e)}")
+                logging.error(f"读取开关 {filename} 时发生错误: {str(e)}")
     return all_switches
 
 
