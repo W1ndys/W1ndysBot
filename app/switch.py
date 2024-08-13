@@ -2,24 +2,23 @@
 
 import json
 import os
-from re import S
 import sys
 
 # 添加项目根目录到sys.path
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from app.config import owner_id
 from app.api import *
-from app.scripts.GroupSwitch.main import *
 
 
 SWITCH_DATA_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "app",
     "data",
     "GroupSwitch",
 )
+
+print(SWITCH_DATA_DIR)
 
 
 # 是否是群主
