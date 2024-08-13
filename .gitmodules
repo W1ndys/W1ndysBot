@@ -31,3 +31,6 @@
 [submodule "app/scripts/WelcomeFarewell"]
 	path = app/scripts/WelcomeFarewell
 	url = https://github.com/W1ndys-bot/WelcomeFarewell
+[submodule "app/scripts/QFNUJWCTracker"]
+	path = app/scripts/QFNUJWCTracker
+	url = https://github.com/W1ndys-bot/QFNUJWCTracker
