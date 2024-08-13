@@ -36,10 +36,8 @@ async def connect_to_bot():
             f"当前时间: {current_time}",
         )
         async for message in websocket:
-            # 并发执行处理事件和处理定时任务
-            await asyncio.gather(
-                handle_message(websocket, message), handle_cron_task(websocket)
-            )
+            # 处理ws消息
+            await handle_message(websocket, message)
 
 
 if __name__ == "__main__":

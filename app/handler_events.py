@@ -6,6 +6,8 @@ import os
 import sys
 import asyncio
 
+from click import group
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.scripts.GroupManager.main import handle_GroupManager_group_message
@@ -36,6 +38,10 @@ from app.scripts.InviteChain.main import (
     handle_InviteChain_group_notice,
 )
 from app.scripts.BanWords.main import handle_BanWords_group_message
+from app.scripts.QFNUJWCTracker.main import (
+    handle_QFNUJWCTracker_group_message,
+    start_qfnujwc_tracker,
+)
 
 # 总开关
 from app.switch import handle_GroupSwitch_group_message
@@ -65,6 +71,9 @@ async def handle_message_event(websocket, msg):
                 WelcomeFarewell_manage(websocket, msg),  # 处理入群欢迎和退群欢送的管理
                 handle_Menu_group_message(websocket, msg),  # 处理菜单
                 handle_InviteChain_group_message(websocket, msg),  # 处理邀请链
+                handle_QFNUJWCTracker_group_message(
+                    websocket, msg
+                ),  # 处理教务处公告监控
             )
 
         # 处理私聊消息
@@ -113,13 +122,22 @@ async def handle_meta_event(websocket, msg):
     pass
 
 
-# 处理消息
+# 处理定时任务
+async def handle_cron_task(websocket, msg):
+    try:
+        await start_qfnujwc_tracker(websocket, msg)
+    except Exception as e:
+        logging.error(f"处理定时任务的逻辑错误: {e}")
+
+
+# 处理ws消息
 async def handle_message(websocket, message):
 
     msg = json.loads(message)
 
     logging.info(f"处理消息: {msg}")
 
+    # 处理事件
     if "post_type" in msg:
         if msg["post_type"] == "message":
             # 处理消息事件
@@ -133,14 +151,5 @@ async def handle_message(websocket, message):
         elif msg["post_type"] == "meta_event":
             # 处理元事件
             await handle_meta_event(websocket, msg)
-    # 收到非事件消息
-    else:
-        pass
-
-
-# 处理定时任务
-async def handle_cron_task(websocket):
-
-    # 处理黑名单定时任务
-    # asyncio.create_task(handle_blacklist_cron_task(websocket))
-    pass
+            # 处理定时任务
+            await handle_cron_task(websocket, msg)

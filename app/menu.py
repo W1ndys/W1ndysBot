@@ -77,6 +77,7 @@ blacklist 黑名单系统
 banwords 违禁词系统
 invitechain 邀请链系统
 qasystem 问答系统
+qfnu QFNU定制服务
 """
     )
 
@@ -145,13 +146,31 @@ qa-rm 删除问答
     await send_group_msg(websocket, group_id, message)
 
 
+# QFNU定制服务
+async def QFNU(websocket, group_id, message_id):
+    message = (
+        f"[CQ:reply,id={message_id}]"
+        + """
+QFNU定制服务
+
+教务处公告监控
+qfnujwc-on 开启监控
+qfnujwc-off 关闭监控
+
+更多内容更新中...（鸽）
+
+技术支持：W1ndys
+"""
+    )
+    await send_group_msg(websocket, group_id, message)
+
+
 # 群消息处理函数
 async def handle_Menu_group_message(websocket, msg):
     try:
         group_id = msg.get("group_id")
         raw_message = msg.get("raw_message")
         message_id = msg.get("message_id")
-        self_id = msg.get("self_id")
         if raw_message == "menu":
             await menu(websocket, group_id, message_id)
         elif raw_message == "groupmanager":
@@ -164,6 +183,8 @@ async def handle_Menu_group_message(websocket, msg):
             await InviteChain(websocket, group_id, message_id)
         elif raw_message == "qasystem":
             await QASystem(websocket, group_id, message_id)
+        elif raw_message == "qfnu":
+            await QFNU(websocket, group_id, message_id)
 
     except Exception as e:
         logging.error(f"处理Menu群消息失败: {e}")

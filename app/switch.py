@@ -12,7 +12,7 @@ from app.api import *
 
 
 SWITCH_DATA_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "app",
     "data",
     "GroupSwitch",
@@ -38,6 +38,7 @@ def is_authorized(role, user_id):
     return (is_admin or is_owner) or (user_id in owner_id)
 
 
+# 加载群组开关
 def load_switch(group_id, key):
     try:
         with open(
@@ -55,6 +56,7 @@ def load_switch(group_id, key):
     return switches.get(key, False)
 
 
+# 保存群组开关
 def save_switch(group_id, key, switch):
     try:
         with open(
@@ -72,7 +74,26 @@ def save_switch(group_id, key, switch):
         json.dump(switches, f, ensure_ascii=False, indent=4)
 
 
-# 获取群组开关
+# 获取所有群组的开关状态
+def get_all_group_switches():
+    all_switches = {}
+    for filename in os.listdir(SWITCH_DATA_DIR):
+        if filename.endswith(".json"):
+            group_id = filename[:-5]  # 移除 '.json' 后缀
+            try:
+                with open(
+                    os.path.join(SWITCH_DATA_DIR, filename), "r", encoding="utf-8"
+                ) as f:
+                    switches = json.load(f)
+                    all_switches[group_id] = switches
+            except json.JSONDecodeError:
+                logging.error(f"无法解析 {filename} 的JSON内容")
+            except Exception as e:
+                logging.error(f"读取 {filename} 时发生错误: {str(e)}")
+    return all_switches
+
+
+# 获取群组所有开关
 def GroupSwitch(group_id):
     try:
         os.makedirs(SWITCH_DATA_DIR, exist_ok=True)
