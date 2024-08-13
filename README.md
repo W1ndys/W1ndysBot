@@ -21,7 +21,7 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 - [x] 机器人连接成功通知到 root 管理员 QQ
 - [x] 机器人断开通知到钉钉
 - [x] 机器人断线自动重连
-- [ ] 菜单
+- [x] 菜单
 
 ### 群管系统
 
@@ -82,6 +82,11 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 
 - [ ] IP 地址查询
 - [x] 快递查询
+
+### 曲阜师范大学教务处公告监控
+
+- [x] 开启教务处公告监控
+- [x] 关闭教务处公告监控
 
 ### 计划中的系统
 
