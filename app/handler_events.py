@@ -8,37 +8,40 @@ import asyncio
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from scripts.GroupManager.main import handle_GroupManager_group_message
+from app.scripts.GroupManager.main import handle_GroupManager_group_message
 
-from scripts.Crypto.main import (
+from app.scripts.Crypto.main import (
     handle_crypto_group_message,
     handle_crypto_private_message,
 )
-from scripts.Tools.main import (
+from app.scripts.Tools.main import (
     handle_group_message as handle_tools_group_message,
     handle_private_message as handle_tools_private_message,
 )
 
 
-from scripts.QASystem.main import handle_qasystem_message_group
-from scripts.BlacklistSystem.main import (
+from app.scripts.QASystem.main import handle_qasystem_message_group
+from app.scripts.BlacklistSystem.main import (
     handle_blacklist_message_group,
     handle_blacklist_request_event,
 )
 
-from scripts.WelcomeFarewell.main import (
+from app.scripts.WelcomeFarewell.main import (
     handle_WelcomeFarewell_group_notice,
     WelcomeFarewell_manage,
 )
 
-from scripts.GroupSwitch.main import handle_GroupSwitch_group_message
-from scripts.InviteChain.main import (
+from app.scripts.InviteChain.main import (
     handle_InviteChain_group_message,
     handle_InviteChain_group_notice,
 )
-from scripts.BanWords.main import handle_BanWords_group_message
+from app.scripts.BanWords.main import handle_BanWords_group_message
 
-from scripts.Menu.main import handle_Menu_group_message
+# 总开关
+from app.switch import handle_GroupSwitch_group_message
+
+# 菜单
+from app.menu import handle_Menu_group_message
 
 
 # 处理消息事件的逻辑

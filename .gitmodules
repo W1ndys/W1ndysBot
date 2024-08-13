@@ -16,18 +16,12 @@
 [submodule "app/scripts/QASystem"]
 	path = app/scripts/QASystem
 	url = https://github.com/W1ndys-bot/QASystem
-[submodule "app/scripts/Menu"]
-	path = app/scripts/Menu
-	url = https://github.com/W1ndys-bot/Menu.git
 [submodule "app/scripts/BlacklistSystem"]
 	path = app/scripts/BlacklistSystem
 	url = https://github.com/W1ndys-bot/BlacklistSystem
 [submodule "app/scripts/Example"]
 	path = app/scripts/Example
 	url = https://github.com/W1ndys-bot/Example
-[submodule "app/scripts/GroupSwitch"]
-	path = app/scripts/GroupSwitch
-	url = https://github.com/W1ndys-bot/GroupSwitch
 [submodule "app/scripts/BanWords"]
 	path = app/scripts/BanWords
 	url = https://github.com/W1ndys-bot/BanWords
