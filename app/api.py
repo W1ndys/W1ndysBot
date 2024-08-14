@@ -3,6 +3,8 @@
 import json
 import logging
 
+from matplotlib.font_manager import json_dump
+
 
 # 发送私聊消息
 async def send_private_msg(websocket, user_id, content):
@@ -16,12 +18,93 @@ async def send_private_msg(websocket, user_id, content):
 
 # 发送群消息
 async def send_group_msg(websocket, group_id, content):
-    content = "呱！" + content
     message = {
         "action": "send_group_msg",
         "params": {"group_id": group_id, "message": content},
     }
     await websocket.send(json.dumps(message))
+    logging.info(f"已发送群消息: {message}")
+
+
+# 给群分享推荐好友
+async def send_ArkSharePeer_group(websocket, user_id, group_id):
+    try:
+        message = {
+            "action": "ArkSharePeer",
+            "params": {"user_id": str(user_id)},
+        }
+        await websocket.send(json.dumps(message))
+        response = json.loads(await websocket.recv())
+        data = response.get("data", {}).get("arkMsg")
+        await send_json_msg_group(websocket, group_id, data)
+    except Exception as e:
+        logging.error(f"发送推荐好友失败: {e}")
+
+
+# 给群分享加群卡片
+async def send_ArkShareGroupEx_group(websocket, group_id, target_group_id):
+    try:
+        message = {
+            "action": "ArkShareGroupEx",
+            "params": {"group_id": str(group_id)},
+        }
+        await websocket.send(json.dumps(message))
+        response = json.loads(await websocket.recv())
+        data = response.get("data")
+        await send_json_msg_group(websocket, target_group_id, data)
+    except Exception as e:
+        logging.error(f"发送加群卡片失败: {e}")
+
+
+# 给私聊分享加群卡片
+async def send_ArkShareGroupEx_private(websocket, user_id):
+    try:
+        message = {
+            "action": "ArkShareGroupEx",
+            "params": {"user_id": str(user_id)},
+        }
+        await websocket.send(json.dumps(message))
+        response = json.loads(await websocket.recv())
+        data = response.get("data")
+        await send_json_msg_private(websocket, user_id, data)
+    except Exception as e:
+        logging.error(f"发送加群卡片失败: {e}")
+
+
+# 给私聊分享推荐好友
+async def send_ArkSharePeer_private(websocket, user_id):
+    try:
+        message = {
+            "action": "ArkSharePeer",
+            "params": {"user_id": str(user_id)},
+        }
+        await websocket.send(json.dumps(message))
+        response = json.loads(await websocket.recv())
+        data = response.get("data", {}).get("arkMsg")
+        await send_json_msg_private(websocket, user_id, data)
+    except Exception as e:
+        logging.error(f"发送推荐好友失败: {e}")
+
+
+# 向群发送JSON消息
+async def send_json_msg_group(websocket, group_id, data):
+    try:
+        message = {
+            "type": "json",
+            "data": {"data": data},
+        }  # 注意这边两层data，详情可见https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#json-%E6%B6%88%E6%81%AF
+        await send_group_msg(websocket, group_id, message)
+    except Exception as e:
+        logging.error(f"发送JSON消息失败: {e}")
+
+
+# 向私聊发送JSON消息
+async def send_json_msg_private(websocket, user_id, data):
+    try:
+        message = {"type": "json", "data": {"data": data}}
+        await send_private_msg(websocket, user_id, message)
+    except Exception as e:
+        logging.error(f"发送JSON消息失败: {e}")
 
 
 # 发送消息

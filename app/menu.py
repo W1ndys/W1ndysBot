@@ -8,6 +8,7 @@ import logging
 import os
 import sys
 import asyncio
+from typing import Self
 
 # 添加项目根目录到sys.path
 sys.path.append(
@@ -43,20 +44,22 @@ def save_function_status(group_id, status):
 # 菜单
 async def menu(websocket, group_id, message_id):
     message = (
-        f"[CQ:reply,id={message_id}]\n"
-        + """
-卷卷bot功能列表
+        f"[CQ:reply,id={message_id}]"
+        + """卷卷bot功能列表
 
-groupswitch 查看群功能开关
-groupmanager 群管理命令
-blacklist 黑名单系统
-banwords 违禁词系统
-invitechain 邀请链系统
-qasystem 问答系统
-qfnu 曲阜师范大学定制服务
+groupswitch——查看群功能开关
+groupmanager——群管理命令
+blacklist——黑名单系统
+banwords——违禁词系统
+invitechain——邀请链系统
+qasystem——问答系统
+qfnu——曲阜师范大学定制服务
 
-join 加入内测群
-"""
+join——加入内测群
+owner——联系开发者
+
+
+发送对应的命令即可，例如：groupswitch"""
     )
 
     await send_group_msg(websocket, group_id, message)
@@ -187,11 +190,19 @@ sb-list 查看本群软封禁
 # 群消息处理函数
 async def handle_Menu_group_message(websocket, msg):
     try:
-        group_id = msg.get("group_id")
+        group_id = str(msg.get("group_id"))
         raw_message = msg.get("raw_message")
         message_id = msg.get("message_id")
+        self_id = msg.get("self_id")
+
         if raw_message == "menu":
             await menu(websocket, group_id, message_id)
+        elif f"[CQ:at,qq={self_id}" in raw_message:
+            await send_group_msg(
+                websocket,
+                group_id,
+                f"[CQ:reply,id={message_id}]你好啊，我是卷卷，一个基于NapCatQQ和Onebot11协议的QQ机器人，我可以帮你管理群聊，也有娱乐功能，发送“menu”可以查看所有功能~",
+            )
         elif raw_message == "groupmanager":
             await GroupManager(websocket, group_id, message_id)
         elif raw_message == "blacklist":
@@ -210,8 +221,16 @@ async def handle_Menu_group_message(websocket, msg):
             await send_group_msg(
                 websocket,
                 group_id,
-                f"[CQ:reply,id={message_id}]\n卷卷bot内测群：728077087\n新功能测试的地方",
+                f"[CQ:reply,id={message_id}]卷卷bot内测群：728077087\n新功能测试的地方，欢迎参与测试\n有啥好玩的点子可以告诉我哦~",
             )
+            await send_ArkShareGroupEx_group(websocket, 728077087, group_id)
+        elif raw_message == "owner":
+            await send_group_msg(
+                websocket,
+                group_id,
+                f"[CQ:reply,id={message_id}]呐~这是我的开发者：\nQQ：2769731875",
+            )
+            await send_ArkSharePeer_group(websocket, 2769731875, group_id)
 
     except Exception as e:
         logging.error(f"处理Menu群消息失败: {e}")
