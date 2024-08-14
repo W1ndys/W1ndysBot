@@ -3,8 +3,6 @@
 import json
 import logging
 
-from matplotlib.font_manager import json_dump
-
 
 # 发送私聊消息
 async def send_private_msg(websocket, user_id, content):
