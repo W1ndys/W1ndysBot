@@ -38,7 +38,10 @@ from app.scripts.InviteChain.main import (
     handle_InviteChain_group_notice,
 )
 from app.scripts.BanWords.main import handle_BanWords_group_message
-from app.scripts.QFNUJWCTracker.main import start_qfnujwc_tracker
+from app.scripts.QFNUJWCTracker.main import (
+    start_qfnujwc_tracker,
+    handle_QFNUJWCTracker_group_message,
+)
 from app.scripts.SoftBan.main import SoftBan_main
 
 # 总开关
@@ -70,6 +73,9 @@ async def handle_message_event(websocket, msg):
                 handle_Menu_group_message(websocket, msg),  # 处理菜单
                 handle_InviteChain_group_message(websocket, msg),  # 处理邀请链
                 SoftBan_main(websocket, msg),  # 处理软封禁
+                handle_QFNUJWCTracker_group_message(
+                    websocket, msg
+                ),  # 处理QFNUJWC追踪器
             )
 
         # 处理私聊消息
