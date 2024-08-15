@@ -31,9 +31,6 @@
 [submodule "app/scripts/WelcomeFarewell"]
 	path = app/scripts/WelcomeFarewell
 	url = https://github.com/W1ndys-bot/WelcomeFarewell
-[submodule "app/scripts/QFNUTracker"]
-	path = app/scripts/QFNUTracker
-	url = https://github.com/W1ndys-bot/QFNUTracker
 [submodule "app/scripts/SoftBan"]
 	path = app/scripts/SoftBan
 	url = https://github.com/W1ndys-bot/SoftBan.git
