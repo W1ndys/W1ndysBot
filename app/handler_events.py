@@ -6,7 +6,6 @@ import os
 import sys
 import asyncio
 
-from click import group
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -38,9 +37,9 @@ from app.scripts.InviteChain.main import (
     handle_InviteChain_group_notice,
 )
 from app.scripts.BanWords.main import handle_BanWords_group_message
-from app.scripts.QFNUJWCTracker.main import (
-    start_qfnujwc_tracker,
-    handle_QFNUJWCTracker_group_message,
+from app.scripts.QFNUTracker.main import (
+    start_qfnu_tracker,
+    handle_QFNUTracker_group_message,
 )
 from app.scripts.SoftBan.main import SoftBan_main
 
@@ -73,9 +72,9 @@ async def handle_message_event(websocket, msg):
                 handle_Menu_group_message(websocket, msg),  # 处理菜单
                 handle_InviteChain_group_message(websocket, msg),  # 处理邀请链
                 SoftBan_main(websocket, msg),  # 处理软封禁
-                handle_QFNUJWCTracker_group_message(
+                handle_QFNUTracker_group_message(
                     websocket, msg
-                ),  # 处理QFNUJWC追踪器
+                ),  # 处理QFNU追踪器开关消息
             )
 
         # 处理私聊消息
@@ -127,7 +126,7 @@ async def handle_meta_event(websocket, msg):
 # 处理定时任务，每个心跳周期检查一次
 async def handle_cron_task(websocket):
     try:
-        await start_qfnujwc_tracker(websocket)
+        await start_qfnu_tracker(websocket)
     except Exception as e:
         logging.error(f"处理定时任务的逻辑错误: {e}")
 
