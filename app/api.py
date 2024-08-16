@@ -11,18 +11,27 @@ async def send_private_msg(websocket, user_id, content):
         "params": {"user_id": user_id, "message": content},
     }
     await websocket.send(json.dumps(message))
-    logging.info(f"已发送消息到用户 {user_id}: {content}")
+    response = json.loads(await websocket.recv())
+    message_id = response.get("data", {}).get("message_id")
+    logging.info(f"已发送消息到用户 {user_id}: {content}，消息ID: {message_id}")
+    return message_id
 
 
 # 发送群消息
 async def send_group_msg(websocket, group_id, content):
-    message = {
-        "action": "send_group_msg",
-        "params": {"group_id": group_id, "message": content},
-    }
-    await websocket.send(json.dumps(message))
-    logging.info(f"已发送群消息: {message}")
-
+    try:
+        message = {
+            "action": "send_group_msg",
+            "params": {"group_id": group_id, "message": content},
+        }
+        await websocket.send(json.dumps(message))
+        response = json.loads(await websocket.recv())
+        message_id = response.get("data", {}).get("message_id")
+        logging.info(f"已发送群消息: {content} 到群 {group_id}，消息ID: {message_id}")
+        return message_id
+    except Exception as e:
+        logging.error(f"发送群消息失败: {e}")
+        return None
 
 # 给群分享推荐好友
 async def send_ArkSharePeer_group(websocket, user_id, group_id):
