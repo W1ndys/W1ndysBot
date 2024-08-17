@@ -54,6 +54,8 @@ invitechain——邀请链系统
 qasystem——问答系统
 qfnu——曲阜师范大学定制服务
 
+卷卷+任意内容可以与我对话
+
 join——加入内测群
 owner——联系开发者
 
@@ -78,7 +80,7 @@ banrandom 随机禁言一个群友随机秒
 banall 全员禁言
 unbanall 全员解禁
 t@ 踢出指定用户
-recall 撤回消息(需要回复要撤回的消息)
+del 撤回消息(需要回复要撤回的消息)
 vc-on 开启视频监控
 vc-off 关闭视频监控
 wf-on 开启欢迎欢送
@@ -158,10 +160,11 @@ async def QFNU(websocket, group_id, message_id):
         + """
 QFNU定制服务
 
-教务处公告监控
-qfnujwc-on 开启监控
-qfnujwc-off 关闭监控
-
+曲阜师范大学公告监控
+qfnujwc-on 开启教务处监控
+qfnujwc-off 关闭教务处监控
+qfnuzcc-on 开启资产处监控
+qfnuzcc-off 关闭资产处监控
 更多内容更新中...（鸽）
 
 技术支持：W1ndys
