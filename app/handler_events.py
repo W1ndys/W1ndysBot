@@ -27,6 +27,7 @@ from app.scripts.QASystem.main import handle_qasystem_message_group
 from app.scripts.BlacklistSystem.main import (
     handle_blacklist_message_group,
     handle_blacklist_request_event,
+    handle_blacklist_group_notice,
 )
 
 from app.scripts.WelcomeFarewell.main import (
@@ -110,6 +111,7 @@ async def handle_notice_event(websocket, msg):
                 websocket, msg
             ),  # 处理入群欢迎和退群欢送的管理
             handle_InviteChain_group_notice(websocket, msg),  # 处理邀请链
+            handle_blacklist_group_notice(websocket, msg),  # 处理黑名单检查
         )
 
 
