@@ -5,10 +5,10 @@ import logging
 
 
 # 发送私聊消息
-async def send_private_msg(websocket, user_id, content):
+async def send_private_msg(websocket, user_id, content, auto_escape=True):
     message = {
         "action": "send_private_msg",
-        "params": {"user_id": user_id, "message": content},
+        "params": {"user_id": user_id, "message": content, "auto_escape": auto_escape},
     }
     await websocket.send(json.dumps(message))
     response = json.loads(await websocket.recv())
@@ -32,6 +32,7 @@ async def send_group_msg(websocket, group_id, content):
     except Exception as e:
         logging.error(f"发送群消息失败: {e}")
         return None
+
 
 # 给群分享推荐好友
 async def send_ArkSharePeer_group(websocket, user_id, group_id):
