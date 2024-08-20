@@ -2,6 +2,9 @@
 
 import json
 import logging
+import re
+
+from sympy import N
 
 
 # 发送私聊消息
@@ -13,7 +16,7 @@ async def send_private_msg(websocket, user_id, content, auto_escape=True):
     await websocket.send(json.dumps(message))
     response = json.loads(await websocket.recv())
     message_id = response.get("data", {}).get("message_id")
-    logging.info(f"已发送消息到用户 {user_id}: {content}，消息ID: {message_id}")
+    logging.info(f"[API]已发送消息到用户 {user_id}: {content}，消息ID: {message_id}")
     return message_id
 
 
@@ -25,12 +28,27 @@ async def send_group_msg(websocket, group_id, content):
             "params": {"group_id": group_id, "message": content},
         }
         await websocket.send(json.dumps(message))
+        logging.info(f"[API]已发送群消息: {content} 到群 {group_id}")
+    except Exception as e:
+        logging.error(f"[API]发送群消息失败: {e}")
+
+
+# 发送群消息并获取消息ID
+async def send_group_msg_with_reply(websocket, group_id, content):
+    try:
+        message = {
+            "action": "send_group_msg",
+            "params": {"group_id": group_id, "message": content},
+        }
+        await websocket.send(json.dumps(message))
         response = json.loads(await websocket.recv())
         message_id = response.get("data", {}).get("message_id")
-        logging.info(f"已发送群消息: {content} 到群 {group_id}，消息ID: {message_id}")
+        logging.info(
+            f"[API]已发送群消息: {content} 到群 {group_id}，消息ID: {message_id}"
+        )
         return message_id
     except Exception as e:
-        logging.error(f"发送群消息失败: {e}")
+        logging.error(f"[API]发送群消息（带回复）失败: {e}")
         return None
 
 
@@ -46,7 +64,7 @@ async def send_ArkSharePeer_group(websocket, user_id, group_id):
         data = response.get("data", {}).get("arkMsg")
         await send_json_msg_group(websocket, group_id, data)
     except Exception as e:
-        logging.error(f"发送推荐好友失败: {e}")
+        logging.error(f"[API]发送推荐好友失败: {e}")
 
 
 # 给群分享加群卡片
@@ -61,7 +79,7 @@ async def send_ArkShareGroupEx_group(websocket, group_id, target_group_id):
         data = response.get("data")
         await send_json_msg_group(websocket, target_group_id, data)
     except Exception as e:
-        logging.error(f"发送加群卡片失败: {e}")
+        logging.error(f"[API]发送加群卡片失败: {e}")
 
 
 # 给私聊分享加群卡片
@@ -76,7 +94,7 @@ async def send_ArkShareGroupEx_private(websocket, user_id):
         data = response.get("data")
         await send_json_msg_private(websocket, user_id, data)
     except Exception as e:
-        logging.error(f"发送加群卡片失败: {e}")
+        logging.error(f"[API]发送加群卡片失败: {e}")
 
 
 # 给私聊分享推荐好友
@@ -91,7 +109,7 @@ async def send_ArkSharePeer_private(websocket, user_id):
         data = response.get("data", {}).get("arkMsg")
         await send_json_msg_private(websocket, user_id, data)
     except Exception as e:
-        logging.error(f"发送推荐好友失败: {e}")
+        logging.error(f"[API]发送推荐好友失败: {e}")
 
 
 # 向群发送JSON消息
@@ -103,7 +121,7 @@ async def send_json_msg_group(websocket, group_id, data):
         }  # 注意这边两层data，详情可见https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#json-%E6%B6%88%E6%81%AF
         await send_group_msg(websocket, group_id, message)
     except Exception as e:
-        logging.error(f"发送JSON消息失败: {e}")
+        logging.error(f"[API]发送JSON消息失败: {e}")
 
 
 # 向私聊发送JSON消息
@@ -112,7 +130,7 @@ async def send_json_msg_private(websocket, user_id, data):
         message = {"type": "json", "data": {"data": data}}
         await send_private_msg(websocket, user_id, message)
     except Exception as e:
-        logging.error(f"发送JSON消息失败: {e}")
+        logging.error(f"[API]发送JSON消息失败: {e}")
 
 
 # 发送消息
@@ -127,7 +145,7 @@ async def send_msg(websocket, message_type, user_id, group_id, message):
         },
     }
     await websocket.send(json.dumps(message))
-    logging.info(f"已发送消息: {message}")
+    logging.info(f"[API]已发送消息: {message}")
 
 
 # 发送合并转发消息
@@ -137,7 +155,7 @@ async def send_forward_msg(websocket, group_id, content):
         "params": {"group_id": group_id, "message": content},
     }
     await websocket.send(json.dumps(message))
-    logging.info(f"已发送合并转发消息: {content}")
+    logging.info(f"[API]已发送合并转发消息: {content}")
 
 
 # 撤回消息
@@ -156,7 +174,7 @@ async def get_msg(websocket, message_id):
         "params": {"message_id": message_id},
     }
     await websocket.send(json.dumps(get_msg))
-    logging.info(f"已获取消息 {message_id}。")
+    logging.info(f"[API]已获取消息 {message_id}。")
 
 
 # 获取合并转发消息
@@ -166,7 +184,7 @@ async def get_forward_msg(websocket, id):
         "params": {"message_id": id},
     }
     await websocket.send(json.dumps(get_forward_msg))
-    logging.info(f"已获取合并转发消息 {id}。")
+    logging.info(f"[API]已获取合并转发消息 {id}。")
 
 
 # 发送好友赞
@@ -176,7 +194,7 @@ async def send_like(websocket, user_id, times):
         "params": {"user_id": user_id, "times": times},
     }
     await websocket.send(json.dumps(like_msg))
-    logging.info(f"已发送好友赞 {user_id} {times} 次。")
+    logging.info(f"[API]已发送好友赞 {user_id} {times} 次。")
 
 
 # 群组踢人
@@ -196,9 +214,9 @@ async def set_group_ban(websocket, group_id, user_id, duration):
     }
     await websocket.send(json.dumps(ban_msg))
     if duration == 0:
-        logging.info(f"执行解除 [CQ:at,qq={user_id}] 禁言。")
+        logging.info(f"[API]执行解除 [CQ:at,qq={user_id}] 禁言。")
     else:
-        logging.info(f"执行禁言 [CQ:at,qq={user_id}] {duration} 秒。")
+        logging.info(f"[API]执行禁言 [CQ:at,qq={user_id}] {duration} 秒。")
 
 
 # 群组匿名用户禁言
@@ -209,10 +227,10 @@ async def set_group_anonymous_ban(websocket, group_id, anonymous_flag, duration)
     }
     await websocket.send(json.dumps(anonymous_ban_msg))
     if duration == 0:
-        logging.info(f"已解除 [CQ:anonymous,flag={anonymous_flag}] 禁言。")
+        logging.info(f"[API]已解除 [CQ:anonymous,flag={anonymous_flag}] 禁言。")
         message = f"已解除 [CQ:anonymous,flag={anonymous_flag}] 禁言。"
     else:
-        logging.info(f"已禁止匿名用户 {anonymous_flag} {duration} 秒。")
+        logging.info(f"[API]已禁止匿名用户 {anonymous_flag} {duration} 秒。")
         message = f"已禁止匿名用户 {anonymous_flag} {duration} 秒。"
     await send_group_msg(websocket, group_id, message)
 
@@ -224,7 +242,7 @@ async def set_group_whole_ban(websocket, group_id, enable):
         "params": {"group_id": group_id, "enable": enable},
     }
     await websocket.send(json.dumps(whole_ban_msg))
-    logging.info(f"已{'开启' if enable else '解除'}群 {group_id} 的全员禁言。")
+    logging.info(f"[API]已{'开启' if enable else '解除'}群 {group_id} 的全员禁言。")
     await send_group_msg(
         websocket,
         group_id,
@@ -251,7 +269,7 @@ async def set_group_anonymous(websocket, group_id, enable):
         "params": {"group_id": group_id, "enable": enable},
     }
     await websocket.send(json.dumps(anonymous_msg))
-    logging.info(f"已{'开启' if enable else '关闭'}群 {group_id} 的匿名。")
+    logging.info(f"[API]已{'开启' if enable else '关闭'}群 {group_id} 的匿名。")
 
 
 # 设置群名片（群备注）
@@ -261,7 +279,7 @@ async def set_group_card(websocket, group_id, user_id, card):
         "params": {"group_id": group_id, "user_id": user_id, "card": card},
     }
     await websocket.send(json.dumps(card_msg))
-    logging.info(f"已设置群 {group_id} 的用户 {user_id} 的群名片为 {card}。")
+    logging.info(f"[API]已设置群 {group_id} 的用户 {user_id} 的群名片为 {card}。")
 
 
 # 设置群名
@@ -271,7 +289,7 @@ async def set_group_name(websocket, group_id, group_name):
         "params": {"group_id": group_id, "group_name": group_name},
     }
     await websocket.send(json.dumps(name_msg))
-    logging.info(f"已设置群 {group_id} 的群名为 {group_name}。")
+    logging.info(f"[API]已设置群 {group_id} 的群名为 {group_name}。")
 
 
 # 退出群组
@@ -281,7 +299,7 @@ async def set_group_leave(websocket, group_id, is_dismiss):
         "params": {"group_id": group_id, "is_dismiss": is_dismiss},
     }
     await websocket.send(json.dumps(leave_msg))
-    logging.info(f"已退出群 {group_id}。")
+    logging.info(f"[API]已退出群 {group_id}。")
 
 
 # 设置群组专属头衔
@@ -298,7 +316,9 @@ async def set_group_special_title(
         },
     }
     await websocket.send(json.dumps(special_title_msg))
-    logging.info(f"已设置群 {group_id} 的用户 {user_id} 的专属头衔为 {special_title}。")
+    logging.info(
+        f"[API]已设置群 {group_id} 的用户 {user_id} 的专属头衔为 {special_title}。"
+    )
 
 
 # 处理加好友请求
@@ -308,7 +328,7 @@ async def set_friend_add_request(websocket, flag, approve):
         "params": {"flag": flag, "approve": approve},
     }
     await websocket.send(json.dumps(request_msg))
-    logging.info(f"已{'同意' if approve else '拒绝'}好友请求。")
+    logging.info(f"[API]已{'同意' if approve else '拒绝'}好友请求。")
 
 
 # 处理加群请求／邀请
@@ -318,7 +338,7 @@ async def set_group_add_request(websocket, flag, type, approve, reason):
         "params": {"flag": flag, "type": type, "approve": approve, "reason": reason},
     }
     await websocket.send(json.dumps(request_msg))
-    logging.info(f"已{'同意' if approve else '拒绝'}群 {type} 请求。")
+    logging.info(f"[API]已{'同意' if approve else '拒绝'}群 {type} 请求。")
 
 
 # 获取登录号信息
@@ -338,7 +358,10 @@ async def get_stranger_info(websocket, user_id, no_cache=False):
         "params": {"user_id": user_id, "no_cache": no_cache},
     }
     await websocket.send(json.dumps(stranger_info_msg))
-    logging.info(f"已获取陌生人 {user_id} 信息。")
+    response = await websocket.recv()
+    response_data = json.loads(response)
+    logging.info(f"[API]已获取 {user_id} 信息。")
+    return response_data
 
 
 # 获取好友列表
@@ -358,7 +381,7 @@ async def get_group_info(websocket, group_id):
         "params": {"group_id": group_id},
     }
     await websocket.send(json.dumps(group_info_msg))
-    logging.info(f"已获取群 {group_id} 信息。")
+    logging.info(f"[API]已获取群 {group_id} 信息。")
 
 
 # 获取群列表
@@ -390,7 +413,7 @@ async def get_group_member_list(websocket, group_id, no_cache=False):
 
     response = await websocket.recv()
     response_data = json.loads(response)
-    logging.info(f"已获取群 {group_id} 的成员列表。")
+    logging.info(f"[API]已获取群 {group_id} 的成员列表。")
 
     return response_data
 
@@ -402,7 +425,7 @@ async def get_group_honor_info(websocket, group_id, type):
         "params": {"group_id": group_id, "type": type},
     }
     await websocket.send(json.dumps(honor_info_msg))
-    logging.info(f"已获取群 {group_id} 的 {type} 荣誉信息。")
+    logging.info(f"[API]已获取群 {group_id} 的 {type} 荣誉信息。")
 
 
 # 获取 Cookies
@@ -442,7 +465,7 @@ async def get_record(websocket, file, out_format, full_path):
         "params": {"file": file, "out_format": out_format, "full_path": full_path},
     }
     await websocket.send(json.dumps(record_msg))
-    logging.info(f"已获取语音 {file}。")
+    logging.info(f"[API]已获取语音 {file}。")
 
 
 # 获取图片
@@ -452,7 +475,7 @@ async def get_image(websocket, file, out_format, full_path):
         "params": {"file": file, "out_format": out_format, "full_path": full_path},
     }
     await websocket.send(json.dumps(image_msg))
-    logging.info(f"已获取图片 {file}。")
+    logging.info(f"[API]已获取图片 {file}。")
 
 
 # 检查是否可以发送图片
