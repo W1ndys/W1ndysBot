@@ -2,9 +2,6 @@
 
 import json
 import logging
-import re
-
-from sympy import N
 
 
 # 发送私聊消息
