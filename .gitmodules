@@ -37,3 +37,6 @@
 [submodule "app/scripts/QFNUTracker"]
 	path = app/scripts/QFNUTracker
 	url = https://github.com/W1ndys-bot/QFNUTracker
+[submodule "app/scripts/Custom"]
+	path = app/scripts/Custom
+	url = https://github.com/W1ndys-bot/Custom
