@@ -44,6 +44,9 @@ from app.scripts.QFNUTracker.main import (
     start_qfnu_tracker,
     handle_QFNUTracker_group_message,
 )
+
+from app.scripts.Custom.main import handle_Custom_group_message
+
 from app.scripts.SoftBan.main import SoftBan_main
 
 # 总开关
@@ -79,6 +82,7 @@ async def handle_message_event(websocket, msg):
                     websocket, msg
                 ),  # 处理QFNU追踪器开关消息
                 handle_kimi_group_message(websocket, msg),  # 处理kimi群消息
+                handle_Custom_group_message(websocket, msg),  # 处理自定义群消息
             )
 
         # 处理私聊消息

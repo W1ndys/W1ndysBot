@@ -533,3 +533,17 @@ async def clean_cache(websocket):
     }
     await websocket.send(json.dumps(clean_cache_msg))
     logging.info("已清理缓存。")
+
+
+######## 下面是NapCatQQ的扩展API
+
+
+# 发送表情回应
+# https://bot.q.qq.com/wiki/develop/api-v2/openapi/emoji/model.html#/EmojiType
+async def set_msg_emoji_like(websocket, message_id, emoji_id):
+    set_msg_emoji_like_msg = {
+        "action": "set_msg_emoji_like",
+        "params": {"message_id": message_id, "emoji_id": emoji_id},
+    }
+    await websocket.send(json.dumps(set_msg_emoji_like_msg))
+    logging.info(f"[API]已发送表情回应 {message_id} {emoji_id}。")
