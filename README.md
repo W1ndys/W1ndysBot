@@ -93,9 +93,5 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 
 ### 曲阜师范大学网站监控
 
-- [x] 教务处公告监控
-- [x] 资产处公告监控
-
-### 计划中的系统
-
-- 词云统计
+- [x] 教务处监控
+- [x] 资产处监控
