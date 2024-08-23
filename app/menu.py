@@ -97,10 +97,10 @@ async def Blacklist(websocket, group_id, message_id):
         + """
 黑名单系统
 
-bl-add 添加黑名单
-bl-rm 删除黑名单
+bl-add@或QQ号 添加黑名单
+bl-rm@或QQ号 删除黑名单
 bl-list 查看黑名单
-bl-check 检查黑名单
+bl-check@或QQ号 检查黑名单
 
 黑名单系统默认开启，无开关
 """
@@ -117,8 +117,8 @@ async def BanWords(websocket, group_id, message_id):
 bw-on 开启违禁词监控
 bw-off 关闭违禁词监控
 bw-list 查看违禁词列表
-bw-add 添加违禁词
-bw-rm 删除违禁词
+bw-add+违禁词 添加违禁词
+bw-rm+违禁词 删除违禁词
 """
     )
     await send_group_msg(websocket, group_id, message)
@@ -132,7 +132,7 @@ async def InviteChain(websocket, group_id, message_id):
 
 ic-on 开启邀请链
 ic-off 关闭邀请链
-ic-list @ 查看邀请链
+ic-list@查看邀请链
 """
     )
     await send_group_msg(websocket, group_id, message)
@@ -181,8 +181,8 @@ async def SoftBan(websocket, group_id, message_id):
 软封禁系统
 (指不封禁，但是会撤回每条消息)
 
-sb-add 添加软封禁
-sb-rm 删除软封禁
+sb-add@或QQ号 添加软封禁
+sb-rm@或QQ号 删除软封禁
 sb-list 查看本群软封禁
 """
     )
