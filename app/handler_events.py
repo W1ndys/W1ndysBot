@@ -45,7 +45,10 @@ from app.scripts.QFNUTracker.main import (
     handle_QFNUTracker_group_message,
 )
 
-from app.scripts.Custom.main import handle_Custom_group_message
+from app.scripts.Custom.main import (
+    handle_Custom_group_message,
+    handle_Custom_private_message,
+)
 
 from app.scripts.SoftBan.main import SoftBan_main
 
@@ -92,6 +95,7 @@ async def handle_message_event(websocket, msg):
             await asyncio.gather(
                 handle_crypto_private_message(websocket, msg),  # 编解码功能
                 handle_tools_private_message(websocket, msg),  # 实用的API工具功能
+                handle_Custom_private_message(websocket, msg),  # 处理自定义私聊消息
                 # handle_qwen_message_private(websocket, user_id, msg)  # 处理通义千问
             )
 
