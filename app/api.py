@@ -4,8 +4,21 @@ import json
 import logging
 
 
-# 发送私聊消息
-async def send_private_msg(websocket, user_id, content, auto_escape=True):
+# 发送私聊消息，解析cq码
+async def send_private_msg(websocket, user_id, content):
+    message = {
+        "action": "send_private_msg",
+        "params": {"user_id": user_id, "message": content},
+    }
+    await websocket.send(json.dumps(message))
+    response = json.loads(await websocket.recv())
+    message_id = response.get("data", {}).get("message_id")
+    logging.info(f"[API]已发送消息到用户 {user_id}: {content}，消息ID: {message_id}")
+    return message_id
+
+
+# 发送私聊消息，不解析cq码
+async def send_private_msg_no_cq(websocket, user_id, content, auto_escape=True):
     message = {
         "action": "send_private_msg",
         "params": {"user_id": user_id, "message": content, "auto_escape": auto_escape},
