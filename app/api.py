@@ -411,6 +411,10 @@ async def get_group_member_info(websocket, group_id, user_id, no_cache=False):
         "params": {"group_id": group_id, "user_id": user_id, "no_cache": no_cache},
     }
     await websocket.send(json.dumps(group_member_info_msg))
+    response = await websocket.recv()
+    response_data = json.loads(response)
+    logging.info(f"[API]已获取群 {group_id} 的用户 {user_id} 信息。")
+    return response_data
 
 
 # 获取群成员列表
