@@ -351,6 +351,19 @@ async def set_group_add_request(websocket, flag, type, approve, reason):
     logging.info(f"[API]已{'同意' if approve else '拒绝'}群 {type} 请求。")
 
 
+# 获取群历史消息
+async def get_group_msg_history(websocket, group_id, count):
+    history_msg = {
+        "action": "get_group_msg_history",
+        "params": {"group_id": group_id, "count": count},
+    }
+    await websocket.send(json.dumps(history_msg))
+    response = await websocket.recv()
+    response_data = json.loads(response)
+    logging.info(f"[API]已获取群 {group_id} 的历史消息 {count} 条。")
+    return response_data
+
+
 # 获取登录号信息
 async def get_login_info(websocket):
     login_info_msg = {
