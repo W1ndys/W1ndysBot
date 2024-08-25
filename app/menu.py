@@ -52,6 +52,7 @@ blacklist——黑名单系统
 banwords——违禁词系统
 invitechain——邀请链系统
 qasystem——问答系统
+lockgroupcard——群名片锁
 qfnu——曲阜师范大学定制服务
 
 卷卷+任意内容可以与我对话
@@ -189,6 +190,23 @@ sb-list 查看本群软封禁
     await send_group_msg(websocket, group_id, message)
 
 
+# 群名片锁
+async def LockGroupCard(websocket, group_id, message_id):
+    message = (
+        f"[CQ:reply,id={message_id}]\n"
+        + """
+群名片锁
+
+lgc-on 开启群名片锁
+lgc-off 关闭群名片锁
+lgc-lock@+群名片 锁定群名片
+lgc-unlock@ 解锁群名片
+lgc-set@+群名片 修改群名片
+"""
+    )
+    await send_group_msg(websocket, group_id, message)
+
+
 # 群消息处理函数
 async def handle_Menu_group_message(websocket, msg):
     try:
@@ -219,6 +237,8 @@ async def handle_Menu_group_message(websocket, msg):
             await QFNU(websocket, group_id, message_id)
         elif raw_message == "softban":
             await SoftBan(websocket, group_id, message_id)
+        elif raw_message == "lockgroupcard":
+            await LockGroupCard(websocket, group_id, message_id)
         elif raw_message == "join":
             await send_group_msg(
                 websocket,

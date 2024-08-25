@@ -9,48 +9,68 @@ import asyncio
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# 群管系统
 from app.scripts.GroupManager.main import handle_GroupManager_group_message
 
+# 编解码
 from app.scripts.Crypto.main import (
     handle_crypto_group_message,
     handle_crypto_private_message,
 )
+
+# 工具
 from app.scripts.Tools.main import (
     handle_group_message as handle_tools_group_message,
     handle_private_message as handle_tools_private_message,
 )
 
+# ai对话
 from app.scripts.AI.kimi import handle_kimi_group_message
 
-
+# 知识库
 from app.scripts.QASystem.main import handle_qasystem_message_group
+
+# 黑名单
 from app.scripts.BlacklistSystem.main import (
     handle_blacklist_message_group,
     handle_blacklist_request_event,
     handle_blacklist_group_notice,
 )
 
+# 入群欢迎和退群欢送
 from app.scripts.WelcomeFarewell.main import (
     handle_WelcomeFarewell_group_notice,
     WelcomeFarewell_manage,
 )
 
+# 邀请链
 from app.scripts.InviteChain.main import (
     handle_InviteChain_group_message,
     handle_InviteChain_group_notice,
 )
+
+# 违禁词
 from app.scripts.BanWords.main import handle_BanWords_group_message
+
+# QFNU追踪器
 from app.scripts.QFNUTracker.main import (
     start_qfnu_tracker,
     handle_QFNUTracker_group_message,
 )
 
+# 群名片锁
+from app.scripts.LockGroupCard.main import (
+    handle_LockGroupCard_group_message,
+)
+
+# 软封禁
+from app.scripts.SoftBan.main import SoftBan_main
+
+# 自定义
 from app.scripts.Custom.main import (
     handle_Custom_group_message,
     handle_Custom_private_message,
 )
-
-from app.scripts.SoftBan.main import SoftBan_main
 
 # 总开关
 from app.switch import handle_GroupSwitch_group_message
@@ -70,6 +90,7 @@ async def handle_message_event(websocket, msg):
 
             # 并发执行群消息处理函数
             await asyncio.gather(
+                handle_LockGroupCard_group_message(websocket, msg),  # 群名片锁
                 handle_GroupManager_group_message(websocket, msg),  # 群管系统
                 handle_crypto_group_message(websocket, msg),  # 编解码功能
                 handle_tools_group_message(websocket, msg),  # 实用的API工具功能
