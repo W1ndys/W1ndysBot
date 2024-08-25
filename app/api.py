@@ -442,18 +442,22 @@ async def get_login_info(websocket):
 
 # 获取陌生人信息
 async def get_stranger_info(websocket, user_id, no_cache=False):
-    stranger_info_msg = {
-        "action": "get_stranger_info",
-        "params": {"user_id": user_id, "no_cache": no_cache},
-        "echo": "get_stranger_info",
-    }
-    await websocket.send(json.dumps(stranger_info_msg))
-    while True:
-        response = await websocket.recv()
-        if response.get("echo") == "get_stranger_info":
+    try:
+        stranger_info_msg = {
+            "action": "get_stranger_info",
+            "params": {"user_id": user_id, "no_cache": no_cache},
+            "echo": "get_stranger_info",
+        }
+        await websocket.send(json.dumps(stranger_info_msg))
+        while True:
+            response = await websocket.recv()
             response_data = json.loads(response)
-            logging.info(f"[API]已获取 {user_id} 信息。")
-            return response_data
+            if response_data.get("echo") == "get_stranger_info":
+                logging.info(f"[API]已获取陌生人 {user_id} 信息。")
+                return response_data.get("data", {})
+    except Exception as e:
+        logging.error(f"获取陌生人信息失败: {e}")
+        return {}
 
 
 # 获取好友列表

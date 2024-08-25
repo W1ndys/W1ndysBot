@@ -43,3 +43,6 @@
 [submodule "app/scripts/LockGroupCard"]
 	path = app/scripts/LockGroupCard
 	url = https://github.com/W1ndys-bot/LockGroupCard.git
+[submodule "app/app/scripts/SendAll"]
+	path = app/app/scripts/SendAll
+	url = https://github.com/W1ndys-bot/SendAll.git
