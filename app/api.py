@@ -503,8 +503,8 @@ async def get_group_member_info(websocket, group_id, user_id, no_cache=False):
     await websocket.send(json.dumps(group_member_info_msg))
     while True:
         response = await websocket.recv()
-        if response.get("echo") == "get_group_member_info":
-            response_data = json.loads(response)
+        response_data = json.loads(response)
+        if response_data.get("echo") == "get_group_member_info":
             logging.info(f"[API]已获取群 {group_id} 的用户 {user_id} 信息。")
             return response_data
 
