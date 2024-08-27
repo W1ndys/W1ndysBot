@@ -519,8 +519,8 @@ async def get_group_member_list(websocket, group_id, no_cache=False):
     await websocket.send(json.dumps(group_member_list_msg))
     while True:
         response = await websocket.recv()
-        if response.get("echo") == "get_group_member_list":
-            response_data = json.loads(response)
+        response_data = json.loads(response)
+        if response_data.get("echo") == "get_group_member_list":
             logging.info(f"[API]已获取群 {group_id} 的成员列表。")
             return response_data
 
