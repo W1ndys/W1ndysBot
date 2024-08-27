@@ -28,7 +28,7 @@ from app.scripts.Tools.main import (
 )
 
 # ai对话
-from app.scripts.AI.kimi import handle_kimi_group_message
+from app.scripts.AI.main import handle_ai_group_message
 
 # 知识库
 from app.scripts.QASystem.main import handle_qasystem_message_group
@@ -108,7 +108,7 @@ async def handle_message_event(websocket, msg):
                 handle_QFNUTracker_group_message(
                     websocket, msg
                 ),  # 处理QFNU追踪器开关消息
-                handle_kimi_group_message(websocket, msg),  # 处理kimi群消息
+                handle_ai_group_message(websocket, msg),  # 处理ai群消息
                 handle_Custom_group_message(websocket, msg),  # 处理自定义群消息
             )
 
