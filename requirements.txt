@@ -3,3 +3,5 @@ colorlog
 websockets
 aiohttp
 bs4
+python-Levenshtein
+jieba
