@@ -3,6 +3,25 @@
 import json
 import logging
 
+from config import *
+
+
+# 检查是否是群主
+def is_group_owner(role):
+    return role == "owner"
+
+
+# 检查是否是管理员
+def is_group_admin(role):
+    return role == "admin"
+
+
+# 检查是否有权限（管理员、群主或root管理员）
+def is_authorized(role, user_id):
+    is_admin = is_group_admin(role)
+    is_owner = is_group_owner(role)
+    return (is_admin or is_owner) or (user_id in owner_id)
+
 
 # 发送私聊消息，解析cq码
 async def send_private_msg(websocket, user_id, content):

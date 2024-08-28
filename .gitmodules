@@ -46,3 +46,6 @@
 [submodule "app/scripts/SendAll"]
 	path = app/scripts/SendAll
 	url = https://github.com/W1ndys-bot/SendAll.git
+[submodule "app/scripts/KeywordsReply"]
+	path = app/scripts/KeywordsReply
+	url = https://github.com/W1ndys-bot/KeywordsReply.git

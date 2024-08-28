@@ -7,7 +7,7 @@ import sys
 # 添加项目根目录到sys.path
 sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from app.config import owner_id
+
 from app.api import *
 
 SWITCH_DATA_DIR = os.path.join(
@@ -18,23 +18,6 @@ SWITCH_DATA_DIR = os.path.join(
 )
 
 logging.info(f"群组开关数据目录: {SWITCH_DATA_DIR}")
-
-
-# 是否是群主
-def is_group_owner(role):
-    return role == "owner"
-
-
-# 是否是管理员
-def is_group_admin(role):
-    return role == "admin"
-
-
-# 是否是管理员或群主或root管理员
-def is_authorized(role, user_id):
-    is_admin = is_group_admin(role)
-    is_owner = is_group_owner(role)
-    return (is_admin or is_owner) or (user_id in owner_id)
 
 
 # 加载群组开关
