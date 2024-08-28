@@ -37,10 +37,7 @@ def setup_logger():
 
     # 添加 RotatingFileHandler 将日志保存到本地文件，并在超过1MB时新建文件
     file_handler = RotatingFileHandler(
-        log_filename,
-        maxBytes=1024 * 1024,
-        backupCount=5,
-        encoding="utf-8",  # 修改 backupCount 为 5
+        log_filename, maxBytes=1024 * 1024, backupCount=0, encoding="utf-8"
     )
     file_handler.setFormatter(
         logging.Formatter(
@@ -54,7 +51,9 @@ def setup_logger():
     file_handler.rotator = lambda source, dest: os.rename(source, dest)
 
     # 设置根日志记录器的级别和处理器
-    root_logger.setLevel(logging.DEBUG)
+    root_logger.setLevel(logging.INFO)  # 只显示INFO及以上级别的日志
+    handler.setLevel(logging.INFO)  # 设置StreamHandler的级别
+    file_handler.setLevel(logging.INFO)  # 设置FileHandler的级别
     root_logger.addHandler(handler)
     root_logger.addHandler(file_handler)
 
@@ -64,6 +63,3 @@ def setup_logger():
 
     logging.info("初始化日志器")
     logging.info(f"日志文件名: {log_filename}")
-
-    # 手动调用 doRollover 确保文件大小超过限制时进行滚动
-    file_handler.doRollover()
