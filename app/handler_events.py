@@ -1,5 +1,6 @@
 # handlers/message_handler.py
 
+from ast import If
 import json
 import logging
 import os
@@ -172,6 +173,10 @@ async def handle_cron_task(websocket):
 async def handle_message(websocket, message):
 
     msg = json.loads(message)
+
+    # 排除回应消息
+    if msg.get("status") == "ok":
+        return
 
     logging.info(f"处理消息: {msg}")
 
