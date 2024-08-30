@@ -49,3 +49,6 @@
 [submodule "app/scripts/KeywordsReply"]
 	path = app/scripts/KeywordsReply
 	url = https://github.com/W1ndys-bot/KeywordsReply.git
+[submodule "app/scripts/CollectTheSun"]
+	path = app/scripts/CollectTheSun
+	url = https://github.com/W1ndys-bot/CollectTheSun
