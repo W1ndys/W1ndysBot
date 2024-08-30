@@ -1,6 +1,6 @@
 # handlers/message_handler.py
 
-from ast import If
+
 import json
 import logging
 import os
@@ -70,6 +70,9 @@ from app.scripts.LockGroupCard.main import (
 # 软封禁
 from app.scripts.SoftBan.main import SoftBan_main
 
+# 收集阳光
+from app.scripts.CollectTheSun.main import handle_CollectTheSun_group_message
+
 # 自定义
 from app.scripts.Custom.main import (
     handle_Custom_group_message,
@@ -111,6 +114,7 @@ async def handle_message_event(websocket, msg):
                 ),  # 处理QFNU追踪器开关消息
                 handle_ai_group_message(websocket, msg),  # 处理ai群消息
                 handle_Custom_group_message(websocket, msg),  # 处理自定义群消息
+                handle_CollectTheSun_group_message(websocket, msg),  # 处理收集阳光
             )
 
         # 处理私聊消息
