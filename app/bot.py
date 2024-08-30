@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from authentication import authenticate
 from handler_events import handle_message
 
-from api import send_private_msg
+from api import send_private_msg, send_group_msg
 
 
 async def connect_to_bot():
@@ -28,6 +28,9 @@ async def connect_to_bot():
             await authenticate(websocket)
         await send_private_msg(
             websocket, owner_id, f"机器人已连接。当前时间: {current_time}"
+        )
+        await send_group_msg(
+            websocket, "742811316", f"机器人已连接。当前时间: {current_time}"
         )
         await dingtalk(
             f"机器人已连接。",
