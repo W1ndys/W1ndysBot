@@ -245,14 +245,14 @@ async def handle_Menu_group_message(websocket, msg):
                 group_id,
                 f"[CQ:reply,id={message_id}]卷卷bot内测群：728077087\n新功能测试的地方，欢迎参与测试\n有啥好玩的点子可以告诉我哦~",
             )
-            await send_ArkShareGroupEx_group(websocket, 728077087, group_id)
+            # await send_ArkShareGroupEx_group(websocket, 728077087, group_id)
         elif raw_message == "owner":
             await send_group_msg(
                 websocket,
                 group_id,
                 f"[CQ:reply,id={message_id}]呐~这是我的开发者：\nQQ：2769731875",
             )
-            await send_ArkSharePeer_group(websocket, 2769731875, group_id)
+            # await send_ArkSharePeer_group(websocket, 2769731875, group_id)
 
     except Exception as e:
         logging.error(f"处理Menu群消息失败: {e}")
