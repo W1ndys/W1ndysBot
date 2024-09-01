@@ -2,13 +2,13 @@ version: "3.7"
 services:
   napcat:
     container_name: napcat
-    image: docker.1panel.dev/mlikiowa/napcat-docker:latest # 更新镜像地址
+    image: docker.1panel.dev/mlikiowa/napcat-docker:latest
     restart: always
     ports:
       - "3001:3001"
       - "6099:6099"
     environment:
-      - "ACCOUNT=<机器人qq>" # 更新机器人的qq号
+      - "ACCOUNT=3649056059" # 更新机器人的qq号
       - "WS_ENABLE=true"
     volumes:
       - "./napcat/app:/usr/src/app/napcat"
