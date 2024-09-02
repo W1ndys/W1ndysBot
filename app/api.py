@@ -2,8 +2,15 @@
 
 import json
 import logging
+import sqlite3
 
 from config import *
+
+SWITCH_DB_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "data",
+    "Switch",
+)
 
 
 # 检查是否是群主
@@ -21,6 +28,35 @@ def is_authorized(role, user_id):
     is_admin = is_group_admin(role)
     is_owner = is_group_owner(role)
     return (is_admin or is_owner) or (user_id in owner_id)
+
+
+# 初始化开关数据库
+def init_switch_database(group_id):
+    if not os.path.exists(SWITCH_DB_PATH):
+        os.makedirs(SWITCH_DB_PATH)
+
+    db_path = os.path.join(SWITCH_DB_PATH, f"switch.db")
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # 创建表
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS switches (
+                group_id TEXT NOT NULL UNIQUE,
+                switch_name TEXT NOT NULL,
+                status INTEGER NOT NULL
+            )
+        """
+    )
+
+    conn.commit()
+    conn.close()
+
+
+# 读取开关状态
+def read_switch_status(switch_name):
+    pass
 
 
 # 发送私聊消息，解析cq码
