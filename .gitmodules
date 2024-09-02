@@ -52,3 +52,6 @@
 [submodule "app/scripts/CollectTheSun"]
 	path = app/scripts/CollectTheSun
 	url = https://github.com/W1ndys-bot/CollectTheSun
+[submodule "app/scripts/GoToEat"]
+	path = app/scripts/GoToEat
+	url = https://github.com/W1ndys-bot/GoToEat.git
