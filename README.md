@@ -4,6 +4,9 @@
 
 W1ndys 开发的 QQ 机器人，励志成为功能丰富，使用方便的 QQ 机器人。
 
+![9a392420a2059f66e5d10ce65f4d9c63](https://github.com/user-attachments/assets/ebce861a-8282-4b22-994e-72a0ba953f2c)
+
+
 ## 开发文档
 
 NapCatQQ [NapCatQQ (napneko.github.io)](https://napneko.github.io/zh-CN/#/)
