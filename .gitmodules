@@ -55,3 +55,6 @@
 [submodule "app/scripts/GoToEat"]
 	path = app/scripts/GoToEat
 	url = https://github.com/W1ndys-bot/GoToEat.git
+[submodule "app/scripts/ImageGenerate"]
+	path = app/scripts/ImageGenerate
+	url = https://github.com/W1ndys-bot/ImageGenerate
