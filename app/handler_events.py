@@ -10,6 +10,9 @@ import asyncio
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# 表情生成器
+from app.scripts.ImageGenerate.main import handle_ImageGenerate_group_message
+
 # 群发消息
 from app.scripts.SendAll.main import handle_SendAll_private_message
 
@@ -97,6 +100,7 @@ async def handle_message_event(websocket, msg):
 
             # 并发执行群消息处理函数
             await asyncio.gather(
+                handle_ImageGenerate_group_message(websocket, msg),  # 表情生成器
                 handle_LockGroupCard_group_message(websocket, msg),  # 群名片锁
                 handle_GroupManager_group_message(websocket, msg),  # 群管系统
                 handle_crypto_group_message(websocket, msg),  # 编解码功能
