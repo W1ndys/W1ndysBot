@@ -1,17 +1,19 @@
-version: "3.7"
+# docker-compose.yml
+version: "3"
 services:
   napcat:
-    container_name: napcat
-    image: docker.1panel.dev/mlikiowa/napcat-docker:v2.2.32
-    restart: always
-    ports:
-      - "3001:3001"
-      - "6099:6099"
     environment:
-      - "ACCOUNT=3649056059" # 更新机器人的qq号
-      - "WS_ENABLE=true"
+      - ACCOUNT=3649056059
+      - WS_ENABLE=true
+      - NAPCAT_UID=0
+      - NAPCAT_GID=0
+    ports:
+      - 3001:3001
+      - 6099:6099
+    restart: always
+    image: docker.1panel.dev/mlikiowa/napcat-docker:v2.2.32
     volumes:
       - "./napcat/app/.config/QQ:/app/.config/QQ"
       - "./napcat/app/napcat/config:/app/napcat/config"
-      - "/home/bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output"
+      # - "/home/bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output"
       - "D:/Github-projects/W1ndys-bot/W1ndys-bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output"
