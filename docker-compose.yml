@@ -2,7 +2,7 @@ version: "3.7"
 services:
   napcat:
     container_name: napcat
-    image: docker.1panel.dev/mlikiowa/napcat-docker:latest
+    image: docker.1panel.dev/mlikiowa/napcat-docker:v2.2.32
     restart: always
     ports:
       - "3001:3001"
@@ -11,5 +11,7 @@ services:
       - "ACCOUNT=3649056059" # 更新机器人的qq号
       - "WS_ENABLE=true"
     volumes:
-      - "./napcat/app:/usr/src/app/napcat"
-      - "./napcat/config:/usr/src/app/napcat/config"
+      - "./napcat/app/.config/QQ:/app/.config/QQ"
+      - "./napcat/app/napcat/config:/app/napcat/config"
+      - "/home/bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output"
+      - "D:/Github-projects/W1ndys-bot/W1ndys-bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output"
