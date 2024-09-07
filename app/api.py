@@ -577,7 +577,7 @@ async def get_group_member_list(websocket, group_id, no_cache=False):
         response_data = json.loads(response)
         if response_data.get("echo") == "get_group_member_list":
             logging.info(f"[API]已获取群 {group_id} 的成员列表。")
-            return response_data
+            return response_data.get("data", {})
 
 
 # 获取群荣誉信息
