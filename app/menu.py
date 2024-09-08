@@ -52,6 +52,7 @@ blacklist——黑名单系统
 banwords——违禁词系统
 invitechain——邀请链系统
 qasystem——问答系统
+keywordsreply——关键词回复系统
 lockgroupcard——群名片锁
 qfnu——曲阜师范大学定制服务
 
