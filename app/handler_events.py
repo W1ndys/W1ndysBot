@@ -37,6 +37,9 @@ from app.scripts.AI.main import handle_ai_group_message
 # 知识库
 from app.scripts.QASystem.main import handle_qasystem_message_group
 
+# 关键词回复
+from app.scripts.KeywordsReply.main import handle_KeywordsReply_group_message
+
 # 黑名单
 from app.scripts.BlacklistSystem.main import (
     handle_blacklist_message_group,
@@ -106,6 +109,7 @@ async def handle_message_event(websocket, msg):
                 handle_crypto_group_message(websocket, msg),  # 编解码功能
                 handle_tools_group_message(websocket, msg),  # 实用的API工具功能
                 handle_qasystem_message_group(websocket, msg),  # 处理知识库问答系统
+                handle_KeywordsReply_group_message(websocket, msg),  # 处理关键词回复
                 handle_blacklist_message_group(websocket, msg),  # 处理黑名单系统
                 handle_GroupSwitch_group_message(websocket, msg),  # 处理群组开关
                 handle_BanWords_group_message(websocket, msg),  # 处理违禁词系统
