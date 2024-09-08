@@ -54,11 +54,6 @@ def init_switch_database(group_id):
     conn.close()
 
 
-# 读取开关状态
-def read_switch_status(switch_name):
-    pass
-
-
 # 发送私聊消息，解析cq码
 async def send_private_msg(websocket, user_id, content):
     message = {
