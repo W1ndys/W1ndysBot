@@ -46,21 +46,20 @@ async def menu(websocket, group_id, message_id):
         f"[CQ:reply,id={message_id}]"
         + """卷卷bot功能列表
 
-groupswitch——查看群功能开关
-groupmanager——群管理命令
-blacklist——黑名单系统
-banwords——违禁词系统
-invitechain——邀请链系统
-qasystem——问答系统
-keywordsreply——关键词回复系统
-lockgroupcard——群名片锁
-qfnu——曲阜师范大学定制服务
+查看群功能开关：groupswitch
+群管理命令：groupmanager
+黑名单系统：blacklist
+违禁词系统：banwords
+邀请链系统：invitechain
+问答系统：qasystem
+关键词回复系统：keywordsreply
+群名片锁：lockgroupcard
+曲阜师范大学定制服务：qfnu
 
-卷卷+任意内容可以与我对话
+卷卷 + 任意内容 可以与我对话
 
-join——加入内测群
-owner——联系开发者
-
+加入内测群：join
+联系开发者：owner
 
 发送对应的命令即可，例如：groupswitch"""
     )
