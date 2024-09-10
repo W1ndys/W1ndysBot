@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.scripts.ImageGenerate.main import handle_ImageGenerate_group_message
 
 # 群发消息
-from app.scripts.SendAll.main import handle_SendAll_private_message
+from app.scripts.SendAll.main import handle_SendAll_group_message
 
 # 群管系统
 from app.scripts.GroupManager.main import handle_GroupManager_group_message
@@ -103,6 +103,7 @@ async def handle_message_event(websocket, msg):
 
             # 并发执行群消息处理函数
             await asyncio.gather(
+                handle_SendAll_group_message(websocket, msg),  # 处理群发消息
                 handle_ImageGenerate_group_message(websocket, msg),  # 表情生成器
                 handle_LockGroupCard_group_message(websocket, msg),  # 群名片锁
                 handle_GroupManager_group_message(websocket, msg),  # 群管系统
@@ -133,7 +134,6 @@ async def handle_message_event(websocket, msg):
                 handle_crypto_private_message(websocket, msg),  # 编解码功能
                 handle_tools_private_message(websocket, msg),  # 实用的API工具功能
                 handle_Custom_private_message(websocket, msg),  # 处理自定义私聊消息
-                handle_SendAll_private_message(websocket, msg),  # 处理群发消息
             )
 
         else:
