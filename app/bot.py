@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from authentication import authenticate
 from handler_events import handle_message
 
-from api import send_private_msg, send_group_msg
+from api import send_group_msg
 
 
 async def connect_to_bot():
@@ -26,7 +26,7 @@ async def connect_to_bot():
         logging.info(f"已连接到机器人。当前时间: {current_time}")
         if authenticate is not None:
             await authenticate(websocket)
-        for _ in test_group_id:
+        for _ in report_group_id:
             await send_group_msg(
                 websocket, _, f"机器人已连接。当前时间: {current_time}"
             )
