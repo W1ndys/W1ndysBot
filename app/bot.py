@@ -26,9 +26,8 @@ async def connect_to_bot():
         logging.info(f"已连接到机器人。当前时间: {current_time}")
         if authenticate is not None:
             await authenticate(websocket)
-        for _ in report_group_id:
             await send_group_msg(
-                websocket, _, f"机器人已连接。当前时间: {current_time}"
+                websocket, report_group_id, f"机器人已连接。当前时间: {current_time}"
             )
         await dingtalk(
             f"机器人已连接。",
