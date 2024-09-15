@@ -61,3 +61,6 @@
 [submodule "app/scripts/ClassTable"]
 	path = app/scripts/ClassTable
 	url = https://github.com/W1ndys-bot/ClassTable.git
+[submodule "app/scripts/LinkGroup"]
+	path = app/scripts/LinkGroup
+	url = https://github.com/W1ndys-bot/LinkGroup.git
