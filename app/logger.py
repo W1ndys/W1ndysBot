@@ -51,9 +51,9 @@ def setup_logger():
     file_handler.rotator = lambda source, dest: os.rename(source, dest)
 
     # 设置根日志记录器的级别和处理器
-    root_logger.setLevel(logging.INFO)  # 只显示INFO及以上级别的日志
-    handler.setLevel(logging.INFO)  # 设置StreamHandler的级别
-    file_handler.setLevel(logging.INFO)  # 设置FileHandler的级别
+    root_logger.setLevel(logging.DEBUG)  # 显示DEBUG及以上级别的日志
+    handler.setLevel(logging.DEBUG)  # 设置StreamHandler的级别
+    file_handler.setLevel(logging.DEBUG)  # 设置FileHandler的级别
     root_logger.addHandler(handler)
     root_logger.addHandler(file_handler)
 
