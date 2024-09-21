@@ -1,12 +1,6 @@
 # 群组开关
 
 import json
-import os
-import sys
-
-# 添加项目根目录到sys.path
-sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
 
 from app.api import *
 

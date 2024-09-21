@@ -5,14 +5,8 @@
 # 注意：function 是函数名称，请根据实际情况一键替换即可
 
 import logging
-import os
-import sys
 import asyncio
 
-# 添加项目根目录到sys.path
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
 
 from app.config import owner_id
 from app.api import *
