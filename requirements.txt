@@ -5,3 +5,5 @@ aiohttp
 bs4
 python-Levenshtein
 jieba
+pillow
+chardet
