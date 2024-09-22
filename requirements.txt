@@ -7,3 +7,4 @@ python-Levenshtein
 jieba
 pillow
 chardet
+pandas

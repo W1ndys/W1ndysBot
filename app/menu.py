@@ -49,6 +49,7 @@ async def menu(websocket, group_id, message_id):
 关键词回复系统：keywordsreply
 群名片锁：lockgroupcard
 曲阜师范大学定制服务：qfnu
+天气订阅功能：weather
 
 卷卷 + 任意内容 可以与我对话
 

@@ -3,12 +3,9 @@
 
 import json
 import logging
-import os
-import sys
 import asyncio
 
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 表情生成器
 from app.scripts.ImageGenerate.main import handle_ImageGenerate_group_message
@@ -79,6 +76,9 @@ from app.scripts.SoftBan.main import SoftBan_main
 # 收集阳光
 from app.scripts.CollectTheSun.main import handle_CollectTheSun_group_message
 
+# 天气订阅
+from app.scripts.WeatherSubscribe.main import handle_WeatherSubscribe_task
+
 # 自定义
 from app.scripts.Custom.main import (
     handle_Custom_group_message,
@@ -122,10 +122,11 @@ async def handle_message_event(websocket, msg):
                     websocket, msg
                 ),  # 处理QFNU追踪器开关消息
                 handle_ai_group_message(websocket, msg),  # 处理ai群消息
-                handle_Custom_group_message(websocket, msg),  # 处理自定义群消息
-                handle_CollectTheSun_group_message(websocket, msg),  # 处理收集阳光
+                handle_Custom_group_message(websocket, msg),  # 处理自定义群消息sd
+                handle_CollectTheSun_group_message(websocket, msg),# 处理收集阳光
             )
 
+            WeatherSubscribe_task =asyncio.create_task(handle_WeatherSubscribe_task(websocket, msg))  # 处理天气订阅
         # 处理私聊消息
         elif msg.get("message_type") == "private":
             user_id = msg.get("user_id")
@@ -135,6 +136,8 @@ async def handle_message_event(websocket, msg):
                 handle_tools_private_message(websocket, msg),  # 实用的API工具功能
                 handle_Custom_private_message(websocket, msg),  # 处理自定义私聊消息
             )
+
+
 
         else:
             logging.info(f"收到未知消息类型: {msg}")
