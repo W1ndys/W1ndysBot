@@ -141,6 +141,7 @@ go-cqhttp [API | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/api/)
 
 - [ ] IP 地址查询
 - [x] 快递查询
+- [x] 天气查询
 
 ### 曲阜师范大学网站监控
 
