@@ -64,3 +64,6 @@
 [submodule "app/scripts/LinkGroup"]
 	path = app/scripts/LinkGroup
 	url = https://github.com/W1ndys-bot/LinkGroup.git
+[submodule "app/scripts/WeatherSubscribe"]
+	path = app/scripts/WeatherSubscribe
+	url = https://github.com/AuroBreeze/WeatherSubscribe.git
