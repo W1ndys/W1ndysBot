@@ -14,7 +14,7 @@ REPO_NAME=$(basename -s .git "$REPO_URL")
 SUBMODULE_PATH="app/scripts/$REPO_NAME"
 
 # 添加子模块
-git submodule add "$REPO_URL" "$SUBMODULE_PATH"
+git submodule add -b main "$REPO_URL" "$SUBMODULE_PATH"
 
 echo "Submodule added at $SUBMODULE_PATH"
 
