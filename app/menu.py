@@ -60,7 +60,7 @@ async def handle_Menu_group_message(websocket, msg):
             await send_group_msg(
                 websocket,
                 group_id,
-                f"[CQ:reply,id={message_id}]你好啊，我是卷卷，一个基于NapCatQQ和Onebot11协议，用Python开发的QQ机器人，我可以帮你管理群聊，也有娱乐功能，发送“menu”可以查看所有功能~\n开源地址：https://github.com/W1ndys-bot/W1ndys-bot\n我的好朋友fufu和算算等具有相似功能都是我的代码复制或衍生作品~\nVersion：1.0.5",
+                f"[CQ:reply,id={message_id}]你好啊，我是卷卷，一个基于NapCatQQ和Onebot11协议，用Python开发的QQ机器人，我可以帮你管理群聊，也有娱乐功能，发送“menu”可以查看所有功能~\n开源地址：https://github.com/W1ndys-bot/W1ndys-bot\n我的好朋友fufu和算算等具有相似功能都是我的代码复制或衍生作品~\nVersion：1.0.6",
             )
 
         elif raw_message == "join":
