@@ -20,20 +20,6 @@ DATA_DIR = os.path.join(
 )
 
 
-# 查看功能开关状态
-def load_function_status(group_id):
-    return load_switch(
-        group_id, "function_status"
-    )  # 注意：function_status 是开关名称，请根据实际情况修改
-
-
-# 保存功能开关状态
-def save_function_status(group_id, status):
-    save_switch(
-        group_id, "function_status", status
-    )  # 注意：function_status 是开关名称，请根据实际情况修改
-
-
 # 菜单
 async def menu(websocket, group_id, message_id):
     message = (
@@ -74,7 +60,7 @@ async def handle_Menu_group_message(websocket, msg):
             await send_group_msg(
                 websocket,
                 group_id,
-                f"[CQ:reply,id={message_id}]你好啊，我是卷卷，一个基于NapCatQQ和Onebot11协议，用Python开发的QQ机器人，我可以帮你管理群聊，也有娱乐功能，发送“menu”可以查看所有功能~",
+                f"[CQ:reply,id={message_id}]你好啊，我是卷卷，一个基于NapCatQQ和Onebot11协议，用Python开发的QQ机器人，我可以帮你管理群聊，也有娱乐功能，发送“menu”可以查看所有功能~\n开源地址：https://github.com/W1ndys-bot/W1ndys-bot\n我的好朋友fufu和算算等具有相似功能都是我的代码复制或衍生作品~\nVersion：1.0.5",
             )
 
         elif raw_message == "join":
