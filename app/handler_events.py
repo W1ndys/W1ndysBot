@@ -38,7 +38,6 @@ from app.scripts.AI.main import handle_ai_group_message
 from app.scripts.QASystem.main import handle_qasystem_message_group
 
 # 天气订阅
-from app.scripts.WeatherSubscribe.main import handle_WeatherSubscribe_task
 
 # 关键词回复
 from app.scripts.KeywordsReply.main import handle_KeywordsReply_group_message
@@ -128,7 +127,6 @@ async def handle_message_event(websocket, msg):
                 handle_Custom_group_message(websocket, msg),  # 处理自定义群消息
                 handle_CollectTheSun_group_message(websocket, msg),  # 处理收集阳光
             )
-            Weather_subscribe = asyncio.create_task(handle_WeatherSubscribe_task(websocket,msg))
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
