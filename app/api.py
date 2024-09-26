@@ -572,7 +572,14 @@ async def get_group_member_list(websocket, group_id, no_cache=False):
         response_data = json.loads(response)
         if response_data.get("echo") == "get_group_member_list":
             logging.info(f"[API]已获取群 {group_id} 的成员列表。")
-            return response_data.get("data", {})
+            return response_data.get("data", [])
+
+
+# 获取群成员列表返回QQ号数组
+async def get_group_member_list_qq(websocket, group_id):
+    group_member_list = await get_group_member_list(websocket, group_id)
+    logging.info(f"[API]已获取群 {group_id} 的成员列表QQ号数组。")
+    return [member.get("user_id") for member in group_member_list]
 
 
 # 获取群荣誉信息
