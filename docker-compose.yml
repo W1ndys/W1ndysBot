@@ -2,6 +2,7 @@
 version: "3"
 services:
   napcat:
+    container_name: napcat
     environment:
       - ACCOUNT=3649056059
       - WS_ENABLE=true
