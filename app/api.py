@@ -3,6 +3,7 @@
 import json
 import logging
 import sqlite3
+from datetime import datetime
 
 from config import *
 
@@ -557,6 +558,18 @@ async def get_group_member_info(websocket, group_id, user_id, no_cache=False):
         if response_data.get("echo") == "get_group_member_info":
             logging.info(f"[API]已获取群 {group_id} 的用户 {user_id} 信息。")
             return response_data
+
+
+# 获取群成员入群时间戳并转换为日期时间
+async def get_group_member_join_time(websocket, group_id, user_id):
+    group_member_join_time_msg = await get_group_member_info(
+        websocket, group_id, user_id
+    )
+    join_time = group_member_join_time_msg.get("data", {}).get("join_time", 0)
+
+    # 将时间戳转换为日期时间
+    join_time_datetime = datetime.fromtimestamp(join_time)
+    return join_time_datetime
 
 
 # 获取群成员列表
