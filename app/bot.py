@@ -6,7 +6,7 @@ import websockets
 from config import *
 
 
-import datetime
+from datetime import datetime
 from dingtalk import dingtalk
 from config import owner_id
 
@@ -21,7 +21,7 @@ async def connect_to_bot():
     logging.info("正在连接到机器人...")
     logging.info(f"连接地址: {ws_url}")
     async with websockets.connect(ws_url) as websocket:
-        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         logging.info(f"已连接到机器人。当前时间: {current_time}")
         if authenticate is not None:
             await authenticate(websocket)
