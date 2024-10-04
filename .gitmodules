@@ -86,3 +86,7 @@
 	path = app/scripts/LinkGroup
 	url = https://github.com/W1ndys-bot/LinkGroup.git
 	branch = main
+[submodule "app/scripts/NoAdd"]
+	path = app/scripts/NoAdd
+	url = https://github.com/W1ndys-bot/NoAdd.git
+	branch = main
