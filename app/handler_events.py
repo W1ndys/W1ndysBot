@@ -6,7 +6,7 @@ import logging
 import os
 import sys
 import asyncio
-
+from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -92,6 +92,12 @@ from app.switch import handle_GroupSwitch_group_message
 
 # 菜单
 from app.menu import handle_Menu_group_message
+
+# api
+from app.api import *
+
+# 配置
+from app.config import *
 
 
 # 处理消息事件的逻辑
