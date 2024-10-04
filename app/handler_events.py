@@ -87,6 +87,9 @@ from app.scripts.Custom.main import (
     handle_Custom_private_message,
 )
 
+# 打断复读
+from app.scripts.NoAddOne.main import handle_NoAddOne_group_message
+
 # 总开关
 from app.switch import handle_GroupSwitch_group_message
 
@@ -131,6 +134,7 @@ async def handle_message_event(websocket, msg):
             await handle_ai_group_message(websocket, msg)  # 处理ai群消息
             await handle_Custom_group_message(websocket, msg)  # 处理自定义群消息
             await handle_CollectTheSun_group_message(websocket, msg)  # 处理收集阳光
+            await handle_NoAddOne_group_message(websocket, msg)  # 处理打断复读
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":

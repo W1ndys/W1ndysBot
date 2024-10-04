@@ -91,6 +91,10 @@ async def view_group_status(websocket, group_id, raw_message, message_id):
             status_message = f"[CQ:reply,id={message_id}]群 {group_id} 的状态:\n\n"
             for key, value in group_status.items():
                 status_message += f"{key}: {value}\n"
+            # 删除最后一个换行符
+            # 把true和false转换为开和关
+            status_message = status_message.replace("True", "开").replace("False", "关")
+            status_message = status_message.rstrip("\n")
         else:
             status_message = (
                 f"[CQ:reply,id={message_id}]未找到群 {group_id} 的状态信息。"

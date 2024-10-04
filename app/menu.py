@@ -19,7 +19,7 @@ DATA_DIR = os.path.join(
     "Menu",
 )
 
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 
 
 # 菜单
