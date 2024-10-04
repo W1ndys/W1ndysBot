@@ -109,40 +109,36 @@ async def handle_message_event(websocket, msg):
             group_id = msg["group_id"]
             logging.info(f"处理群消息,群ID:{group_id}")
 
-            # 并发执行群消息处理函数
-            await asyncio.gather(
-                handle_SendAll_group_message(websocket, msg),  # 处理群发消息
-                handle_ImageGenerate_group_message(websocket, msg),  # 表情生成器
-                handle_LockGroupCard_group_message(websocket, msg),  # 群名片锁
-                handle_GroupManager_group_message(websocket, msg),  # 群管系统
-                handle_crypto_group_message(websocket, msg),  # 编解码功能
-                handle_tools_group_message(websocket, msg),  # 实用的API工具功能
-                handle_qasystem_message_group(websocket, msg),  # 处理知识库问答系统
-                handle_KeywordsReply_group_message(websocket, msg),  # 处理关键词回复
-                handle_blacklist_message_group(websocket, msg),  # 处理黑名单系统
-                handle_GroupSwitch_group_message(websocket, msg),  # 处理群组开关
-                handle_BanWords_group_message(websocket, msg),  # 处理违禁词系统
-                WelcomeFarewell_manage(websocket, msg),  # 处理入群欢迎和退群欢送的管理
-                handle_Menu_group_message(websocket, msg),  # 处理菜单
-                handle_InviteChain_group_message(websocket, msg),  # 处理邀请链
-                SoftBan_main(websocket, msg),  # 处理软封禁
-                handle_QFNUTracker_group_message(
-                    websocket, msg
-                ),  # 处理QFNU追踪器开关消息
-                handle_ai_group_message(websocket, msg),  # 处理ai群消息
-                handle_Custom_group_message(websocket, msg),  # 处理自定义群消息
-                handle_CollectTheSun_group_message(websocket, msg),  # 处理收集阳光
-            )
+            # 依次执行群消息处理函数
+            await handle_SendAll_group_message(websocket, msg)  # 处理群发消息
+            await handle_ImageGenerate_group_message(websocket, msg)  # 表情生成器
+            await handle_LockGroupCard_group_message(websocket, msg)  # 群名片锁
+            await handle_GroupManager_group_message(websocket, msg)  # 群管系统
+            await handle_crypto_group_message(websocket, msg)  # 编解码功能
+            await handle_tools_group_message(websocket, msg)  # 实用的API工具功能
+            await handle_qasystem_message_group(websocket, msg)  # 处理知识库问答系统
+            await handle_KeywordsReply_group_message(websocket, msg)  # 处理关键词回复
+            await handle_blacklist_message_group(websocket, msg)  # 处理黑名单系统
+            await handle_GroupSwitch_group_message(websocket, msg)  # 处理群组开关
+            await handle_BanWords_group_message(websocket, msg)  # 处理违禁词系统
+            await WelcomeFarewell_manage(websocket, msg)  # 处理入群欢迎和退群欢送的管理
+            await handle_Menu_group_message(websocket, msg)  # 处理菜单
+            await handle_InviteChain_group_message(websocket, msg)  # 处理邀请链
+            await SoftBan_main(websocket, msg)  # 处理软封禁
+            await handle_QFNUTracker_group_message(
+                websocket, msg
+            )  # 处理QFNU追踪器开关消息
+            await handle_ai_group_message(websocket, msg)  # 处理ai群消息
+            await handle_Custom_group_message(websocket, msg)  # 处理自定义群消息
+            await handle_CollectTheSun_group_message(websocket, msg)  # 处理收集阳光
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
             user_id = msg.get("user_id")
-            # 并发执行私聊消息处理函数
-            await asyncio.gather(
-                handle_crypto_private_message(websocket, msg),  # 编解码功能
-                handle_tools_private_message(websocket, msg),  # 实用的API工具功能
-                handle_Custom_private_message(websocket, msg),  # 处理自定义私聊消息
-            )
+            # 依次执行私聊消息处理函数
+            await handle_crypto_private_message(websocket, msg)  # 编解码功能
+            await handle_tools_private_message(websocket, msg)  # 实用的API工具功能
+            await handle_Custom_private_message(websocket, msg)  # 处理自定义私聊消息
 
         else:
             logging.info(f"收到未知消息类型: {msg}")
@@ -159,21 +155,17 @@ async def handle_notice_event(websocket, msg):
         group_id = msg["group_id"]
         logging.info(f"处理群通知事件, 群ID: {group_id}")
 
-        await asyncio.gather(
-            handle_WelcomeFarewell_group_notice(
-                websocket, msg
-            ),  # 处理入群欢迎和退群欢送的管理
-            handle_InviteChain_group_notice(websocket, msg),  # 处理邀请链
-            handle_blacklist_group_notice(websocket, msg),  # 处理黑名单检查
-        )
+        await handle_WelcomeFarewell_group_notice(
+            websocket, msg
+        )  # 处理入群欢迎和退群欢送的管理
+        await handle_InviteChain_group_notice(websocket, msg)  # 处理邀请链
+        await handle_blacklist_group_notice(websocket, msg)  # 处理黑名单检查
 
 
 # 处理请求事件的逻辑
 async def handle_request_event(websocket, msg):
 
-    await asyncio.gather(
-        handle_blacklist_request_event(websocket, msg)  # 处理黑名单请求事件
-    )
+    await handle_blacklist_request_event(websocket, msg)  # 处理黑名单请求事件
 
 
 # 处理元事件的逻辑
