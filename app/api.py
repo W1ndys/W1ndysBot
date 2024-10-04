@@ -561,7 +561,6 @@ async def get_group_member_info(websocket, group_id, user_id, no_cache=False):
 
 
 # 获取群成员入群时间戳并转换为日期时间
-# 实测发现获取的信息中的join_time会变化，所以不使用这个方法
 def get_group_member_join_time(group_id, user_id, group_member_info):
     join_time = group_member_info.get("data", {}).get("join_time", 0)
     # 将时间戳转换为日期时间

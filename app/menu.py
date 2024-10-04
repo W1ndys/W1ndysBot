@@ -34,6 +34,7 @@ async def menu(websocket, group_id, message_id):
 问答系统：qasystem
 关键词回复系统：keywordsreply
 群名片锁：lockgroupcard
+入群欢迎和退群欢送：welcomefarewell
 曲阜师范大学定制服务：qfnu
 
 卷卷 + 任意内容 可以与我对话
