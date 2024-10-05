@@ -8,3 +8,5 @@ jieba
 pillow
 chardet
 openai
+pandas
+Pyyaml
