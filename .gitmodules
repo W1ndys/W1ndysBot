@@ -93,3 +93,4 @@
 [submodule "app/scripts/WeatherSubscribe"]
 	path = app/scripts/WeatherSubscribe
 	url = https://github.com/AuroBreeze/WeatherSubscribe.git
+	branch = main

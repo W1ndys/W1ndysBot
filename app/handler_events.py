@@ -38,7 +38,16 @@ from app.scripts.AI.main import handle_ai_group_message
 from app.scripts.QASystem.main import handle_qasystem_message_group
 
 # 天气订阅
-from app.scripts.WeatherSubscribe.main import handle_WeatherSubscribe_task_Timer,handle_WeatherSubscribe_task_Msg
+from app.scripts.WeatherSubscribe.main import (
+    handle_WeatherSubscribe_task_Timer,
+    handle_WeatherSubscribe_task_Msg,
+)
+
+# 课程表
+from app.scripts.ClassTable.main import (
+    handle_ClassTable_group_message,
+    check_and_push_course_schedule,
+)
 
 # 关键词回复
 from app.scripts.KeywordsReply.main import handle_KeywordsReply_group_message
@@ -136,7 +145,8 @@ async def handle_message_event(websocket, msg):
             await handle_Custom_group_message(websocket, msg)  # 处理自定义群消息
             await handle_CollectTheSun_group_message(websocket, msg)  # 处理收集阳光
             await handle_NoAddOne_group_message(websocket, msg)  # 处理打断复读
-            await handle_WeatherSubscribe_task_Msg(websocket, msg))  # 处理天气订阅
+            await handle_WeatherSubscribe_task_Msg(websocket, msg)  # 处理天气订阅
+            await handle_ClassTable_group_message(websocket, msg)  # 处理课程表
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
@@ -184,6 +194,7 @@ async def handle_cron_task(websocket):
     try:
         await start_qfnu_tracker(websocket)
         await handle_WeatherSubscribe_task_Timer(websocket)
+        await check_and_push_course_schedule(websocket)
     except Exception as e:
         logging.error(f"处理定时任务的逻辑错误: {e}")
 

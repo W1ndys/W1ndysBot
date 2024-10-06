@@ -19,7 +19,7 @@ DATA_DIR = os.path.join(
     "Menu",
 )
 
-VERSION = "1.1.1"
+VERSION = "1.1.2"
 
 
 # 菜单
@@ -39,6 +39,7 @@ async def menu(websocket, group_id, message_id):
 入群欢迎和退群欢送：welcomefarewell
 打断复读：NoAddOne
 曲阜师范大学定制服务：qfnu
+课程订阅提醒：classtable 或 课程表
 
 卷卷 + 任意内容 可以与我对话
 
