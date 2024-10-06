@@ -90,3 +90,6 @@
 	path = app/scripts/NoAddOne
 	url = https://github.com/W1ndys-bot/NoAddOne.git
 	branch = main
+[submodule "app/scripts/WeatherSubscribe"]
+	path = app/scripts/WeatherSubscribe
+	url = https://github.com/AuroBreeze/WeatherSubscribe.git
