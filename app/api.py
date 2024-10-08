@@ -111,6 +111,21 @@ async def send_group_msg(websocket, group_id, content):
         logging.error(f"[API]发送群消息失败: {e}")
 
 
+# 发送群消息，不解析cq码
+async def send_group_msg_no_cq(websocket, group_id, content, auto_escape=True):
+    message = {
+        "action": "send_group_msg",
+        "params": {
+            "group_id": group_id,
+            "message": content,
+            "auto_escape": auto_escape,
+        },
+        "echo": "send_group_msg_no_cq",
+    }
+    await websocket.send(json.dumps(message))
+    logging.info(f"[API]已发送无CQ码的群消息到群 {group_id}")
+
+
 # 发送群消息并获取消息ID
 async def send_group_msg_with_reply(websocket, group_id, content):
     try:
