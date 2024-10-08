@@ -94,7 +94,6 @@ from app.scripts.CollectTheSun.main import handle_CollectTheSun_group_message
 # 自定义
 from app.scripts.Custom.main import (
     handle_Custom_group_message,
-    handle_Custom_private_message,
 )
 
 # 打断复读
@@ -154,7 +153,6 @@ async def handle_message_event(websocket, msg):
             # 依次执行私聊消息处理函数
             await handle_crypto_private_message(websocket, msg)  # 编解码功能
             await handle_tools_private_message(websocket, msg)  # 实用的API工具功能
-            await handle_Custom_private_message(websocket, msg)  # 处理自定义私聊消息
 
         else:
             logging.info(f"收到未知消息类型: {msg}")
