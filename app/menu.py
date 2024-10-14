@@ -39,6 +39,7 @@ async def menu(websocket, group_id, message_id):
 入群欢迎和退群欢送：welcomefarewell
 打断复读：NoAddOne
 曲阜师范大学定制服务：qfnu
+天气订阅提醒(测试)：weather
 课程订阅提醒：classtable 或 课程表
 
 卷卷 + 任意内容 可以与我对话
