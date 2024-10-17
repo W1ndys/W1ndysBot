@@ -140,11 +140,11 @@ async def handle_message_event(websocket, msg):
             await handle_QFNUTracker_group_message(
                 websocket, msg
             )  # 处理QFNU追踪器开关消息
-            await handle_ai_group_message(websocket, msg)  # 处理ai群消息
+            asyncio.create_task(handle_ai_group_message(websocket, msg))  # 处理ai群消息
             await handle_Custom_group_message(websocket, msg)  # 处理自定义群消息
             await handle_CollectTheSun_group_message(websocket, msg)  # 处理收集阳光
             await handle_NoAddOne_group_message(websocket, msg)  # 处理打断复读
-            await handle_WeatherSubscribe_task_Msg(websocket, msg)  # 处理天气订阅
+            # await handle_WeatherSubscribe_task_Msg(websocket, msg)  # 处理天气订阅
             await handle_ClassTable_group_message(websocket, msg)  # 处理课程表
 
         # 处理私聊消息
