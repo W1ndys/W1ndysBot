@@ -193,8 +193,8 @@ async def handle_meta_event(websocket, msg):
 async def handle_cron_task(websocket):
     try:
         await start_qfnu_tracker(websocket)
-        await handle_WeatherSubscribe_task_Timer(websocket)
-        await check_and_push_course_schedule(websocket)
+        # await handle_WeatherSubscribe_task_Timer(websocket)
+        # await check_and_push_course_schedule(websocket)
     except Exception as e:
         logging.error(f"处理定时任务的逻辑错误: {e}")
 
