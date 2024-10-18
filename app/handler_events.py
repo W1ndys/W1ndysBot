@@ -147,9 +147,7 @@ async def handle_message_event(websocket, msg):
             await handle_CollectTheSun_group_message(websocket, msg)  # 处理收集阳光
             await handle_NoAddOne_group_message(websocket, msg)  # 处理打断复读
             # await handle_WeatherSubscribe_task_Msg(websocket, msg)  # 处理天气订阅
-            asyncio.create_task(
-                handle_ClassTable_group_message(websocket, msg)
-            )  # 处理课程表
+            await handle_ClassTable_group_message(websocket, msg)  # 处理课程表
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
