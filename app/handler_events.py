@@ -127,7 +127,9 @@ async def handle_message_event(websocket, msg):
             await handle_LockGroupCard_group_message(websocket, msg)  # 群名片锁
             await handle_GroupManager_group_message(websocket, msg)  # 群管系统
             await handle_crypto_group_message(websocket, msg)  # 编解码功能
-            await handle_tools_group_message(websocket, msg)  # 实用的API工具功能
+            asyncio.create_task(
+                handle_tools_group_message(websocket, msg)
+            )  # 实用的API工具功能
             await handle_qasystem_message_group(websocket, msg)  # 处理知识库问答系统
             await handle_KeywordsReply_group_message(websocket, msg)  # 处理关键词回复
             await handle_blacklist_message_group(websocket, msg)  # 处理黑名单系统
