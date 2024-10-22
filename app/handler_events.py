@@ -151,10 +151,7 @@ async def handle_message_event(websocket, msg):
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
-            user_id = msg.get("user_id")
-            # 依次执行私聊消息处理函数
-            await handle_crypto_private_message(websocket, msg)  # 编解码功能
-            await handle_tools_private_message(websocket, msg)  # 实用的API工具功能
+            pass
 
         else:
             logging.info(f"收到未知消息类型: {msg}")
