@@ -16,5 +16,5 @@ services:
     volumes:
       - "./napcat/app/.config/QQ:/app/.config/QQ"
       - "./napcat/app/napcat/config:/app/napcat/config"
-      # - "/home/bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output"
-      - "D:/Github-projects/W1ndys-bot/W1ndys-bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output"
+      - "/home/bot/app/scripts/WeatherSubscribe:/home/bot/app/scripts/WeatherSubscribe"
+      - "/home/bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output"
