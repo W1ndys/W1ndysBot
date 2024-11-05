@@ -151,6 +151,7 @@ async def handle_message_event(websocket, msg):
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
+            # 由于私聊风险较大，不处理私聊消息，仅记录
             pass
 
         else:

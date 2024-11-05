@@ -94,3 +94,7 @@
 	path = app/scripts/WeatherSubscribe
 	url = https://github.com/AuroBreeze/WeatherSubscribe.git
 	branch = main
+[submodule "app/scripts/WordCloud"]
+	path = app/scripts/WordCloud
+	url = https://github.com/W1ndys-bot/WordCloud
+	branch = main
