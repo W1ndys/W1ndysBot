@@ -10,3 +10,4 @@ chardet
 openai
 pandas
 Pyyaml
+wordcloud

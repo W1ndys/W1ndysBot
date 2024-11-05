@@ -96,6 +96,12 @@ from app.scripts.Custom.main import (
     handle_Custom_group_message,
 )
 
+# 词云
+from app.scripts.WordCloud.main import (
+    handle_WordCloud_group_message,
+    wordcloud_task,
+)
+
 # 打断复读
 from app.scripts.NoAddOne.main import handle_NoAddOne_group_message
 
@@ -148,6 +154,7 @@ async def handle_message_event(websocket, msg):
             await handle_NoAddOne_group_message(websocket, msg)  # 处理打断复读
             # await handle_WeatherSubscribe_task_Msg(websocket, msg)  # 处理天气订阅
             await handle_ClassTable_group_message(websocket, msg)  # 处理课程表
+            await handle_WordCloud_group_message(websocket, msg)  # 处理词云
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
@@ -193,6 +200,7 @@ async def handle_cron_task(websocket):
         await start_qfnu_tracker(websocket)  # QFNU追踪器
         # await handle_WeatherSubscribe_task_Timer(websocket) # 天气订阅
         await check_and_push_course_schedule(websocket)  # 课程表
+        await wordcloud_task(websocket)  # 词云
     except Exception as e:
         logging.error(f"处理定时任务的逻辑错误: {e}")
 
