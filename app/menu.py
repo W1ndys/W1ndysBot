@@ -19,7 +19,7 @@ DATA_DIR = os.path.join(
     "Menu",
 )
 
-VERSION = "1.1.2"
+VERSION = "1.1.5"
 
 
 # 菜单
@@ -71,7 +71,6 @@ async def handle_Menu_group_message(websocket, msg):
                 f"[CQ:reply,id={message_id}]你好啊，我是卷卷，"
                 + "一个基于NapCatQQ和Onebot11协议，用Python开发的QQ机器人，我可以帮你管理群聊，也有娱乐功能，发送“menu”可以查看所有功能~\n"
                 + "开源地址：https://github.com/W1ndys-bot/W1ndys-bot\n"
-                + "我的好朋友fufu和算算等具有相似功能都是我的代码复制或衍生作品~\n"
                 + f"Version：{VERSION}",
             )
 
