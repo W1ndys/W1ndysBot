@@ -98,3 +98,7 @@
 	path = app/scripts/WordCloud
 	url = https://github.com/W1ndys-bot/WordCloud
 	branch = main
+[submodule "app/scripts/ZXinTools"]
+	path = app/scripts/ZXinTools
+	url = https://github.com/W1ndys-bot/ZXinTools.git
+	branch = main
