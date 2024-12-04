@@ -28,7 +28,6 @@ from app.scripts.Crypto.main import (
 # 工具
 from app.scripts.Tools.main import (
     handle_group_message as handle_tools_group_message,
-    handle_private_message as handle_tools_private_message,
 )
 
 # ai对话
@@ -102,6 +101,9 @@ from app.scripts.WordCloud.main import (
     wordcloud_task,
 )
 
+# 夸夸AI
+from app.scripts.KuaKuaAI.main import handle_KuaKuaAI_group_message
+
 # 打断复读
 from app.scripts.NoAddOne.main import handle_NoAddOne_group_message
 
@@ -155,7 +157,7 @@ async def handle_message_event(websocket, msg):
             # await handle_WeatherSubscribe_task_Msg(websocket, msg)  # 处理天气订阅
             await handle_ClassTable_group_message(websocket, msg)  # 处理课程表
             await handle_WordCloud_group_message(websocket, msg)  # 处理词云
-
+            await handle_KuaKuaAI_group_message(websocket, msg)  # 处理夸夸AI
         # 处理私聊消息
         elif msg.get("message_type") == "private":
             # 由于私聊风险较大，不处理私聊消息，仅记录
