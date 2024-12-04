@@ -102,3 +102,7 @@
 	path = app/scripts/ZXinTools
 	url = https://github.com/W1ndys-bot/ZXinTools.git
 	branch = main
+[submodule "app/scripts/KuaKuaAI"]
+	path = app/scripts/KuaKuaAI
+	url = https://github.com/W1ndys-bot/KuaKuaAI.git
+	branch = main
