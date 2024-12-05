@@ -37,10 +37,10 @@ from app.scripts.AI.main import handle_ai_group_message
 from app.scripts.QASystem.main import handle_qasystem_message_group
 
 # 天气订阅
-from app.scripts.WeatherSubscribe.main import (
-    handle_WeatherSubscribe_task_Timer,
-    handle_WeatherSubscribe_task_Msg,
-)
+# from app.scripts.WeatherSubscribe.main import (
+#     handle_WeatherSubscribe_task_Timer,
+#     handle_WeatherSubscribe_task_Msg,
+# )
 
 # 课程表
 from app.scripts.ClassTable.main import (
@@ -104,6 +104,9 @@ from app.scripts.WordCloud.main import (
 # 夸夸AI
 from app.scripts.KuaKuaAI.main import handle_KuaKuaAI_group_message
 
+# 戳一戳
+from app.scripts.PokePal.main import handle_PokePal_group_message
+
 # 打断复读
 from app.scripts.NoAddOne.main import handle_NoAddOne_group_message
 
@@ -158,6 +161,7 @@ async def handle_message_event(websocket, msg):
             await handle_ClassTable_group_message(websocket, msg)  # 处理课程表
             await handle_WordCloud_group_message(websocket, msg)  # 处理词云
             await handle_KuaKuaAI_group_message(websocket, msg)  # 处理夸夸AI
+            await handle_PokePal_group_message(websocket, msg)  # 处理戳一戳
         # 处理私聊消息
         elif msg.get("message_type") == "private":
             # 由于私聊风险较大，不处理私聊消息，仅记录

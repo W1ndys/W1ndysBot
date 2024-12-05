@@ -737,7 +737,7 @@ async def clean_cache(websocket):
 async def set_msg_emoji_like(websocket, message_id, emoji_id):
     set_msg_emoji_like_msg = {
         "action": "set_msg_emoji_like",
-        "params": {"message_id": message_id, "emoji_id": emoji_id},
+        "params": {"message_id": message_id, "emoji_id": emoji_id, "set": True},
         "echo": "set_msg_emoji_like",
     }
     await websocket.send(json.dumps(set_msg_emoji_like_msg))
