@@ -42,6 +42,7 @@ async def menu(websocket, group_id, message_id):
 天气订阅提醒(测试)：weather
 课程订阅提醒：classtable 或 课程表
 群词云：wordcloud
+夸夸AI：kkai
 
 卷卷 + 任意内容 可以与我对话
 
