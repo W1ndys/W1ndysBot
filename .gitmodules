@@ -106,3 +106,7 @@
 	path = app/scripts/KuaKuaAI
 	url = https://github.com/W1ndys-bot/KuaKuaAI.git
 	branch = main
+[submodule "app/scripts/PokePal"]
+	path = app/scripts/PokePal
+	url = https://github.com/W1ndys-bot/PokePal.git
+	branch = main
