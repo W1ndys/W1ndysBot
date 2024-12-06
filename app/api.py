@@ -734,10 +734,10 @@ async def clean_cache(websocket):
 
 # 发送表情回应
 # https://bot.q.qq.com/wiki/develop/api-v2/openapi/emoji/model.html#/EmojiType
-async def set_msg_emoji_like(websocket, message_id, emoji_id):
+async def set_msg_emoji_like(websocket, message_id, emoji_id, set=True):
     set_msg_emoji_like_msg = {
         "action": "set_msg_emoji_like",
-        "params": {"message_id": message_id, "emoji_id": emoji_id, "set": True},
+        "params": {"message_id": message_id, "emoji_id": emoji_id, "set": set},
         "echo": "set_msg_emoji_like",
     }
     await websocket.send(json.dumps(set_msg_emoji_like_msg))
