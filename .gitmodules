@@ -110,3 +110,7 @@
 	path = app/scripts/PokePal
 	url = https://github.com/W1ndys-bot/PokePal.git
 	branch = main
+[submodule "app/scripts/TimeAwareGreetings"]
+	path = app/scripts/TimeAwareGreetings
+	url = https://github.com/W1ndys-bot/TimeAwareGreetings.git
+	branch = main
