@@ -100,6 +100,8 @@ from app.scripts.WordCloud.main import (
     handle_WordCloud_group_message,
     wordcloud_task,
 )
+# 时间感知问候
+from app.scripts.TimeAwareGreetings.main import handle_TimeAwareGreetings_group_message
 
 # 夸夸AI
 from app.scripts.KuaKuaAI.main import handle_KuaKuaAI_group_message
@@ -162,6 +164,7 @@ async def handle_message_event(websocket, msg):
             await handle_WordCloud_group_message(websocket, msg)  # 处理词云
             await handle_KuaKuaAI_group_message(websocket, msg)  # 处理夸夸AI
             await handle_PokePal_group_message(websocket, msg)  # 处理戳一戳
+            await handle_TimeAwareGreetings_group_message(websocket, msg)  # 处理时间感知问候
         # 处理私聊消息
         elif msg.get("message_type") == "private":
             # 由于私聊风险较大，不处理私聊消息，仅记录
