@@ -118,13 +118,10 @@
 	path = app/scripts/AI
 	url = https://github.com/W1ndys-bot/AI.git
 	branch = main
-<<<<<<< HEAD
 [submodule "app/scripts/BanWords2"]
 	path = app/scripts/BanWords2
 	url = https://github.com/W1ndys-bot/BanWords2.git
-=======
 [submodule "app/scripts/CET4"]
 	path = app/scripts/CET4
 	url = https://github.com/W1ndys-bot/CET4.git
->>>>>>> fa2fbca004c249743598d557a3bd4529e9ef7c7c
 	branch = main
