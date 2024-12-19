@@ -118,3 +118,7 @@
 	path = app/scripts/AI
 	url = https://github.com/W1ndys-bot/AI.git
 	branch = main
+[submodule "app/scripts/CET4"]
+	path = app/scripts/CET4
+	url = https://github.com/W1ndys-bot/CET4.git
+	branch = main
