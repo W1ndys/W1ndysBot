@@ -1,94 +1,94 @@
 [submodule "app/scripts/GroupManager"]
 	path = app/scripts/GroupManager
-	url = https://github.com/W1ndys-bot/GroupManager.git
+	url = https://github.com/W1ndysBot/GroupManager.git
 	branch = main
 [submodule "Bot-json"]
 	path = Bot-json
-	url = https://github.com/W1ndys-bot/Bot-json.git
+	url = https://github.com/W1ndysBot/Bot-json.git
 	branch = main
 [submodule "Crypto"]
 	path = app/scripts/Crypto
-	url = https://github.com/W1ndys-bot/Crypto.git
+	url = https://github.com/W1ndysBot/Crypto.git
 	branch = main
 [submodule "app/scripts/Crypto"]
 	path = app/scripts/Crypto
-	url = https://github.com/W1ndys-bot/Crypto.git
+	url = https://github.com/W1ndysBot/Crypto.git
 	branch = main
 [submodule "app/scripts/Tools"]
 	path = app/scripts/Tools
-	url = https://github.com/W1ndys-bot/Tools
+	url = https://github.com/W1ndysBot/Tools
 	branch = main
 [submodule "app/scripts/QASystem"]
 	path = app/scripts/QASystem
-	url = https://github.com/W1ndys-bot/QASystem
+	url = https://github.com/W1ndysBot/QASystem
 	branch = main
 [submodule "app/scripts/BlacklistSystem"]
 	path = app/scripts/BlacklistSystem
-	url = https://github.com/W1ndys-bot/BlacklistSystem
+	url = https://github.com/W1ndysBot/BlacklistSystem
 	branch = main
 [submodule "app/scripts/Example"]
 	path = app/scripts/Example
-	url = https://github.com/W1ndys-bot/Example
+	url = https://github.com/W1ndysBot/Example
 	branch = main
 [submodule "app/scripts/BanWords"]
 	path = app/scripts/BanWords
-	url = https://github.com/W1ndys-bot/BanWords
+	url = https://github.com/W1ndysBot/BanWords
 	branch = main
 [submodule "app/scripts/InviteChain"]
 	path = app/scripts/InviteChain
-	url = https://github.com/W1ndys-bot/InviteChain
+	url = https://github.com/W1ndysBot/InviteChain
 	branch = main
 [submodule "app/scripts/WelcomeFarewell"]
 	path = app/scripts/WelcomeFarewell
-	url = https://github.com/W1ndys-bot/WelcomeFarewell
+	url = https://github.com/W1ndysBot/WelcomeFarewell
 	branch = main
 [submodule "app/scripts/SoftBan"]
 	path = app/scripts/SoftBan
-	url = https://github.com/W1ndys-bot/SoftBan.git
+	url = https://github.com/W1ndysBot/SoftBan.git
 	branch = main
 [submodule "app/scripts/QFNUTracker"]
 	path = app/scripts/QFNUTracker
-	url = https://github.com/W1ndys-bot/QFNUTracker
+	url = https://github.com/W1ndysBot/QFNUTracker
 	branch = main
 [submodule "app/scripts/Custom"]
 	path = app/scripts/Custom
-	url = https://github.com/W1ndys-bot/Custom
+	url = https://github.com/W1ndysBot/Custom
 	branch = main
 [submodule "app/scripts/LockGroupCard"]
 	path = app/scripts/LockGroupCard
-	url = https://github.com/W1ndys-bot/LockGroupCard.git
+	url = https://github.com/W1ndysBot/LockGroupCard.git
 	branch = main
 [submodule "app/scripts/SendAll"]
 	path = app/scripts/SendAll
-	url = https://github.com/W1ndys-bot/SendAll.git
+	url = https://github.com/W1ndysBot/SendAll.git
 	branch = main
 [submodule "app/scripts/KeywordsReply"]
 	path = app/scripts/KeywordsReply
-	url = https://github.com/W1ndys-bot/KeywordsReply.git
+	url = https://github.com/W1ndysBot/KeywordsReply.git
 	branch = main
 [submodule "app/scripts/CollectTheSun"]
 	path = app/scripts/CollectTheSun
-	url = https://github.com/W1ndys-bot/CollectTheSun
+	url = https://github.com/W1ndysBot/CollectTheSun
 	branch = main
 [submodule "app/scripts/GoToEat"]
 	path = app/scripts/GoToEat
-	url = https://github.com/W1ndys-bot/GoToEat.git
+	url = https://github.com/W1ndysBot/GoToEat.git
 	branch = main
 [submodule "app/scripts/ImageGenerate"]
 	path = app/scripts/ImageGenerate
-	url = https://github.com/W1ndys-bot/ImageGenerate
+	url = https://github.com/W1ndysBot/ImageGenerate
 	branch = main
 [submodule "app/scripts/ClassTable"]
 	path = app/scripts/ClassTable
-	url = https://github.com/W1ndys-bot/ClassTable.git
+	url = https://github.com/W1ndysBot/ClassTable.git
 	branch = main
 [submodule "app/scripts/LinkGroup"]
 	path = app/scripts/LinkGroup
-	url = https://github.com/W1ndys-bot/LinkGroup.git
+	url = https://github.com/W1ndysBot/LinkGroup.git
 	branch = main
 [submodule "app/scripts/NoAddOne"]
 	path = app/scripts/NoAddOne
-	url = https://github.com/W1ndys-bot/NoAddOne.git
+	url = https://github.com/W1ndysBot/NoAddOne.git
 	branch = main
 [submodule "app/scripts/WeatherSubscribe"]
 	path = app/scripts/WeatherSubscribe
@@ -96,32 +96,32 @@
 	branch = main
 [submodule "app/scripts/WordCloud"]
 	path = app/scripts/WordCloud
-	url = https://github.com/W1ndys-bot/WordCloud
+	url = https://github.com/W1ndysBot/WordCloud
 	branch = main
 [submodule "app/scripts/ZXinTools"]
 	path = app/scripts/ZXinTools
-	url = https://github.com/W1ndys-bot/ZXinTools.git
+	url = https://github.com/W1ndysBot/ZXinTools.git
 	branch = main
 [submodule "app/scripts/KuaKuaAI"]
 	path = app/scripts/KuaKuaAI
-	url = https://github.com/W1ndys-bot/KuaKuaAI.git
+	url = https://github.com/W1ndysBot/KuaKuaAI.git
 	branch = main
 [submodule "app/scripts/PokePal"]
 	path = app/scripts/PokePal
-	url = https://github.com/W1ndys-bot/PokePal.git
+	url = https://github.com/W1ndysBot/PokePal.git
 	branch = main
 [submodule "app/scripts/TimeAwareGreetings"]
 	path = app/scripts/TimeAwareGreetings
-	url = https://github.com/W1ndys-bot/TimeAwareGreetings.git
+	url = https://github.com/W1ndysBot/TimeAwareGreetings.git
 	branch = main
 [submodule "app/scripts/AI"]
 	path = app/scripts/AI
-	url = https://github.com/W1ndys-bot/AI.git
+	url = https://github.com/W1ndysBot/AI.git
 	branch = main
 [submodule "app/scripts/BanWords2"]
 	path = app/scripts/BanWords2
-	url = https://github.com/W1ndys-bot/BanWords2.git
+	url = https://github.com/W1ndysBot/BanWords2.git
 [submodule "app/scripts/CET4"]
 	path = app/scripts/CET4
-	url = https://github.com/W1ndys-bot/CET4.git
+	url = https://github.com/W1ndysBot/CET4.git
 	branch = main
