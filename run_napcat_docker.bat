@@ -12,7 +12,7 @@ docker run -d ^
   -v "%cd%/napcat/app/.config/QQ:/app/.config/QQ" ^
   -v "%cd%/napcat/app/napcat/config:/app/napcat/config" ^
   -v "D:/Github-projects/W1ndys-bot/W1ndys-bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output" ^
-  docker.1panel.dev/mlikiowa/napcat-docker:v2.2.32
+  mlikiowa/napcat-docker:latest
 
 rem 提示用户容器已启动
 echo Docker container 'napcat' started

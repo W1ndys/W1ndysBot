@@ -1,21 +1,21 @@
-# docker-compose.yml
-version: "3"
+version: '3.8'
+
 services:
   napcat:
+    image: mlikiowa/napcat-docker:latest
     container_name: napcat
-    environment:
-      - ACCOUNT=3649056059
-      - WS_ENABLE=true
-      - NAPCAT_UID=0
-      - NAPCAT_GID=0
     ports:
-      - 3001:3001
-      - 6099:6099
+      - "3000:3000"
+      - "3001:3001"
+      - "6099:6099"
+    environment:
+      - NAPCAT_GID=${NAPCAT_GID}
+      - NAPCAT_UID=${NAPCAT_UID}
     restart: always
-    image: docker.1panel.live/mlikiowa/napcat-docker:latest
     volumes:
       - "./napcat/app/.config/QQ:/app/.config/QQ"
       - "./napcat/app/napcat:/app/napcat"
-      - "./app/napcat/config:/app/napcat/config"
+      - "./napcat/config:/app/napcat/config"
       - "/home/bot/app/scripts/WeatherSubscribe:/home/bot/app/scripts/WeatherSubscribe"
       - "/home/bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output"
+    
