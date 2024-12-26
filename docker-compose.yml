@@ -12,9 +12,10 @@ services:
       - 3001:3001
       - 6099:6099
     restart: always
-    image: docker.1panel.dev/mlikiowa/napcat-docker:latest
+    image: docker.1panel.live/mlikiowa/napcat-docker:latest
     volumes:
       - "./napcat/app/.config/QQ:/app/.config/QQ"
       - "./napcat/app/napcat:/app/napcat"
+      - "./app/napcat/config:/app/napcat/config"
       - "/home/bot/app/scripts/WeatherSubscribe:/home/bot/app/scripts/WeatherSubscribe"
       - "/home/bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output"
