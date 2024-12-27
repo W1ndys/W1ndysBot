@@ -5,6 +5,7 @@ import os
 import sys
 from datetime import datetime
 import re
+from collections import deque
 
 # 添加项目根目录到sys.path
 sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -33,23 +34,52 @@ def get_latest_log_file(log_dir):
         return None
 
 
-# 获取日志文件的最后的指定行日志
+# 获取指定文件的最后的指定行内容
 def get_last_n_lines(file_path, n):
-    with open(file_path, "rb") as f:
-        f.seek(0, os.SEEK_END)
-        file_size = f.tell()
-        buffer_size = 1024
-        buffer = bytearray()
-        lines_found = 0
-        while file_size > 0:
-            file_size -= buffer_size
-            if file_size < 0:
-                buffer_size += file_size
-                file_size = 0
-            f.seek(file_size)
-            buffer.extend(f.read(buffer_size + 1))
-        lines = buffer.splitlines()
-        return lines[-n:]
+    """从文件中获取最后n行"""
+    try:
+        with open(file_path, "rb") as file:
+            # 使用seek从文件末尾开始读取
+            file.seek(0, os.SEEK_END)
+            file_size = file.tell()
+            buffer_size = 1024
+            buffer = deque()
+            lines = []
+
+            while file_size > 0 and len(lines) <= n:
+                # 计算要读取的字节数
+                read_size = min(buffer_size, file_size)
+                file_size -= read_size
+                file.seek(file_size)
+                data = file.read(read_size)
+                buffer.appendleft(data)  # 直接添加数据
+
+                # 将缓冲区转换为字节串并分割行
+                lines = b"".join(buffer).splitlines()
+
+            # 返回最后n行
+            return lines[-n:]
+    except Exception as e:
+        logging.error(f"读取文件失败: {e}")
+        return []
+
+
+# 过滤日志中的debug日志
+def filter_debug_logs(log_content):
+    """过滤掉日志内容中的DEBUG级别日志"""
+    try:
+        # 将日志内容按行分割
+        lines = log_content.splitlines()
+
+        # 过滤掉包含"DEBUG"的行
+        filtered_lines = [line for line in lines if "DEBUG" not in line]
+
+        # 返回过滤后的内容
+        return "\n".join(filtered_lines)
+
+    except Exception as e:
+        logging.error(f"过滤DEBUG日志失败: {e}")
+        return log_content  # 返回原始内容以防止数据丢失
 
 
 # 群消息处理函数
@@ -62,7 +92,6 @@ async def handle_System_group_message(websocket, msg):
         role = str(msg.get("sender", {}).get("role"))
         message_id = str(msg.get("message_id"))
         latest_log_file = get_latest_log_file(LOG_DIR)
-        last_n_lines = get_last_n_lines(latest_log_file, 10)
 
         if user_id not in owner_id:
             return
@@ -71,12 +100,26 @@ async def handle_System_group_message(websocket, msg):
         if match:
             num_lines = int(match.group(1))
             last_n_lines = get_last_n_lines(latest_log_file, num_lines)
-            # 发送日志行到群组
-            await send_group_msg(
-                websocket,
-                group_id,
-                "\n".join(line.decode("utf-8") for line in last_n_lines),
+
+            # 将字节串列表转换为字符串
+            last_n_lines_str = "\n".join(line.decode("utf-8") for line in last_n_lines)
+
+            # 过滤DEBUG日志
+            last_n_lines_filter_debug_logs = filter_debug_logs(last_n_lines_str)
+
+            message = (
+                "日志文件: " + latest_log_file + "\n\n" + last_n_lines_filter_debug_logs
             )
+            # 发送日志行到群组
+            await send_group_msg(websocket, group_id, message)
+
+            # 检查日志里有没有error日志，如果有，整理出来单独上报一次
+            error_lines = [
+                line for line in last_n_lines_str.splitlines() if "ERROR" in line
+            ]
+            if error_lines:
+                error_message = "错误日志:\n" + "\n".join(error_lines)
+                await send_group_msg(websocket, group_id, error_message)
             return
 
     except Exception as e:
@@ -87,3 +130,10 @@ async def handle_System_group_message(websocket, msg):
             "处理System群消息失败，错误信息：" + str(e),
         )
         return
+
+
+latest_log_file = get_latest_log_file(LOG_DIR)
+# 确保将字节串列表转换为字符串
+last_n_lines = get_last_n_lines(latest_log_file, 50)
+last_n_lines_str = "\n".join(line.decode("utf-8") for line in last_n_lines)
+print(filter_debug_logs(last_n_lines_str))
