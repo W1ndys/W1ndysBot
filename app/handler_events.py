@@ -119,6 +119,9 @@ from app.switch import handle_GroupSwitch_group_message
 # 菜单
 from app.menu import handle_Menu_group_message
 
+# 系统
+from app.sysyem import handle_System_group_message
+
 # api
 from app.api import *
 
@@ -134,8 +137,12 @@ async def handle_message_event(websocket, msg):
 
             group_id = msg["group_id"]
             logging.info(f"处理群消息,群ID:{group_id}")
+            # 系统必需功能
+            await handle_System_group_message(websocket, msg)  # 处理系统消息
+            await handle_GroupSwitch_group_message(websocket, msg)  # 处理群组开关
+            await handle_Menu_group_message(websocket, msg)  # 处理菜单
 
-            # 依次执行群消息处理函数
+            # 依次执行scripts功能
             await handle_SendAll_group_message(websocket, msg)  # 处理群发消息
             await handle_ImageGenerate_group_message(websocket, msg)  # 表情生成器
             await handle_LockGroupCard_group_message(websocket, msg)  # 群名片锁
@@ -144,11 +151,9 @@ async def handle_message_event(websocket, msg):
             await handle_qasystem_message_group(websocket, msg)  # 处理知识库问答系统
             await handle_KeywordsReply_group_message(websocket, msg)  # 处理关键词回复
             await handle_blacklist_message_group(websocket, msg)  # 处理黑名单系统
-            await handle_GroupSwitch_group_message(websocket, msg)  # 处理群组开关
             await handle_BanWords_group_message(websocket, msg)  # 处理违禁词系统
             await handle_BanWords2_group_message(websocket, msg)  # 处理违禁词系统(2)
             await WelcomeFarewell_manage(websocket, msg)  # 处理入群欢迎和退群欢送的管理
-            await handle_Menu_group_message(websocket, msg)  # 处理菜单
             await handle_InviteChain_group_message(websocket, msg)  # 处理邀请链
             await SoftBan_main(websocket, msg)  # 处理软封禁
             await handle_QFNUTracker_group_message(
@@ -167,9 +172,10 @@ async def handle_message_event(websocket, msg):
                 websocket, msg
             )  # 处理时间感知问候
             await handle_tools_group_message(websocket, msg)  # 实用的API工具功能
+
         # 处理私聊消息
         elif msg.get("message_type") == "private":
-            # 由于私聊风险较大，不处理私聊消息，仅记录
+            # 由于私聊风险较大，不处理私聊消息，仅占位
             pass
 
         else:
@@ -197,7 +203,7 @@ async def handle_notice_event(websocket, msg):
 # 处理请求事件的逻辑
 async def handle_request_event(websocket, msg):
 
-    await handle_blacklist_request_event(websocket, msg)  # 处理黑名单请求事件
+    await handle_blacklist_request_event(websocket, msg)  # 处理黑名单加群请求事件
 
 
 # 处理元事件的逻辑
