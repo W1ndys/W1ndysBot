@@ -1,11 +1,6 @@
 # script/Menu/main.py
-# 示例脚本
-# 本脚本写好了基本的函数，直接在函数中编写逻辑即可，必要的时候可以修改函数名
-# 注意：Menu 是具体功能，请根据实际情况一键替换即可
-# 注意：function 是函数名称，请根据实际情况一键替换即可
 
 import logging
-import asyncio
 
 
 from app.config import owner_id
