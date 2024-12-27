@@ -14,38 +14,14 @@ DATA_DIR = os.path.join(
     "Menu",
 )
 
-VERSION = "1.1.5"
+VERSION = "1.1.6"
 
 
 # 菜单
 async def menu(websocket, group_id, message_id):
     message = (
         f"[CQ:reply,id={message_id}]"
-        + f"""卷卷bot功能列表
-
-查看群功能开关：groupswitch
-群管理命令：groupmanager
-黑名单系统：blacklist
-违禁词系统：banwords
-邀请链系统：invitechain
-问答系统：qasystem
-关键词回复系统：keywordsreply
-群名片锁：lockgroupcard
-入群欢迎和退群欢送：welcomefarewell
-打断复读：NoAddOne
-曲阜师范大学定制服务：qfnu
-天气订阅提醒(测试)：weather
-课程订阅提醒：classtable 或 课程表
-群词云：wordcloud
-夸夸AI：kkai
-
-卷卷 + 任意内容 可以与我对话
-
-加入内测群：join
-联系开发者：owner
-
-发送对应的命令即可，例如：groupswitch
-Version：{VERSION}"""
+        + f"卷卷bot功能列表\n[由于卷卷为开发者自用版本，相关功能为开发者亲手开发，无需功能列表的引导，相关内容已删除]\n卷卷版本：{VERSION}\n"
     )
 
     await send_group_msg(websocket, group_id, message)
@@ -65,8 +41,8 @@ async def handle_Menu_group_message(websocket, msg):
                 websocket,
                 group_id,
                 f"[CQ:reply,id={message_id}]你好啊，我是卷卷，"
-                + "一个基于NapCatQQ和Onebot11协议，用Python开发的QQ机器人，我可以帮你管理群聊，也有娱乐功能，发送“menu”可以查看所有功能~\n"
-                + "开源地址：https://github.com/W1ndys-bot/W1ndys-bot\n"
+                + "一个基于NapCatQQ和Onebot11协议，用Python开发的QQ机器人，我可以帮你管理群聊，还有其他功能~\n"
+                + "开源地址：https://github.com/W1ndysBot/W1ndysBot\n"
                 + f"Version：{VERSION}",
             )
 
