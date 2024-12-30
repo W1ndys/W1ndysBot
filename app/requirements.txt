@@ -1,0 +1,13 @@
+requests
+colorlog
+websockets
+aiohttp
+bs4
+python-Levenshtein
+jieba
+pillow
+chardet
+openai
+pandas
+Pyyaml
+wordcloud
