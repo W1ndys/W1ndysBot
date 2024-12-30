@@ -10,12 +10,7 @@ COPY app /app
 # 安装依赖
 RUN pip install -r requirements.txt
 
-# 暴露端口
-EXPOSE 3001
-
-# 进入app目录
-RUN cd app
 
 # 启动应用
-CMD ["python3", "main.py"]
+CMD ["python", "main.py"]
 
