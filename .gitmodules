@@ -125,3 +125,7 @@
 	path = app/scripts/CET4
 	url = https://github.com/W1ndysBot/CET4.git
 	branch = main
+[submodule "app/scripts/QFNUBustExamClassroomFind"]
+	path = app/scripts/QFNUBustExamClassroomFind
+	url = https://github.com/W1ndysBot/QFNUBustExamClassroomFind
+	branch = main
