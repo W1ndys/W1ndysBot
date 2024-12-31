@@ -8,10 +8,8 @@ from config import *
 
 from datetime import datetime
 from dingtalk import dingtalk
-from config import owner_id
 
 
-from authentication import authenticate
 from handler_events import handle_message
 
 from api import send_group_msg
@@ -20,14 +18,16 @@ from api import send_group_msg
 async def connect_to_bot():
     logging.info("正在连接到机器人...")
     logging.info(f"连接地址: {ws_url}")
-    async with websockets.connect(ws_url) as websocket:
+
+    # 添加 token 到请求头
+    headers = {"Authorization": f"Bearer {token}"}
+
+    async with websockets.connect(ws_url, extra_headers=headers) as websocket:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         logging.info(f"已连接到机器人。当前时间: {current_time}")
-        if authenticate is not None:
-            await authenticate(websocket)
-            await send_group_msg(
-                websocket, report_group_id, f"机器人已连接。当前时间: {current_time}"
-            )
+        await send_group_msg(
+            websocket, report_group_id, f"机器人已连接。当前时间: {current_time}"
+        )
         await dingtalk(
             f"机器人已连接。",
             f"当前时间: {current_time}",
