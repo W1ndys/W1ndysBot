@@ -1,7 +1,5 @@
 # config.py
 
-import os
-
 owner_id = ["2769731875"]  # 机器人root管理员 QQ 号
 
 test_group_id = ["742811316"]  # 测试群
