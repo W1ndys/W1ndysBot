@@ -114,7 +114,9 @@ from app.scripts.PokePal.main import handle_PokePal_group_message
 from app.scripts.NoAddOne.main import handle_NoAddOne_group_message
 
 # 考试教室查询
-from app.scripts.QFNUBustExamClassroomFind.main import handle_QFNUBustExamClassroomFind_group_message
+from app.scripts.QFNUBustExamClassroomFind.main import (
+    handle_QFNUBustExamClassroomFind_group_message,
+)
 
 # 总开关
 from app.switch import handle_GroupSwitch_group_message
@@ -175,7 +177,9 @@ async def handle_message_event(websocket, msg):
                 websocket, msg
             )  # 处理时间感知问候
             await handle_tools_group_message(websocket, msg)  # 实用的API工具功能
-            await handle_QFNUBustExamClassroomFind_group_message(websocket, msg)  # 处理考试教室查询
+            await handle_QFNUBustExamClassroomFind_group_message(
+                websocket, msg
+            )  # 处理考试教室查询
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":

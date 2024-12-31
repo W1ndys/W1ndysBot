@@ -111,6 +111,12 @@ async def handle_System_group_message(websocket, msg):
             # 过滤DEBUG日志
             last_n_lines_filter_debug_logs = filter_debug_logs(last_n_lines_str)
 
+            # 确保latest_log_file和last_n_lines_filter_debug_logs不是None
+            latest_log_file = latest_log_file or "未知日志文件"
+            last_n_lines_filter_debug_logs = (
+                last_n_lines_filter_debug_logs or "无日志内容"
+            )
+
             message = (
                 "日志文件: " + latest_log_file + "\n\n" + last_n_lines_filter_debug_logs
             )
