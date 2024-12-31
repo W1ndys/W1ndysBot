@@ -15,6 +15,10 @@ from app.api import *
 # 该机器人系统的日志目录
 LOG_DIR = os.path.join((os.path.dirname(os.path.abspath(__file__))), "logs")
 
+# 确保日志目录存在
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
 
 def get_latest_log_file(log_dir):
     """获取日志目录内最新的日志文件"""
