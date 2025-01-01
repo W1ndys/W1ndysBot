@@ -17,16 +17,6 @@ DATA_DIR = os.path.join(
 VERSION = "1.1.7"
 
 
-# 菜单
-async def menu(websocket, group_id, message_id):
-    message = (
-        f"[CQ:reply,id={message_id}]"
-        + f"卷卷bot功能列表\n卷卷使用手册： https://blog.w1ndys.top/posts/fbd9a8fd.html \n卷卷版本：{VERSION}\n"
-    )
-
-    await send_group_msg(websocket, group_id, message)
-
-
 # 群消息处理函数
 async def handle_Menu_group_message(websocket, msg):
     try:
@@ -34,16 +24,15 @@ async def handle_Menu_group_message(websocket, msg):
         raw_message = msg.get("raw_message")
         message_id = msg.get("message_id")
 
-        if raw_message == "menu":
-            await menu(websocket, group_id, message_id)
-        elif f"卷卷" == raw_message:
+        if raw_message == "卷卷":
             await send_group_msg(
                 websocket,
                 group_id,
                 f"[CQ:reply,id={message_id}]你好啊，我是卷卷，"
                 + "一个基于NapCatQQ和Onebot11协议，用Python开发的QQ机器人，我可以帮你管理群聊，还有其他功能~\n"
                 + "开源地址：https://github.com/W1ndysBot/W1ndysBot\n"
-                + f"Version：{VERSION}",
+                + "卷卷使用手册：https://blog.w1ndys.top/posts/fbd9a8fd.html\n"
+                + f"版本：{VERSION}",
             )
 
         elif raw_message == "join":
