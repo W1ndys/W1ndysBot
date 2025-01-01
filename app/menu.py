@@ -14,14 +14,14 @@ DATA_DIR = os.path.join(
     "Menu",
 )
 
-VERSION = "1.1.6"
+VERSION = "1.1.7"
 
 
 # 菜单
 async def menu(websocket, group_id, message_id):
     message = (
         f"[CQ:reply,id={message_id}]"
-        + f"卷卷bot功能列表\n[由于卷卷为开发者自用版本，相关功能为开发者亲手开发，无需功能列表的引导，相关内容已删除]\n卷卷版本：{VERSION}\n"
+        + f"卷卷bot功能列表\n卷卷使用手册：https://blog.w1ndys.top/posts/fbd9a8fd.html\n卷卷版本：{VERSION}\n"
     )
 
     await send_group_msg(websocket, group_id, message)
