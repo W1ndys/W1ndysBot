@@ -21,7 +21,7 @@ VERSION = "1.1.7"
 async def menu(websocket, group_id, message_id):
     message = (
         f"[CQ:reply,id={message_id}]"
-        + f"卷卷bot功能列表\n卷卷使用手册：https://blog.w1ndys.top/posts/fbd9a8fd.html\n卷卷版本：{VERSION}\n"
+        + f"卷卷bot功能列表\n卷卷使用手册： https://blog.w1ndys.top/posts/fbd9a8fd.html \n卷卷版本：{VERSION}\n"
     )
 
     await send_group_msg(websocket, group_id, message)
