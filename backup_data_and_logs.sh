@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # 进入app目录
-cd app || { echo "app 目录不存在或无法访问"; exit 1; }
+cd app || {
+    echo "app 目录不存在或无法访问"
+    exit 1
+}
 
 # 检查data和logs目录是否存在
 if [ ! -d "data" ] || [ ! -d "logs" ]; then
@@ -13,7 +16,7 @@ fi
 current_date=$(date +%Y%m%d)
 
 # 定义压缩文件名
-archive_name="backup_$current_date.tar.gz"
+archive_name="backup.tar.gz"
 
 # 打包data和logs目录
 tar -czvf $archive_name data logs
