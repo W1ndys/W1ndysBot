@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# 进入app目录
-cd app || {
-    echo "app 目录不存在或无法访问"
+# 进入/home/bot/app目录
+cd /home/bot/app || {
+    echo "/home/bot/app 目录不存在或无法访问"
     exit 1
 }
 
