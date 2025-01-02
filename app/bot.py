@@ -20,21 +20,35 @@ async def connect_to_bot():
     logging.info(f"连接地址: {ws_url}")
 
     # 如果 token 不为 None，则添加到请求头
-    headers = {"Authorization": f"Bearer {token}"} if token else None
-
-    async with websockets.connect(ws_url, extra_headers=headers) as websocket:
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        logging.info(f"已连接到机器人。当前时间: {current_time}")
-        await send_group_msg(
-            websocket, report_group_id, f"机器人已连接。当前时间: {current_time}"
-        )
-        await dingtalk(
-            f"机器人已连接。",
-            f"当前时间: {current_time}",
-        )
-        async for message in websocket:
-            # 处理ws消息
-            await handle_message(websocket, message)
+    if token:
+        headers = {"Authorization": f"Bearer {token}"}
+        async with websockets.connect(ws_url, extra_headers=headers) as websocket:
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            logging.info(f"已连接到机器人。当前时间: {current_time}")
+            await send_group_msg(
+                websocket, report_group_id, f"机器人已连接。当前时间: {current_time}"
+            )
+            await dingtalk(
+                f"机器人已连接。",
+                f"当前时间: {current_time}",
+            )
+            async for message in websocket:
+                # 处理ws消息
+                await handle_message(websocket, message)
+    else:
+        async with websockets.connect(ws_url) as websocket:
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            logging.info(f"已连接到机器人。当前时间: {current_time}")
+            await send_group_msg(
+                websocket, report_group_id, f"机器人已连接。当前时间: {current_time}"
+            )
+            await dingtalk(
+                f"机器人已连接。",
+                f"当前时间: {current_time}",
+            )
+            async for message in websocket:
+                # 处理ws消息
+                await handle_message(websocket, message)
 
 
 if __name__ == "__main__":
