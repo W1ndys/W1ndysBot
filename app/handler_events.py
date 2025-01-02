@@ -22,11 +22,6 @@ from app.scripts.GroupManager.main import handle_GroupManager_group_message
 # 编解码
 from app.scripts.Crypto.main import handle_crypto_group_message
 
-# 工具
-from app.scripts.Tools.main import (
-    handle_group_message as handle_tools_group_message,
-)
-
 # ai对话
 from app.scripts.AI.main import handle_ai_group_message
 
@@ -118,6 +113,9 @@ from app.scripts.QFNUBustExamClassroomFind.main import (
     handle_QFNUBustExamClassroomFind_group_message,
 )
 
+# IP信息查询
+from app.scripts.GetIPInfo.main import handle_GetIPInfo_group_message
+
 # 总开关
 from app.switch import handle_GroupSwitch_group_message
 
@@ -176,10 +174,10 @@ async def handle_message_event(websocket, msg):
             await handle_TimeAwareGreetings_group_message(
                 websocket, msg
             )  # 处理时间感知问候
-            await handle_tools_group_message(websocket, msg)  # 实用的API工具功能
             await handle_QFNUBustExamClassroomFind_group_message(
                 websocket, msg
             )  # 处理考试教室查询
+            await handle_GetIPInfo_group_message(websocket, msg)  # 处理IP信息查询
 
         # 处理私聊消息
         elif msg.get("message_type") == "private":
