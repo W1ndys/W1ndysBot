@@ -16,9 +16,8 @@ docker run -d \
   -v ./napcat/app/.config/QQ:/app/.config/QQ \
   -v ./napcat/app/napcat:/app/napcat \
   -v ./app/napcat/config:/app/napcat/config \
-  -v /home/bot/app/scripts/WeatherSubscribe:/home/bot/app/scripts/WeatherSubscribe \
-  -v /home/bot/app/scripts/ImageGenerate/output:/home/bot/app/scripts/ImageGenerate/output \
-  mlikiowa/napcat-docker:latest
+  -v /home/bot/app/scripts/:/home/bot/app/scripts/ \
+  mlikiowa/napcat-docker
 
 # 提示容器已启动
 echo "Napcat Docker container is now running."
