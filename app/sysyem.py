@@ -127,13 +127,17 @@ async def handle_System_group_message(websocket, msg):
 
         if match_errorlog:
             num_lines = int(match_errorlog.group(1))
-            last_n_lines = get_last_n_lines(latest_log_file, num_lines)
-            last_n_lines_str = "\n".join(line.decode("utf-8") for line in last_n_lines)
+            all_lines = get_last_n_lines(latest_log_file, 1000)  # 假设读取足够多的行
+            all_lines_str = "\n".join(line.decode("utf-8") for line in all_lines)
             error_lines = [
-                line for line in last_n_lines_str.splitlines() if "ERROR" in line
+                line for line in all_lines_str.splitlines() if "ERROR" in line
             ]
-            if error_lines:
-                error_message = "错误日志:\n" + "\n".join(error_lines)
+
+            # 取最近的指定数量的错误日志
+            recent_error_lines = error_lines[-num_lines:]
+
+            if recent_error_lines:
+                error_message = "错误日志:\n" + "\n".join(recent_error_lines)
                 await send_group_msg(websocket, group_id, error_message)
             else:
                 await send_group_msg(websocket, group_id, "没有找到错误日志")
