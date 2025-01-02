@@ -125,3 +125,7 @@
 	path = app/scripts/QFNUBustExamClassroomFind
 	url = https://github.com/W1ndysBot/QFNUBustExamClassroomFind
 	branch = main
+[submodule "app/scripts/GetIPInfo"]
+	path = app/scripts/GetIPInfo
+	url = https://github.com/W1ndysBot/GetIPInfo.git
+	branch = main
