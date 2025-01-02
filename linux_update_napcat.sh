@@ -6,8 +6,13 @@ log() {
 }
 
 # Step 1: 接受用户输入的 docker pull 命令
-log "请输入 docker pull 命令："
+log "请输入 docker pull 命令（默认: docker pull mlikiowa/napcat-docker:latest）："
 read pull_command
+
+# 如果用户没有输入，使用默认值
+if [ -z "$pull_command" ]; then
+  pull_command="docker pull mlikiowa/napcat-docker:latest"
+fi
 
 # 提取镜像名称和版本
 image_name=$(echo $pull_command | awk '{print $3}')
