@@ -100,36 +100,43 @@ async def handle_System_group_message(websocket, msg):
         if user_id not in owner_id:
             return
 
-        match = re.search(r"logs(\d+)", raw_message)
-        if match:
-            num_lines = int(match.group(1))
+        match_logs = re.search(r"logs(\d+)", raw_message)
+        match_errorlog = re.search(r"errorlog(\d+)", raw_message)
+
+        if match_logs:
+            num_lines = int(match_logs.group(1))
             last_n_lines = get_last_n_lines(latest_log_file, num_lines)
-
-            # 将字节串列表转换为字符串
             last_n_lines_str = "\n".join(line.decode("utf-8") for line in last_n_lines)
-
-            # 过滤DEBUG日志
             last_n_lines_filter_debug_logs = filter_debug_logs(last_n_lines_str)
-
-            # 确保latest_log_file和last_n_lines_filter_debug_logs不是None
             latest_log_file = latest_log_file or "未知日志文件"
             last_n_lines_filter_debug_logs = (
                 last_n_lines_filter_debug_logs or "无日志内容"
             )
-
             message = (
                 "日志文件: " + latest_log_file + "\n\n" + last_n_lines_filter_debug_logs
             )
-            # 发送日志行到群组
             await send_group_msg(websocket, group_id, message)
 
-            # 检查日志里有没有error日志，如果有，整理出来单独上报一次
             error_lines = [
                 line for line in last_n_lines_str.splitlines() if "ERROR" in line
             ]
             if error_lines:
                 error_message = "错误日志:\n" + "\n".join(error_lines)
                 await send_group_msg(websocket, group_id, error_message)
+            return
+
+        if match_errorlog:
+            num_lines = int(match_errorlog.group(1))
+            last_n_lines = get_last_n_lines(latest_log_file, num_lines)
+            last_n_lines_str = "\n".join(line.decode("utf-8") for line in last_n_lines)
+            error_lines = [
+                line for line in last_n_lines_str.splitlines() if "ERROR" in line
+            ]
+            if error_lines:
+                error_message = "错误日志:\n" + "\n".join(error_lines)
+                await send_group_msg(websocket, group_id, error_message)
+            else:
+                await send_group_msg(websocket, group_id, "没有找到错误日志")
             return
 
     except Exception as e:
@@ -140,5 +147,3 @@ async def handle_System_group_message(websocket, msg):
             "处理System群消息失败，错误信息：" + str(e),
         )
         return
-
-
