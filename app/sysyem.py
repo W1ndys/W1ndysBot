@@ -142,8 +142,3 @@ async def handle_System_group_message(websocket, msg):
         return
 
 
-latest_log_file = get_latest_log_file(LOG_DIR)
-# 确保将字节串列表转换为字符串
-last_n_lines = get_last_n_lines(latest_log_file, 50)
-last_n_lines_str = "\n".join(line.decode("utf-8") for line in last_n_lines)
-print(filter_debug_logs(last_n_lines_str))

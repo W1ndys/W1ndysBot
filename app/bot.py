@@ -19,8 +19,8 @@ async def connect_to_bot():
     logging.info("正在连接到机器人...")
     logging.info(f"连接地址: {ws_url}")
 
-    # 添加 token 到请求头
-    headers = {"Authorization": f"Bearer {token}"}
+    # 如果 token 不为 None，则添加到请求头
+    headers = {"Authorization": f"Bearer {token}"} if token else None
 
     async with websockets.connect(ws_url, extra_headers=headers) as websocket:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
