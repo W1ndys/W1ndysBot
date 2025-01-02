@@ -24,6 +24,10 @@ tar -czvf $archive_name data logs
 # 输出打包结果
 if [ $? -eq 0 ]; then
     echo "打包成功: $archive_name"
+    # 返回上一级目录
+    cd ..
+    # 运行当前目录下的 Python 文件
+    python3 backup_data_and_logs_success_info_report.py
 else
     echo "打包失败"
 fi
