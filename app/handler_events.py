@@ -63,7 +63,10 @@ from app.scripts.InviteChain.main import (
 )
 
 # 违禁词
-from app.scripts.BanWords.main import handle_BanWords_group_message
+from app.scripts.BanWords.main import (
+    handle_BanWords_group_message,
+    handle_BanWords_response_message,
+)
 
 # 违禁词2
 from app.scripts.BanWords2.main import handle_BanWords2_group_message
@@ -228,19 +231,26 @@ async def handle_cron_task(websocket):
         logging.error(f"处理定时任务的逻辑错误: {e}")
 
 
+# 处理回应消息
+async def handle_response_message(websocket, message):
+    msg = json.loads(message)
+    if msg.get("status") == "ok":
+        await handle_BanWords_response_message(websocket, message)
+
+
 # 处理ws消息
 async def handle_message(websocket, message):
 
     msg = json.loads(message)
 
-    # 排除回应消息
+    # 处理回应消息
     if msg.get("status") == "ok":
-        return
-
-    logging.info(f"处理消息: {msg}")
+        logging.info(f"处理回应消息")
+        await handle_response_message(websocket, message)
 
     # 处理事件
     if "post_type" in msg:
+        logging.info(f"处理事件消息")
         if msg["post_type"] == "message":
             # 处理消息事件
             await handle_message_event(websocket, msg)

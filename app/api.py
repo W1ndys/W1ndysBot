@@ -481,19 +481,14 @@ async def set_group_add_request(websocket, flag, type, approve, reason):
 
 
 # 获取群历史消息，注意count是int类型
-async def get_group_msg_history(websocket, group_id, count):
+async def get_group_msg_history(websocket, group_id, count, user_id):
     history_msg = {
         "action": "get_group_msg_history",
         "params": {"group_id": group_id, "count": count},
-        "echo": "get_group_msg_history",
+        "echo": f"get_group_msg_history_{group_id}_{user_id}",
     }
     await websocket.send(json.dumps(history_msg))
-    while True:
-        response = await websocket.recv()
-        response_data = json.loads(response)
-        if response_data.get("echo") == "get_group_msg_history":
-            logging.info(f"[API]已获取群 {group_id} 的历史消息 {count} 条。")
-            return response_data
+
 
 
 # 获取登录号信息
