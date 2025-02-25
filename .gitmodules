@@ -137,3 +137,7 @@
 	path = app/scripts/LLM
 	url = git@github.com:W1ndysBot/LLM.git
 	branch = main
+[submodule "app/scripts/MoodDetector"]
+	path = app/scripts/MoodDetector
+	url = git@github.com:W1ndysBot/MoodDetector.git
+	branch = main
