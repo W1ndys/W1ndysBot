@@ -51,6 +51,8 @@ from app.scripts.TitleSelfService.main import (
 from app.scripts.MuteWheel.main import handle_events as handle_MuteWheel_events
 from app.scripts.BanWords2.main import handle_events as handle_BanWords2_events
 from app.scripts.LLM.main import handle_events as handle_LLM_events
+from app.scripts.MoodDetector.main import handle_events as handle_MoodDetector_events
+from app.scripts.QFNUEatWhat.main import handle_events as handle_QFNUEatWhat_events
 
 # 系统模块
 from app.system import handle_events as handle_System_events
@@ -69,6 +71,7 @@ async def handle_message(websocket, message):
         await handle_Switch_events(websocket, msg)
 
         # 功能模块事件处理
+        await handle_QFNUEatWhat_events(websocket, msg)
         await handle_BanWords2_events(websocket, msg)
         await handle_ImageGenerate_events(websocket, msg)
         await handle_SendAll_events(websocket, msg)
@@ -99,6 +102,6 @@ async def handle_message(websocket, message):
         await handle_TitleSelfService_events(websocket, msg)
         await handle_MuteWheel_events(websocket, msg)
         await handle_LLM_events(websocket, msg)
-
+        await handle_MoodDetector_events(websocket, msg)
     except Exception as e:
         logging.error(f"处理ws消息的逻辑错误: {e}")
