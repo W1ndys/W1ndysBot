@@ -1,4 +1,6 @@
 {
     "欢迎": false,
-    "违禁词监控": true
+    "违禁词监控": true,
+    "InviteChain": true,
+    "BanWords2": true
 }

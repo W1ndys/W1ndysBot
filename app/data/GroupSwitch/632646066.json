@@ -1,4 +1,6 @@
 {
     "违禁词监控": true,
-    "词云统计": true
+    "词云统计": true,
+    "LLM": true,
+    "QFNUEatWhat": true
 }

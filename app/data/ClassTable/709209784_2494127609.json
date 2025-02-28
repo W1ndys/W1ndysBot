@@ -1,0 +1,5278 @@
+{
+    "1": {
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "5": {
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "2": {
+            "9": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "2": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "3": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "4": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "5": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "6": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 7,
+                    "courseName": "专业英语(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 8,
+                    "courseName": "科技论文写作与前沿动态(分组02)",
+                    "room": "格物楼B418",
+                    "teacher": "宋辉",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "7": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ]
+        },
+        "7": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "8": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "9": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "10": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "11": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "12": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "嵌入式实验室204",
+                    "teacher": "李桂青",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "5": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 3,
+                    "courseName": "工程伦理学",
+                    "room": "格物楼B109",
+                    "teacher": "刘新",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "13": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "14": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 9,
+                    "courseName": "形势与政策专题四",
+                    "room": "致知楼B101",
+                    "teacher": "顾训宝",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 9,
+                    "courseName": "形势与政策专题四",
+                    "room": "致知楼B101",
+                    "teacher": "顾训宝",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "15": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 9,
+                    "courseName": "形势与政策专题四",
+                    "room": "致知楼B101",
+                    "teacher": "顾训宝",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 9,
+                    "courseName": "形势与政策专题四",
+                    "room": "致知楼B101",
+                    "teacher": "顾训宝",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "1": {
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 6,
+                    "courseName": "毛泽东思想和中国特色社会主义理论体系概论",
+                    "room": "格物楼B105",
+                    "teacher": "薛琳钰",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "16": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 9,
+                    "courseName": "形势与政策专题四",
+                    "room": "致知楼B101",
+                    "teacher": "顾训宝",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 9,
+                    "courseName": "形势与政策专题四",
+                    "room": "致知楼B101",
+                    "teacher": "顾训宝",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "17": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼A317",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 9,
+                    "courseName": "形势与政策专题四",
+                    "room": "致知楼B101",
+                    "teacher": "顾训宝",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 9,
+                    "courseName": "形势与政策专题四",
+                    "room": "致知楼B101",
+                    "teacher": "顾训宝",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    },
+    "18": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语4(分组28)",
+                    "room": "格物楼B101",
+                    "teacher": "郑桂玲",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ]
+        },
+        "4": {
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 2,
+                    "courseName": "计算机网络原理",
+                    "room": "格物楼B212",
+                    "teacher": "李桂青",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "16:00",
+                    "endTime": "16:50"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 4,
+                    "courseName": "数据库系统原理与应用",
+                    "room": "格物楼B212",
+                    "teacher": "郭吉楠",
+                    "startTime": "17:00",
+                    "endTime": "17:50"
+                }
+            ]
+        },
+        "5": {
+            "3": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "10:10",
+                    "endTime": "11:00"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 0,
+                    "courseName": "操作系统",
+                    "room": "格物楼B106",
+                    "teacher": "高鹏",
+                    "startTime": "11:10",
+                    "endTime": "12:00"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "14:00",
+                    "endTime": "14:50"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 5,
+                    "courseName": "体育-羽毛球提高课(分组05)",
+                    "room": "公体球类馆03",
+                    "teacher": "赵哲哲",
+                    "startTime": "15:00",
+                    "endTime": "15:50"
+                }
+            ]
+        },
+        "7": {
+            "9": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 10,
+                    "courseName": "Web程序设计",
+                    "room": "软件基础实验室301",
+                    "teacher": "王玉田",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ]
+        }
+    }
+}

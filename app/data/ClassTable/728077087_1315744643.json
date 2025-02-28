@@ -1,0 +1,4450 @@
+{
+    "1": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆204[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆204[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 8,
+                    "courseName": "形势与政策2",
+                    "room": "博文馆210[媒159]",
+                    "teacher": "郝芸芸",
+                    "startTime": "18:40",
+                    "endTime": "19:25"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 8,
+                    "courseName": "形势与政策2",
+                    "room": "博文馆210[媒159]",
+                    "teacher": "郝芸芸",
+                    "startTime": "19:30",
+                    "endTime": "20:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "2": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆204[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆204[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 8,
+                    "courseName": "形势与政策2",
+                    "room": "博文馆210[媒159]",
+                    "teacher": "郝芸芸",
+                    "startTime": "18:40",
+                    "endTime": "19:25"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 8,
+                    "courseName": "形势与政策2",
+                    "room": "博文馆210[媒159]",
+                    "teacher": "郝芸芸",
+                    "startTime": "19:30",
+                    "endTime": "20:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "3": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆204[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆204[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 8,
+                    "courseName": "形势与政策2",
+                    "room": "博文馆210[媒159]",
+                    "teacher": "郝芸芸",
+                    "startTime": "18:40",
+                    "endTime": "19:25"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 8,
+                    "courseName": "形势与政策2",
+                    "room": "博文馆210[媒159]",
+                    "teacher": "郝芸芸",
+                    "startTime": "19:30",
+                    "endTime": "20:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "4": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆204[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆204[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 8,
+                    "courseName": "形势与政策2",
+                    "room": "博文馆210[媒159]",
+                    "teacher": "郝芸芸",
+                    "startTime": "18:40",
+                    "endTime": "19:25"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 8,
+                    "courseName": "形势与政策2",
+                    "room": "博文馆210[媒159]",
+                    "teacher": "郝芸芸",
+                    "startTime": "19:30",
+                    "endTime": "20:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "5": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "6": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "6": {
+            "6": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "7": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "6": {
+            "6": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "8": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "6": {
+            "6": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "9": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "6": {
+            "6": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 7,
+                    "courseName": "党史",
+                    "room": "博文馆103[媒159]",
+                    "teacher": "王慧",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "10": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "11": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "12": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "13": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "14": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "15": {
+        "1": {
+            "1": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                },
+                {
+                    "courseId": 0,
+                    "courseName": "高等数学A2",
+                    "room": "博文馆207[媒214]",
+                    "teacher": "魏瑞菊",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    },
+    "16": {
+        "2": {
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ],
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "计算机专业实验室3",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "6": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "博文馆209[媒214]",
+                    "teacher": "高希霞",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ]
+        },
+        "3": {
+            "1": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "07:50",
+                    "endTime": "08:35"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆304[媒99]",
+                    "teacher": "许丽娜",
+                    "startTime": "08:40",
+                    "endTime": "09:25"
+                }
+            ]
+        },
+        "1": {
+            "3": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 3,
+                    "courseName": "面向对象程序设计(计算机)",
+                    "room": "博文馆315[媒99]",
+                    "teacher": "杨朝晖",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 6,
+                    "courseName": "大学英语2",
+                    "room": "科技馆302[媒128]",
+                    "teacher": "高希霞",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        },
+        "4": {
+            "3": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 4,
+                    "courseName": "大学体育2(武术1)",
+                    "room": "",
+                    "teacher": "王军",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ]
+        },
+        "7": {
+            "3": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "09:40",
+                    "endTime": "10:25"
+                }
+            ],
+            "4": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "10:30",
+                    "endTime": "11:15"
+                }
+            ],
+            "5": [
+                {
+                    "courseId": 5,
+                    "courseName": "中国近现代史纲要(2022)",
+                    "room": "逸夫楼535[媒110]",
+                    "teacher": "张倩",
+                    "startTime": "11:20",
+                    "endTime": "12:05"
+                }
+            ]
+        },
+        "5": {
+            "6": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "13:40",
+                    "endTime": "14:25"
+                }
+            ],
+            "7": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学物理A1",
+                    "room": "博文馆110[媒189]",
+                    "teacher": "王秀英",
+                    "startTime": "14:30",
+                    "endTime": "15:15"
+                }
+            ],
+            "8": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "15:30",
+                    "endTime": "16:15"
+                }
+            ],
+            "9": [
+                {
+                    "courseId": 2,
+                    "courseName": "离散数学(JS)",
+                    "room": "博文馆311[媒214]",
+                    "teacher": "许丽娜",
+                    "startTime": "16:20",
+                    "endTime": "17:05"
+                }
+            ]
+        }
+    }
+}

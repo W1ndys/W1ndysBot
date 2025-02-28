@@ -22,5 +22,8 @@
     "QRCodeInspector": true,
     "TitleSelfService": true,
     "MuteWheel": true,
-    "LLM": true
+    "LLM": true,
+    "InviteChain": true,
+    "QFNUEatWhat": true,
+    "MoodDetector": true
 }
