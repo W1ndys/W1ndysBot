@@ -31,12 +31,7 @@ SUBMODULE_PATH="app/scripts/${REPO_NAME}"
 # 添加子模块
 git submodule add -b main "${REPO_URL}" "${SUBMODULE_PATH}"
 
-# 更新子模块
-git submodule update --remote --merge
-
 # 输出结果
 echo "子模块已添加到 ${SUBMODULE_PATH}"
-echo "使用的SSH URL: ${REPO_URL}"
-
 # 暂停三秒
-sleep 3 
+sleep 3
