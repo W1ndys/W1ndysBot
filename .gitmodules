@@ -141,3 +141,7 @@
 	path = app/scripts/MoodDetector
 	url = git@github.com:W1ndysBot/MoodDetector.git
 	branch = main
+[submodule "app/scripts/QFNUEatWhat"]
+	path = app/scripts/QFNUEatWhat
+	url = git@github.com:W1ndysBot/QFNUEatWhat.git
+	branch = main
