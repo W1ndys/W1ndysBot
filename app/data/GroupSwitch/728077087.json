@@ -19,7 +19,7 @@
     "BilibilliPush": true,
     "BilibiliPush": true,
     "GroupLink": true,
-    "QRCodeInspector": true,
+    "QRCodeInspector": false,
     "TitleSelfService": true,
     "MuteWheel": true,
     "LLM": true,

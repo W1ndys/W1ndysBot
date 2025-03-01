@@ -12,5 +12,6 @@
     "欢迎": false,
     "GithubCard": true,
     "曲阜师范大学预选课查询": true,
-    "QRCodeInspector": false
+    "QRCodeInspector": false,
+    "LLM": true
 }
