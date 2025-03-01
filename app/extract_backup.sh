@@ -2,6 +2,8 @@
 
 # 检查 backup.tar.gz 是否存在
 if [ -f "backup.tar.gz" ]; then
+    # 删除data和logs目录
+    rm -rf data logs
     # 解压 backup.tar.gz 并覆盖重复文件
     tar -xzvf backup.tar.gz --overwrite
 
