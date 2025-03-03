@@ -98,6 +98,18 @@ async def handle_System_group_message(websocket, msg):
         message_id = str(msg.get("message_id"))
         latest_log_file = get_latest_log_file(LOG_DIR)
 
+        # 卷卷的介绍
+        if raw_message == "卷卷":
+            await send_group_msg(
+                websocket,
+                group_id,
+                "卷卷是一个由W1ndys开发的QQ机器人，基于NapCatQQ框架。"
+                "开源地址：https://github.com/W1ndys/W1ndysBot"
+                "使用手册：https://blog.w1ndys.top/posts/fbd9a8fd.html"
+                "开发文档（暂未完成）：https://w1ndysbot.github.io/W1ndysBotDocs/",
+            )
+            return
+
         if user_id not in owner_id:
             return
 
