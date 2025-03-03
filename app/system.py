@@ -116,12 +116,8 @@ async def handle_System_group_message(websocket, msg):
         match_logs = re.match(r"logs(\d+)?", raw_message)
         match_errorlog = re.match(r"errorlog(\d+)?", raw_message)
         match_debuglog = re.match(r"debuglog(\d+)?", raw_message)
-        match_restart = re.match(r"重启", raw_message) or re.match(
-            r"restart", raw_message
-        )
-        match_backup = re.match(r"备份", raw_message) or re.match(
-            r"backup", raw_message
-        )
+        match_restart = raw_message == "重启" or raw_message == "restart"
+        match_backup = raw_message == "备份" or raw_message == "backup"
 
         match_update_easy_qfnu = re.match("更新Easy-QFNU", raw_message) or re.match(
             "update Easy-QFNU", raw_message
