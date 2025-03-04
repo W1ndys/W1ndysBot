@@ -1,6 +1,8 @@
 {
     "欢迎": false,
     "违禁词监控": true,
-    "InviteChain": true,
-    "BanWords2": true
+    "InviteChain": false,
+    "BanWords2": true,
+    "关键词回复": true,
+    "知识库": true
 }
