@@ -87,6 +87,37 @@ def filter_debug_logs(log_content):
         return log_content  # 返回原始内容以防止数据丢失
 
 
+# 更新源代码的函数
+async def handle_update_source_code(websocket, target_id, message_id, is_group=True):
+    """处理更新源代码的通用函数"""
+    send_msg = send_group_msg if is_group else send_private_msg
+    await send_msg(
+        websocket,
+        target_id,
+        f"[CQ:reply,id={message_id}]开始更新源代码...\n当前时间："
+        + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    )
+
+    # 执行解包
+    backup_process = await asyncio.create_subprocess_shell(
+        "sh /home/bot/app/extract_backup_scripts.sh",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    backup_stdout, backup_stderr = await backup_process.communicate()
+
+    if backup_process.returncode != 0:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]更新源代码失败:\n{backup_stderr.decode()}",
+        )
+        return
+
+    # 执行重启
+    await handle_restart(websocket, target_id, message_id, is_group)
+
+
 # 通用消息处理函数
 async def handle_update_blog(websocket, target_id, message_id, is_group=True):
     """处理更新博客的通用函数"""
@@ -277,6 +308,15 @@ async def handle_System_group_message(websocket, msg):
         match_update_blog = re.match("更新博客", raw_message) or re.match(
             "update blog", raw_message
         )
+        match_update_source_code = re.match("更新源代码", raw_message) or re.match(
+            "update source code", raw_message
+        )
+
+        if match_update_source_code:
+            await handle_update_source_code(
+                websocket, group_id, message_id, is_group=True
+            )
+            return
 
         if match_update_blog:
             await handle_update_blog(websocket, group_id, message_id, is_group=True)

@@ -67,7 +67,7 @@ async def backup_data_and_logs():
 
     # 获取当前日期
     current_date = time.strftime("%Y%m%d")
-    archive_name = "backup.tar.gz"
+    archive_name = "backup_data_and_logs.tar.gz"
 
     try:
         # 打包data和logs目录
