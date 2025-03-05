@@ -11,5 +11,6 @@
     "GroupLink": true,
     "欢迎": true,
     "MuteWheel": true,
-    "BanWords2": true
+    "BanWords2": true,
+    "TitleSelfService": true
 }
