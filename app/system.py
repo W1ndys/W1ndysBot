@@ -87,6 +87,152 @@ def filter_debug_logs(log_content):
         return log_content  # 返回原始内容以防止数据丢失
 
 
+# 通用消息处理函数
+async def handle_update_blog(websocket, target_id, message_id, is_group=True):
+    """处理更新博客的通用函数"""
+    send_msg = send_group_msg if is_group else send_private_msg
+    await send_msg(
+        websocket,
+        target_id,
+        f"[CQ:reply,id={message_id}]开始更新博客...预计需要15秒左右\n当前时间："
+        + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    )
+    process = await asyncio.create_subprocess_shell(
+        "sh /home/W1ndys/BlogTools/update_site.sh",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await process.communicate()
+    if process.returncode == 0:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]更新博客完成\n当前时间："
+            + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        )
+    else:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]更新博客失败:\n{stderr.decode()}",
+        )
+
+
+async def handle_update_easy_qfnu(websocket, target_id, message_id, is_group=True):
+    """处理更新Easy-QFNU的通用函数"""
+    send_msg = send_group_msg if is_group else send_private_msg
+    await send_msg(
+        websocket,
+        target_id,
+        f"[CQ:reply,id={message_id}]开始更新Easy-QFNU...预计需要15秒左右\n当前时间："
+        + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    )
+    process = await asyncio.create_subprocess_shell(
+        "sh /home/W1ndys/Easy-QFNU_scripts/update_site.sh",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await process.communicate()
+    if process.returncode == 0:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]更新Easy-QFNU完成\n当前时间："
+            + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        )
+    else:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]更新Easy-QFNU失败:\n{stderr.decode()}",
+        )
+
+
+async def handle_backup(websocket, target_id, message_id, is_group=True):
+    """处理备份的通用函数"""
+    send_msg = send_group_msg if is_group else send_private_msg
+    await send_msg(
+        websocket,
+        target_id,
+        f"[CQ:reply,id={message_id}]开始备份...",
+    )
+    process = await asyncio.create_subprocess_shell(
+        "python3 /home/bot/W1ndysBotScriptsTools/backup_data_and_logs.py",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await process.communicate()
+    if process.returncode == 0:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]备份完成",
+        )
+    else:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]备份失败:\n{stderr.decode()}",
+        )
+
+
+async def handle_restart(websocket, target_id, message_id, is_group=True):
+    """处理重启的通用函数"""
+    send_msg = send_group_msg if is_group else send_private_msg
+    await send_msg(
+        websocket,
+        target_id,
+        f"[CQ:reply,id={message_id}]即将重启，请稍等...",
+    )
+    process = await asyncio.create_subprocess_shell(
+        "sh /home/bot/restart_app.sh",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await process.communicate()
+    if process.returncode == 0:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]重启命令已执行",
+        )
+    else:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]重启失败:\n{stderr.decode()}",
+        )
+
+
+async def handle_logs(
+    websocket, target_id, message_id, latest_log_file, num_lines, is_group=True
+):
+    """处理日志查看的通用函数"""
+    send_msg = send_group_msg if is_group else send_private_msg
+    last_n_lines = get_last_n_lines(latest_log_file, num_lines)
+    last_n_lines_str = "\n".join(line.decode("utf-8") for line in last_n_lines)
+    last_n_lines_filter_debug_logs = filter_debug_logs(last_n_lines_str)
+    latest_log_file_path = latest_log_file or "未知日志文件"
+    last_n_lines_filter_debug_logs = last_n_lines_filter_debug_logs or "无日志内容"
+    message = (
+        "日志文件: " + latest_log_file_path + "\n\n" + last_n_lines_filter_debug_logs
+    )
+    await send_msg(
+        websocket,
+        target_id,
+        f"[CQ:reply,id={message_id}]{message}",
+    )
+
+    error_lines = [line for line in last_n_lines_str.splitlines() if "ERROR" in line]
+    if error_lines:
+        error_message = "错误日志:\n" + "\n".join(error_lines)
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]{error_message}",
+        )
+
+
 # 群消息处理函数
 async def handle_System_group_message(websocket, msg):
 
@@ -96,7 +242,12 @@ async def handle_System_group_message(websocket, msg):
         raw_message = str(msg.get("raw_message"))
         role = str(msg.get("sender", {}).get("role"))
         message_id = str(msg.get("message_id"))
+
+        # 获取最新日志文件路径
         latest_log_file = get_latest_log_file(LOG_DIR)
+        if not latest_log_file:
+            await send_group_msg(websocket, group_id, "未找到日志文件")
+            return
 
         # 卷卷的介绍
         if raw_message == "卷卷":
@@ -128,144 +279,33 @@ async def handle_System_group_message(websocket, msg):
         )
 
         if match_update_blog:
-            await send_group_msg(
-                websocket,
-                group_id,
-                f"[CQ:reply,id={message_id}]开始更新博客...预计需要15秒左右\n当前时间："
-                + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            )
-            process = await asyncio.create_subprocess_shell(
-                "sh /home/W1ndys/BlogTools/update_site.sh",
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            stdout, stderr = await process.communicate()
-            if process.returncode == 0:
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"[CQ:reply,id={message_id}]更新博客完成\n当前时间："
-                    + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                )
-            else:
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"[CQ:reply,id={message_id}]更新博客失败:\n{stderr.decode()}",
-                )
+            await handle_update_blog(websocket, group_id, message_id, is_group=True)
             return
 
         if match_update_easy_qfnu:
-            await send_group_msg(
-                websocket,
-                group_id,
-                f"[CQ:reply,id={message_id}]开始更新Easy-QFNU...预计需要15秒左右\n当前时间："
-                + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            await handle_update_easy_qfnu(
+                websocket, group_id, message_id, is_group=True
             )
-            process = await asyncio.create_subprocess_shell(
-                "sh /home/W1ndys/Easy-QFNU_scripts/update_site.sh",
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            stdout, stderr = await process.communicate()
-
-            if process.returncode == 0:
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"[CQ:reply,id={message_id}]更新Easy-QFNU完成\n当前时间："
-                    + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                )
-            else:
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"[CQ:reply,id={message_id}]更新Easy-QFNU失败:\n{stderr.decode()}",
-                )
             return
 
         if match_backup:
-            await send_group_msg(
-                websocket,
-                group_id,
-                f"[CQ:reply,id={message_id}]开始备份...",
-            )
-            process = await asyncio.create_subprocess_shell(
-                "python3 /home/bot/W1ndysBotScriptsTools/backup_data_and_logs.py",
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            stdout, stderr = await process.communicate()
-
-            if process.returncode == 0:
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"[CQ:reply,id={message_id}]备份完成",
-                )
-            else:
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"[CQ:reply,id={message_id}]备份失败:\n{stderr.decode()}",
-                )
+            await handle_backup(websocket, group_id, message_id, is_group=True)
             return
 
         if match_restart:
-            await send_group_msg(
-                websocket,
-                group_id,
-                f"[CQ:reply,id={message_id}]即将重启，请稍等...",
-            )
-            process = await asyncio.create_subprocess_shell(
-                "sh /home/bot/restart_app.sh",
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            stdout, stderr = await process.communicate()
-
-            if process.returncode == 0:
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"[CQ:reply,id={message_id}]重启命令已执行",
-                )
-            else:
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"[CQ:reply,id={message_id}]重启失败:\n{stderr.decode()}",
-                )
+            await handle_restart(websocket, group_id, message_id, is_group=True)
             return
 
         if match_logs:
-            num_lines = int(match_logs.group(1) or 50)  # 默认50条
-            last_n_lines = get_last_n_lines(latest_log_file, num_lines)
-            last_n_lines_str = "\n".join(line.decode("utf-8") for line in last_n_lines)
-            last_n_lines_filter_debug_logs = filter_debug_logs(last_n_lines_str)
-            latest_log_file = latest_log_file or "未知日志文件"
-            last_n_lines_filter_debug_logs = (
-                last_n_lines_filter_debug_logs or "无日志内容"
-            )
-            message = (
-                "日志文件: " + latest_log_file + "\n\n" + last_n_lines_filter_debug_logs
-            )
-            await send_group_msg(
+            num_lines = int(match_logs.group(1) or 50)
+            await handle_logs(
                 websocket,
                 group_id,
-                f"[CQ:reply,id={message_id}]{message}",
+                message_id,
+                latest_log_file,
+                num_lines,
+                is_group=True,
             )
-
-            error_lines = [
-                line for line in last_n_lines_str.splitlines() if "ERROR" in line
-            ]
-            if error_lines:
-                error_message = "错误日志:\n" + "\n".join(error_lines)
-                await send_group_msg(
-                    websocket,
-                    group_id,
-                    f"[CQ:reply,id={message_id}]{error_message}",
-                )
             return
 
         if match_errorlog:
@@ -332,6 +372,142 @@ async def handle_System_group_message(websocket, msg):
         return
 
 
+# 私聊消息处理函数
+async def handle_System_private_message(websocket, msg):
+    try:
+        user_id = str(msg.get("user_id"))
+        raw_message = str(msg.get("raw_message"))
+        message_id = str(msg.get("message_id"))
+
+        # 获取最新日志文件路径
+        latest_log_file = get_latest_log_file(LOG_DIR)
+        if not latest_log_file:
+            await send_private_msg(websocket, user_id, "未找到日志文件")
+            return
+
+        # 卷卷的介绍
+        if raw_message == "卷卷":
+            await send_private_msg(
+                websocket,
+                user_id,
+                "卷卷是一个由W1ndys开发的QQ机器人，基于NapCatQQ框架。"
+                "开源地址：https://github.com/W1ndys/W1ndysBot"
+                "使用手册：https://blog.w1ndys.top/posts/fbd9a8fd.html"
+                "开发文档（暂未完成）：https://w1ndysbot.github.io/W1ndysBotDocs/",
+            )
+            return
+
+        if user_id not in owner_id:
+            return
+
+        match_logs = re.match(r"logs(\d+)?", raw_message)
+        match_errorlog = re.match(r"errorlog(\d+)?", raw_message)
+        match_debuglog = re.match(r"debuglog(\d+)?", raw_message)
+        match_restart = raw_message == "重启" or raw_message == "restart"
+        match_backup = raw_message == "备份" or raw_message == "backup"
+
+        match_update_easy_qfnu = re.match("更新Easy-QFNU", raw_message) or re.match(
+            "update Easy-QFNU", raw_message
+        )
+
+        match_update_blog = re.match("更新博客", raw_message) or re.match(
+            "update blog", raw_message
+        )
+
+        if match_update_blog:
+            await handle_update_blog(websocket, user_id, message_id, is_group=False)
+            return
+
+        if match_update_easy_qfnu:
+            await handle_update_easy_qfnu(
+                websocket, user_id, message_id, is_group=False
+            )
+            return
+
+        if match_backup:
+            await handle_backup(websocket, user_id, message_id, is_group=False)
+            return
+
+        if match_restart:
+            await handle_restart(websocket, user_id, message_id, is_group=False)
+            return
+
+        if match_logs:
+            num_lines = int(match_logs.group(1) or 50)
+            await handle_logs(
+                websocket,
+                user_id,
+                message_id,
+                latest_log_file,
+                num_lines,
+                is_group=False,
+            )
+            return
+
+        if match_errorlog:
+            num_lines = int(match_errorlog.group(1) or 50)  # 默认50条
+            all_lines = get_last_n_lines(latest_log_file, 1000)  # 假设读取足够多的行
+            all_lines_str = "\n".join(line.decode("utf-8") for line in all_lines)
+            error_lines = [
+                line for line in all_lines_str.splitlines() if "ERROR" in line
+            ]
+
+            # 取最近的指定数量的错误日志
+            recent_error_lines = error_lines[-num_lines:]
+
+            if recent_error_lines:
+                error_message = "错误日志:\n" + "\n".join(recent_error_lines)
+                await send_private_msg(
+                    websocket,
+                    user_id,
+                    f"[CQ:reply,id={message_id}]{error_message}",
+                )
+            else:
+                await send_private_msg(
+                    websocket,
+                    user_id,
+                    f"[CQ:reply,id={message_id}]没有找到错误日志",
+                )
+            return
+
+        if match_debuglog:
+            num_lines = int(match_debuglog.group(1) or 50)  # 默认50条
+            all_lines = get_last_n_lines(latest_log_file, 1000)  # 假设读取足够多的行
+            all_lines_str = "\n".join(line.decode("utf-8") for line in all_lines)
+            debug_lines = [
+                line
+                for line in all_lines_str.splitlines()
+                if "DEBUG" in line and "DEBUG:root:" in line
+            ]
+
+            # 取最近的指定数量的错误日志
+            recent_debug_lines = debug_lines[-num_lines:]
+
+            if recent_debug_lines:
+                debug_message = "调试日志:\n" + "\n".join(recent_debug_lines)
+                await send_private_msg(
+                    websocket,
+                    user_id,
+                    f"[CQ:reply,id={message_id}]{debug_message}",
+                )
+            else:
+                await send_private_msg(
+                    websocket,
+                    user_id,
+                    f"[CQ:reply,id={message_id}]没有找到调试日志",
+                )
+            return
+
+    except Exception as e:
+        logging.error(f"处理System私聊消息失败: {e}")
+        await send_private_msg(
+            websocket,
+            user_id,
+            f"[CQ:reply,id={message_id}]处理System私聊消息失败，错误信息：{str(e)}",
+        )
+        return
+
+
 # 统一事件处理入口
 async def handle_events(websocket, msg):
     """统一事件处理入口
@@ -365,7 +541,7 @@ async def handle_events(websocket, msg):
             if message_type == "group":
                 await handle_System_group_message(websocket, msg)
             elif message_type == "private":
-                return
+                await handle_System_private_message(websocket, msg)
             return
 
         # 处理通知事件
