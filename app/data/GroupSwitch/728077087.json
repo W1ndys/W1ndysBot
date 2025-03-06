@@ -25,5 +25,5 @@
     "LLM": true,
     "InviteChain": true,
     "QFNUEatWhat": true,
-    "MoodDetector": true
+    "MoodDetector": false
 }
