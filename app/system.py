@@ -100,7 +100,7 @@ async def handle_update_source_code(websocket, target_id, message_id, is_group=T
 
     # 执行解包
     backup_process = await asyncio.create_subprocess_shell(
-        "sh /home/bot/app/extract_backup_scripts.sh",
+        "bash /home/bot/app/extract_backup_scripts.sh",
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
@@ -129,7 +129,7 @@ async def handle_update_blog(websocket, target_id, message_id, is_group=True):
         + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     )
     process = await asyncio.create_subprocess_shell(
-        "sh /home/W1ndys/BlogTools/update_site.sh",
+        "bash /home/W1ndys/BlogTools/update_site.sh",
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
@@ -159,7 +159,7 @@ async def handle_update_easy_qfnu(websocket, target_id, message_id, is_group=Tru
         + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     )
     process = await asyncio.create_subprocess_shell(
-        "sh /home/W1ndys/Easy-QFNU_scripts/update_site.sh",
+        "bash /home/W1ndys/Easy-QFNU_scripts/update_site.sh",
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
