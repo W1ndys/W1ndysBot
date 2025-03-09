@@ -178,58 +178,6 @@
                 }
             ]
         },
-        "3": {
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
-            "9": [
-                {
-                    "courseId": 14,
-                    "courseName": "中国近现代史纲要",
-                    "room": "综合教学楼501",
-                    "teacher": "马卫花",
-                    "startTime": "19:00",
-                    "endTime": "19:50"
-                }
-            ],
-            "10": [
-                {
-                    "courseId": 14,
-                    "courseName": "中国近现代史纲要",
-                    "room": "综合教学楼501",
-                    "teacher": "马卫花",
-                    "startTime": "20:00",
-                    "endTime": "20:50"
-                }
-            ],
-            "11": [
-                {
-                    "courseId": 14,
-                    "courseName": "中国近现代史纲要",
-                    "room": "综合教学楼501",
-                    "teacher": "马卫花",
-                    "startTime": "21:00",
-                    "endTime": "21:50"
-                }
-            ]
-        },
         "2": {
             "7": [
                 {
@@ -279,6 +227,58 @@
                     "teacher": "谢广龙",
                     "startTime": "10:10",
                     "endTime": "11:00"
+                }
+            ]
+        },
+        "3": {
+            "9": [
+                {
+                    "courseId": 14,
+                    "courseName": "中国近现代史纲要",
+                    "room": "综合教学楼501",
+                    "teacher": "马卫花",
+                    "startTime": "19:00",
+                    "endTime": "19:50"
+                }
+            ],
+            "10": [
+                {
+                    "courseId": 14,
+                    "courseName": "中国近现代史纲要",
+                    "room": "综合教学楼501",
+                    "teacher": "马卫花",
+                    "startTime": "20:00",
+                    "endTime": "20:50"
+                }
+            ],
+            "11": [
+                {
+                    "courseId": 14,
+                    "courseName": "中国近现代史纲要",
+                    "room": "综合教学楼501",
+                    "teacher": "马卫花",
+                    "startTime": "21:00",
+                    "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         }
@@ -417,26 +417,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -465,6 +445,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -851,26 +851,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -899,6 +879,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -1305,26 +1305,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -1353,6 +1333,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -1759,26 +1759,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -1807,6 +1787,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -2213,26 +2213,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -2261,6 +2241,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -2667,26 +2667,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -2715,6 +2695,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -3121,26 +3121,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -3169,6 +3149,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -3561,26 +3561,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -3609,6 +3589,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -4001,26 +4001,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -4049,6 +4029,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -4441,26 +4441,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -4489,6 +4469,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -4881,26 +4881,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -4929,6 +4909,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -5321,26 +5321,6 @@
                     "endTime": "16:50"
                 }
             ],
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -5369,6 +5349,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         },
@@ -5951,26 +5951,6 @@
             ]
         },
         "3": {
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -5999,6 +5979,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         }
@@ -6327,26 +6327,6 @@
             ]
         },
         "3": {
-            "1": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "08:00",
-                    "endTime": "08:50"
-                }
-            ],
-            "2": [
-                {
-                    "courseId": 1,
-                    "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
-                    "teacher": "张燕",
-                    "startTime": "09:00",
-                    "endTime": "09:50"
-                }
-            ],
             "9": [
                 {
                     "courseId": 14,
@@ -6375,6 +6355,26 @@
                     "teacher": "马卫花",
                     "startTime": "21:00",
                     "endTime": "21:50"
+                }
+            ],
+            "1": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "08:00",
+                    "endTime": "08:50"
+                }
+            ],
+            "2": [
+                {
+                    "courseId": 1,
+                    "courseName": "大学英语2（普通）(分组44)",
+                    "room": "生物楼308",
+                    "teacher": "张燕",
+                    "startTime": "09:00",
+                    "endTime": "09:50"
                 }
             ]
         }
@@ -6539,7 +6539,7 @@
                 {
                     "courseId": 1,
                     "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
+                    "room": "生物楼308",
                     "teacher": "张燕",
                     "startTime": "08:00",
                     "endTime": "08:50"
@@ -6557,7 +6557,7 @@
                 {
                     "courseId": 1,
                     "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
+                    "room": "生物楼308",
                     "teacher": "张燕",
                     "startTime": "09:00",
                     "endTime": "09:50"
@@ -6849,7 +6849,7 @@
                 {
                     "courseId": 1,
                     "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
+                    "room": "生物楼308",
                     "teacher": "张燕",
                     "startTime": "08:00",
                     "endTime": "08:50"
@@ -6867,7 +6867,7 @@
                 {
                     "courseId": 1,
                     "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
+                    "room": "生物楼308",
                     "teacher": "张燕",
                     "startTime": "09:00",
                     "endTime": "09:50"
@@ -7159,7 +7159,7 @@
                 {
                     "courseId": 1,
                     "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
+                    "room": "生物楼308",
                     "teacher": "张燕",
                     "startTime": "08:00",
                     "endTime": "08:50"
@@ -7177,7 +7177,7 @@
                 {
                     "courseId": 1,
                     "courseName": "大学英语2（普通）(分组44)",
-                    "room": "生物楼312",
+                    "room": "生物楼308",
                     "teacher": "张燕",
                     "startTime": "09:00",
                     "endTime": "09:50"
