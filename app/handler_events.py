@@ -89,7 +89,7 @@ async def handle_message(websocket, message):
         await handle_Custom_events(websocket, msg)
         await handle_TimeAwareGreetings_events(websocket, msg)
         await handle_KuaKuaAI_events(websocket, msg)
-        await handle_PokePal_events(websocket, msg)
+        # await handle_PokePal_events(websocket, msg) # 暂时关闭骚扰
         await handle_NoAddOne_events(websocket, msg)
         await handle_QFNUBustExamClassroomFind_events(websocket, msg)
         await handle_QFNUClassRegistrationCheck_events(websocket, msg)
