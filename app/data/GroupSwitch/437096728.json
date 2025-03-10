@@ -7,5 +7,6 @@
     "欢迎": true,
     "kuakua": false,
     "词云统计": true,
-    "MuteWheel": true
+    "MuteWheel": true,
+    "BanWords2": true
 }
