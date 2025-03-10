@@ -145,7 +145,3 @@
 	path = app/scripts/QFNUEatWhat
 	url = git@github.com:W1ndysBot/QFNUEatWhat.git
 	branch = main
-[submodule "app/scripts/TodayInHistory"]
-	path = app/scripts/TodayInHistory
-	url = git@github.com:W1ndysBot/TodayInHistory.git
-	branch = main
