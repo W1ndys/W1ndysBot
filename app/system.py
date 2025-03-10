@@ -216,7 +216,7 @@ async def handle_restart(websocket, target_id, message_id, is_group=True):
         f"[CQ:reply,id={message_id}]即将重启，请稍等...",
     )
     process = await asyncio.create_subprocess_shell(
-        "sh /home/bot/restart_app.sh",
+        "sh /home/bot/restart-app.sh",
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
