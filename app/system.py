@@ -100,7 +100,7 @@ async def handle_update_source_code(websocket, target_id, message_id, is_group=T
 
     # 执行解包
     backup_process = await asyncio.create_subprocess_shell(
-        "bash /home/bot/app/extract_backup_scripts.sh",
+        "bash /home/bot/app/extract-backup-scripts.sh",
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
