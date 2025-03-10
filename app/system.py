@@ -264,6 +264,34 @@ async def handle_logs(
         )
 
 
+async def handle_clean_logs(websocket, target_id, message_id, is_group=True):
+    """处理清理日志的通用函数"""
+    send_msg = send_group_msg if is_group else send_private_msg
+    await send_msg(
+        websocket,
+        target_id,
+        f"[CQ:reply,id={message_id}]开始清理日志...",
+    )
+    process = await asyncio.create_subprocess_shell(
+        "bash /home/bot/W1ndysBotScriptsTools/clean-logs.sh",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await process.communicate()
+    if process.returncode == 0:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]日志清理完成",
+        )
+    else:
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]日志清理失败:\n{stderr.decode()}",
+        )
+
+
 # 群消息处理函数
 async def handle_System_group_message(websocket, msg):
 
@@ -300,6 +328,7 @@ async def handle_System_group_message(websocket, msg):
         match_debuglog = re.match(r"debuglog(\d+)?", raw_message)
         match_restart = raw_message == "重启" or raw_message == "restart"
         match_backup = raw_message == "备份" or raw_message == "backup"
+        match_clean_logs = raw_message == "清理日志" or raw_message == "clean logs"
 
         match_update_easy_qfnu = re.match("更新Easy-QFNU", raw_message) or re.match(
             "update Easy-QFNU", raw_message
@@ -334,6 +363,10 @@ async def handle_System_group_message(websocket, msg):
 
         if match_restart:
             await handle_restart(websocket, group_id, message_id, is_group=True)
+            return
+
+        if match_clean_logs:
+            await handle_clean_logs(websocket, group_id, message_id, is_group=True)
             return
 
         if match_logs:
@@ -445,6 +478,7 @@ async def handle_System_private_message(websocket, msg):
         match_debuglog = re.match(r"debuglog(\d+)?", raw_message)
         match_restart = raw_message == "重启" or raw_message == "restart"
         match_backup = raw_message == "备份" or raw_message == "backup"
+        match_clean_logs = raw_message == "清理日志" or raw_message == "clean logs"
 
         match_update_easy_qfnu = re.match("更新Easy-QFNU", raw_message) or re.match(
             "update Easy-QFNU", raw_message
@@ -470,6 +504,10 @@ async def handle_System_private_message(websocket, msg):
 
         if match_restart:
             await handle_restart(websocket, user_id, message_id, is_group=False)
+            return
+
+        if match_clean_logs:
+            await handle_clean_logs(websocket, user_id, message_id, is_group=False)
             return
 
         if match_logs:
