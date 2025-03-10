@@ -21,15 +21,4 @@ git submodule update --init --recursive
 echo -e "${BLUE}🔄 正在更新子模块到 main 分支...${NC}"
 git submodule foreach 'git checkout main && git pull origin main'
 
-# 添加所有更改
-git add .
-
-# 提交更改，提交信息为"备份数据"
-git commit -m "chore(备份): 备份数据"
-
-# 推送到远程仓库
-git push
-
-echo "已完成备份数据的提交和推送"
-
-echo -e "${GREEN}✅ 项目及其子模块已成功更新。${NC}" 
+echo -e "${GREEN}✅ 项目及其子模块已成功更新。${NC}"
