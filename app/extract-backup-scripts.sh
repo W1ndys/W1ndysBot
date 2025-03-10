@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 定义备份文件名
-BACKUP_NAME="backup_scripts.tar.gz"
+BACKUP_NAME="backup-scripts.tar.gz"
 
 # 检查备份文件是否存在
 if [ ! -f "$BACKUP_NAME" ]; then
