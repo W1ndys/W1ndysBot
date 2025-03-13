@@ -53,6 +53,9 @@ from app.scripts.BanWords2.main import handle_events as handle_BanWords2_events
 from app.scripts.LLM.main import handle_events as handle_LLM_events
 from app.scripts.MoodDetector.main import handle_events as handle_MoodDetector_events
 from app.scripts.QFNUEatWhat.main import handle_events as handle_QFNUEatWhat_events
+from app.scripts.QFNUGetFreeClassrooms.main import (
+    handle_events as handle_QFNUGetFreeClassrooms_events,
+)
 
 # 系统模块
 from app.system import handle_events as handle_System_events
@@ -97,11 +100,13 @@ async def handle_message(websocket, message):
         await handle_CET4_events(websocket, msg)
         await handle_GithubCard_events(websocket, msg)
         await handle_BilibiliPush_events(websocket, msg)
+        await handle_QFNUGetFreeClassrooms_events(websocket, msg)
         await handle_GroupLink_events(websocket, msg)
         await handle_QRCodeInspector_events(websocket, msg)
         await handle_TitleSelfService_events(websocket, msg)
         await handle_MuteWheel_events(websocket, msg)
         await handle_LLM_events(websocket, msg)
         await handle_MoodDetector_events(websocket, msg)
+
     except Exception as e:
         logging.error(f"处理ws消息的逻辑错误: {e}")
