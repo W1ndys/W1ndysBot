@@ -14,3 +14,5 @@ app/data/BilibiliPush/sessdata.txt
 
 app/data/QFNUClassRegistrationCheck/token.txt
 app/backup-scripts.tar.gz
+app/data/QFNUGetFreeClassrooms/session.json
+app/data/QFNUGetFreeClassrooms/account.json
