@@ -3,7 +3,7 @@
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 from collections import deque
 import asyncio
@@ -292,6 +292,37 @@ async def handle_clean_logs(websocket, target_id, message_id, is_group=True):
         )
 
 
+# 清理旧日志的函数
+async def handle_clean_old_logs(websocket, target_id, message_id, is_group=True):
+    """处理清理旧日志的通用函数"""
+    send_msg = send_group_msg if is_group else send_private_msg
+    await send_msg(
+        websocket,
+        target_id,
+        f"[CQ:reply,id={message_id}]开始清理旧日志...",
+    )
+    try:
+        now = datetime.now()
+        for filename in os.listdir(LOG_DIR):
+            file_path = os.path.join(LOG_DIR, filename)
+            if os.path.isfile(file_path):
+                file_time = datetime.fromtimestamp(os.path.getmtime(file_path))
+                if now - file_time > timedelta(days=2):
+                    os.remove(file_path)
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]旧日志清理完成",
+        )
+    except Exception as e:
+        logging.error(f"清理旧日志失败: {e}")
+        await send_msg(
+            websocket,
+            target_id,
+            f"[CQ:reply,id={message_id}]清理旧日志失败:\n{str(e)}",
+        )
+
+
 # 群消息处理函数
 async def handle_System_group_message(websocket, msg):
 
@@ -329,6 +360,9 @@ async def handle_System_group_message(websocket, msg):
         match_restart = raw_message == "重启" or raw_message == "restart"
         match_backup = raw_message == "备份" or raw_message == "backup"
         match_clean_logs = raw_message == "清理日志" or raw_message == "clean logs"
+        match_clean_old_logs = (
+            raw_message == "清理旧日志" or raw_message == "clean old logs"
+        )
 
         match_update_easy_qfnu = re.match("更新Easy-QFNU", raw_message) or re.match(
             "update Easy-QFNU", raw_message
@@ -367,6 +401,10 @@ async def handle_System_group_message(websocket, msg):
 
         if match_clean_logs:
             await handle_clean_logs(websocket, group_id, message_id, is_group=True)
+            return
+
+        if match_clean_old_logs:
+            await handle_clean_old_logs(websocket, group_id, message_id, is_group=True)
             return
 
         if match_logs:
@@ -479,6 +517,9 @@ async def handle_System_private_message(websocket, msg):
         match_restart = raw_message == "重启" or raw_message == "restart"
         match_backup = raw_message == "备份" or raw_message == "backup"
         match_clean_logs = raw_message == "清理日志" or raw_message == "clean logs"
+        match_clean_old_logs = (
+            raw_message == "清理旧日志" or raw_message == "clean old logs"
+        )
 
         match_update_easy_qfnu = re.match("更新Easy-QFNU", raw_message) or re.match(
             "update Easy-QFNU", raw_message
@@ -508,6 +549,10 @@ async def handle_System_private_message(websocket, msg):
 
         if match_clean_logs:
             await handle_clean_logs(websocket, user_id, message_id, is_group=False)
+            return
+
+        if match_clean_old_logs:
+            await handle_clean_old_logs(websocket, user_id, message_id, is_group=False)
             return
 
         if match_logs:
@@ -610,7 +655,11 @@ async def handle_events(websocket, msg):
 
         # 处理元事件
         if post_type == "meta_event":
-            pass
+            # 检查是否为心跳事件
+            if msg.get("meta_event_type") == "heartbeat":
+                now = datetime.now()
+                if now.hour == 0 and now.minute == 0:
+                    await handle_clean_old_logs(websocket, None, None, is_group=False)
             return
 
         # 处理消息事件
