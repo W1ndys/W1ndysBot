@@ -14,5 +14,6 @@
     "曲阜师范大学预选课查询": true,
     "QRCodeInspector": false,
     "LLM": true,
-    "BanWords2": true
+    "BanWords2": true,
+    "QFNUGetFreeClassrooms": true
 }

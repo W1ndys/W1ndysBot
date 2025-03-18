@@ -25,5 +25,6 @@
     "LLM": true,
     "InviteChain": true,
     "QFNUEatWhat": true,
-    "MoodDetector": false
+    "MoodDetector": false,
+    "QFNUGetFreeClassrooms": true
 }
