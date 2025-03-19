@@ -145,3 +145,7 @@
 	path = app/scripts/QFNUEatWhat
 	url = git@github.com:W1ndysBot/QFNUEatWhat.git
 	branch = main
+[submodule "app/scripts/GroupEntryVerification"]
+	path = app/scripts/GroupEntryVerification
+	url = git@github.com:W1ndysBot/GroupEntryVerification.git
+	branch = main
