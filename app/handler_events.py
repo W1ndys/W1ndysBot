@@ -56,6 +56,9 @@ from app.scripts.QFNUEatWhat.main import handle_events as handle_QFNUEatWhat_eve
 from app.scripts.QFNUGetFreeClassrooms.main import (
     handle_events as handle_QFNUGetFreeClassrooms_events,
 )
+from app.scripts.GroupEntryVerification.main import (
+    handle_events as handle_GroupEntryVerification_events,
+)
 
 # 系统模块
 from app.system import handle_events as handle_System_events
@@ -74,6 +77,7 @@ async def handle_message(websocket, message):
         await handle_Switch_events(websocket, msg)
 
         # 功能模块事件处理
+        await handle_GroupEntryVerification_events(websocket, msg)
         await handle_QFNUEatWhat_events(websocket, msg)
         await handle_BanWords2_events(websocket, msg)
         await handle_ImageGenerate_events(websocket, msg)
