@@ -344,10 +344,11 @@ async def handle_System_group_message(websocket, msg):
             await send_group_msg(
                 websocket,
                 group_id,
-                "卷卷是一个由W1ndys开发的QQ机器人，基于NapCatQQ框架。"
-                "开源地址：https://github.com/W1ndys/W1ndysBot"
-                "使用手册：https://blog.w1ndys.top/posts/fbd9a8fd.html"
-                "开发文档（暂未完成）：https://w1ndysbot.github.io/W1ndysBotDocs/",
+                "卷卷是一个由W1ndys开发的QQ机器人，基于NapCatQQ框架。\n"
+                "开源地址：https://github.com/W1ndys/W1ndysBot\n"
+                "使用手册：https://blog.w1ndys.top/posts/fbd9a8fd.html\n"
+                "开发文档（暂未完成）：https://w1ndysbot.github.io/W1ndysBotDocs/\n"
+                "W1ndys的交流群：489237389",
             )
             return
 
