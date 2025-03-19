@@ -15,5 +15,6 @@
     "QRCodeInspector": false,
     "LLM": true,
     "BanWords2": true,
-    "QFNUGetFreeClassrooms": true
+    "QFNUGetFreeClassrooms": true,
+    "BilibiliPush": true
 }
