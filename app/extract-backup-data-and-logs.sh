@@ -9,6 +9,10 @@ if [ ! -f "$BACKUP_NAME" ]; then
     exit 1
 fi
 
+# 删除当前目录的data和logs目录
+rm -rf data
+rm -rf logs
+
 # 解压备份文件到当前目录
 tar -xzf "$BACKUP_NAME"
 
