@@ -660,7 +660,9 @@ async def handle_events(websocket, msg):
             if msg.get("meta_event_type") == "heartbeat":
                 now = datetime.now()
                 if now.hour == 0 and now.minute == 0:
-                    await handle_clean_old_logs(websocket, None, None, is_group=False)
+                    await handle_clean_old_logs(
+                        websocket, owner_id[0], None, is_group=False
+                    )
             return
 
         # 处理消息事件
