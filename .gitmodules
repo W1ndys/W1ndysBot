@@ -62,10 +62,6 @@
 	path = app/scripts/NoAddOne
 	url = git@github.com:W1ndysBot/NoAddOne.git
 	branch = main
-[submodule "app/scripts/KuaKuaAI"]
-	path = app/scripts/KuaKuaAI
-	url = git@github.com:W1ndysBot/KuaKuaAI.git
-	branch = main
 [submodule "app/scripts/PokePal"]
 	path = app/scripts/PokePal
 	url = git@github.com:W1ndysBot/PokePal.git
