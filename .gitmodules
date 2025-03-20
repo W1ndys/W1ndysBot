@@ -149,3 +149,7 @@
 	path = app/scripts/GroupEntryVerification
 	url = git@github.com:W1ndysBot/GroupEntryVerification.git
 	branch = main
+[submodule "app/scripts/QFNUNoticeMonitor"]
+	path = app/scripts/QFNUNoticeMonitor
+	url = git@github.com:W1ndysBot/QFNUNoticeMonitor.git
+	branch = main
