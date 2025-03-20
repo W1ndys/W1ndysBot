@@ -12,5 +12,6 @@
     "欢迎": true,
     "MuteWheel": true,
     "BanWords2": true,
-    "TitleSelfService": true
+    "TitleSelfService": true,
+    "GroupEntryVerification": true
 }

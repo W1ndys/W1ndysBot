@@ -21,14 +21,13 @@ from app.scripts.WelcomeFarewell.main import (
     handle_events as handle_WelcomeFarewell_events,
 )
 from app.scripts.InviteChain.main import handle_events as handle_InviteChain_events
-from app.scripts.QFNUTracker.main import handle_events as handle_QFNUTracker_events
 from app.scripts.LockGroupCard.main import handle_events as handle_LockGroupCard_events
 from app.scripts.SoftBan.main import handle_events as handle_SoftBan_events
 from app.scripts.Custom.main import handle_events as handle_Custom_events
 from app.scripts.TimeAwareGreetings.main import (
     handle_events as handle_TimeAwareGreetings_events,
 )
-from app.scripts.KuaKuaAI.main import handle_events as handle_KuaKuaAI_events
+
 from app.scripts.PokePal.main import handle_events as handle_PokePal_events
 from app.scripts.NoAddOne.main import handle_events as handle_NoAddOne_events
 from app.scripts.QFNUBustExamClassroomFind.main import (
@@ -58,6 +57,9 @@ from app.scripts.QFNUGetFreeClassrooms.main import (
 )
 from app.scripts.GroupEntryVerification.main import (
     handle_events as handle_GroupEntryVerification_events,
+)
+from app.scripts.QFNUNoticeMonitor.main import (
+    handle_events as handle_QFNUNoticeMonitor_events,
 )
 
 # 系统模块
@@ -90,12 +92,10 @@ async def handle_message(websocket, message):
         await handle_Blacklist_events(websocket, msg)
         await handle_WelcomeFarewell_events(websocket, msg)
         await handle_InviteChain_events(websocket, msg)
-        await handle_QFNUTracker_events(websocket, msg)
         await handle_LockGroupCard_events(websocket, msg)
         await handle_SoftBan_events(websocket, msg)
         await handle_Custom_events(websocket, msg)
         await handle_TimeAwareGreetings_events(websocket, msg)
-        await handle_KuaKuaAI_events(websocket, msg)
         # await handle_PokePal_events(websocket, msg) # 暂时关闭骚扰
         await handle_NoAddOne_events(websocket, msg)
         await handle_QFNUBustExamClassroomFind_events(websocket, msg)
@@ -111,6 +111,6 @@ async def handle_message(websocket, message):
         await handle_MuteWheel_events(websocket, msg)
         await handle_LLM_events(websocket, msg)
         await handle_MoodDetector_events(websocket, msg)
-
+        await handle_QFNUNoticeMonitor_events(websocket, msg)
     except Exception as e:
         logging.error(f"处理ws消息的逻辑错误: {e}")
