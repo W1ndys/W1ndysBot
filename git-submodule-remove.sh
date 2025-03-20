@@ -33,11 +33,11 @@ print_step "开始清理子模块: $SUBMODULE_PATH"
 
 # 1. 从 .git/config 中删除子模块配置
 print_step "1. 删除 .git/config 中的子模块配置"
-git submodule deinit -f "$SUBMODULE_PATH"
+git submodule deinit -f -- "$SUBMODULE_PATH"
 
 # 2. 从工作区和索引中删除子模块
 print_step "2. 从工作区和索引中删除子模块"
-git rm -f "$SUBMODULE_PATH"
+git rm -f -- "$SUBMODULE_PATH"
 
 # 3. 删除 .git/modules 中的子模块目录
 print_step "3. 清理 .git/modules 目录"
@@ -53,14 +53,14 @@ fi
 print_step "检查清理结果"
 
 # 检查 .git/config
-if git config -l | grep -q "$SUBMODULE_PATH"; then
+if git config -l | grep -F "$SUBMODULE_PATH" > /dev/null 2>&1; then
     echo -e "${YELLOW}⚠️  警告: 子模块在 .git/config 中仍有残留${NC}"
 else
     echo -e "${GREEN}✅ .git/config 已清理完成${NC}"
 fi
 
 # 检查 .gitmodules
-if grep -q "$SUBMODULE_PATH" .gitmodules; then
+if grep -F "$SUBMODULE_PATH" .gitmodules > /dev/null 2>&1; then
     echo -e "${YELLOW}⚠️  警告: 子模块在 .gitmodules 中仍有残留${NC}"
 else
     echo -e "${GREEN}✅ .gitmodules 已清理完成${NC}"
