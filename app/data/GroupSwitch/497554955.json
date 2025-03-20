@@ -13,5 +13,6 @@
     "GroupLink": true,
     "TitleSelfService": false,
     "QFNUGetFreeClassrooms": true,
-    "GroupEntryVerification": true
+    "GroupEntryVerification": true,
+    "QFNUNoticeMonitor": true
 }

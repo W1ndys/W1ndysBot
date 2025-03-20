@@ -26,5 +26,6 @@
     "InviteChain": true,
     "QFNUEatWhat": true,
     "MoodDetector": false,
-    "QFNUGetFreeClassrooms": true
+    "QFNUGetFreeClassrooms": true,
+    "QFNUNoticeMonitor": true
 }
