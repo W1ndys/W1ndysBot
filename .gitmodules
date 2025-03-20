@@ -30,10 +30,6 @@
 	path = app/scripts/SoftBan
 	url = git@github.com:W1ndysBot/SoftBan.git
 	branch = main
-[submodule "app/scripts/QFNUTracker"]
-	path = app/scripts/QFNUTracker
-	url = git@github.com:W1ndysBot/QFNUTracker
-	branch = main
 [submodule "app/scripts/Custom"]
 	path = app/scripts/Custom
 	url = git@github.com:W1ndysBot/Custom
