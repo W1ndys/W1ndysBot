@@ -348,7 +348,7 @@ async def handle_System_group_message(websocket, msg):
                 "开源地址：https://github.com/W1ndys/W1ndysBot\n"
                 "使用手册：https://blog.w1ndys.top/posts/fbd9a8fd.html\n"
                 "开发文档（暂未完成）：https://w1ndysbot.github.io/W1ndysBotDocs/\n"
-                "W1ndys的交流群：489237389",
+                "W1ndysbot卷卷的开发内测交流群：489237389",
             )
             return
 
