@@ -6,5 +6,6 @@
     "关键词回复": true,
     "知识库": true,
     "QRCodeInspector": false,
-    "群名片锁": true
+    "群名片锁": true,
+    "GroupLink": true
 }
