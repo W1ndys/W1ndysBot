@@ -47,8 +47,8 @@ def is_authorized(role, user_id):
 # 发送私聊消息，解析cq码
 async def send_private_msg(websocket, user_id, content):
     try:
-        # 给content添加随机字符串防止频繁
-        random_str = str(uuid.uuid4())
+        # 使用更短的随机字符串
+        random_str = str(uuid.uuid4())[:8]
         content = f"{content}\n{random_str}"
         message = {
             "action": "send_private_msg",
@@ -65,8 +65,8 @@ async def send_private_msg(websocket, user_id, content):
 # 发送私聊消息，不解析cq码
 async def send_private_msg_no_cq(websocket, user_id, content, auto_escape=True):
     try:
-        # 给content添加随机字符串防止频繁
-        random_str = str(uuid.uuid4())
+        # 使用更短的随机字符串
+        random_str = str(uuid.uuid4())[:8]
         content = f"{content}\n{random_str}"
         message = {
             "action": "send_private_msg",
@@ -86,8 +86,8 @@ async def send_private_msg_no_cq(websocket, user_id, content, auto_escape=True):
 # 发送私聊消息，并获取消息ID
 async def send_private_msg_with_reply(websocket, user_id, content):
     try:
-        # 给content添加随机字符串防止频繁
-        random_str = str(uuid.uuid4())
+        # 使用更短的随机字符串
+        random_str = str(uuid.uuid4())[:8]
         content = f"{content}\n{random_str}"
         message = {
             "action": "send_private_msg",
@@ -103,8 +103,8 @@ async def send_private_msg_with_reply(websocket, user_id, content):
 # 发送群消息
 async def send_group_msg(websocket, group_id, content):
     try:
-        # 给content添加随机字符串防止频繁
-        random_str = str(uuid.uuid4())
+        # 使用更短的随机字符串
+        random_str = str(uuid.uuid4())[:8]
         content = f"{content}\n{random_str}"
         message = {
             "action": "send_group_msg",
@@ -121,6 +121,9 @@ async def send_group_msg(websocket, group_id, content):
 # 发送群消息，不解析cq码
 async def send_group_msg_no_cq(websocket, group_id, content, auto_escape=True):
     try:
+        # 使用更短的随机字符串
+        random_str = str(uuid.uuid4())[:8]
+        content = f"{content}\n{random_str}"
         message = {
             "action": "send_group_msg",
             "params": {

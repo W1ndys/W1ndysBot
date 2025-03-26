@@ -14,7 +14,7 @@ async def send_group_msg(websocket, group_id, message):
     """
     try:
         # 给message添加随机字符串防止频繁
-        random_str = str(uuid.uuid4())
+        random_str = str(uuid.uuid4())[:8]
         message.append(
             {
                 "type": "text",
@@ -44,7 +44,7 @@ async def send_private_msg(websocket, user_id, message):
     """
     try:
         # 给message添加随机字符串防止频繁
-        random_str = str(uuid.uuid4())
+        random_str = str(uuid.uuid4())[:8]
         message.append(
             {
                 "type": "text",
