@@ -18,7 +18,7 @@ async def send_group_msg(websocket, group_id, message):
         message.append(
             {
                 "type": "text",
-                "data": {"text": f"{message}\n{random_str}"},
+                "data": {"text": f"{message}\n\n随机ID: {random_str}"},
             }
         )
 
@@ -48,7 +48,7 @@ async def send_private_msg(websocket, user_id, message):
         message.append(
             {
                 "type": "text",
-                "data": {"text": f"{message}\n{random_str}"},
+                "data": {"text": f"{message}\n\n随机ID: {random_str}"},
             }
         )
         message = {
