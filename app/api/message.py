@@ -1,12 +1,27 @@
 import json
 import logging
+import uuid
 
 
 async def send_group_msg(websocket, group_id, message):
     """
-    发送群聊消息
+    发送群聊消息，使用新的消息格式
+    {
+        "type": "text",
+        "data": {"text": "消息内容"}
+    }
+    https://napcat.apifox.cn/226799128e0
     """
     try:
+        # 给message添加随机字符串防止频繁
+        random_str = str(uuid.uuid4())
+        message.append(
+            {
+                "type": "text",
+                "data": {"text": f"{message}\n{random_str}"},
+            }
+        )
+
         message = {
             "action": "send_group_msg",
             "params": {"group_id": group_id, "message": message},
@@ -20,9 +35,22 @@ async def send_group_msg(websocket, group_id, message):
 
 async def send_private_msg(websocket, user_id, message):
     """
-    发送私聊消息
+    发送私聊消息，使用新的消息格式
+    {
+        "type": "text",
+        "data": {"text": "消息内容"}
+    }
+    https://napcat.apifox.cn/226799128e0
     """
     try:
+        # 给message添加随机字符串防止频繁
+        random_str = str(uuid.uuid4())
+        message.append(
+            {
+                "type": "text",
+                "data": {"text": f"{message}\n{random_str}"},
+            }
+        )
         message = {
             "action": "send_private_msg",
             "params": {"user_id": user_id, "message": message},
