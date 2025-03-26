@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+import uuid
 from datetime import datetime
 import asyncio
 from config import *
@@ -46,6 +47,9 @@ def is_authorized(role, user_id):
 # 发送私聊消息，解析cq码
 async def send_private_msg(websocket, user_id, content):
     try:
+        # 给content添加随机字符串防止频繁
+        random_str = str(uuid.uuid4())
+        content = f"{content}\n{random_str}"
         message = {
             "action": "send_private_msg",
             "params": {"user_id": user_id, "message": content},
@@ -61,6 +65,9 @@ async def send_private_msg(websocket, user_id, content):
 # 发送私聊消息，不解析cq码
 async def send_private_msg_no_cq(websocket, user_id, content, auto_escape=True):
     try:
+        # 给content添加随机字符串防止频繁
+        random_str = str(uuid.uuid4())
+        content = f"{content}\n{random_str}"
         message = {
             "action": "send_private_msg",
             "params": {
@@ -79,6 +86,9 @@ async def send_private_msg_no_cq(websocket, user_id, content, auto_escape=True):
 # 发送私聊消息，并获取消息ID
 async def send_private_msg_with_reply(websocket, user_id, content):
     try:
+        # 给content添加随机字符串防止频繁
+        random_str = str(uuid.uuid4())
+        content = f"{content}\n{random_str}"
         message = {
             "action": "send_private_msg",
             "params": {"user_id": user_id, "message": content},
@@ -93,6 +103,9 @@ async def send_private_msg_with_reply(websocket, user_id, content):
 # 发送群消息
 async def send_group_msg(websocket, group_id, content):
     try:
+        # 给content添加随机字符串防止频繁
+        random_str = str(uuid.uuid4())
+        content = f"{content}\n{random_str}"
         message = {
             "action": "send_group_msg",
             "params": {"group_id": group_id, "message": content},
