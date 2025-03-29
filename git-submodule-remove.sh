@@ -90,6 +90,8 @@ if [[ "$AUTO_COMMIT" =~ ^[Yy]$ ]]; then
     git commit -m "$COMMIT_MESSAGE"
     
     echo -e "${GREEN}✅ 更改已提交: $COMMIT_MESSAGE${NC}"
+    git push origin main
+    echo -e "${GREEN}✅ 更改已推送到远程仓库${NC}"
 else
     echo -e "${YELLOW}ℹ️ 未提交更改，您可以稍后手动提交${NC}"
 fi 
