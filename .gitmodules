@@ -145,7 +145,3 @@
 	path = app/scripts/QFNUNoticeMonitor
 	url = git@github.com:W1ndysBot/QFNUNoticeMonitor.git
 	branch = main
-[submodule "app/scripts/BanWordsPlus"]
-	path = app/scripts/BanWordsPlus
-	url = git@github.com:W1ndysBot/BanWordsPlus.git
-	branch = main
