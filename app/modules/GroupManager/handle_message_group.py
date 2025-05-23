@@ -78,7 +78,7 @@ class GroupMessageHandler:
                 await group_manager.handle_all_mute()
             elif self.raw_message.startswith(GROUP_ALL_UNMUTE_COMMAND):
                 await group_manager.handle_all_unmute()
-            elif self.raw_message.startswith(GROUP_RECALL_COMMAND):
+            elif GROUP_RECALL_COMMAND in self.raw_message:
                 await group_manager.handle_recall()
 
         except Exception as e:

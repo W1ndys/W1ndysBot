@@ -3,9 +3,9 @@
 """
 
 import logger
-from . import MODULE_NAME
+from . import MODULE_NAME, GROUP_RECALL_COMMAND
 from api.group import set_group_ban, set_group_kick, set_group_whole_ban
-from api.message import send_group_msg
+from api.message import send_group_msg, delete_msg
 from api.generate import generate_reply_message, generate_text_message
 import re
 
@@ -192,10 +192,27 @@ class GroupManager:
     async def handle_recall(self):
         """
         处理群组撤回
+        格式：[CQ:reply,id={message_id}] 任意内容 {command}
         """
         try:
-            # 实现撤回逻辑
-            pass
+            # 匹配撤回格式
+            pattern = rf"\[CQ:reply,id=(\d+)\].*{GROUP_RECALL_COMMAND}"
+            match = re.search(pattern, self.raw_message)
+            if match:
+                message_id = match.group(1)
+            else:
+                raise ValueError("未找到消息ID")
+
+            # 提取 message_id
+            message_id = re.search(r"\[CQ:reply,id=(\d+)\]", self.raw_message)
+            if message_id:
+                message_id = message_id.group(1)
+            else:
+                raise ValueError("未找到消息ID")
+
+            # 执行撤回操作
+            await delete_msg(self.websocket, message_id)
+
         except Exception as e:
             await self.send_error_message(f"撤回操作失败: {str(e)}")
             logger.error(f"[{MODULE_NAME}]撤回操作失败: {e}")
