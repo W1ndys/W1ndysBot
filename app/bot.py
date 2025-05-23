@@ -4,13 +4,10 @@ from config import *
 
 from handle_events import EventHandler
 
-handler = None
-
 
 async def connect_to_bot():
     """连接到机器人并开始接收消息"""
-    global handler
-    handler = EventHandler()  # 只创建一次
+    handler = EventHandler()  # 为每个连接创建一个独立实例
 
     logging.info("正在连接到机器人...")
 
