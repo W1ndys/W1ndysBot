@@ -4,7 +4,7 @@
 
 import logger
 from . import MODULE_NAME
-from api.group import set_group_ban, set_group_kick
+from api.group import set_group_ban, set_group_kick, set_group_whole_ban
 from api.message import send_group_msg
 from api.generate import generate_reply_message, generate_text_message
 import re
@@ -174,8 +174,7 @@ class GroupManager:
         处理群组全员禁言
         """
         try:
-            # 实现全员禁言逻辑
-            pass
+            await set_group_whole_ban(self.websocket, self.group_id, True)
         except Exception as e:
             await self.send_error_message(f"全员禁言操作失败: {str(e)}")
             logger.error(f"[{MODULE_NAME}]全员禁言操作失败: {e}")
@@ -185,8 +184,7 @@ class GroupManager:
         处理群组全员解禁
         """
         try:
-            # 实现全员解禁逻辑
-            pass
+            await set_group_whole_ban(self.websocket, self.group_id, False)
         except Exception as e:
             await self.send_error_message(f"全员解禁操作失败: {str(e)}")
             logger.error(f"[{MODULE_NAME}]全员解禁操作失败: {e}")

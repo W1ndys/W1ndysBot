@@ -83,6 +83,8 @@ async def get_essence_msg_list(websocket, group_id):
 async def set_group_whole_ban(websocket, group_id, enable):
     """
     全体禁言
+    group_id: 群号
+    enable: 是否开启全体禁言，True表示开启，False表示关闭
     """
     try:
         message = {
