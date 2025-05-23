@@ -24,24 +24,33 @@ class PrivateMessageHandler:
         self.sender = msg.get("sender", {})  # 发送者信息
         self.nickname = self.sender.get("nickname", "")  # 昵称
 
+    async def handle_module_switch(self):
+        """
+        处理模块开关命令
+        """
+        try:
+            switch_status = toggle_private_switch(MODULE_NAME)
+            switch_status = "开启" if switch_status else "关闭"
+            reply_message = generate_reply_message(self.message_id)
+            text_message = generate_text_message(
+                f"[{MODULE_NAME}]私聊开关已切换为【{switch_status}】"
+            )
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                [reply_message, text_message],
+                note="del_msg_10",
+            )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理模块开关命令失败: {e}")
+
     async def handle(self):
         """
         处理私聊消息
         """
         try:
             if self.raw_message.lower() == MODULE_NAME.lower():
-                switch_status = toggle_private_switch(MODULE_NAME)
-                switch_status = "开启" if switch_status else "关闭"
-                reply_message = generate_reply_message(self.message_id)
-                text_message = generate_text_message(
-                    f"[{MODULE_NAME}]私聊开关已切换为【{switch_status}】"
-                )
-                await send_private_msg(
-                    self.websocket,
-                    self.user_id,
-                    [reply_message, text_message],
-                    note="del_msg_10",
-                )
+                await self.handle_module_switch()
                 return
 
             # 如果没开启私聊开关，则不处理

@@ -1,6 +1,9 @@
 from . import MODULE_NAME
 import logger
 from datetime import datetime
+from core.switchs import is_group_switch_on
+from .data_manager import BlackListDataManager
+from api.user import set_group_add_request
 
 
 class RequestHandler:
@@ -17,6 +20,8 @@ class RequestHandler:
         self.user_id = self.msg.get("user_id", "")
         self.comment = self.msg.get("comment", "")
         self.flag = self.msg.get("flag", "")
+        self.group_id = self.msg.get("group_id", "")
+        self.data_manager = BlackListDataManager()
 
     async def handle_friend(self):
         """
@@ -32,6 +37,10 @@ class RequestHandler:
         处理群请求
         """
         try:
+            # 如果没开启群聊开关，则不处理
+            if not is_group_switch_on(self.group_id, MODULE_NAME):
+                return
+
             self.sub_type = self.msg.get("sub_type", "")
             if self.sub_type == "invite":
                 await self.handle_group_invite()
@@ -56,13 +65,19 @@ class RequestHandler:
         处理加群请求
         """
         try:
-            pass
+            # 检查用户是否在黑名单中
+            if self.data_manager.is_in_blacklist(self.group_id, self.user_id):
+                # 拒绝入群请求
+                reason = "您在该群的黑名单中，无法加入群聊"
+                await set_group_add_request(self.websocket, self.flag, False, reason)
+                logger.info(
+                    f"[{MODULE_NAME}]拒绝黑名单用户 {self.user_id} 加入群 {self.group_id}"
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理加群请求失败: {e}")
 
     async def handle(self):
         try:
-
             if self.request_type == "friend":
                 # 必要时可以这里可以引入好友请求开关检测
                 await self.handle_friend()
