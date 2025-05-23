@@ -5,6 +5,9 @@ import logger
 async def set_group_kick(websocket, group_id, user_id, reject_add_request=False):
     """
     设置群踢人
+    group_id: 群号
+    user_id: 用户ID
+    reject_add_request: 是否拒绝加群请求(拉黑)，默认False
     """
     try:
         message = {
@@ -26,6 +29,9 @@ async def set_group_kick(websocket, group_id, user_id, reject_add_request=False)
 async def set_group_ban(websocket, group_id, user_id, duration):
     """
     群禁言
+    group_id: 群号
+    user_id: 用户ID
+    duration: 禁言时长，单位为秒，0表示解除禁言
     """
     try:
         message = {
