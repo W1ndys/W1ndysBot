@@ -1,9 +1,17 @@
-from . import MODULE_NAME
+from . import (
+    MODULE_NAME,
+    BLACKLIST_ADD_COMMAND,
+    BLACKLIST_REMOVE_COMMAND,
+    BLACKLIST_LIST_COMMAND,
+    BLACKLIST_CLEAR_COMMAND,
+)
 import logger
+from core.auth import is_system_owner, is_group_admin
 from core.switchs import is_group_switch_on, toggle_group_switch
 from api.message import send_group_msg
 from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
+from .handle_blacklist import BlackListHandle
 
 
 class GroupMessageHandler:
@@ -51,5 +59,21 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
+            # 鉴权，只有管理员才能使用
+            if not is_group_admin(self.role) and not is_system_owner(self.user_id):
+                return
+
+            # 初始化实例
+            blacklist_handler = BlackListHandle(self.websocket, self.msg)
+
+            # 解析消息
+            if self.raw_message.startswith(BLACKLIST_ADD_COMMAND):
+                await blacklist_handler.add_blacklist()
+            elif self.raw_message.startswith(BLACKLIST_REMOVE_COMMAND):
+                await blacklist_handler.remove_blacklist()
+            elif self.raw_message.startswith(BLACKLIST_LIST_COMMAND):
+                await blacklist_handler.list_blacklist()
+            elif self.raw_message.startswith(BLACKLIST_CLEAR_COMMAND):
+                await blacklist_handler.clear_blacklist()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
