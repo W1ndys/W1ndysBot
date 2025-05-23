@@ -5,7 +5,9 @@ import os
 MODULE_NAME = "GroupManager"
 
 # 模块描述
-MODULE_DESCRIPTION = "群组管理模块"
+MODULE_DESCRIPTION = (
+    "群组管理模块，支持群组禁言、解禁、踢出、全员禁言、全员解禁、撤回消息等操作。"
+)
 
 # 数据目录
 DATA_DIR = os.path.join("data", MODULE_NAME)

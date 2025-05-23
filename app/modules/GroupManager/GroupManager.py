@@ -87,32 +87,36 @@ class GroupManager:
     async def handle_unmute(self):
         """
         处理群组解禁
-        两种格式：
-            {command}[CQ:at,qq={user_id}]
-            {command} {user_id}
+        支持以下格式：
+            {command}[CQ:at,qq={user_id}] [CQ:at,qq={user_id}] ...  # 多个at
+            {command} {user_id} {user_id} ...  # 多个QQ号
+            {command}[CQ:at,qq={user_id}] {user_id} ...  # at和QQ号混用
         """
         try:
-            # 实现解禁逻辑
-            # 匹配 at 格式
+            # 匹配所有 at 格式
             at_pattern = r"\[CQ:at,qq=(\d+)\]"
-            at_match = re.search(at_pattern, self.raw_message)
+            at_matches = re.finditer(at_pattern, self.raw_message)
+            target_user_ids = [match.group(1) for match in at_matches]
 
-            if at_match:
-                # 使用 at 方式
-                target_user_id = at_match.group(1)
-            else:
-                # 使用 QQ号 方式
-                message_parts = self.raw_message.split()
-                if len(message_parts) >= 2:
-                    # 去掉命令部分，第一个参数应该是QQ号
-                    target_user_id = message_parts[1]
-                    if not target_user_id.isdigit():
-                        raise ValueError("无效的QQ号")
-                else:
-                    raise ValueError("格式错误，请使用 '@用户' 或 'QQ号' 的格式")
+            # 处理QQ号格式
+            message_parts = self.raw_message.split()
+            # 去掉命令和at部分,剩下的应该都是QQ号
+            qq_numbers = [part for part in message_parts[1:] if part.isdigit()]
+            target_user_ids.extend(qq_numbers)
 
-            # 执行解禁操作（禁言时间设为0表示解除禁言）
-            await set_group_ban(self.websocket, self.group_id, target_user_id, 0)
+            if not target_user_ids:
+                raise ValueError(
+                    "格式错误，请使用 '@用户' 或 'QQ号' 的格式，支持多个用户"
+                )
+
+            # 检查所有QQ号是否有效
+            for user_id in target_user_ids:
+                if not user_id.isdigit():
+                    raise ValueError(f"无效的QQ号: {user_id}")
+
+            # 批量执行解禁操作
+            for target_user_id in target_user_ids:
+                await set_group_ban(self.websocket, self.group_id, target_user_id, 0)
 
         except Exception as e:
             await self.send_error_message(f"解禁操作失败: {str(e)}")
