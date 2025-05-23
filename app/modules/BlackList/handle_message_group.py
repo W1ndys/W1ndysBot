@@ -106,9 +106,14 @@ class GroupMessageHandler:
 
                 # 发送警告消息
                 warning_msg = generate_text_message(
-                    f"检测到黑名单用户 {self.user_id} 在群内发言，系统将自动撤回消息并将其踢出"
+                    f"检测到黑名单用户 {self.user_id} 在群内发言，将自动撤回消息并将其踢出"
                 )
-                await send_group_msg(self.websocket, self.group_id, [warning_msg])
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [warning_msg],
+                    note="del_msg_30",
+                )
 
                 # 踢出用户并拉黑，拒绝后续加群请求
                 await set_group_kick(self.websocket, self.group_id, self.user_id, True)
