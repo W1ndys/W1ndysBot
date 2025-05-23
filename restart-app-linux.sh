@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# 在出错时停止脚本执行
+set -e
+
 # 进入当前目录的app目录
 cd "$(dirname "$0")/app"
 
@@ -21,6 +24,12 @@ else
     echo "没有找到pid文件，应用可能没有在运行"
 fi
 
+# 检查虚拟环境是否存在
+if [ ! -f "../venv/bin/activate" ]; then
+    echo "错误: 未找到虚拟环境 (../venv/bin/activate)"
+    exit 1
+fi
+
 # 激活虚拟环境
 source "../venv/bin/activate"
 
@@ -34,4 +43,4 @@ echo $! >app.pid
 echo "Python程序已在虚拟环境中重新启动，PID保存在app/app.pid中"
 
 # 退出虚拟环境
-deactivate 
+deactivate
