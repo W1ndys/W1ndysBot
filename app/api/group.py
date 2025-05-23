@@ -16,7 +16,7 @@ async def set_group_kick(websocket, group_id, user_id, reject_add_request=False)
             },
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行设置群踢人")
+        logger.info("[API]已执行设置群踢人")
         return True
     except Exception as e:
         logger.error(f"[API]设置群踢人失败: {e}")
@@ -33,7 +33,7 @@ async def set_group_ban(websocket, group_id, user_id, duration):
             "params": {"group_id": group_id, "user_id": user_id, "duration": duration},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行群禁言")
+        logger.info("[API]已执行群禁言")
         return True
     except Exception as e:
         logger.error(f"[API]群禁言失败: {e}")
@@ -50,7 +50,7 @@ async def get_group_system_msg(websocket, group_id):
             "params": {"group_id": group_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群系统消息")
+        logger.info("[API]已执行获取群系统消息")
         return True
     except Exception as e:
         logger.error(f"[API]获取群系统消息失败: {e}")
@@ -67,7 +67,7 @@ async def get_essence_msg_list(websocket, group_id):
             "params": {"group_id": group_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取精华消息")
+        logger.info("[API]已执行获取精华消息")
         return True
     except Exception as e:
         logger.error(f"[API]获取精华消息失败: {e}")
@@ -84,7 +84,7 @@ async def set_group_whole_ban(websocket, group_id, enable):
             "params": {"group_id": group_id, "enable": enable},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行全体禁言")
+        logger.info("[API]已执行全体禁言")
         return True
     except Exception as e:
         logger.error(f"[API]全体禁言失败: {e}")
@@ -101,7 +101,7 @@ async def set_group_portrait(websocket, group_id, file_path):
             "params": {"group_id": group_id, "file_path": file_path},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行设置群头像")
+        logger.info("[API]已执行设置群头像")
         return True
     except Exception as e:
         logger.error(f"[API]设置群头像失败: {e}")
@@ -118,7 +118,7 @@ async def set_group_admin(websocket, group_id, user_id, enable):
             "params": {"group_id": group_id, "user_id": user_id, "enable": enable},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行设置群管理")
+        logger.info("[API]已执行设置群管理")
         return True
     except Exception as e:
         logger.error(f"[API]设置群管理失败: {e}")
@@ -135,7 +135,7 @@ async def set_group_essence_msg(websocket, group_id, message_id):
             "params": {"group_id": group_id, "message_id": message_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行设置群精华消息")
+        logger.info("[API]已执行设置群精华消息")
         return True
     except Exception as e:
         logger.error(f"[API]设置群精华消息失败: {e}")
@@ -152,7 +152,7 @@ async def set_group_card(websocket, group_id, user_id, card):
             "params": {"group_id": group_id, "user_id": user_id, "card": card},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行设置群成员名片")
+        logger.info("[API]已执行设置群成员名片")
         return True
     except Exception as e:
         logger.error(f"[API]设置群成员名片失败: {e}")
@@ -169,7 +169,7 @@ async def delete_group_essence_msg(websocket, group_id, message_id):
             "params": {"group_id": group_id, "message_id": message_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行删除群精华消息")
+        logger.info("[API]已执行删除群精华消息")
         return True
     except Exception as e:
         logger.error(f"[API]删除群精华消息失败: {e}")
@@ -186,7 +186,7 @@ async def set_group_name(websocket, group_id, group_name):
             "params": {"group_id": group_id, "group_name": group_name},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行设置群名")
+        logger.info("[API]已执行设置群名")
         return True
     except Exception as e:
         logger.error(f"[API]设置群名失败: {e}")
@@ -200,7 +200,7 @@ async def set_group_leave(websocket, group_id):
     try:
         message = {"action": "set_group_leave", "params": {"group_id": group_id}}
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行退群")
+        logger.info("[API]已执行退群")
         return True
     except Exception as e:
         logger.error(f"[API]退群失败: {e}")
@@ -221,7 +221,7 @@ async def _send_group_notice(websocket, group_id, content, image_path):
             },
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行发送群公告")
+        logger.info("[API]已执行发送群公告")
         return True
     except Exception as e:
         logger.error(f"[API]发送群公告失败: {e}")
@@ -235,7 +235,7 @@ async def _get_group_notice(websocket, group_id):
     try:
         message = {"action": "_get_group_notice", "params": {"group_id": group_id}}
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群公告")
+        logger.info("[API]已执行获取群公告")
         return True
     except Exception as e:
         logger.error(f"[API]获取群公告失败: {e}")
@@ -256,7 +256,7 @@ async def set_group_special_title(websocket, group_id, user_id, special_title):
             },
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行设置群头衔")
+        logger.info("[API]已执行设置群头衔")
         return True
     except Exception as e:
         logger.error(f"[API]设置群头衔失败: {e}")
@@ -278,7 +278,7 @@ async def upload_group_file(websocket, group_id, file, name, folder_id):
             },
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行上传群文件")
+        logger.info("[API]已执行上传群文件")
         return True
     except Exception as e:
         logger.error(f"[API]上传群文件失败: {e}")
@@ -295,7 +295,7 @@ async def set_group_add_request(websocket, flag, approve, reason):
             "params": {"flag": flag, "approve": approve, "reason": reason},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行处理加群请求")
+        logger.info("[API]已执行处理加群请求")
         return True
     except Exception as e:
         logger.error(f"[API]处理加群请求失败: {e}")
@@ -309,7 +309,7 @@ async def get_group_info(websocket, group_id):
     try:
         message = {"action": "get_group_info", "params": {"group_id": group_id}}
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群信息")
+        logger.info("[API]已执行获取群信息")
         return True
     except Exception as e:
         logger.error(f"[API]获取群信息失败: {e}")
@@ -323,7 +323,7 @@ async def get_group_info_ex(websocket, group_id):
     try:
         message = {"action": "get_group_info_ex", "params": {"group_id": group_id}}
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群信息")
+        logger.info("[API]已执行获取群信息")
         return True
     except Exception as e:
         logger.error(f"[API]获取群信息失败: {e}")
@@ -340,7 +340,7 @@ async def create_group_file_folder(websocket, group_id, folder_name):
             "params": {"group_id": group_id, "folder_name": folder_name},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行创建群文件夹")
+        logger.info("[API]已执行创建群文件夹")
         return True
     except Exception as e:
         logger.error(f"[API]创建群文件夹失败: {e}")
@@ -357,7 +357,7 @@ async def delete_group_file(websocket, group_id, file_id):
             "params": {"group_id": group_id, "file_id": file_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行删除群文件")
+        logger.info("[API]已执行删除群文件")
         return True
     except Exception as e:
         logger.error(f"[API]删除群文件失败: {e}")
@@ -374,7 +374,7 @@ async def delete_group_folder(websocket, group_id, folder_id):
             "params": {"group_id": group_id, "folder_id": folder_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行删除群文件夹")
+        logger.info("[API]已执行删除群文件夹")
         return True
     except Exception as e:
         logger.error(f"[API]删除群文件夹失败: {e}")
@@ -391,7 +391,7 @@ async def get_group_file_system_info(websocket, group_id):
             "params": {"group_id": group_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群文件系统信息")
+        logger.info("[API]已执行获取群文件系统信息")
         return True
     except Exception as e:
         logger.error(f"[API]获取群文件系统信息失败: {e}")
@@ -405,7 +405,7 @@ async def get_group_root_files(websocket, group_id):
     try:
         message = {"action": "get_group_root_files", "params": {"group_id": group_id}}
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群根目录文件列表")
+        logger.info("[API]已执行获取群根目录文件列表")
         return True
     except Exception as e:
         logger.error(f"[API]获取群根目录文件列表失败: {e}")
@@ -426,7 +426,7 @@ async def get_group_files_by_folder(websocket, group_id, folder_id, file_count):
             },
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群子目录文件列表")
+        logger.info("[API]已执行获取群子目录文件列表")
         return True
     except Exception as e:
         logger.error(f"[API]获取群子目录文件列表失败: {e}")
@@ -443,7 +443,7 @@ async def get_group_file_url(websocket, group_id, file_id):
             "params": {"group_id": group_id, "file_id": file_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群文件资源链接")
+        logger.info("[API]已执行获取群文件资源链接")
         return True
     except Exception as e:
         logger.error(f"[API]获取群文件资源链接失败: {e}")
@@ -457,7 +457,7 @@ async def get_group_list(websocket, no_cache):
     try:
         message = {"action": "get_group_list", "params": {"no_cache": no_cache}}
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群列表")
+        logger.info("[API]已执行获取群列表")
         return True
     except Exception as e:
         logger.error(f"[API]获取群列表失败: {e}")
@@ -474,7 +474,7 @@ async def get_group_member_info(websocket, group_id, user_id, no_cache):
             "params": {"group_id": group_id, "user_id": user_id, "no_cache": no_cache},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群成员信息")
+        logger.info("[API]已执行获取群成员信息")
         return True
     except Exception as e:
         logger.error(f"[API]获取群成员信息失败: {e}")
@@ -491,7 +491,7 @@ async def get_group_member_list(websocket, group_id, no_cache):
             "params": {"group_id": group_id, "no_cache": no_cache},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群成员列表")
+        logger.info("[API]已执行获取群成员列表")
         return True
     except Exception as e:
         logger.error(f"[API]获取群成员列表失败: {e}")
@@ -505,7 +505,7 @@ async def get_group_honor_info(websocket, group_id):
     try:
         message = {"action": "get_group_honor_info", "params": {"group_id": group_id}}
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群荣誉信息")
+        logger.info("[API]已执行获取群荣誉信息")
         return True
     except Exception as e:
         logger.error(f"[API]获取群荣誉信息失败: {e}")
@@ -522,7 +522,7 @@ async def get_group_at_all_remain(websocket, group_id):
             "params": {"group_id": group_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群at剩余次数")
+        logger.info("[API]已执行获取群at剩余次数")
         return True
     except Exception as e:
         logger.error(f"[API]获取群at剩余次数失败: {e}")
@@ -539,7 +539,7 @@ async def get_group_ignored_notifies(websocket, group_id):
             "params": {"group_id": group_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取群过滤系统消息")
+        logger.info("[API]已执行获取群过滤系统消息")
         return True
     except Exception as e:
         logger.error(f"[API]获取群被禁言成员列表失败: {e}")
@@ -556,7 +556,7 @@ async def set_group_sign(websocket, group_id):
             "params": {"group_id": group_id},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行设置群打卡")
+        logger.info("[API]已执行设置群打卡")
         return True
     except Exception as e:
         logger.error(f"[API]设置群打卡失败: {e}")
@@ -570,7 +570,7 @@ async def send_group_sign(websocket, group_id):
     try:
         message = {"action": "send_group_sign", "params": {"group_id": group_id}}
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行发送群打卡")
+        logger.info("[API]已执行发送群打卡")
         return True
     except Exception as e:
         logger.error(f"[API]发送群打卡失败: {e}")
@@ -587,7 +587,7 @@ async def get_ai_characters(websocket, group_id, chat_type):
             "params": {"group_id": group_id, "chat_type": chat_type},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取ai语音人物")
+        logger.info("[API]已执行获取ai语音人物")
         return True
     except Exception as e:
         logger.error(f"[API]获取ai语音人物失败: {e}")
@@ -608,7 +608,7 @@ async def send_group_ai_record(websocket, group_id, character_id, text):
             },
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行发送群ai语音")
+        logger.info("[API]已执行发送群ai语音")
         return True
     except Exception as e:
         logger.error(f"[API]发送群ai语音失败: {e}")
@@ -625,7 +625,7 @@ async def get_ai_record(websocket, group_id, character, text):
             "params": {"group_id": group_id, "character": character, "text": text},
         }
         await websocket.send(json.dumps(message))
-        logger.info(f"[API]已执行获取ai语音")
+        logger.info("[API]已执行获取ai语音")
         return True
     except Exception as e:
         logger.error(f"[API]获取群ai语音失败: {e}")
