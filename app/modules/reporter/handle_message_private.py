@@ -62,7 +62,7 @@ class PrivateMessageHandler:
                         self.websocket,
                         self.user_id,
                         [reply_message, text_message],
-                        note="del_msg_3",
+                        note="del_msg_10",
                     )
                     return
 

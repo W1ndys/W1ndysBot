@@ -43,6 +43,7 @@ class GroupMessageHandler:
                     self.websocket,
                     self.group_id,
                     [reply_message, text_message],
+                    note="del_msg_10",
                 )
                 return
 
