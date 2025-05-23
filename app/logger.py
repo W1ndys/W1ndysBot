@@ -74,7 +74,7 @@ class Logger:
         )
 
         file_handler = RotatingFileHandler(
-            self.log_filename, maxBytes=1024 * 1024, backupCount=0, encoding="utf-8"
+            self.log_filename, maxBytes=1024 * 1024, backupCount=5, encoding="utf-8"
         )
         file_handler.setFormatter(
             logging.Formatter(
