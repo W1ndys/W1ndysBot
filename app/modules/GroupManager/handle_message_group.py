@@ -69,16 +69,16 @@ class GroupMessageHandler:
             group_manager = GroupManager(self.websocket, self.msg)
 
             # 处理群消息
-            if self.raw_message.startswith(GROUP_MUTE_COMMAND):
+            if self.raw_message.startswith(GROUP_ALL_MUTE_COMMAND):
+                await group_manager.handle_all_mute()
+            elif self.raw_message.startswith(GROUP_ALL_UNMUTE_COMMAND):
+                await group_manager.handle_all_unmute()
+            elif self.raw_message.startswith(GROUP_MUTE_COMMAND):
                 await group_manager.handle_mute()
             elif self.raw_message.startswith(GROUP_UNMUTE_COMMAND):
                 await group_manager.handle_unmute()
             elif self.raw_message.startswith(GROUP_KICK_COMMAND):
                 await group_manager.handle_kick()
-            elif self.raw_message.startswith(GROUP_ALL_MUTE_COMMAND):
-                await group_manager.handle_all_mute()
-            elif self.raw_message.startswith(GROUP_ALL_UNMUTE_COMMAND):
-                await group_manager.handle_all_unmute()
             elif GROUP_RECALL_COMMAND in self.raw_message:
                 await group_manager.handle_recall()
 
