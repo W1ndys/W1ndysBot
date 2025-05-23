@@ -1,0 +1,4 @@
+websockets
+requests
+colorlog
+aiohttp
