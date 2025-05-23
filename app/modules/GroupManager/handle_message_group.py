@@ -13,7 +13,7 @@ from api.message import send_group_msg
 from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
 from core.auth import is_group_admin, is_system_owner
-from .GroupManager import GroupManager
+from .GroupManagerHandle import GroupManagerHandle
 
 
 class GroupMessageHandler:
@@ -66,21 +66,21 @@ class GroupMessageHandler:
                 return
 
             # 初始化群组管理器
-            group_manager = GroupManager(self.websocket, self.msg)
+            group_manager_handle = GroupManagerHandle(self.websocket, self.msg)
 
             # 处理群消息
             if self.raw_message.startswith(GROUP_ALL_MUTE_COMMAND):
-                await group_manager.handle_all_mute()
+                await group_manager_handle.handle_all_mute()
             elif self.raw_message.startswith(GROUP_ALL_UNMUTE_COMMAND):
-                await group_manager.handle_all_unmute()
+                await group_manager_handle.handle_all_unmute()
             elif self.raw_message.startswith(GROUP_MUTE_COMMAND):
-                await group_manager.handle_mute()
+                await group_manager_handle.handle_mute()
             elif self.raw_message.startswith(GROUP_UNMUTE_COMMAND):
-                await group_manager.handle_unmute()
+                await group_manager_handle.handle_unmute()
             elif self.raw_message.startswith(GROUP_KICK_COMMAND):
-                await group_manager.handle_kick()
+                await group_manager_handle.handle_kick()
             elif GROUP_RECALL_COMMAND in self.raw_message:
-                await group_manager.handle_recall()
+                await group_manager_handle.handle_recall()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")

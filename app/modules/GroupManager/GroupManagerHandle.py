@@ -10,7 +10,7 @@ from api.generate import generate_reply_message, generate_text_message
 import re
 
 
-class GroupManager:
+class GroupManagerHandle:
     def __init__(self, websocket, msg):
         self.websocket = websocket
         self.msg = msg
