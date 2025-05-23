@@ -23,55 +23,51 @@ class GroupManager:
     async def handle_mute(self):
         """
         处理群组禁言
-        两种格式：
-            {command}[CQ:at,qq={user_id}] 禁言时间(分钟)
-            {command} {user_id} 禁言时间(分钟)
+        支持以下格式：
+            {command}[CQ:at,qq={user_id}] [CQ:at,qq={user_id}] ... 禁言时间(分钟)  # 多个at
+            {command} {user_id} {user_id} ... 禁言时间(分钟)  # 多个QQ号
+            {command}[CQ:at,qq={user_id}] {user_id} ... 禁言时间(分钟)  # at和QQ号混用
         """
         try:
-            # 使用正则提取被禁言用户和禁言时间
-
-            # 提取 at 消息中的 QQ 号
+            # 匹配所有 at 格式
             at_pattern = r"\[CQ:at,qq=(\d+)\]"
-            at_match = re.search(at_pattern, self.raw_message)
+            at_matches = re.finditer(at_pattern, self.raw_message)
+            target_user_ids = [match.group(1) for match in at_matches]
 
-            # 提取禁言时间
-            time_pattern = r"(\d+)"
-            time_matches = re.findall(time_pattern, self.raw_message)
+            # 处理QQ号格式
+            message_parts = self.raw_message.split()
+            # 去掉命令部分,剩下的应该是QQ号和时间
+            parts = [part for part in message_parts[1:] if part.isdigit()]
 
-            if at_match:
-                # 使用 at 方式
-                target_user_id = at_match.group(1)
-                # 如果有多个数字，第一个是QQ号，第二个才是时间
-                if len(time_matches) > 1:
-                    mute_time = int(time_matches[1])
-                else:
-                    mute_time = 5  # 默认5分钟
+            # 如果最后一个数字小于1000,认为是时间参数
+            if parts and int(parts[-1]) < 1000:
+                mute_time = int(parts[-1])
+                # 移除时间参数,剩下的都是QQ号
+                parts = parts[:-1]
             else:
-                # 使用 QQ号 方式
-                message_parts = self.raw_message.split()
-                if len(message_parts) >= 2:
-                    # 去掉命令部分，第一个参数应该是QQ号
-                    target_user_id = message_parts[1]
-                    if not target_user_id.isdigit():
-                        raise ValueError("无效的QQ号")
+                mute_time = 5  # 默认5分钟
 
-                    # 检查是否有时间参数
-                    if len(message_parts) >= 3 and message_parts[2].isdigit():
-                        mute_time = int(message_parts[2])
-                    else:
-                        mute_time = 5  # 默认5分钟
-                else:
-                    raise ValueError(
-                        "格式错误，请使用 '@用户 时间' 或 'QQ号 时间' 的格式"
-                    )
+            # 添加QQ号格式的目标
+            target_user_ids.extend(parts)
 
-            # 执行禁言操作
-            await set_group_ban(
-                self.websocket,
-                self.group_id,
-                target_user_id,
-                mute_time * 60,
-            )
+            if not target_user_ids:
+                raise ValueError(
+                    "格式错误，请使用 '@用户 时间' 或 'QQ号 时间' 的格式，支持多个用户"
+                )
+
+            # 检查所有QQ号是否有效
+            for user_id in target_user_ids:
+                if not user_id.isdigit():
+                    raise ValueError(f"无效的QQ号: {user_id}")
+
+            # 批量执行禁言操作
+            for target_user_id in target_user_ids:
+                await set_group_ban(
+                    self.websocket,
+                    self.group_id,
+                    target_user_id,
+                    mute_time * 60,
+                )
 
         except Exception as e:
             await send_group_msg(
@@ -160,9 +156,10 @@ class GroupManager:
                 [
                     generate_reply_message(self.message_id),
                     generate_text_message(
-                        f"已成功踢出用户：{','.join(target_user_ids)}"
+                        f"已成功踢出用户：{'、'.join(target_user_ids)}"
                     ),
                 ],
+                note="del_msg_10",
             )
 
         except Exception as e:
