@@ -4,7 +4,7 @@
 
 import logger
 from . import MODULE_NAME
-from api.group import set_group_ban
+from api.group import set_group_ban, set_group_kick
 from api.message import send_group_msg
 from api.generate import generate_reply_message, generate_text_message
 import re
@@ -125,10 +125,46 @@ class GroupManager:
     async def handle_kick(self):
         """
         处理群组踢出
+        支持以下格式：
+            {command}[CQ:at,qq={user_id}] [CQ:at,qq={user_id}] ...  # 多个at
+            {command} {user_id} {user_id} ...  # 多个QQ号
+            {command}[CQ:at,qq={user_id}] {user_id} ...  # at和QQ号混用
         """
         try:
-            # 实现踢出逻辑
-            pass
+            # 匹配所有 at 格式
+            at_pattern = r"\[CQ:at,qq=(\d+)\]"
+            at_matches = re.finditer(at_pattern, self.raw_message)
+            target_user_ids = [match.group(1) for match in at_matches]
+
+            # 处理QQ号格式
+            message_parts = self.raw_message.split()
+            # 去掉命令和at部分,剩下的应该都是QQ号
+            qq_numbers = [part for part in message_parts[1:] if part.isdigit()]
+            target_user_ids.extend(qq_numbers)
+
+            if not target_user_ids:
+                raise ValueError(
+                    "格式错误，请使用 '@用户' 或 'QQ号' 的格式，支持多个用户"
+                )
+
+            # 批量执行踢出操作
+            for target_user_id in target_user_ids:
+                await set_group_kick(
+                    self.websocket, self.group_id, target_user_id, False
+                )
+
+            # 发送成功消息
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_reply_message(self.message_id),
+                    generate_text_message(
+                        f"已成功踢出用户：{','.join(target_user_ids)}"
+                    ),
+                ],
+            )
+
         except Exception as e:
             await self.send_error_message(f"踢出操作失败: {str(e)}")
             logger.error(f"[{MODULE_NAME}]踢出操作失败: {e}")

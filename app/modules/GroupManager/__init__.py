@@ -17,10 +17,10 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # 模块的一些命令可以在这里定义，方便在其他地方调用，提高代码的复用率
 # ------------------------------------------------------------
 
-GROUP_MUTE_COMMAND = "禁言"  # 禁言命令
-GROUP_UNMUTE_COMMAND = "解禁"  # 解禁命令
-GROUP_KICK_COMMAND = "踢出"  # 踢出命令
-GROUP_ALL_MUTE_COMMAND = "全员禁言"  # 全员禁言命令
-GROUP_ALL_UNMUTE_COMMAND = "全员解禁"  # 全员解禁命令
-GROUP_RECALL_COMMAND = "撤回"  # 撤回消息命令
+GROUP_MUTE_COMMAND = "ban"  # 禁言命令
+GROUP_UNMUTE_COMMAND = "unban"  # 解禁命令
+GROUP_KICK_COMMAND = "kick"  # 踢出命令
+GROUP_ALL_MUTE_COMMAND = "banall"  # 全员禁言命令
+GROUP_ALL_UNMUTE_COMMAND = "unbanall"  # 全员解禁命令
+GROUP_RECALL_COMMAND = "recall"  # 撤回消息命令
 # ------------------------------------------------------------
