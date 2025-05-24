@@ -4,6 +4,9 @@ import os
 # 模块名称
 MODULE_NAME = "GroupManager"
 
+# 开关名称(由模块名称的大写字母的缩写组成)
+SWITCH_NAME = "".join([c for c in MODULE_NAME if c.isupper()])
+
 # 模块描述
 MODULE_DESCRIPTION = (
     "群组管理模块，支持群组禁言、解禁、踢出、全员禁言、全员解禁、撤回消息等操作。"

@@ -1,4 +1,4 @@
-from . import MODULE_NAME
+from . import MODULE_NAME, SWITCH_NAME
 import logger
 from core.switchs import is_group_switch_on, toggle_group_switch
 from api.message import send_group_msg
@@ -52,7 +52,7 @@ class GroupMessageHandler:
         处理群消息
         """
         try:
-            if self.raw_message.lower() == MODULE_NAME.lower():
+            if self.raw_message.lower() == SWITCH_NAME.lower():
                 await self.handle_module_switch()
                 return
 

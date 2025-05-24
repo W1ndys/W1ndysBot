@@ -6,6 +6,7 @@ from . import (
     GROUP_ALL_MUTE_COMMAND,
     GROUP_ALL_UNMUTE_COMMAND,
     GROUP_RECALL_COMMAND,
+    SWITCH_NAME,
 )
 import logger
 from core.switchs import is_group_switch_on, toggle_group_switch
@@ -62,7 +63,7 @@ class GroupMessageHandler:
         处理群消息
         """
         try:
-            if self.raw_message.lower() == MODULE_NAME.lower():
+            if self.raw_message.lower() == SWITCH_NAME.lower():
                 await self.handle_module_switch()
                 return
 

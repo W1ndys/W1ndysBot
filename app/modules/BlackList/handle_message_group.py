@@ -4,6 +4,7 @@ from . import (
     BLACKLIST_REMOVE_COMMAND,
     BLACKLIST_LIST_COMMAND,
     BLACKLIST_CLEAR_COMMAND,
+    SWITCH_NAME,
 )
 import logger
 from core.auth import is_system_owner, is_group_admin
@@ -63,7 +64,7 @@ class GroupMessageHandler:
         处理群消息
         """
         try:
-            if self.raw_message.lower() == MODULE_NAME.lower():
+            if self.raw_message.lower() == SWITCH_NAME.lower():
                 await self.handle_module_switch()
                 return
 

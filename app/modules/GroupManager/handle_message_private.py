@@ -1,4 +1,4 @@
-from . import MODULE_NAME
+from . import MODULE_NAME, SWITCH_NAME
 import logger
 from core.switchs import is_private_switch_on, toggle_private_switch
 from api.message import send_private_msg
@@ -49,7 +49,7 @@ class PrivateMessageHandler:
         处理私聊消息
         """
         try:
-            if self.raw_message.lower() == MODULE_NAME.lower():
+            if self.raw_message.lower() == SWITCH_NAME.lower():
                 await self.handle_module_switch()
                 return
 
