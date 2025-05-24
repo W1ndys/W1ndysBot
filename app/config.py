@@ -4,7 +4,7 @@
 OWNER_ID = "3649056059"
 
 # 连接到NapCatQQ的WebSocket连接地址，默认使用3001端口
-WS_URL = "ws://127.0.0.1:3001"
+WS_URL = "ws://192.168.229.133:3001"
 
 # 连接到NapCatQQ的机器人Token
 TOKEN = ""
