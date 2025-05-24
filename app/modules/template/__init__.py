@@ -2,10 +2,10 @@ import os
 
 
 # 模块名称
-MODULE_NAME = "template"
+MODULE_NAME = "Template"
 
 # 模块开关名称
-SWITCH_NAME = ""
+SWITCH_NAME = "template"
 
 # 模块描述
 MODULE_DESCRIPTION = "模板模块"
