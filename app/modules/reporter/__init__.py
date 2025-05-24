@@ -3,8 +3,8 @@ import os
 # 模块名称
 MODULE_NAME = "reporter"
 
-# 开关名称(由模块名称的大写字母的缩写组成)
-SWITCH_NAME = "".join([c for c in MODULE_NAME if c.isupper()])
+# 模块开关名称
+SWITCH_NAME = ""
 
 # 模块描述
 MODULE_DESCRIPTION = "主要用于把私聊bot、加bot为好友，邀请bot入群等操作的通知报告"
