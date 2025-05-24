@@ -16,6 +16,24 @@ def generate_at_message(user_id):
     return {"type": "at", "data": {"qq": user_id}}
 
 
+def generate_at_message_with_qq(user_id):
+    """
+    生成@消息(QQ号)
+
+    Args:
+        user_id (int): 要@的用户QQ号
+
+    Returns:
+        dict: 包含@消息段和QQ号的消息字典，格式为:
+        {"type": "at", "data": {"qq": user_id}, "text": f"({user_id})"}
+
+    Note:
+        - 在群聊中@全体成员需要管理员权限
+        - 私聊中不支持@功能
+    """
+    return {"type": "at", "data": {"qq": user_id}, "text": f"({user_id})"}
+
+
 def generate_reply_message(message_id):
     """
     生成回复消息
