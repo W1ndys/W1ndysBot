@@ -102,7 +102,7 @@ class PrivateMessageHandler:
                     flag = parts[1]
                     logger.info(f"[{MODULE_NAME}]处理群请求: {action} {flag}")
                     # 处理群请求
-                    approve = action == "同意群请求"
+                    approve = action == "同意邀请登录号入群请求"
                     await set_group_add_request(
                         self.websocket, flag, approve, reason=""
                     )
