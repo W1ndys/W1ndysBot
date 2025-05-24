@@ -5,7 +5,7 @@ import os
 MODULE_NAME = "GroupManager"
 
 # 模块开关名称
-SWITCH_NAME = ""
+SWITCH_NAME = "GM"
 
 # 模块描述
 MODULE_DESCRIPTION = (

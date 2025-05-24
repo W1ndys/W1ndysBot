@@ -5,7 +5,7 @@ import os
 MODULE_NAME = "BlackList"
 
 # 模块开关名称
-SWITCH_NAME = ""
+SWITCH_NAME = "BL"
 
 # 模块描述
 MODULE_DESCRIPTION = "黑名单模块"

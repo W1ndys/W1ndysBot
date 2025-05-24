@@ -5,7 +5,7 @@ import os
 MODULE_NAME = "GroupSpamDetection"
 
 # 模块 开关名称
-SWITCH_NAME = ""
+SWITCH_NAME = "GSD"
 
 # 模块描述
 MODULE_DESCRIPTION = "群聊刷屏检测"
