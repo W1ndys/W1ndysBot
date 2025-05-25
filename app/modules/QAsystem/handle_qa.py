@@ -2,7 +2,7 @@ import logger
 from . import MODULE_NAME, ADD_QA, DELETE_QA
 from core.auth import is_group_admin, is_system_owner
 from .handle_match_qa import AdvancedQAMatcher
-from api.message import send_group_msg
+from api.message import send_group_msg, send_group_msg_with_cq
 from api.generate import generate_reply_message, generate_text_message
 
 
@@ -142,9 +142,9 @@ class QaHandler:
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message("添加成功"),
-                            generate_text_message(f"问题: {question}"),
-                            generate_text_message(f"答案: {answer}"),
+                            generate_text_message("添加成功\n"),
+                            generate_text_message(f"问题: {question}\n"),
+                            generate_text_message(f"答案: {answer}\n"),
                             generate_text_message(f"问答对ID: {str(result_id)}"),
                         ],
                     )
@@ -242,18 +242,18 @@ class QaHandler:
         try:
             matcher = AdvancedQAMatcher(self.group_id)
             matcher.build_index()
-            orig_question, answer, score = matcher.find_best_match(self.raw_message)
+            orig_question, answer, score, qa_id = matcher.find_best_match(
+                self.raw_message
+            )
             if orig_question and answer:
-                await send_group_msg(
+                await send_group_msg_with_cq(
                     self.websocket,
                     self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message("你可能想问：\n"),
-                        generate_text_message(f"问题: {orig_question}\n"),
-                        generate_text_message(f"答案: {answer}\n"),
-                        generate_text_message(f"相似度: {score:.2f}"),
-                    ],
+                    f"[CQ:reply,id={self.message_id}]"
+                    "你可能想问\n"
+                    f"问题: {orig_question}\n"
+                    f"回复: {answer}\n"
+                    f"相似度: {score:.2f} ，ID: {qa_id}",
                 )
                 return
         except Exception as e:

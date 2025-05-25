@@ -27,8 +27,8 @@ class AdvancedQAMatcher:
         """
         从数据库加载所有问答对到内存。
         """
-        # 从数据库加载所有QA对
-        self.qa_pairs = [(q, a) for _, q, a in self.db.get_all_qa_pairs()]
+        # 从数据库加载所有QA对，包含id
+        self.qa_pairs = [(id, q, a) for id, q, a in self.db.get_all_qa_pairs()]
 
     def _tokenize(self, text):
         """
@@ -49,9 +49,9 @@ class AdvancedQAMatcher:
             question: str 问题
             answer: str 答案
         """
-        self.qa_pairs.append((question, answer))
         result_id = self.db.add_qa_pair(question, answer)
         if result_id:
+            self.qa_pairs.append((result_id, question, answer))
             return result_id
         return None
 
@@ -64,7 +64,7 @@ class AdvancedQAMatcher:
             bool 是否删除成功
         """
         # 从内存中删除
-        self.qa_pairs = [(q, a) for i, (q, a) in enumerate(self.qa_pairs) if i != qa_id]
+        self.qa_pairs = [(id, q, a) for id, q, a in self.qa_pairs if id != qa_id]
         # 从数据库中删除
         self.db.delete_qa_pair(qa_id)
         return True
@@ -74,12 +74,12 @@ class AdvancedQAMatcher:
         构建TF-IDF索引和关键词倒排索引，用于高效检索。
         """
         # 构建TF-IDF索引
-        questions = [q for q, a in self.qa_pairs]
+        questions = [q for _, q, a in self.qa_pairs]
         self.tfidf_matrix = self.vectorizer.fit_transform(questions).tocsr()  # type: ignore
 
         # 构建关键词倒排索引
         self.keyword_index.clear()
-        for idx, (q, a) in enumerate(self.qa_pairs):
+        for idx, (id, q, a) in enumerate(self.qa_pairs):
             keywords = set(self._tokenize(q))
             for word in keywords:
                 self.keyword_index[word].append(idx)
@@ -106,15 +106,15 @@ class AdvancedQAMatcher:
 
     def find_best_match(self, query, threshold=0.5):
         """
-        查找与输入问题最匹配的问答对，返回原始问题、答案和相似度分数。
+        查找与输入问题最匹配的问答对，返回原始问题、答案、相似度分数和数据库id。
         参数:
             query: str 用户输入的问题
             threshold: float 匹配阈值，低于该值则认为无合适答案
         返回:
-            (orig_question, orig_answer, score) 或 (None, None, score)
+            (orig_question, orig_answer, score, id) 或 (None, None, score, None)
         """
         if not self.qa_pairs or self.tfidf_matrix is None:
-            return None, None, 0.0
+            return None, None, 0.0, None
 
         # 步骤1: 初步筛选候选问题
         candidate_indices = self._get_candidate_indices(query)
@@ -133,15 +133,15 @@ class AdvancedQAMatcher:
 
         # 步骤3: 使用编辑距离进行二次验证
         seq_score = difflib.SequenceMatcher(
-            None, query, self.qa_pairs[best_qa_idx][0]
+            None, query, self.qa_pairs[best_qa_idx][1]
         ).ratio()
         # 优化加权方式：TF-IDF与编辑距离0.3:0.7
         combined_score = 0.3 * best_score + 0.7 * seq_score
 
         if combined_score >= threshold:
-            orig_question, orig_answer = self.qa_pairs[best_qa_idx]
-            return orig_question, orig_answer, combined_score
-        return None, None, combined_score
+            qa_id, orig_question, orig_answer = self.qa_pairs[best_qa_idx]
+            return orig_question, orig_answer, combined_score, qa_id
+        return None, None, combined_score, None
 
 
 if __name__ == "__main__":
@@ -150,10 +150,10 @@ if __name__ == "__main__":
 
     while True:
         query = input("请输入问题: ")
-        orig_question, answer, score = matcher.find_best_match(query)
+        orig_question, answer, score, qa_id = matcher.find_best_match(query)
         print(f"问题: {query}")
         if answer:
             print(f"数据库原句: {orig_question}")
-            print(f"匹配答案: {answer} (相似度: {score:.2f})\n")
+            print(f"匹配答案: {answer} (相似度: {score:.2f}) [ID: {qa_id}]")
         else:
             print(f"未找到合适答案 (相似度: {score:.2f})\n")
