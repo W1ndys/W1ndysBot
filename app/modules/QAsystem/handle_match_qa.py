@@ -22,6 +22,7 @@ class AdvancedQAMatcher:
         self.keyword_index = defaultdict(list)
         self.db = QADatabaseManager(group_id)
         self._load_from_db()
+        self.threshold = 0.6
 
     def _load_from_db(self):
         """
@@ -104,7 +105,7 @@ class AdvancedQAMatcher:
             list(candidate_indices) if candidate_indices else range(len(self.qa_pairs))
         )
 
-    def find_best_match(self, query, threshold=0.5):
+    def find_best_match(self, query):
         """
         查找与输入问题最匹配的问答对，返回原始问题、答案、相似度分数和数据库id。
         参数:
@@ -138,7 +139,7 @@ class AdvancedQAMatcher:
         # 优化加权方式：TF-IDF与编辑距离0.3:0.7
         combined_score = 0.3 * best_score + 0.7 * seq_score
 
-        if combined_score >= threshold:
+        if combined_score >= self.threshold:
             qa_id, orig_question, orig_answer = self.qa_pairs[best_qa_idx]
             return orig_question, orig_answer, combined_score, qa_id
         return None, None, combined_score, None
