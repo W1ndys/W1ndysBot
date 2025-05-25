@@ -4,7 +4,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import difflib
 from collections import defaultdict
 import jieba
-from db_manager import QADatabaseManager
+from .db_manager import QADatabaseManager
 import scipy.sparse
 from typing import Optional
 
@@ -104,7 +104,7 @@ class AdvancedQAMatcher:
             list(candidate_indices) if candidate_indices else range(len(self.qa_pairs))
         )
 
-    def find_best_match(self, query, threshold=0.47):
+    def find_best_match(self, query, threshold=0.5):
         """
         查找与输入问题最匹配的问答对，返回原始问题、答案和相似度分数。
         参数:

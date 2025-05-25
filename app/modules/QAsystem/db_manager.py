@@ -12,6 +12,7 @@ class QADatabaseManager:
             group_id: str 群组ID
         """
         self.db_path = os.path.join(DATA_DIR, group_id, "qa_data.db")
+        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         self._create_table()
 
     def _create_table(self):

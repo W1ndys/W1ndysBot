@@ -18,9 +18,9 @@ class QaHandler:
         self.websocket = websocket
         self.msg = msg
         self.raw_message = msg.get("raw_message")
-        self.group_id = msg.get("group_id")
-        self.user_id = msg.get("user_id")
-        self.message_id = msg.get("message_id")
+        self.group_id = str(msg.get("group_id"))
+        self.user_id = str(msg.get("user_id"))
+        self.message_id = str(msg.get("message_id"))
         self.sender = msg.get("sender", {})
         self.role = self.sender.get("role")
 
@@ -85,8 +85,9 @@ class QaHandler:
                         fail_list.append(f"第{idx+1}行内容缺失")
                         continue
                     result_id = matcher.add_qa_pair(question, answer)
-                    if result_id:
-                        success_list.append(f"问题: {question}，ID: {result_id}")
+                    if result_id is not None:
+                        # 确保ID为字符串类型
+                        success_list.append(f"问题: {question}，ID: {str(result_id)}")
                     else:
                         fail_list.append(f"问题: {question} 添加失败")
                 # 组织反馈消息
@@ -115,7 +116,9 @@ class QaHandler:
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message("格式错误，应为：添加命令 问题 答案"),
+                            generate_text_message(
+                                f"格式错误，应为：{ADD_QA} 问题 答案"
+                            ),
                         ],
                     )
                     return
@@ -126,12 +129,14 @@ class QaHandler:
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message("问题或答案不能为空"),
+                            generate_text_message(
+                                f"问题或答案不能为空，应为：{ADD_QA} 问题 答案"
+                            ),
                         ],
                     )
                     return
                 result_id = matcher.add_qa_pair(question, answer)
-                if result_id:
+                if result_id is not None:
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
@@ -140,7 +145,7 @@ class QaHandler:
                             generate_text_message("添加成功"),
                             generate_text_message(f"问题: {question}"),
                             generate_text_message(f"答案: {answer}"),
-                            generate_text_message(f"问答对ID: {result_id}"),
+                            generate_text_message(f"问答对ID: {str(result_id)}"),
                         ],
                     )
                 else:
@@ -244,9 +249,9 @@ class QaHandler:
                     self.group_id,
                     [
                         generate_reply_message(self.message_id),
-                        generate_text_message("你可能想问："),
-                        generate_text_message(f"问题: {orig_question}"),
-                        generate_text_message(f"答案: {answer}"),
+                        generate_text_message("你可能想问：\n"),
+                        generate_text_message(f"问题: {orig_question}\n"),
+                        generate_text_message(f"答案: {answer}\n"),
                         generate_text_message(f"相似度: {score:.2f}"),
                     ],
                 )
