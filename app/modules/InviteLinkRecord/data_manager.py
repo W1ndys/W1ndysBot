@@ -7,10 +7,10 @@ import logger
 class InviteLinkRecordDataManager:
     def __init__(self, msg):
         self.msg = msg
-        self.group_id = self.msg.get("group_id")
-        self.operator_id = self.msg.get("operator_id")
-        self.invited_id = self.msg.get("user_id")
-        self.invite_time = self.msg.get("time")
+        self.group_id = str(self.msg.get("group_id"))
+        self.operator_id = str(self.msg.get("operator_id"))
+        self.invited_id = str(self.msg.get("user_id"))
+        self.invite_time = str(self.msg.get("time"))
         self.db_path = os.path.join(DATA_DIR, self.group_id, "invite_link_record.db")
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         self.conn = sqlite3.connect(self.db_path)
@@ -52,7 +52,7 @@ class InviteLinkRecordDataManager:
         try:
             self.cursor.execute(
                 """SELECT invited_id FROM invite_link_record WHERE operator_id = ? AND group_id = ?""",
-                (operator_id, self.group_id)
+                (operator_id, self.group_id),
             )
             rows = self.cursor.fetchall()
             # 返回被邀请者id的列表

@@ -5,6 +5,7 @@ from api.message import send_group_msg
 from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
 from .data_manager import InviteLinkRecordDataManager
+import re
 
 
 class GroupMessageHandler:
@@ -63,8 +64,29 @@ class GroupMessageHandler:
 
             # 查看邀请记录命令
             if self.raw_message.startswith(VIEW_INVITE_RECORD):
-                # 获取邀请者id
-                operator_id = self.raw_message.split(" ")[1]
+                # 使用正则提取参数，支持QQ号或CQ码
+
+                operator_id = None
+                # 匹配CQ码 [CQ:at,qq=123456789]
+                cq_match = re.search(r"\[CQ:at,qq=(\d+)\]", self.raw_message)
+                if cq_match:
+                    operator_id = cq_match.group(1)
+                else:
+                    # 匹配空格后面的纯数字QQ号
+                    num_match = re.search(
+                        rf"{VIEW_INVITE_RECORD}\s+(\d+)", self.raw_message
+                    )
+                    if num_match:
+                        operator_id = num_match.group(1)
+
+                if not operator_id:
+                    # 没有找到参数，提示格式错误
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [generate_text_message("请提供正确的QQ号或@某人。")],
+                    )
+                    return
                 # 调用查看邀请记录
                 invite_link_record = InviteLinkRecordDataManager(self.msg)
                 invited_users = invite_link_record.get_invited_users_by_operator(
