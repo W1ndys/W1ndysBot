@@ -1,69 +1,19 @@
-# 🤖 W1ndysBotFrame
+# 🤖 W1ndysBot
 
-![GitHub stars](https://img.shields.io/github/stars/W1ndysBot/W1ndysBotFrame?style=flat-square)
-![GitHub forks](https://img.shields.io/github/forks/W1ndysBot/W1ndysBotFrame?style=flat-square)
-![GitHub issues](https://img.shields.io/github/issues/W1ndysBot/W1ndysBotFrame?style=flat-square)
-![GitHub license](https://img.shields.io/github/license/W1ndysBot/W1ndysBotFrame?style=flat-square)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/W1ndysBot/W1ndysBotFrame)
+![GitHub stars](https://img.shields.io/github/stars/W1ndys/W1ndysBot?style=flat-square)
+![GitHub forks](https://img.shields.io/github/forks/W1ndys/W1ndysBot?style=flat-square)
+![GitHub issues](https://img.shields.io/github/issues/W1ndys/W1ndysBot?style=flat-square)
+![GitHub license](https://img.shields.io/github/license/W1ndys/W1ndysBot?style=flat-square)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/W1ndys/W1ndysBot)
 
-W1ndysBotFrame，一款基于 NapCat 和 Python 开发的机器人程序。
-
-本项目已发布 3.0 版本，经过了彻底重构，欢迎使用！如有任何问题，请提交 issue 或联系作者
-
-## 📁 项目结构
-
-```
-app/
-├── api/                    # API 接口模块
-│   ├── user.py            # 用户相关接口
-│   ├── message.py         # 消息处理接口
-│   ├── generate.py        # 生成相关接口
-│   └── group.py           # 群组管理接口
-├── core/                   # 核心功能模块
-│   ├── auth.py            # 权限认证
-│   ├── del_self_msg.py # 自动撤回自己发送的消息
-│   ├── online_detect.py   # 在线检测
-│   └── switchs.py         # 开关管理
-├── modules/               # 模块目录
-│   └── template/          # 模板模块
-│       ├── main.py              # 主程序入口
-│       ├── handle_message.py   # 消息处理器
-│       ├── handle_notice.py    # 通知处理器
-│       ├── handle_request.py   # 请求处理器
-│       ├── handle_response.py  # 响应处理器
-│       └── README.md           # 说明文档
-├── utils/                   # 工具函数模块
-│   ├── feishu.py            # 飞书集成
-│   └── logs_clean.py        # 日志清理
-├── bot.py                 # 机器人主程序
-├── handle_events.py      # 事件处理器
-├── main.py               # 程序入口
-├── logger.py             # 日志系统
-└── config.py             # 配置文件
-```
-
-## 流程图
-
-在这里->[流程图](./docs/flow_diagram.md)
+W1ndysBot，一款基于 NapCat 和 Python 开发的机器人程序，基于[W1ndysBotFrame](https://github.com/W1ndysBot/W1ndysBotFrame) 开发。
 
 ## ✨ 功能说明
 
-- ❤️ 每次心跳检测机器人是否在线
-- 📢 支持掉线后自动发送通知到飞书
-- 🔌 模块动态加载，无需侵入式修改代码
-- 🔒 每个群可以单独控制功能的开启/关闭
-- 🔐 每个私聊功能可以单独控制功能的开启/关闭
-- ⏰ 支持定时任务
-- 🔄 支持自动撤回自己发送的消息
-- 📨 支持私聊转达到`OWNER`管理员
-- 📝 支持日志记录和查询
-- 🧩 功能模块可以独立开发和管理
-
-## 🛠️ 开发说明
-
-- 新功能开发请参考 `app/modules/template` 目录的示例
-- 数据存储请在 `app/data` 下创建对应目录
-- 如需定时撤回消息，请在[发送消息 API](https://github.com/W1ndysBot/W1ndysBotFrame/blob/main/app/api/message.py) 的`note`参数中传入`del_msg_秒数`，例如`del_msg_10`
+- 🧩 含[W1ndysBotFrame](https://github.com/W1ndysBot/W1ndysBotFrame) 所有系统功能
+- 🚫 黑名单系统，支持拉黑、解黑、查看黑名单、清空黑名单，新入群或发言时检测黑名单
+- 🛡️ 基础群管功能，支持群禁言、解禁、踢出、全员禁言、全员解禁、撤回消息等
+- 🔄 刷屏检测，支持检测用户 1 秒内发送的消息数量是否超过 5 条或存在连续重复的消息
 
 ## ⚙️ 配置说明
 
@@ -82,9 +32,9 @@ app/
 （注意备份好数据、日志、配置文件、自己开发的功能等，建议使用 git 管理，或复制新目录再覆盖）
 
 ```bash
-git clone https://github.com/W1ndysBot/W1ndysBotFrame.git
+git clone https://github.com/W1ndys/W1ndysBot.git
 ```
 
 ## 🌟 星标历史
 
-[![Star History Chart](https://api.star-history.com/svg?repos=W1ndysBot/W1ndysBotFrame&type=Date)](https://star-history.com/#W1ndysBot/W1ndysBotFrame&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=W1ndys/W1ndysBot&type=Date)](https://star-history.com/#W1ndys/W1ndysBot&Date)
