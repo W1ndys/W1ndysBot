@@ -42,8 +42,9 @@ async def clean_logs(websocket, msg):
 
     # 发送删除的文件列表
     if deleted_files:
+        deleted_files_str = "\n".join(deleted_files)
         await send_private_msg(
             websocket,
             OWNER_ID,
-            f"已删除过期日志文件: \n{'\n'.join(deleted_files)}",
+            f"已删除过期日志文件: \n{deleted_files_str}",
         )
