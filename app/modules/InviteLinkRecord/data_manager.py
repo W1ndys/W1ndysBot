@@ -44,3 +44,19 @@ class InviteLinkRecordDataManager:
         except Exception as e:
             logger.error(f"添加邀请链接记录失败: {e}")
             return False
+
+    def get_invited_users_by_operator(self, operator_id):
+        """
+        查询某个邀请者(operator_id)邀请的所有用户，返回被邀请者id列表
+        """
+        try:
+            self.cursor.execute(
+                """SELECT invited_id FROM invite_link_record WHERE operator_id = ? AND group_id = ?""",
+                (operator_id, self.group_id)
+            )
+            rows = self.cursor.fetchall()
+            # 返回被邀请者id的列表
+            return [row[0] for row in rows]
+        except Exception as e:
+            logger.error(f"查询邀请者{operator_id}邀请的用户失败: {e}")
+            return []

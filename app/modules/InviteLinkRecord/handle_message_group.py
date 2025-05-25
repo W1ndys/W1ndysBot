@@ -1,9 +1,10 @@
-from . import MODULE_NAME, SWITCH_NAME
+from . import MODULE_NAME, SWITCH_NAME, VIEW_INVITE_RECORD
 import logger
 from core.switchs import is_group_switch_on, toggle_group_switch
 from api.message import send_group_msg
 from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
+from .data_manager import InviteLinkRecordDataManager
 
 
 class GroupMessageHandler:
@@ -58,6 +59,28 @@ class GroupMessageHandler:
 
             # 如果没开启群聊开关，则不处理
             if not is_group_switch_on(self.group_id, MODULE_NAME):
+                return
+
+            # 查看邀请记录命令
+            if self.raw_message.startswith(VIEW_INVITE_RECORD):
+                # 获取邀请者id
+                operator_id = self.raw_message.split(" ")[1]
+                # 调用查看邀请记录
+                invite_link_record = InviteLinkRecordDataManager(self.msg)
+                invited_users = invite_link_record.get_invited_users_by_operator(
+                    operator_id
+                )
+                # 发送邀请记录
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_text_message(
+                            f"{operator_id}邀请入群记录\n\n"
+                            f"被邀请者：{','.join(invited_users)}"
+                        )
+                    ],
+                )
                 return
 
         except Exception as e:

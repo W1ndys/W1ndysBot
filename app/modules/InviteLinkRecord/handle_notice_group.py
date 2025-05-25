@@ -211,7 +211,11 @@ class GroupNoticeHandler:
                     OWNER_ID,
                     [
                         generate_text_message(
-                            f"管理员邀请入群通知: {operator_id} 邀请 {invited_id} 入群（群号：{group_id}）"
+                            f"邀请入群记录通知\n\n"
+                            f"邀请者：{operator_id}\n"
+                            f"被邀请者：{invited_id}\n"
+                            f"群号：{group_id}\n"
+                            f"邀请时间：{self.formatted_time}\n"
                         )
                     ],
                 )
