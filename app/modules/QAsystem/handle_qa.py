@@ -41,7 +41,7 @@ class QaHandler:
                 return
 
             # 否则，调用匹配问答对函数
-            await self.handle_match_qa()
+            await self.handle_match_qa()  # type: ignore
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
@@ -87,23 +87,24 @@ class QaHandler:
                     result_id = matcher.add_qa_pair(question, answer)
                     if result_id is not None:
                         # 确保ID为字符串类型
-                        success_list.append(f"问题: {question}，ID: {str(result_id)}")
+                        success_list.append(f"问题: {question}，ID: {str(result_id)}\n")
                     else:
-                        fail_list.append(f"问题: {question} 添加失败")
+                        fail_list.append(f"问题: {question} 添加失败\n")
                 # 组织反馈消息
                 reply_msgs = [generate_reply_message(self.message_id)]
                 if success_list:
-                    reply_msgs.append(generate_text_message("批量添加成功："))
+                    reply_msgs.append(generate_text_message("批量添加成功：\n"))
                     for s in success_list:
                         reply_msgs.append(generate_text_message(s))
                 if fail_list:
-                    reply_msgs.append(generate_text_message("以下内容添加失败："))
+                    reply_msgs.append(generate_text_message("以下内容添加失败：\n"))
                     for f in fail_list:
                         reply_msgs.append(generate_text_message(f))
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
                     reply_msgs,
+                    note="del_msg_20",
                 )
             else:
                 # 单条添加
@@ -117,9 +118,10 @@ class QaHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"格式错误，应为：{ADD_QA} 问题 答案"
+                                f"格式错误，应为：{ADD_QA} 问题 答案",
                             ),
                         ],
+                        note="del_msg_20",
                     )
                     return
                 question, answer = parts[0].strip(), parts[1].strip()
@@ -130,9 +132,10 @@ class QaHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"问题或答案不能为空，应为：{ADD_QA} 问题 答案"
+                                f"问题或答案不能为空，应为：{ADD_QA} 问题 答案",
                             ),
                         ],
+                        note="del_msg_20",
                     )
                     return
                 result_id = matcher.add_qa_pair(question, answer)
@@ -147,6 +150,7 @@ class QaHandler:
                             generate_text_message(f"答案: {answer}\n"),
                             generate_text_message(f"问答对ID: {str(result_id)}"),
                         ],
+                        note="del_msg_20",
                     )
                 else:
                     await send_group_msg(
@@ -156,6 +160,7 @@ class QaHandler:
                             generate_reply_message(self.message_id),
                             generate_text_message("添加失败"),
                         ],
+                        note="del_msg_20",
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理添加问答对命令失败: {e}")
@@ -181,6 +186,7 @@ class QaHandler:
                             "请提供要删除的问答对ID（可空格分隔多个ID）"
                         ),
                     ],
+                    note="del_msg_20",
                 )
                 return
 
@@ -196,6 +202,7 @@ class QaHandler:
                             "请提供要删除的问答对ID（可空格分隔多个ID）"
                         ),
                     ],
+                    note="del_msg_20",
                 )
                 return
 
@@ -229,6 +236,7 @@ class QaHandler:
                 self.websocket,
                 self.group_id,
                 msg_list,
+                note="del_msg_20",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理删除问答对命令失败: {e}")
