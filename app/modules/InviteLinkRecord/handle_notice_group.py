@@ -1,6 +1,10 @@
 from . import MODULE_NAME
 import logger
 from core.switchs import is_group_switch_on
+from .data_manager import InviteLinkRecordDataManager
+from config import OWNER_ID
+from api.generate import generate_text_message
+from api.message import send_private_msg
 
 
 class GroupNoticeHandler:
@@ -185,7 +189,32 @@ class GroupNoticeHandler:
         处理群聊成员增加 - 管理员邀请入群通知
         """
         try:
-            pass
+            # 检测群开关
+            if not is_group_switch_on(self.group_id, MODULE_NAME):
+                return
+
+            # 操作者，即邀请者
+            operator_id = self.msg.get("operator_id")
+
+            # 被邀请者
+            invited_id = self.msg.get("user_id")
+
+            # 群号
+            group_id = self.msg.get("group_id")
+
+            # 添加邀请链接记录
+            invite_link_record = InviteLinkRecordDataManager(self.msg)
+            if invite_link_record.add_invite_link_record():
+                # 通知管理员
+                await send_private_msg(
+                    self.websocket,
+                    OWNER_ID,
+                    [
+                        generate_text_message(
+                            f"管理员邀请入群通知: {operator_id} 邀请 {invited_id} 入群（群号：{group_id}）"
+                        )
+                    ],
+                )
         except Exception as e:
             logger.error(
                 f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知失败: {e}"
