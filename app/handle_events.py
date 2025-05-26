@@ -85,6 +85,12 @@ class EventHandler:
             except Exception as e:
                 logger.error(f"加载模块失败: {module_name}, 错误: {e}")
 
+    async def _safe_handle(self, handler, websocket, msg):
+        try:
+            await handler(websocket, msg)
+        except Exception as e:
+            logger.error(f"模块 {handler} 处理消息时出错: {e}")
+
     async def handle_message(self, websocket, message):
         """处理websocket消息"""
         try:
@@ -96,9 +102,9 @@ class EventHandler:
                 f"{'-' * terminal_width}\n📩 收到WebSocket消息:\n{msg}\n{'-' * terminal_width}"
             )
 
-            # 并发调用各个模块的事件处理器
-            tasks = [handler(websocket, msg) for handler in self.handlers]
-            await asyncio.gather(*tasks)
+            # 每个 handler 独立异步后台处理
+            for handler in self.handlers:
+                asyncio.create_task(self._safe_handle(handler, websocket, msg))
 
         except Exception as e:
             logger.error(f"处理websocket消息的逻辑错误: {e}")

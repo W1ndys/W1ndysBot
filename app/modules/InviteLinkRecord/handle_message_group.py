@@ -122,7 +122,7 @@ class GroupMessageHandler:
                 else:
                     # 匹配空格后面的纯数字QQ号
                     num_match = re.search(
-                        rf"{VIEW_INVITE_RECORD}\s+(\d+)", self.raw_message
+                        rf"{KICK_INVITE_RECORD}\s+(\d+)", self.raw_message
                     )
                     if num_match:
                         operator_id = num_match.group(1)
@@ -135,7 +135,8 @@ class GroupMessageHandler:
                         [generate_text_message("请提供正确的QQ号或@某人。")],
                     )
                     return
-                # 调用查看邀请记录
+
+                # 获取相关邀请者
                 related_users = invite_link_record.get_related_invite_users(operator_id)
                 # 发送踢出邀请树
                 for user_id in related_users:
