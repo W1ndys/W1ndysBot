@@ -159,9 +159,12 @@ class QaHandler:
                                 generate_text_message("更新成功\n"),
                                 generate_text_message(f"问题: {question}\n"),
                                 generate_text_message(f"答案: {answer}\n"),
-                                generate_text_message(f"问答对ID: {str(result_id)}"),
+                                generate_text_message(f"问答对ID: {str(result_id)}\n"),
+                                generate_text_message(
+                                    f"消息将在10秒后撤回，请及时保存"
+                                ),
                             ],
-                            note="del_msg_20",
+                            note="del_msg_10",
                         )
                     else:
                         await send_group_msg(
@@ -172,9 +175,12 @@ class QaHandler:
                                 generate_text_message("添加成功\n"),
                                 generate_text_message(f"问题: {question}\n"),
                                 generate_text_message(f"答案: {answer}\n"),
-                                generate_text_message(f"问答对ID: {str(result_id)}"),
+                                generate_text_message(f"问答对ID: {str(result_id)}\n"),
+                                generate_text_message(
+                                    f"消息将在10秒后撤回，请及时保存"
+                                ),
                             ],
-                            note="del_msg_20",
+                            note="del_msg_10",
                         )
                 else:
                     await send_group_msg(
@@ -207,10 +213,11 @@ class QaHandler:
                     [
                         generate_reply_message(self.message_id),
                         generate_text_message(
-                            "请提供要删除的问答对ID（可空格分隔多个ID）"
+                            "请提供要删除的问答对ID（可空格分隔多个ID）\n"
                         ),
+                        generate_text_message(f"消息将在10秒后撤回，请及时保存"),
                     ],
-                    note="del_msg_20",
+                    note="del_msg_10",
                 )
                 return
 
@@ -223,10 +230,11 @@ class QaHandler:
                     [
                         generate_reply_message(self.message_id),
                         generate_text_message(
-                            "请提供要删除的问答对ID（可空格分隔多个ID）"
+                            "请提供要删除的问答对ID（可空格分隔多个ID）\n"
                         ),
+                        generate_text_message(f"消息将在10秒后撤回，请及时保存"),
                     ],
-                    note="del_msg_20",
+                    note="del_msg_10",
                 )
                 return
 
@@ -247,11 +255,17 @@ class QaHandler:
             msg_list = [generate_reply_message(self.message_id)]
             if success_ids:
                 msg_list.append(
-                    generate_text_message(f"删除成功的ID: {' '.join(success_ids)}")
+                    generate_text_message(
+                        f"删除成功的ID: {' '.join(success_ids)}\n"
+                        f"消息将在10秒后撤回，请及时保存"
+                    )
                 )
             if fail_ids:
                 msg_list.append(
-                    generate_text_message(f"删除失败的ID: {' '.join(fail_ids)}")
+                    generate_text_message(
+                        f"删除失败的ID: {' '.join(fail_ids)}\n"
+                        f"消息将在10秒后撤回，请及时保存"
+                    )
                 )
             if not success_ids and not fail_ids:
                 msg_list.append(generate_text_message("未能识别要删除的问答对ID"))
@@ -260,7 +274,7 @@ class QaHandler:
                 self.websocket,
                 self.group_id,
                 msg_list,
-                note="del_msg_20",
+                note="del_msg_10",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理删除问答对命令失败: {e}")
@@ -285,7 +299,8 @@ class QaHandler:
                     "你可能想问\n"
                     f"问题: {orig_question}\n"
                     f"回复: {answer}\n"
-                    f"相似度: {score:.2f} ，ID: {qa_id}",
+                    f"相似度: {score:.2f} ，ID: {qa_id}\n"
+                    f"消息将在30秒后撤回，请及时保存",
                 )
                 return
         except Exception as e:
