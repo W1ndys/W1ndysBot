@@ -128,3 +128,37 @@ class InviteLinkRecordDataManager:
         except Exception as e:
             logger.error(f"生成邀请链结构失败: {e}")
         return result
+
+    def get_full_invite_chain_str(self, user_id):
+        """
+        生成完整邀请链：先递归向上查找所有邀请者，找到最顶层root，再以root为起点递归向下生成树状结构。
+        """
+        # 1. 向上查找所有邀请者，找到最顶层root
+        chain = []
+        current_id = user_id
+        visited_up = set()
+        while True:
+            if current_id in visited_up:
+                break  # 防止环
+            visited_up.add(current_id)
+            chain.append(current_id)
+            self.cursor.execute(
+                """SELECT operator_id FROM invite_link_record WHERE invited_id = ? AND group_id = ?""",
+                (current_id, self.group_id),
+            )
+            row = self.cursor.fetchone()
+            if row and row[0]:
+                current_id = row[0]
+            else:
+                break
+        chain = chain[::-1]  # 反转，root在前
+        root_id = chain[0]
+        # 2. 以root为起点，递归向下生成树状结构
+        tree_str = self.get_invite_tree_str(root_id)
+        # 3. 标记目标user_id
+        if user_id != root_id:
+            # 用*标记目标节点
+            tree_str = tree_str.replace(f"{user_id}\n", f"{user_id}  <--- 查询对象\n")
+        # 4. 展示链路
+        chain_str = " -> ".join(chain)
+        return f"邀请链路：{chain_str}\n\n{tree_str}"
