@@ -89,17 +89,15 @@ class GroupMessageHandler:
                     return
                 # 调用查看邀请记录
                 invite_link_record = InviteLinkRecordDataManager(self.msg)
-                invited_users = invite_link_record.get_invited_users_by_operator(
-                    operator_id
-                )
+                # 生成邀请链树状结构
+                invite_tree_str = invite_link_record.get_invite_tree_str(operator_id)
                 # 发送邀请记录
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
                     [
                         generate_text_message(
-                            f"{operator_id}邀请入群记录\n\n"
-                            f"被邀请者：{','.join(invited_users)}"
+                            f"{operator_id}邀请链结构\n\n" + invite_tree_str
                         )
                     ],
                 )
