@@ -162,3 +162,47 @@ class InviteLinkRecordDataManager:
         # 4. 展示链路
         chain_str = " -> ".join(chain)
         return f"邀请链路：{chain_str}\n\n{tree_str}"
+
+    def get_related_invite_users(self, user_id):
+        """
+        返回被查询者的上级和下级所有相关邀请者，结果为去重后的id列表（包含自身）。
+        上级：递归向上查找所有邀请者
+        下级：递归向下查找所有被邀请者
+        """
+        related_users = set()
+        related_users.add(user_id)  # 包含自身
+        # 向上查找所有邀请者
+        current_id = user_id
+        visited_up = set()
+        while True:
+            if current_id in visited_up:
+                break  # 防止环
+            visited_up.add(current_id)
+            self.cursor.execute(
+                """SELECT operator_id FROM invite_link_record WHERE invited_id = ? AND group_id = ?""",
+                (current_id, self.group_id),
+            )
+            row = self.cursor.fetchone()
+            if row and row[0]:
+                operator_id = row[0]
+                related_users.add(operator_id)
+                current_id = operator_id
+            else:
+                break
+
+        # 向下查找所有被邀请者
+        def find_down(inviter_id, visited_down):
+            self.cursor.execute(
+                """SELECT invited_id FROM invite_link_record WHERE operator_id = ? AND group_id = ?""",
+                (inviter_id, self.group_id),
+            )
+            rows = self.cursor.fetchall()
+            for row in rows:
+                invited_id = row[0]
+                if invited_id not in visited_down:
+                    related_users.add(invited_id)
+                    visited_down.add(invited_id)
+                    find_down(invited_id, visited_down)
+
+        find_down(user_id, set())
+        return list(related_users)
