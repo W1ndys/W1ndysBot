@@ -29,6 +29,14 @@ class InviteLinkRecordDataManager:
             invited_id TEXT,
             invite_time TEXT)"""
         )
+        self.conn.commit()
+        self._close()
+
+    def _close(self):
+        """
+        关闭数据库连接
+        """
+        self.conn.close()
 
     def add_invite_link_record(self):
         """
@@ -62,9 +70,11 @@ class InviteLinkRecordDataManager:
             logger.info(
                 f"已添加或更新群{self.group_id}，邀请者：{self.operator_id}，被邀请者：{self.invited_id} 的邀请记录"
             )
+            self._close()
             return True
         except Exception as e:
             logger.error(f"添加或更新邀请树接记录失败: {e}")
+            self._close()
             return False
 
     def get_invite_tree_str(
@@ -100,9 +110,12 @@ class InviteLinkRecordDataManager:
                 result += self.get_invite_tree_str(
                     invited_id, level + 1, visited, is_last=last, prefix=new_prefix
                 )
+            self._close()
+            return result
         except Exception as e:
             logger.error(f"生成邀请树结构失败: {e}")
-        return result
+            self._close()
+            return ""
 
     def get_full_invite_chain_str(self, user_id):
         """
@@ -137,6 +150,7 @@ class InviteLinkRecordDataManager:
         # 4. 展示链路
         chain_str = " -> ".join(chain)
         logger.info(f"已查询群{self.group_id}，{user_id} 的完整邀请树：{chain_str}")
+        self._close()
         return f"邀请树路：{chain_str}\n\n{tree_str}"
 
     def get_related_invite_users(self, user_id):
@@ -184,6 +198,7 @@ class InviteLinkRecordDataManager:
         logger.info(
             f"已查询群{self.group_id}，{user_id} 的上下级相关邀请者：{related_users}"
         )
+        self._close()
         return list(related_users)
 
     def delete_invite_record_by_invited_id(self, invited_id):
@@ -197,9 +212,11 @@ class InviteLinkRecordDataManager:
             )
             self.conn.commit()
             logger.info(f"已删除群{self.group_id}，被邀请者：{invited_id} 的邀请记录")
+            self._close()
             return True
         except Exception as e:
             logger.error(
                 f"删除群{self.group_id}，被邀请者：{invited_id} 的邀请记录失败: {e}"
             )
+            self._close()
             return False

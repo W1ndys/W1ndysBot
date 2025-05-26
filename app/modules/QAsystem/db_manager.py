@@ -13,24 +13,31 @@ class QADatabaseManager:
         """
         self.db_path = os.path.join(DATA_DIR, group_id, "qa_data.db")
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+        self.conn = sqlite3.connect(self.db_path)
+        self.cursor = self.conn.cursor()
         self._create_table()
 
     def _create_table(self):
         """
         创建存储问答对的表（如不存在则新建）。
         """
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                """
-                CREATE TABLE IF NOT EXISTS qa_pairs (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    question TEXT NOT NULL,
-                    answer TEXT NOT NULL
-                )
+        self.cursor.execute(
             """
+            CREATE TABLE IF NOT EXISTS qa_pairs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                question TEXT NOT NULL,
+                answer TEXT NOT NULL
             )
-            conn.commit()
+        """
+        )
+        self.conn.commit()
+
+    def _close(self):
+        """
+        关闭数据库连接。
+        """
+        self.cursor.close()
+        self.conn.close()
 
     def add_qa_pair(self, question: str, answer: str) -> Optional[int]:
         """
@@ -41,27 +48,28 @@ class QADatabaseManager:
         返回:
             int 问答对的ID（主键），失败时返回None
         """
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            # 检查问题是否已存在
-            cursor.execute("SELECT id FROM qa_pairs WHERE question = ?", (question,))
-            row = cursor.fetchone()
-            if row:
-                # 已存在，更新答案
-                qa_id = row[0]
-                cursor.execute(
-                    "UPDATE qa_pairs SET answer = ? WHERE id = ?", (answer, qa_id)
-                )
-                conn.commit()
-                return qa_id
-            else:
-                # 不存在，插入新问答对
-                cursor.execute(
-                    "INSERT INTO qa_pairs (question, answer) VALUES (?, ?)",
-                    (question, answer),
-                )
-                conn.commit()
-                return cursor.lastrowid
+        # 检查问题是否已存在
+        self.cursor.execute("SELECT id FROM qa_pairs WHERE question = ?", (question,))
+        row = self.cursor.fetchone()
+        if row:
+            # 已存在，更新答案
+            qa_id = row[0]
+            self.cursor.execute(
+                "UPDATE qa_pairs SET answer = ? WHERE id = ?", (answer, qa_id)
+            )
+            self.conn.commit()
+            self._close()
+            return qa_id
+        else:
+            # 不存在，插入新问答对
+            self.cursor.execute(
+                "INSERT INTO qa_pairs (question, answer) VALUES (?, ?)",
+                (question, answer),
+            )
+            self.conn.commit()
+            last_id = self.cursor.lastrowid
+            self._close()
+            return last_id
 
     def get_qa_pair(self, qa_id: int) -> Optional[Tuple[int, str, str]]:
         """
@@ -71,12 +79,12 @@ class QADatabaseManager:
         返回:
             (id, question, answer) 元组，未找到时返回None
         """
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, question, answer FROM qa_pairs WHERE id = ?", (qa_id,)
-            )
-            return cursor.fetchone()
+        self.cursor.execute(
+            "SELECT id, question, answer FROM qa_pairs WHERE id = ?", (qa_id,)
+        )
+        result = self.cursor.fetchone()
+        self._close()
+        return result
 
     def get_all_qa_pairs(self) -> List[Tuple[int, str, str]]:
         """
@@ -84,10 +92,10 @@ class QADatabaseManager:
         返回:
             包含所有 (id, question, answer) 元组的列表
         """
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT id, question, answer FROM qa_pairs")
-            return cursor.fetchall()
+        self.cursor.execute("SELECT id, question, answer FROM qa_pairs")
+        result = self.cursor.fetchall()
+        self._close()
+        return result
 
     def update_qa_pair(self, qa_id: int, question: str, answer: str) -> bool:
         """
@@ -99,14 +107,14 @@ class QADatabaseManager:
         返回:
             bool 是否更新成功
         """
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "UPDATE qa_pairs SET question = ?, answer = ? WHERE id = ?",
-                (question, answer, qa_id),
-            )
-            conn.commit()
-            return cursor.rowcount > 0
+        self.cursor.execute(
+            "UPDATE qa_pairs SET question = ?, answer = ? WHERE id = ?",
+            (question, answer, qa_id),
+        )
+        self.conn.commit()
+        updated = self.cursor.rowcount > 0
+        self._close()
+        return updated
 
     def delete_qa_pair(self, qa_id: int) -> bool:
         """
@@ -116,8 +124,8 @@ class QADatabaseManager:
         返回:
             bool 是否删除成功
         """
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM qa_pairs WHERE id = ?", (qa_id,))
-            conn.commit()
-            return cursor.rowcount > 0
+        self.cursor.execute("DELETE FROM qa_pairs WHERE id = ?", (qa_id,))
+        self.conn.commit()
+        deleted = self.cursor.rowcount > 0
+        self._close()
+        return deleted

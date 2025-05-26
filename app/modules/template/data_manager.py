@@ -11,4 +11,10 @@ class DataManager:
         """建表函数，如果表不存在则创建"""
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS""")
 
-    # 其他函数
+    def _close(self):
+        """
+        关闭数据库连接
+        """
+        self.conn.close()
+
+    # 其他函数，注意需要在最后调用_close()以关闭数据库连接
