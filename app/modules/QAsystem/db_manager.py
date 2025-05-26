@@ -34,21 +34,34 @@ class QADatabaseManager:
 
     def add_qa_pair(self, question: str, answer: str) -> Optional[int]:
         """
-        添加问答对到数据库。
+        添加问答对到数据库。如果问题已存在，则更新答案，否则插入新问答对。
         参数:
             question: str 问题内容
             answer: str 答案内容
         返回:
-            int 新增问答对的ID（主键），失败时返回None
+            int 问答对的ID（主键），失败时返回None
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO qa_pairs (question, answer) VALUES (?, ?)",
-                (question, answer),
-            )
-            conn.commit()
-            return cursor.lastrowid
+            # 检查问题是否已存在
+            cursor.execute("SELECT id FROM qa_pairs WHERE question = ?", (question,))
+            row = cursor.fetchone()
+            if row:
+                # 已存在，更新答案
+                qa_id = row[0]
+                cursor.execute(
+                    "UPDATE qa_pairs SET answer = ? WHERE id = ?", (answer, qa_id)
+                )
+                conn.commit()
+                return qa_id
+            else:
+                # 不存在，插入新问答对
+                cursor.execute(
+                    "INSERT INTO qa_pairs (question, answer) VALUES (?, ?)",
+                    (question, answer),
+                )
+                conn.commit()
+                return cursor.lastrowid
 
     def get_qa_pair(self, qa_id: int) -> Optional[Tuple[int, str, str]]:
         """
