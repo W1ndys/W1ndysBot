@@ -19,10 +19,10 @@ async def set_group_kick(websocket, group_id, user_id, reject_add_request=False)
             },
         }
         await websocket.send(json.dumps(message))
-        logger.info("[API]已执行设置群踢人")
+        logger.info(f"[API]已执行设置群{group_id}踢{user_id}")
         return True
     except Exception as e:
-        logger.error(f"[API]设置群踢人失败: {e}")
+        logger.error(f"[API]设置群{group_id}踢{user_id}失败: {e}")
         return False
 
 
