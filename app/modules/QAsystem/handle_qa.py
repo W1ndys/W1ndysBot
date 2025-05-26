@@ -336,6 +336,7 @@ class QaHandler:
                     f"回复: {answer}\n"
                     f"相似度: {score:.2f} ，ID: {qa_id}\n"
                     f"消息将在30秒后撤回，请及时保存",
+                    note="del_msg_30",
                 )
                 return
         except Exception as e:
