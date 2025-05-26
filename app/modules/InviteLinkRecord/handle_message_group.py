@@ -111,6 +111,7 @@ class GroupMessageHandler:
                     ],
                 )
                 return
+
             # 踢出邀请树命令
             if self.raw_message.startswith(KICK_INVITE_RECORD):
                 # 使用正则提取参数，支持QQ号或CQ码
@@ -140,8 +141,12 @@ class GroupMessageHandler:
                 related_users = invite_link_record.get_related_invite_users(operator_id)
                 # 发送踢出邀请树
                 for user_id in related_users:
+                    # 踢出邀请树
                     await set_group_kick(self.websocket, self.group_id, user_id)
+                    # 删除邀请记录
+                    invite_link_record.delete_invite_record_by_invited_id(user_id)
                     await asyncio.sleep(0.5)
+
                 await send_group_msg(
                     self.websocket,
                     self.group_id,

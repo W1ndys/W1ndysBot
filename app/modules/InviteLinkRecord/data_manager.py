@@ -59,38 +59,13 @@ class InviteLinkRecordDataManager:
                     ),
                 )
             self.conn.commit()
+            logger.info(
+                f"已添加或更新群{self.group_id}，邀请者：{self.operator_id}，被邀请者：{self.invited_id} 的邀请记录"
+            )
             return True
         except Exception as e:
             logger.error(f"添加或更新邀请链接记录失败: {e}")
             return False
-
-    def get_all_invited_users_recursive(self, operator_id, visited=None):
-        """
-        递归查询某个邀请者(operator_id)及其所有下级邀请的用户，返回所有被邀请者id列表（去重）
-        """
-        if visited is None:
-            visited = set()
-        all_invited = []
-        try:
-            # 查询直接被邀请者
-            self.cursor.execute(
-                """SELECT invited_id FROM invite_link_record WHERE operator_id = ? AND group_id = ?""",
-                (operator_id, self.group_id),
-            )
-            rows = self.cursor.fetchall()
-            for row in rows:
-                invited_id = row[0]
-                if invited_id not in visited:
-                    visited.add(invited_id)
-                    all_invited.append(invited_id)
-                    # 递归查找被邀请者邀请的人
-                    all_invited.extend(
-                        self.get_all_invited_users_recursive(invited_id, visited)
-                    )
-            return all_invited
-        except Exception as e:
-            logger.error(f"递归查询邀请者{operator_id}邀请的用户失败: {e}")
-            return all_invited
 
     def get_invite_tree_str(
         self, operator_id, level=0, visited=None, is_last=True, prefix=""
@@ -161,6 +136,7 @@ class InviteLinkRecordDataManager:
             tree_str = tree_str.replace(f"{user_id}\n", f"{user_id}  <--- 查询对象\n")
         # 4. 展示链路
         chain_str = " -> ".join(chain)
+        logger.info(f"已查询群{self.group_id}，{user_id} 的完整邀请链：{chain_str}")
         return f"邀请链路：{chain_str}\n\n{tree_str}"
 
     def get_related_invite_users(self, user_id):
@@ -205,4 +181,25 @@ class InviteLinkRecordDataManager:
                     find_down(invited_id, visited_down)
 
         find_down(user_id, set())
+        logger.info(
+            f"已查询群{self.group_id}，{user_id} 的上下级相关邀请者：{related_users}"
+        )
         return list(related_users)
+
+    def delete_invite_record_by_invited_id(self, invited_id):
+        """
+        根据群号和被邀请者id删除所有相关邀请记录。
+        """
+        try:
+            self.cursor.execute(
+                """DELETE FROM invite_link_record WHERE group_id = ? AND invited_id = ?""",
+                (self.group_id, invited_id),
+            )
+            self.conn.commit()
+            logger.info(f"已删除群{self.group_id}，被邀请者：{invited_id} 的邀请记录")
+            return True
+        except Exception as e:
+            logger.error(
+                f"删除群{self.group_id}，被邀请者：{invited_id} 的邀请记录失败: {e}"
+            )
+            return False
