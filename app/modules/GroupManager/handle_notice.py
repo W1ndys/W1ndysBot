@@ -25,8 +25,6 @@ class NoticeHandler:
         self.user_id = str(msg.get("user_id", ""))
         self.group_id = str(msg.get("group_id", ""))
         self.operator_id = str(msg.get("operator_id", ""))
-        self.friend_handler = FriendNoticeHandler(self)
-        self.group_handler = GroupNoticeHandler(self)
 
     async def handle(self):
         """
@@ -34,9 +32,11 @@ class NoticeHandler:
         """
         try:
             if self.notice_type.startswith("friend_"):
-                await self.friend_handler.handle_friend_notice()
+                friend_handler = FriendNoticeHandler(self.msg)
+                await friend_handler.handle_friend_notice()
             elif self.notice_type.startswith("group_"):
-                await self.group_handler.handle_group_notice()
+                group_handler = GroupNoticeHandler(self.msg)
+                await group_handler.handle_group_notice()
             elif self.notice_type == "notify":
                 await self.handle_notify_notice()
             elif self.notice_type == "essence":

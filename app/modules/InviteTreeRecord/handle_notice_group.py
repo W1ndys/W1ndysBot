@@ -12,17 +12,16 @@ class GroupNoticeHandler:
     群组通知处理器
     """
 
-    def __init__(self, notice_handler):
-        self.notice_handler = notice_handler
-        self.websocket = notice_handler.websocket
-        self.msg = notice_handler.msg
-        self.time = notice_handler.time
-        self.formatted_time = notice_handler.formatted_time
-        self.notice_type = notice_handler.notice_type
-        self.sub_type = notice_handler.sub_type
-        self.user_id = notice_handler.user_id
-        self.group_id = notice_handler.group_id
-        self.operator_id = notice_handler.operator_id
+    def __init__(self, msg):
+        self.websocket = msg.get("websocket")
+        self.msg = msg
+        self.time = msg.get("time")
+        self.formatted_time = msg.get("formatted_time")
+        self.notice_type = msg.get("notice_type")
+        self.sub_type = msg.get("sub_type")
+        self.user_id = str(msg.get("user_id"))
+        self.group_id = str(msg.get("group_id"))
+        self.operator_id = str(msg.get("operator_id"))
 
     async def handle_group_notice(self):
         """
@@ -193,15 +192,6 @@ class GroupNoticeHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            # 操作者，即邀请者
-            operator_id = self.msg.get("operator_id")
-
-            # 被邀请者
-            invited_id = self.msg.get("user_id")
-
-            # 群号
-            group_id = self.msg.get("group_id")
-
             # 添加邀请树接记录
             invite_link_record = InviteLinkRecordDataManager(self.msg)
             if invite_link_record.add_invite_link_record():
@@ -212,9 +202,9 @@ class GroupNoticeHandler:
                     [
                         generate_text_message(
                             f"邀请入群记录通知\n\n"
-                            f"邀请者：{operator_id}\n"
-                            f"被邀请者：{invited_id}\n"
-                            f"群号：{group_id}\n"
+                            f"邀请者：{self.operator_id}\n"
+                            f"被邀请者：{self.user_id}\n"
+                            f"群号：{self.group_id}\n"
                             f"邀请时间：{self.formatted_time}\n"
                         )
                     ],

@@ -8,17 +8,15 @@ class GroupNoticeHandler:
     群组通知处理器
     """
 
-    def __init__(self, notice_handler):
-        self.notice_handler = notice_handler
-        self.websocket = notice_handler.websocket
-        self.msg = notice_handler.msg
-        self.time = notice_handler.time
-        self.formatted_time = notice_handler.formatted_time
-        self.notice_type = notice_handler.notice_type
-        self.sub_type = notice_handler.sub_type
-        self.user_id = notice_handler.user_id
-        self.group_id = notice_handler.group_id
-        self.operator_id = notice_handler.operator_id
+    def __init__(self, msg):
+        self.msg = msg
+        self.time = msg.get("time")
+        self.formatted_time = msg.get("formatted_time")
+        self.notice_type = msg.get("notice_type")
+        self.sub_type = msg.get("sub_type")
+        self.user_id = str(msg.get("user_id"))
+        self.group_id = str(msg.get("group_id"))
+        self.operator_id = str(msg.get("operator_id"))
 
     async def handle_group_notice(self):
         """
