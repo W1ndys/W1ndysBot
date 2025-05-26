@@ -36,8 +36,8 @@ class QADatabaseManager:
         """
         关闭数据库连接。
         """
-        self.cursor.close()
-        self.conn.close()
+        self.cursor.close()  # 关闭游标
+        self.conn.close()  # 关闭连接
 
     def add_qa_pair(self, question: str, answer: str) -> Optional[int]:
         """
@@ -58,7 +58,6 @@ class QADatabaseManager:
                 "UPDATE qa_pairs SET answer = ? WHERE id = ?", (answer, qa_id)
             )
             self.conn.commit()
-            self._close()
             return qa_id
         else:
             # 不存在，插入新问答对
@@ -68,7 +67,6 @@ class QADatabaseManager:
             )
             self.conn.commit()
             last_id = self.cursor.lastrowid
-            self._close()
             return last_id
 
     def get_qa_pair(self, qa_id: int) -> Optional[Tuple[int, str, str]]:
@@ -83,7 +81,6 @@ class QADatabaseManager:
             "SELECT id, question, answer FROM qa_pairs WHERE id = ?", (qa_id,)
         )
         result = self.cursor.fetchone()
-        self._close()
         return result
 
     def get_all_qa_pairs(self) -> List[Tuple[int, str, str]]:
@@ -94,7 +91,6 @@ class QADatabaseManager:
         """
         self.cursor.execute("SELECT id, question, answer FROM qa_pairs")
         result = self.cursor.fetchall()
-        self._close()
         return result
 
     def update_qa_pair(self, qa_id: int, question: str, answer: str) -> bool:
@@ -113,7 +109,6 @@ class QADatabaseManager:
         )
         self.conn.commit()
         updated = self.cursor.rowcount > 0
-        self._close()
         return updated
 
     def delete_qa_pair(self, qa_id: int) -> bool:
@@ -127,5 +122,4 @@ class QADatabaseManager:
         self.cursor.execute("DELETE FROM qa_pairs WHERE id = ?", (qa_id,))
         self.conn.commit()
         deleted = self.cursor.rowcount > 0
-        self._close()
         return deleted
