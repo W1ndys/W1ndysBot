@@ -84,10 +84,18 @@ class QaHandler:
                     if not question or not answer:
                         fail_list.append(f"第{idx+1}行内容缺失")
                         continue
+                    # 新增或更新
+                    old_id = matcher.get_qa_id_by_question(question)
                     result_id = matcher.add_qa_pair(question, answer)
                     if result_id is not None:
-                        # 确保ID为字符串类型
-                        success_list.append(f"问题: {question}，ID: {str(result_id)}\n")
+                        if old_id != -1:
+                            success_list.append(
+                                f"问题: {question}，ID: {str(result_id)}（更新成功）\n"
+                            )
+                        else:
+                            success_list.append(
+                                f"问题: {question}，ID: {str(result_id)}（添加成功）\n"
+                            )
                     else:
                         fail_list.append(f"问题: {question} 添加失败\n")
                 # 组织反馈消息
@@ -138,20 +146,36 @@ class QaHandler:
                         note="del_msg_20",
                     )
                     return
+                # 新增或更新
+                old_id = matcher.get_qa_id_by_question(question)
                 result_id = matcher.add_qa_pair(question, answer)
                 if result_id is not None:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message("添加成功\n"),
-                            generate_text_message(f"问题: {question}\n"),
-                            generate_text_message(f"答案: {answer}\n"),
-                            generate_text_message(f"问答对ID: {str(result_id)}"),
-                        ],
-                        note="del_msg_20",
-                    )
+                    if old_id != -1:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message("更新成功\n"),
+                                generate_text_message(f"问题: {question}\n"),
+                                generate_text_message(f"答案: {answer}\n"),
+                                generate_text_message(f"问答对ID: {str(result_id)}"),
+                            ],
+                            note="del_msg_20",
+                        )
+                    else:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message("添加成功\n"),
+                                generate_text_message(f"问题: {question}\n"),
+                                generate_text_message(f"答案: {answer}\n"),
+                                generate_text_message(f"问答对ID: {str(result_id)}"),
+                            ],
+                            note="del_msg_20",
+                        )
                 else:
                     await send_group_msg(
                         self.websocket,

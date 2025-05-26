@@ -144,6 +144,15 @@ class AdvancedQAMatcher:
             return orig_question, orig_answer, combined_score, qa_id
         return None, None, combined_score, None
 
+    def get_qa_id_by_question(self, question: str) -> int:
+        """
+        根据问题查找对应的问答对ID，找不到返回-1。
+        """
+        for qa_id, q, _ in self.qa_pairs:
+            if q == question:
+                return qa_id
+        return -1
+
 
 if __name__ == "__main__":
     matcher = AdvancedQAMatcher("1234567890")
