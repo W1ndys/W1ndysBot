@@ -137,7 +137,8 @@ class QaHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"❗ 格式错误，应为：\n{ADD_FAQ} 问题 答案"
+                                f"❗ 格式错误，应为：\n{ADD_FAQ} 问题 答案\n"
+                                f"例如：\n{ADD_FAQ} 你好 你好呀\n"
                             ),
                             generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"),
                         ],
@@ -152,7 +153,8 @@ class QaHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"❗ 问题或答案不能为空，应为：\n{ADD_FAQ} 问题 答案"
+                                f"❗ 问题或答案不能为空，应为：\n{ADD_FAQ} 问题 答案\n"
+                                f"例如：\n{ADD_FAQ} 你好 你好呀\n"
                             ),
                             generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"),
                         ],
@@ -175,7 +177,7 @@ class QaHandler:
                                     f"🌟 问题：{question}\n"
                                     f"💡 答案：{answer}\n"
                                     f"🆔 问答对ID：{str(result_id)}\n"
-                                    "━━━━━━━━━━━━━━"
+                                    "━━━━━━━━━━━━━━\n"
                                 ),
                                 generate_text_message(
                                     "⏳ 消息将在10秒后撤回，请及时保存"
@@ -195,7 +197,7 @@ class QaHandler:
                                     f"🌟 问题：{question}\n"
                                     f"💡 答案：{answer}\n"
                                     f"🆔 问答对ID：{str(result_id)}\n"
-                                    "━━━━━━━━━━━━━━"
+                                    "━━━━━━━━━━━━━━\n"
                                 ),
                                 generate_text_message(
                                     "⏳ 消息将在10秒后撤回，请及时保存"
@@ -209,7 +211,7 @@ class QaHandler:
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message("❌ 添加失败"),
+                            generate_text_message("❌ 添加失败\n"),
                             generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"),
                         ],
                         note="del_msg_20",
@@ -235,7 +237,8 @@ class QaHandler:
                     [
                         generate_reply_message(self.message_id),
                         generate_text_message(
-                            "❗ 请提供要删除的问答对ID（可空格分隔多个ID）"
+                            "❗ 请提供要删除的问答对ID（可空格分隔多个ID）\n"
+                            f"例如：\n{DELETE_FAQ} 1 2 3\n"
                         ),
                         generate_text_message("⏳ 消息将在10秒后撤回，请及时保存"),
                     ],
@@ -252,7 +255,8 @@ class QaHandler:
                     [
                         generate_reply_message(self.message_id),
                         generate_text_message(
-                            "❗ 请提供要删除的问答对ID（可空格分隔多个ID）"
+                            "❗ 请提供要删除的问答对ID（可空格分隔多个ID）\n"
+                            f"例如：\n{DELETE_FAQ} 1 2 3\n"
                         ),
                         generate_text_message("⏳ 消息将在10秒后撤回，请及时保存"),
                     ],
