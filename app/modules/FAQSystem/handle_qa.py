@@ -96,24 +96,29 @@ class QaHandler:
                     if result_id is not None:
                         if old_id != -1:
                             success_list.append(
-                                f"问题: {question}，ID: {str(result_id)}（更新成功）\n"
+                                f"━━━━━━━━━━━━━━\n"
+                                f"🌟 问题：{question}\n"
+                                f"🆔 ID：{str(result_id)}（更新成功）\n"
                             )
                         else:
                             success_list.append(
-                                f"问题: {question}，ID: {str(result_id)}（添加成功）\n"
+                                f"━━━━━━━━━━━━━━\n"
+                                f"🌟 问题：{question}\n"
+                                f"🆔 ID：{str(result_id)}（添加成功）\n"
                             )
                     else:
-                        fail_list.append(f"问题: {question} 添加失败\n")
+                        fail_list.append(f"━━━━━━━━━━━━━━\n问题：{question}\n添加失败\n")
                 # 组织反馈消息
                 reply_msgs = [generate_reply_message(self.message_id)]
                 if success_list:
-                    reply_msgs.append(generate_text_message("批量添加成功：\n"))
+                    reply_msgs.append(generate_text_message("✅ 批量添加成功：\n"))
                     for s in success_list:
                         reply_msgs.append(generate_text_message(s))
                 if fail_list:
-                    reply_msgs.append(generate_text_message("以下内容添加失败：\n"))
+                    reply_msgs.append(generate_text_message("❌ 以下内容添加失败：\n"))
                     for f in fail_list:
                         reply_msgs.append(generate_text_message(f))
+                reply_msgs.append(generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"))
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
@@ -132,8 +137,9 @@ class QaHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"格式错误，应为：{ADD_FAQ} 问题 答案",
+                                f"❗ 格式错误，应为：\n{ADD_FAQ} 问题 答案"
                             ),
+                            generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"),
                         ],
                         note="del_msg_20",
                     )
@@ -146,8 +152,9 @@ class QaHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"问题或答案不能为空，应为：{ADD_FAQ} 问题 答案",
+                                f"❗ 问题或答案不能为空，应为：\n{ADD_FAQ} 问题 答案"
                             ),
+                            generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"),
                         ],
                         note="del_msg_20",
                     )
@@ -162,14 +169,16 @@ class QaHandler:
                             self.group_id,
                             [
                                 generate_reply_message(self.message_id),
-                                generate_text_message("更新成功\n\n"),
-                                generate_text_message(f"问题: {question}\n\n"),
-                                generate_text_message(f"答案: {answer}\n\n"),
+                                generate_text_message("✅ 更新成功\n"),
                                 generate_text_message(
-                                    f"问答对ID: {str(result_id)}\n\n"
+                                    "━━━━━━━━━━━━━━\n"
+                                    f"🌟 问题：{question}\n"
+                                    f"💡 答案：{answer}\n"
+                                    f"🆔 问答对ID：{str(result_id)}\n"
+                                    "━━━━━━━━━━━━━━"
                                 ),
                                 generate_text_message(
-                                    f"消息将在10秒后撤回，请及时保存"
+                                    "⏳ 消息将在10秒后撤回，请及时保存"
                                 ),
                             ],
                             note="del_msg_10",
@@ -180,14 +189,16 @@ class QaHandler:
                             self.group_id,
                             [
                                 generate_reply_message(self.message_id),
-                                generate_text_message("添加成功\n\n"),
-                                generate_text_message(f"问题: {question}\n\n"),
-                                generate_text_message(f"答案: {answer}\n\n"),
+                                generate_text_message("✅ 添加成功\n"),
                                 generate_text_message(
-                                    f"问答对ID: {str(result_id)}\n\n"
+                                    "━━━━━━━━━━━━━━\n"
+                                    f"🌟 问题：{question}\n"
+                                    f"💡 答案：{answer}\n"
+                                    f"🆔 问答对ID：{str(result_id)}\n"
+                                    "━━━━━━━━━━━━━━"
                                 ),
                                 generate_text_message(
-                                    f"消息将在10秒后撤回，请及时保存"
+                                    "⏳ 消息将在10秒后撤回，请及时保存"
                                 ),
                             ],
                             note="del_msg_10",
@@ -198,7 +209,8 @@ class QaHandler:
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message("添加失败"),
+                            generate_text_message("❌ 添加失败"),
+                            generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"),
                         ],
                         note="del_msg_20",
                     )
@@ -223,9 +235,9 @@ class QaHandler:
                     [
                         generate_reply_message(self.message_id),
                         generate_text_message(
-                            "请提供要删除的问答对ID（可空格分隔多个ID）\n"
+                            "❗ 请提供要删除的问答对ID（可空格分隔多个ID）"
                         ),
-                        generate_text_message(f"消息将在10秒后撤回，请及时保存"),
+                        generate_text_message("⏳ 消息将在10秒后撤回，请及时保存"),
                     ],
                     note="del_msg_10",
                 )
@@ -240,9 +252,9 @@ class QaHandler:
                     [
                         generate_reply_message(self.message_id),
                         generate_text_message(
-                            "请提供要删除的问答对ID（可空格分隔多个ID）\n"
+                            "❗ 请提供要删除的问答对ID（可空格分隔多个ID）"
                         ),
-                        generate_text_message(f"消息将在10秒后撤回，请及时保存"),
+                        generate_text_message("⏳ 消息将在10秒后撤回，请及时保存"),
                     ],
                     note="del_msg_10",
                 )
@@ -266,15 +278,21 @@ class QaHandler:
             if success_ids:
                 msg_list.append(
                     generate_text_message(
-                        f"删除成功的ID: {' '.join(success_ids)}\n"
-                        f"消息将在10秒后撤回，请及时保存"
+                        "✅ 删除成功的ID：\n"
+                        "━━━━━━━━━━━━━━\n"
+                        f"{' '.join(success_ids)}\n"
+                        "━━━━━━━━━━━━━━\n"
+                        "⏳ 消息将在10秒后撤回，请及时保存"
                     )
                 )
             if fail_ids:
                 msg_list.append(
                     generate_text_message(
-                        f"删除失败的ID: {' '.join(fail_ids)}\n"
-                        f"消息将在10秒后撤回，请及时保存"
+                        "❌ 删除失败的ID：\n"
+                        "━━━━━━━━━━━━━━\n"
+                        f"{' '.join(fail_ids)}\n"
+                        "━━━━━━━━━━━━━━\n"
+                        "⏳ 消息将在10秒后撤回，请及时保存"
                     )
                 )
             if not success_ids and not fail_ids:
