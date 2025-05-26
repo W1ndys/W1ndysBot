@@ -51,7 +51,6 @@ class AdvancedQAMatcher:
             answer: str 答案
         """
         result_id = self.db.add_qa_pair(question, answer)
-        self.db._close()
         if result_id:
             self.qa_pairs.append((result_id, question, answer))
             return result_id
@@ -69,7 +68,6 @@ class AdvancedQAMatcher:
         self.qa_pairs = [(id, q, a) for id, q, a in self.qa_pairs if id != qa_id]
         # 从数据库中删除
         self.db.delete_qa_pair(qa_id)
-        self.db._close()
         return True
 
     def build_index(self):
