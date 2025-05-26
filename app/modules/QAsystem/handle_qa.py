@@ -1,9 +1,15 @@
+import os
 import logger
 from . import MODULE_NAME, ADD_QA, DELETE_QA
 from core.auth import is_group_admin, is_system_owner
 from .handle_match_qa import AdvancedQAMatcher
 from api.message import send_group_msg, send_group_msg_with_cq
 from api.generate import generate_reply_message, generate_text_message
+import re
+import json
+
+
+RKEY_DIR = os.path.join("data", "nc_get_rkey.json")
 
 
 class QaHandler:
@@ -291,6 +297,35 @@ class QaHandler:
             orig_question, answer, score, qa_id = matcher.find_best_match(
                 self.raw_message
             )
+
+            # 如果答案中有图片（包含rkey），则替换为本地缓存的rkey
+            # 示例图片格式：
+            # [CQ:image,file=92C3698A5D8CEB42EDE70B316514F211.jpg,sub_type=0,url=https://multimedia.nt.qq.com.cn/download?appid=1407&amp;fileid=xxx&amp;rkey=xxx,file_size=45934]
+            if answer is not None:
+
+                def replace_rkey(match):
+                    cq_img = match.group(0)
+                    # 查找rkey参数
+                    rkey_pattern = r"rkey=([^,^\]]+)"
+                    rkey_search = re.search(rkey_pattern, cq_img)
+                    if rkey_search:
+                        # 读取本地rkey
+                        try:
+                            with open(RKEY_DIR, "r", encoding="utf-8") as f:
+                                rkey_json = json.load(f)
+                            new_rkey = rkey_json.get("rkey")
+                            if new_rkey:
+                                # 替换rkey参数
+                                new_cq_img = re.sub(
+                                    rkey_pattern, f"rkey={new_rkey}", cq_img
+                                )
+                                return new_cq_img
+                        except Exception as e:
+                            logger.error(f"[{MODULE_NAME}]本地rkey替换失败: {e}")
+                    return cq_img  # 未找到rkey或替换失败则返回原内容
+
+                answer = re.sub(r"\[CQ:image,[^\]]+\]", replace_rkey, answer)
+
             if orig_question and answer:
                 await send_group_msg_with_cq(
                     self.websocket,
