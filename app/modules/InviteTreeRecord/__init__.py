@@ -2,13 +2,13 @@ import os
 
 
 # 模块名称
-MODULE_NAME = "InviteLinkRecord"
+MODULE_NAME = "InviteTreeRecord"
 
 # 模块开关名称
-SWITCH_NAME = "ILR"
+SWITCH_NAME = "ITR"
 
 # 模块描述
-MODULE_DESCRIPTION = "邀请链记录"
+MODULE_DESCRIPTION = "邀请树记录"
 
 # 数据目录
 DATA_DIR = os.path.join("data", MODULE_NAME)

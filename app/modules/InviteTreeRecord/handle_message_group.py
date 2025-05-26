@@ -96,7 +96,7 @@ class GroupMessageHandler:
                     return
                 # 调用查看邀请记录
 
-                # 生成完整邀请链路和树状结构
+                # 生成完整邀请树路和树状结构
                 invite_chain_str = invite_link_record.get_full_invite_chain_str(
                     operator_id
                 )
@@ -107,7 +107,7 @@ class GroupMessageHandler:
                     [
                         generate_reply_message(self.message_id),
                         generate_text_message(
-                            f"{operator_id}邀请链结构\n\n"
+                            f"{operator_id}邀请树结构\n\n"
                             + invite_chain_str
                             + f"\n\n消息将于30秒后撤回，请及时记录"
                         ),

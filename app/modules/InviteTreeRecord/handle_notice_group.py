@@ -202,7 +202,7 @@ class GroupNoticeHandler:
             # 群号
             group_id = self.msg.get("group_id")
 
-            # 添加邀请链接记录
+            # 添加邀请树接记录
             invite_link_record = InviteLinkRecordDataManager(self.msg)
             if invite_link_record.add_invite_link_record():
                 # 通知管理员

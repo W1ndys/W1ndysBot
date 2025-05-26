@@ -19,7 +19,7 @@ class InviteLinkRecordDataManager:
 
     def _create_table(self):
         """
-        创建邀请链接记录表，id为自增，group_id为群组id，operator_id为邀请者id，invited_id为被邀请者id，invite_time为邀请时间
+        创建邀请树接记录表，id为自增，group_id为群组id，operator_id为邀请者id，invited_id为被邀请者id，invite_time为邀请时间
         """
         self.cursor.execute(
             """CREATE TABLE IF NOT EXISTS invite_link_record (
@@ -32,7 +32,7 @@ class InviteLinkRecordDataManager:
 
     def add_invite_link_record(self):
         """
-        添加邀请链接记录，如果已存在相同群号、邀请者、被邀请者，则刷新邀请时间，其余不变。成功返回True，失败返回False
+        添加邀请树接记录，如果已存在相同群号、邀请者、被邀请者，则刷新邀请时间，其余不变。成功返回True，失败返回False
         """
         try:
             # 检查是否已存在相同记录
@@ -64,14 +64,14 @@ class InviteLinkRecordDataManager:
             )
             return True
         except Exception as e:
-            logger.error(f"添加或更新邀请链接记录失败: {e}")
+            logger.error(f"添加或更新邀请树接记录失败: {e}")
             return False
 
     def get_invite_tree_str(
         self, operator_id, level=0, visited=None, is_last=True, prefix=""
     ):
         """
-        递归生成邀请链的层级结构字符串，严格树状结构（无环、无重复、无"已出现"提示）
+        递归生成邀请树的层级结构字符串，严格树状结构（无环、无重复、无"已出现"提示）
         """
         if visited is None:
             visited = set()
@@ -101,12 +101,12 @@ class InviteLinkRecordDataManager:
                     invited_id, level + 1, visited, is_last=last, prefix=new_prefix
                 )
         except Exception as e:
-            logger.error(f"生成邀请链结构失败: {e}")
+            logger.error(f"生成邀请树结构失败: {e}")
         return result
 
     def get_full_invite_chain_str(self, user_id):
         """
-        生成完整邀请链：先递归向上查找所有邀请者，找到最顶层root，再以root为起点递归向下生成树状结构。
+        生成完整邀请树：先递归向上查找所有邀请者，找到最顶层root，再以root为起点递归向下生成树状结构。
         """
         # 1. 向上查找所有邀请者，找到最顶层root
         chain = []
@@ -136,8 +136,8 @@ class InviteLinkRecordDataManager:
             tree_str = tree_str.replace(f"{user_id}\n", f"{user_id}  <--- 查询对象\n")
         # 4. 展示链路
         chain_str = " -> ".join(chain)
-        logger.info(f"已查询群{self.group_id}，{user_id} 的完整邀请链：{chain_str}")
-        return f"邀请链路：{chain_str}\n\n{tree_str}"
+        logger.info(f"已查询群{self.group_id}，{user_id} 的完整邀请树：{chain_str}")
+        return f"邀请树路：{chain_str}\n\n{tree_str}"
 
     def get_related_invite_users(self, user_id):
         """
