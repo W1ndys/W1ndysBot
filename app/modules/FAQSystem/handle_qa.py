@@ -331,17 +331,21 @@ class QaHandler:
                 answer = re.sub(r"\[CQ:image,[^\]]+\]", replace_rkey, answer)
 
             if orig_question and answer:
+                msg = (
+                    f"[CQ:reply,id={self.message_id}]"
+                    "🌟 你可能想问：\n"
+                    "━━━━━━━━━━━━━━\n"
+                    f"❓ 问题：\n{orig_question}\n"
+                    "━━━━━━━━━━━━━━\n"
+                    f"💡 答案：\n{answer}\n"
+                    "━━━━━━━━━━━━━━\n"
+                    f"🔎 相似度：{score:.2f}   🆔 ID：{qa_id}\n"
+                    "⏳ 本消息将在30秒后撤回，请及时保存"
+                )
                 await send_group_msg_with_cq(
                     self.websocket,
                     self.group_id,
-                    f"[CQ:reply,id={self.message_id}]"
-                    "你可能想问：\n\n"
-                    f"问题: {orig_question}\n\n"
-                    f"===========================\n"
-                    f"{answer}\n"
-                    f"===========================\n"
-                    f"相似度: {score:.2f} ，ID: {qa_id}\n\n"
-                    f"消息将在30秒后撤回，请及时保存",
+                    msg,
                     note="del_msg_30",
                 )
                 return
