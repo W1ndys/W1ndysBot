@@ -1,4 +1,4 @@
-from . import MODULE_NAME, SWITCH_NAME, ADD_QA, DELETE_QA
+from . import MODULE_NAME, SWITCH_NAME, ADD_FAQ, DELETE_FAQ
 import logger
 from core.switchs import is_group_switch_on, toggle_group_switch
 from api.message import send_group_msg

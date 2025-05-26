@@ -1,6 +1,6 @@
 import os
 import logger
-from . import MODULE_NAME, ADD_QA, DELETE_QA
+from . import MODULE_NAME, ADD_FAQ, DELETE_FAQ
 from core.auth import is_group_admin, is_system_owner
 from .handle_match_qa import AdvancedQAMatcher
 from api.message import send_group_msg, send_group_msg_with_cq
@@ -38,11 +38,11 @@ class QaHandler:
         """
         try:
             # 如果消息是添加问答对命令，则调用添加问答对函数
-            if self.raw_message.startswith(ADD_QA):
+            if self.raw_message.startswith(ADD_FAQ):
                 await self.handle_add_qa()
                 return
             # 如果消息是删除问答对命令，则调用删除问答对函数
-            if self.raw_message.startswith(DELETE_QA):
+            if self.raw_message.startswith(DELETE_FAQ):
                 await self.handle_delete_qa()
                 return
 
@@ -75,7 +75,7 @@ class QaHandler:
             success_list = []
             fail_list = []
 
-            if len(lines) > 1 and lines[0].startswith(ADD_QA):
+            if len(lines) > 1 and lines[0].startswith(ADD_FAQ):
                 # 批量添加
                 for idx, line in enumerate(lines[1:], 1):
                     line = line.strip()
@@ -123,7 +123,7 @@ class QaHandler:
             else:
                 # 单条添加
                 # 去除命令前缀
-                content = self.raw_message.replace(ADD_QA, "", 1).strip()
+                content = self.raw_message.replace(ADD_FAQ, "", 1).strip()
                 parts = content.split(" ", 1)
                 if len(parts) != 2:
                     await send_group_msg(
@@ -132,7 +132,7 @@ class QaHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"格式错误，应为：{ADD_QA} 问题 答案",
+                                f"格式错误，应为：{ADD_FAQ} 问题 答案",
                             ),
                         ],
                         note="del_msg_20",
@@ -146,7 +146,7 @@ class QaHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"问题或答案不能为空，应为：{ADD_QA} 问题 答案",
+                                f"问题或答案不能为空，应为：{ADD_FAQ} 问题 答案",
                             ),
                         ],
                         note="del_msg_20",
@@ -211,7 +211,7 @@ class QaHandler:
                 return
 
             # 去除命令前缀
-            content = self.raw_message.replace(DELETE_QA, "", 1).strip()
+            content = self.raw_message.replace(DELETE_FAQ, "", 1).strip()
             if not content:
                 await send_group_msg(
                     self.websocket,
