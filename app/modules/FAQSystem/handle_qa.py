@@ -335,9 +335,11 @@ class QaHandler:
                     self.websocket,
                     self.group_id,
                     f"[CQ:reply,id={self.message_id}]"
-                    "你可能想问\n\n"
+                    "你可能想问：\n\n"
                     f"问题: {orig_question}\n\n"
-                    f"回复: {answer}\n\n"
+                    f"===========================\n"
+                    f"{answer}\n"
+                    f"===========================\n"
                     f"相似度: {score:.2f} ，ID: {qa_id}\n\n"
                     f"消息将在30秒后撤回，请及时保存",
                     note="del_msg_30",
