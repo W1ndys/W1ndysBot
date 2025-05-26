@@ -1,5 +1,3 @@
-# app/core/online_detect.py
-
 import logger
 from config import OWNER_ID
 from api.message import send_private_msg
