@@ -65,6 +65,7 @@ class QaHandler:
         单条格式：
         添加命令 问题 答案
         """
+        matcher = None
         try:
             if not is_group_admin(self.role) and not is_system_owner(self.user_id):
                 return
@@ -107,7 +108,9 @@ class QaHandler:
                                 f"🆔 ID：{str(result_id)}（添加成功）\n"
                             )
                     else:
-                        fail_list.append(f"━━━━━━━━━━━━━━\n问题：{question}\n添加失败\n")
+                        fail_list.append(
+                            f"━━━━━━━━━━━━━━\n问题：{question}\n添加失败\n"
+                        )
                 # 组织反馈消息
                 reply_msgs = [generate_reply_message(self.message_id)]
                 if success_list:
@@ -118,7 +121,9 @@ class QaHandler:
                     reply_msgs.append(generate_text_message("❌ 以下内容添加失败：\n"))
                     for f in fail_list:
                         reply_msgs.append(generate_text_message(f))
-                reply_msgs.append(generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"))
+                reply_msgs.append(
+                    generate_text_message("⏳ 消息将在20秒后撤回，请及时保存")
+                )
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
@@ -218,6 +223,9 @@ class QaHandler:
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理添加问答对命令失败: {e}")
+        finally:
+            if matcher is not None:
+                matcher.db._close()
 
     async def handle_delete_qa(self):
         """
