@@ -105,10 +105,14 @@ class GroupMessageHandler:
                     self.websocket,
                     self.group_id,
                     [
+                        generate_reply_message(self.message_id),
                         generate_text_message(
-                            f"{operator_id}邀请链结构\n\n" + invite_chain_str
-                        )
+                            f"{operator_id}邀请链结构\n\n"
+                            + invite_chain_str
+                            + f"\n\n消息将于30秒后撤回，请及时记录"
+                        ),
                     ],
+                    note="del_msg_30",
                 )
                 return
 
@@ -139,6 +143,18 @@ class GroupMessageHandler:
 
                 # 获取相关邀请者
                 related_users = invite_link_record.get_related_invite_users(operator_id)
+
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(
+                            f"已查询群{self.group_id}，{operator_id} 的上下级相关邀请者，正在执行踢出邀请树，若数量较大则可能需要较长时间，请耐心等待。"
+                        ),
+                    ],
+                    note="del_msg_10",
+                )
                 # 发送踢出邀请树
                 for user_id in related_users:
                     # 踢出邀请树
@@ -151,10 +167,12 @@ class GroupMessageHandler:
                     self.websocket,
                     self.group_id,
                     [
+                        generate_reply_message(self.message_id),
                         generate_text_message(
                             f"已执行踢出邀请树: {','.join(related_users)}"
-                        )
+                        ),
                     ],
+                    note="del_msg_10",
                 )
                 return
         except Exception as e:
