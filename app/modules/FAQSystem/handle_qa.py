@@ -162,10 +162,12 @@ class QaHandler:
                             self.group_id,
                             [
                                 generate_reply_message(self.message_id),
-                                generate_text_message("更新成功\n"),
-                                generate_text_message(f"问题: {question}\n"),
-                                generate_text_message(f"答案: {answer}\n"),
-                                generate_text_message(f"问答对ID: {str(result_id)}\n"),
+                                generate_text_message("更新成功\n\n"),
+                                generate_text_message(f"问题: {question}\n\n"),
+                                generate_text_message(f"答案: {answer}\n\n"),
+                                generate_text_message(
+                                    f"问答对ID: {str(result_id)}\n\n"
+                                ),
                                 generate_text_message(
                                     f"消息将在10秒后撤回，请及时保存"
                                 ),
@@ -178,10 +180,12 @@ class QaHandler:
                             self.group_id,
                             [
                                 generate_reply_message(self.message_id),
-                                generate_text_message("添加成功\n"),
-                                generate_text_message(f"问题: {question}\n"),
-                                generate_text_message(f"答案: {answer}\n"),
-                                generate_text_message(f"问答对ID: {str(result_id)}\n"),
+                                generate_text_message("添加成功\n\n"),
+                                generate_text_message(f"问题: {question}\n\n"),
+                                generate_text_message(f"答案: {answer}\n\n"),
+                                generate_text_message(
+                                    f"问答对ID: {str(result_id)}\n\n"
+                                ),
                                 generate_text_message(
                                     f"消息将在10秒后撤回，请及时保存"
                                 ),
@@ -331,10 +335,10 @@ class QaHandler:
                     self.websocket,
                     self.group_id,
                     f"[CQ:reply,id={self.message_id}]"
-                    "你可能想问\n"
-                    f"问题: {orig_question}\n"
-                    f"回复: {answer}\n"
-                    f"相似度: {score:.2f} ，ID: {qa_id}\n"
+                    "你可能想问\n\n"
+                    f"问题: {orig_question}\n\n"
+                    f"回复: {answer}\n\n"
+                    f"相似度: {score:.2f} ，ID: {qa_id}\n\n"
                     f"消息将在30秒后撤回，请及时保存",
                     note="del_msg_30",
                 )
