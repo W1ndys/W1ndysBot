@@ -44,6 +44,9 @@ class Application:
                 result = await connect_to_bot()
                 if result is None:
                     raise ValueError("连接返回None")
+            except KeyboardInterrupt:
+                logger.error("检测到用户主动退出程序（Ctrl+C），程序已终止。")
+                break
             except Exception as e:
                 current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 logger.error(f"连接失败，正在重试: {e} 当前时间: {current_time}")
@@ -54,4 +57,7 @@ class Application:
 if __name__ == "__main__":
 
     app = Application()
-    asyncio.run(app.run())
+    try:
+        asyncio.run(app.run())
+    except KeyboardInterrupt:
+        logger.error("检测到用户主动退出程序（Ctrl+C），程序已终止。")
