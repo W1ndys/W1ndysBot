@@ -12,7 +12,7 @@ export default hopeTheme({
   },
 
   logo: "/assets/icon/capoo.gif",
-
+  favicon: "/assets/icon/capoo.gif",
   repo: "W1ndys/W1ndysBot",
 
   docsDir: "docs/src",
