@@ -11,7 +11,9 @@ class FriendNoticeHandler:
     def __init__(self, websocket, msg):
         self.websocket = websocket
         self.time = msg.get("time")
-        self.formatted_time = msg.get("formatted_time")
+        self.formatted_time = datetime.fromtimestamp(self.time).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )  # 格式化时间
         self.notice_type = msg.get("notice_type")
         self.sub_type = msg.get("sub_type")
         self.user_id = str(msg.get("user_id"))
