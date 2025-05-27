@@ -16,6 +16,8 @@ venv/
 # 忽略.cursor文件夹
 .cursor/
 
+# 忽略node_modules文件夹
+node_modules/
 
 
 
