@@ -4,6 +4,7 @@ from core.switchs import is_group_switch_on, toggle_group_switch
 from api.message import send_group_msg
 from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
+from .data_manager import DataManager
 
 
 class GroupMessageHandler:
@@ -59,6 +60,11 @@ class GroupMessageHandler:
             # 如果没开启群聊开关，则不处理
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
+
+            # 示例：使用DataManager进行数据库操作
+            with DataManager(self.group_id) as dm:
+                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
+                pass
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")

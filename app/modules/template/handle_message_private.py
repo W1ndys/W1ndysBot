@@ -4,6 +4,7 @@ from core.switchs import is_private_switch_on, toggle_private_switch
 from api.message import send_private_msg
 from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
+from .data_manager import DataManager
 
 
 class PrivateMessageHandler:
@@ -56,6 +57,11 @@ class PrivateMessageHandler:
             # 如果没开启私聊开关，则不处理
             if not is_private_switch_on(MODULE_NAME):
                 return
+
+            # 示例：使用DataManager进行数据库操作
+            with DataManager(self.user_id) as dm:
+                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
+                pass
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊消息失败: {e}")
