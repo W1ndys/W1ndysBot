@@ -8,7 +8,7 @@ import logger
 from core.switchs import is_group_switch_on, toggle_group_switch
 from api.message import send_group_msg
 from api.generate import generate_reply_message, generate_text_message
-from api.group import set_group_kick, set_group_ban
+from api.group import set_group_kick
 from datetime import datetime
 from .data_manager import InviteLinkRecordDataManager
 import re
@@ -70,7 +70,9 @@ class GroupMessageHandler:
                 return
 
             # 使用 with 语法管理数据库连接
-            with InviteLinkRecordDataManager(self.msg) as invite_link_record:
+            with InviteLinkRecordDataManager(
+                self.websocket, self.msg
+            ) as invite_link_record:
                 # 查看邀请记录命令
                 if self.raw_message.startswith(VIEW_INVITE_RECORD):
                     operator_id = None
