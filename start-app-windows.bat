@@ -14,6 +14,3 @@ cd app
 
 :: 运行主程序
 python main.py
-
-:: 如果程序意外退出，暂停以便查看错误信息
-pause 
