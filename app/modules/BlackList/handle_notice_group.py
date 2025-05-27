@@ -22,7 +22,6 @@ class GroupNoticeHandler:
         self.user_id = str(msg.get("user_id"))
         self.group_id = str(msg.get("group_id"))
         self.operator_id = str(msg.get("operator_id"))
-        self.data_manager = BlackListDataManager()
 
     async def handle_group_notice(self):
         """
@@ -80,22 +79,25 @@ class GroupNoticeHandler:
         检查用户是否在黑名单中，如果在则踢出并发送警告
         """
         try:
-            if self.data_manager.is_in_blacklist(self.group_id, self.user_id):
-                # 发送警告消息
-                warning_msg = generate_text_message(
-                    f"检测到黑名单用户 {self.user_id} 进入了群聊，将自动将其踢出"
-                )
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [warning_msg],
-                    note="del_msg=30",
-                )
+            with BlackListDataManager() as data_manager:
+                if data_manager.is_in_blacklist(self.group_id, self.user_id):
+                    # 发送警告消息
+                    warning_msg = generate_text_message(
+                        f"检测到黑名单用户 {self.user_id} 进入了群聊，将自动将其踢出"
+                    )
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [warning_msg],
+                        note="del_msg=30",
+                    )
 
-                # 踢出用户并拉黑
-                await set_group_kick(self.websocket, self.group_id, self.user_id, True)
-                logger.info(
-                    f"[{MODULE_NAME}]已踢出黑名单用户 {self.user_id} 并拒绝后续加群请求"
-                )
+                    # 踢出用户并拉黑
+                    await set_group_kick(
+                        self.websocket, self.group_id, self.user_id, True
+                    )
+                    logger.info(
+                        f"[{MODULE_NAME}]已踢出黑名单用户 {self.user_id} 并拒绝后续加群请求"
+                    )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]检查并踢出黑名单用户失败: {e}")

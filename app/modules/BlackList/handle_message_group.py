@@ -37,7 +37,6 @@ class GroupMessageHandler:
         self.nickname = self.sender.get("nickname", "")  # 昵称
         self.card = self.sender.get("card", "")  # 群名片
         self.role = self.sender.get("role", "")  # 群身份
-        self.data_manager = BlackListDataManager()
 
     async def handle_module_switch(self):
         """
@@ -101,27 +100,30 @@ class GroupMessageHandler:
         :return: 如果是黑名单用户则返回True，否则返回False
         """
         try:
-            if self.data_manager.is_in_blacklist(self.group_id, self.user_id):
-                # 如果用户在黑名单中，先撤回消息
-                await delete_msg(self.websocket, self.message_id)
+            with BlackListDataManager() as data_manager:
+                if data_manager.is_in_blacklist(self.group_id, self.user_id):
+                    # 如果用户在黑名单中，先撤回消息
+                    await delete_msg(self.websocket, self.message_id)
 
-                # 发送警告消息
-                warning_msg = generate_text_message(
-                    f"检测到黑名单用户 {self.user_id} 在群内发言，将自动撤回消息并将其踢出"
-                )
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [warning_msg],
-                    note="del_msg=30",
-                )
+                    # 发送警告消息
+                    warning_msg = generate_text_message(
+                        f"检测到黑名单用户 {self.user_id} 在群内发言，将自动撤回消息并将其踢出"
+                    )
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [warning_msg],
+                        note="del_msg=30",
+                    )
 
-                # 踢出用户并拉黑，拒绝后续加群请求
-                await set_group_kick(self.websocket, self.group_id, self.user_id, True)
-                logger.info(
-                    f"[{MODULE_NAME}]已踢出黑名单用户 {self.user_id} 并拒绝后续加群请求"
-                )
-                return True
+                    # 踢出用户并拉黑，拒绝后续加群请求
+                    await set_group_kick(
+                        self.websocket, self.group_id, self.user_id, True
+                    )
+                    logger.info(
+                        f"[{MODULE_NAME}]已踢出黑名单用户 {self.user_id} 并拒绝后续加群请求"
+                    )
+                    return True
             return False
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]检查黑名单用户失败: {e}")

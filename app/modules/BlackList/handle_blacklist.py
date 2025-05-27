@@ -19,7 +19,6 @@ class BlackListHandle:
         self.raw_message = msg.get("raw_message", "")
         self.group_id = msg.get("group_id", "")
         self.user_id = msg.get("user_id", "")
-        self.data_manager = BlackListDataManager()
 
     async def add_blacklist(self):
         """
@@ -57,9 +56,10 @@ class BlackListHandle:
 
             # 添加黑名单
             success_count = []
-            for user_id in user_ids:
-                if self.data_manager.add_blacklist(self.group_id, user_id):
-                    success_count.append(user_id)
+            with BlackListDataManager() as data_manager:
+                for user_id in user_ids:
+                    if data_manager.add_blacklist(self.group_id, user_id):
+                        success_count.append(user_id)
 
             # 发送成功消息
             reply_message = f"已将以下用户添加到黑名单：{', '.join(success_count)}"
@@ -114,9 +114,10 @@ class BlackListHandle:
 
             # 移除黑名单
             success_count = []
-            for user_id in user_ids:
-                if self.data_manager.remove_blacklist(self.group_id, user_id):
-                    success_count.append(user_id)
+            with BlackListDataManager() as data_manager:
+                for user_id in user_ids:
+                    if data_manager.remove_blacklist(self.group_id, user_id):
+                        success_count.append(user_id)
 
             # 发送成功消息
             reply_message = f"已将以下用户从黑名单中移除：{', '.join(success_count)}"
@@ -141,7 +142,8 @@ class BlackListHandle:
         列出当前群组的所有黑名单用户
         """
         try:
-            blacklist = self.data_manager.get_group_blacklist(self.group_id)
+            with BlackListDataManager() as data_manager:
+                blacklist = data_manager.get_group_blacklist(self.group_id)
 
             if not blacklist:
                 reply_message = "当前群组没有黑名单用户"
@@ -177,7 +179,8 @@ class BlackListHandle:
         """
         try:
             # 获取当前群组的黑名单
-            blacklist = self.data_manager.get_group_blacklist(self.group_id)
+            with BlackListDataManager() as data_manager:
+                blacklist = data_manager.get_group_blacklist(self.group_id)
 
             if not blacklist:
                 reply_message = "当前群组没有黑名单用户"
@@ -194,7 +197,8 @@ class BlackListHandle:
 
             # 移除所有黑名单
             for user_id, _ in blacklist:
-                self.data_manager.remove_blacklist(self.group_id, user_id)
+                with BlackListDataManager() as data_manager:
+                    data_manager.remove_blacklist(self.group_id, user_id)
 
             reply_message = f"已清空当前群组的所有黑名单用户（共{len(blacklist)}人）"
             await send_group_msg(

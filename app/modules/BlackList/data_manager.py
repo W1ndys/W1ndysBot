@@ -11,6 +11,12 @@ class BlackListDataManager:
         self.cursor = self.conn.cursor()
         self._create_table()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.conn.close()
+
     def _create_table(self):
         """
         创建黑名单表
@@ -31,15 +37,8 @@ class BlackListDataManager:
                 )"""
             )
             self.conn.commit()
-            self._close()
         except sqlite3.Error as e:
             raise Exception(f"创建黑名单表失败: {str(e)}")
-
-    def _close(self):
-        """
-        关闭数据库连接
-        """
-        self.conn.close()
 
     def add_blacklist(self, group_id: str, user_id: str) -> bool:
         """
@@ -64,7 +63,6 @@ class BlackListDataManager:
                 (group_id, user_id, created_at),
             )
             self.conn.commit()
-            self._close()
             return True
         except sqlite3.Error as e:
             raise Exception(f"添加黑名单失败: {str(e)}")
@@ -83,7 +81,6 @@ class BlackListDataManager:
                 (group_id, user_id),
             )
             self.conn.commit()
-            self._close()
             return True
         except sqlite3.Error as e:
             raise Exception(f"移除黑名单失败: {str(e)}")
@@ -102,7 +99,6 @@ class BlackListDataManager:
                 (group_id, user_id),
             )
             count = self.cursor.fetchone()[0]
-            self._close()
             return count > 0
         except sqlite3.Error as e:
             raise Exception(f"查询黑名单失败: {str(e)}")
@@ -119,7 +115,6 @@ class BlackListDataManager:
                 "SELECT user_id, created_at FROM blacklist WHERE group_id = ?",
                 (group_id,),
             )
-            self._close()
             return self.cursor.fetchall()
         except sqlite3.Error as e:
             raise Exception(f"获取群组黑名单失败: {str(e)}")

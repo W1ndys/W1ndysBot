@@ -21,7 +21,6 @@ class RequestHandler:
         self.comment = self.msg.get("comment", "")
         self.flag = self.msg.get("flag", "")
         self.group_id = self.msg.get("group_id", "")
-        self.data_manager = BlackListDataManager()
 
     async def handle_friend(self):
         """
@@ -65,14 +64,15 @@ class RequestHandler:
         处理加群请求
         """
         try:
-            # 检查用户是否在黑名单中
-            if self.data_manager.is_in_blacklist(self.group_id, self.user_id):
-                # 拒绝入群请求
-                reason = "您在该群的黑名单中，无法加入群聊"
-                await set_group_add_request(self.websocket, self.flag, False, reason)
-                logger.info(
-                    f"[{MODULE_NAME}]拒绝黑名单用户 {self.user_id} 加入群 {self.group_id}"
-                )
+            with BlackListDataManager() as data_manager:
+                if data_manager.is_in_blacklist(self.group_id, self.user_id):
+                    reason = "您在该群的黑名单中，无法加入群聊"
+                    await set_group_add_request(
+                        self.websocket, self.flag, False, reason
+                    )
+                    logger.info(
+                        f"[{MODULE_NAME}]拒绝黑名单用户 {self.user_id} 加入群 {self.group_id}"
+                    )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理加群请求失败: {e}")
 
