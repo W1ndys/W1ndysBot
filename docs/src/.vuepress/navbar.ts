@@ -5,13 +5,12 @@ export default navbar([
   {
     text: "快速开始",
     icon: "rocket",
-    prefix: "/quickstart/",
-    link: "/quickstart/",
+    prefix: "/QuickStart/",
+    link: "/QuickStart/",
   },
   {
-    text: "价格",
-    icon: "money-bill",
-    prefix: "/price/",
-    link: "/price/",
+    text: "命令手册",
+    icon: "book",
+    link: "/UserManual/",
   },
 ]);

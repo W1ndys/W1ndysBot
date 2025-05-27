@@ -1,22 +1,19 @@
 ---
 home: true
 icon: house
-title: W1ndysGroupBot
+title: W1ndysBot
 heroImage: https://theme-hope-assets.vuejs.press/logo.svg
 bgImage: https://theme-hope-assets.vuejs.press/bg/6-light.svg
 bgImageDark: https://theme-hope-assets.vuejs.press/bg/6-dark.svg
 bgImageStyle:
   background-attachment: fixed
-heroText: W1ndysGroupBot
-tagline: 专为大学学生组织设计的带授权系统的综合管理QQ群机器人，致力于为大学学生组织提供一个高效、便捷、安全的管理工具。
+heroText: W1ndysBot
+tagline: 一个基于 W1ndysBotFrame 框架的QQ群机器人，致力于为QQ群提供一个高效、便捷、安全的管理工具。
 actions:
   - text: 快速开始
     icon: lightbulb
     link: ./quickstart/
     type: primary
-
-  - text: 价格
-    link: ./price/
 
 highlights:
   - header: 易于安装
