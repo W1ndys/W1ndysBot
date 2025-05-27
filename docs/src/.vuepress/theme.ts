@@ -13,7 +13,7 @@ export default hopeTheme({
 
   logo: "/logo.png",
 
-  repo: "W1ndys/W1ndysGroupBot",
+  repo: "W1ndys/W1ndysBot",
 
   docsDir: "docs/src",
 
@@ -24,7 +24,7 @@ export default hopeTheme({
   sidebar,
 
   // 页脚
-  footer: "W1ndysGroupBot",
+  footer: "W1ndysBot",
   displayFooter: true,
 
   // 加密配置
@@ -135,7 +135,7 @@ export default hopeTheme({
     watermark: {
       enabled: true,
       watermarkOptions: {
-        content: "W1ndysGroupBot",
+        content: "W1ndysBot",
         globalAlpha: 0.1, // 设置水印透明度，值范围为0-1
       },
     },
