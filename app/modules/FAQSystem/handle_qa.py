@@ -2,7 +2,7 @@ import os
 import logger
 from . import MODULE_NAME, ADD_FAQ, DELETE_FAQ
 from core.auth import is_group_admin, is_system_owner
-from .handle_match_qa import AdvancedQAMatcher
+from .handle_match_qa import AdvancedFAQMatcher
 from api.message import send_group_msg, send_group_msg_with_cq
 from api.generate import generate_reply_message, generate_text_message
 import re
@@ -72,7 +72,7 @@ class QaHandler:
 
             # 判断是否为批量添加（多行）
             lines = self.raw_message.strip().splitlines()
-            matcher = AdvancedQAMatcher(self.group_id)
+            matcher = AdvancedFAQMatcher(self.group_id)
             success_list = []
             fail_list = []
 
@@ -272,7 +272,7 @@ class QaHandler:
                 )
                 return
 
-            matcher = AdvancedQAMatcher(self.group_id)
+            matcher = AdvancedFAQMatcher(self.group_id)
             success_ids = []
             fail_ids = []
             for id_str in id_strs:
@@ -326,7 +326,7 @@ class QaHandler:
         根据收到的消息内容，在问答库中查找最相似的问题，并返回对应的答案及相似度。
         """
         try:
-            matcher = AdvancedQAMatcher(self.group_id)
+            matcher = AdvancedFAQMatcher(self.group_id)
             matcher.build_index()
             orig_question, answer, score, qa_id = matcher.find_best_match(
                 self.raw_message
