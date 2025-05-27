@@ -19,7 +19,11 @@ venv/
 # 忽略node_modules文件夹
 node_modules/
 
+# .temp文件夹
+.temp/
 
+# .cache文件夹
+.cache/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
