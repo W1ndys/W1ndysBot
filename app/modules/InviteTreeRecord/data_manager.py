@@ -5,7 +5,8 @@ import logger
 
 
 class InviteLinkRecordDataManager:
-    def __init__(self, msg):
+    def __init__(self, websocket, msg):
+        self.websocket = websocket
         self.msg = msg
         self.group_id = str(self.msg.get("group_id"))
         self.operator_id = str(self.msg.get("operator_id"))

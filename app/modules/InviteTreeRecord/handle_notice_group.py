@@ -193,7 +193,7 @@ class GroupNoticeHandler:
                 return
 
             # 添加邀请树接记录
-            invite_link_record = InviteLinkRecordDataManager(self.msg)
+            invite_link_record = InviteLinkRecordDataManager(self.websocket, self.msg)
             if invite_link_record.add_invite_link_record():
                 # 通知管理员
                 await send_private_msg(
