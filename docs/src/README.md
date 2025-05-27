@@ -10,9 +10,14 @@ bgImageStyle:
 heroText: W1ndysBot
 tagline: 一个基于 W1ndysBotFrame 框架的QQ群机器人，致力于为QQ群提供一个高效、便捷、安全的管理工具。
 actions:
-  - text: 快速开始
-    icon: lightbulb
-    link: ./quickstart/
+  # - text: 快速开始
+  #   icon: lightbulb
+  #   link: ./quickstart/
+  #   type: primary
+
+  - text: 用户手册
+    icon: book
+    link: ./UserManual/
     type: primary
 
 highlights:
