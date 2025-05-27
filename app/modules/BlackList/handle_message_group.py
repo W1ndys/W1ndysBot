@@ -54,7 +54,7 @@ class GroupMessageHandler:
                 self.websocket,
                 self.group_id,
                 [reply_message, text_message],
-                note="del_msg_10",
+                note="del_msg=10",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理模块开关命令失败: {e}")
@@ -113,7 +113,7 @@ class GroupMessageHandler:
                     self.websocket,
                     self.group_id,
                     [warning_msg],
-                    note="del_msg_30",
+                    note="del_msg=30",
                 )
 
                 # 踢出用户并拉黑，拒绝后续加群请求

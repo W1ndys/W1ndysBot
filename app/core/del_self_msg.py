@@ -24,8 +24,8 @@ async def handle_events(websocket, msg):
     try:
         if msg.get("status") == "ok":
             echo = msg.get("echo", {})
-            # 格式：del_msg_秒数
-            res = re.search(r"del_msg_(\d+)", echo)
+            # 格式：del_msg=秒数
+            res = re.search(r"del_msg=(\d+)", echo)
             if res:
                 del_time = int(res.group(1))
                 message_id = msg.get("data", {}).get("message_id")

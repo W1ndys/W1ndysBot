@@ -89,7 +89,7 @@ class GroupNoticeHandler:
                     self.websocket,
                     self.group_id,
                     [warning_msg],
-                    note="del_msg_30",
+                    note="del_msg=30",
                 )
 
                 # 踢出用户并拉黑

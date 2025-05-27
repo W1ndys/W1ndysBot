@@ -70,7 +70,7 @@ class BlackListHandle:
                     generate_reply_message(reply_message),
                     generate_text_message(reply_message),
                 ],
-                note="del_msg_10",
+                note="del_msg=10",
             )
 
             return True
@@ -127,7 +127,7 @@ class BlackListHandle:
                     generate_reply_message(reply_message),
                     generate_text_message(reply_message),
                 ],
-                note="del_msg_10",
+                note="del_msg=10",
             )
 
             return True
@@ -162,7 +162,7 @@ class BlackListHandle:
                     generate_reply_message(reply_message),
                     generate_text_message(reply_message),
                 ],
-                note="del_msg_10",
+                note="del_msg=10",
             )
 
             return True
@@ -188,7 +188,7 @@ class BlackListHandle:
                         generate_reply_message(reply_message),
                         generate_text_message(reply_message),
                     ],
-                    note="del_msg_10",
+                    note="del_msg=10",
                 )
                 return True
 
@@ -204,7 +204,7 @@ class BlackListHandle:
                     generate_reply_message(reply_message),
                     generate_text_message(reply_message),
                 ],
-                note="del_msg_10",
+                note="del_msg=10",
             )
 
             return True

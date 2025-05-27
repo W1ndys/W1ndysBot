@@ -128,7 +128,7 @@ class QaHandler:
                     self.websocket,
                     self.group_id,
                     reply_msgs,
-                    note="del_msg_20",
+                    note="del_msg=20",
                 )
             else:
                 # 单条添加
@@ -147,7 +147,7 @@ class QaHandler:
                             ),
                             generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"),
                         ],
-                        note="del_msg_20",
+                        note="del_msg=20",
                     )
                     return
                 question, answer = parts[0].strip(), parts[1].strip()
@@ -163,7 +163,7 @@ class QaHandler:
                             ),
                             generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"),
                         ],
-                        note="del_msg_20",
+                        note="del_msg=20",
                     )
                     return
                 # 新增或更新
@@ -188,7 +188,7 @@ class QaHandler:
                                     "⏳ 消息将在10秒后撤回，请及时保存"
                                 ),
                             ],
-                            note="del_msg_10",
+                            note="del_msg=10",
                         )
                     else:
                         await send_group_msg(
@@ -208,7 +208,7 @@ class QaHandler:
                                     "⏳ 消息将在10秒后撤回，请及时保存"
                                 ),
                             ],
-                            note="del_msg_10",
+                            note="del_msg=10",
                         )
                 else:
                     await send_group_msg(
@@ -219,7 +219,7 @@ class QaHandler:
                             generate_text_message("❌ 添加失败\n"),
                             generate_text_message("⏳ 消息将在20秒后撤回，请及时保存"),
                         ],
-                        note="del_msg_20",
+                        note="del_msg=20",
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理添加问答对命令失败: {e}")
@@ -250,7 +250,7 @@ class QaHandler:
                         ),
                         generate_text_message("⏳ 消息将在10秒后撤回，请及时保存"),
                     ],
-                    note="del_msg_10",
+                    note="del_msg=10",
                 )
                 return
 
@@ -268,7 +268,7 @@ class QaHandler:
                         ),
                         generate_text_message("⏳ 消息将在10秒后撤回，请及时保存"),
                     ],
-                    note="del_msg_10",
+                    note="del_msg=10",
                 )
                 return
 
@@ -314,7 +314,7 @@ class QaHandler:
                 self.websocket,
                 self.group_id,
                 msg_list,
-                note="del_msg_10",
+                note="del_msg=10",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理删除问答对命令失败: {e}")
@@ -376,7 +376,7 @@ class QaHandler:
                     self.websocket,
                     self.group_id,
                     msg,
-                    note="del_msg_30",
+                    note="del_msg=30",
                 )
                 return
         except Exception as e:

@@ -51,7 +51,7 @@ class GroupMessageHandler:
                 self.websocket,
                 self.group_id,
                 [reply_message, text_message],
-                note="del_msg_10",
+                note="del_msg=10",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理模块开关命令失败: {e}")
@@ -112,7 +112,7 @@ class GroupMessageHandler:
                             + f"\n\n消息将于30秒后撤回，请及时记录"
                         ),
                     ],
-                    note="del_msg_30",
+                    note="del_msg=30",
                 )
                 return
 
@@ -153,7 +153,7 @@ class GroupMessageHandler:
                             f"已查询群{self.group_id}，{operator_id} 的上下级相关邀请者，正在执行踢出邀请树，若数量较大则可能需要较长时间，请耐心等待。"
                         ),
                     ],
-                    note="del_msg_10",
+                    note="del_msg=10",
                 )
                 # 发送踢出邀请树
                 for user_id in related_users:
@@ -172,7 +172,7 @@ class GroupMessageHandler:
                             f"已执行踢出邀请树: {','.join(related_users)}"
                         ),
                     ],
-                    note="del_msg_10",
+                    note="del_msg=10",
                 )
                 return
         except Exception as e:

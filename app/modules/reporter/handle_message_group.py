@@ -42,7 +42,7 @@ class GroupMessageHandler:
                 self.websocket,
                 self.group_id,
                 [reply_message, text_message],
-                note="del_msg_10",
+                note="del_msg=10",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理模块开关命令失败: {e}")
@@ -68,7 +68,7 @@ class GroupMessageHandler:
                     self.websocket,
                     self.group_id,
                     [reply_message, text_message],
-                    note="del_msg_10",
+                    note="del_msg=10",
                 )
                 return
 

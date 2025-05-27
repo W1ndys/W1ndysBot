@@ -159,7 +159,7 @@ class GroupManagerHandle:
                         f"已成功踢出用户：{'、'.join(target_user_ids)}"
                     ),
                 ],
-                note="del_msg_10",
+                note="del_msg=10",
             )
 
         except Exception as e:
