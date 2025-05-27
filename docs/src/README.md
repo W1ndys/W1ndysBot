@@ -2,7 +2,7 @@
 home: true
 icon: house
 title: W1ndysBot
-heroImage: https://theme-hope-assets.vuejs.press/logo.svg
+heroImage: /assets/icon/capoo.gif
 bgImage: https://theme-hope-assets.vuejs.press/bg/6-light.svg
 bgImageDark: https://theme-hope-assets.vuejs.press/bg/6-dark.svg
 bgImageStyle:

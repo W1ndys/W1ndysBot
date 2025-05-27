@@ -11,7 +11,7 @@ export default hopeTheme({
     url: "https://w1ndys.top",
   },
 
-  logo: "/logo.png",
+  logo: "/assets/icon/capoo.gif",
 
   repo: "W1ndys/W1ndysBot",
 
