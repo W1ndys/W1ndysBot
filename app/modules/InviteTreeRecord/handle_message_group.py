@@ -69,111 +69,98 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            invite_link_record = InviteLinkRecordDataManager(self.msg)
-            # 查看邀请记录命令
-            if self.raw_message.startswith(VIEW_INVITE_RECORD):
-                # 使用正则提取参数，支持QQ号或CQ码
-                operator_id = None
-                # 匹配CQ码 [CQ:at,qq=123456789]
-                cq_match = re.search(r"\[CQ:at,qq=(\d+)\]", self.raw_message)
-                if cq_match:
-                    operator_id = cq_match.group(1)
-                else:
-                    # 匹配空格后面的纯数字QQ号
-                    num_match = re.search(
-                        rf"{VIEW_INVITE_RECORD}\s+(\d+)", self.raw_message
-                    )
-                    if num_match:
-                        operator_id = num_match.group(1)
+            # 使用 with 语法管理数据库连接
+            with InviteLinkRecordDataManager(self.msg) as invite_link_record:
+                # 查看邀请记录命令
+                if self.raw_message.startswith(VIEW_INVITE_RECORD):
+                    operator_id = None
+                    cq_match = re.search(r"\[CQ:at,qq=(\d+)\]", self.raw_message)
+                    if cq_match:
+                        operator_id = cq_match.group(1)
+                    else:
+                        num_match = re.search(
+                            rf"{VIEW_INVITE_RECORD}\s+(\d+)", self.raw_message
+                        )
+                        if num_match:
+                            operator_id = num_match.group(1)
 
-                if not operator_id:
-                    # 没有找到参数，提示格式错误
+                    if not operator_id:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [generate_text_message("请提供正确的QQ号或@某人。")],
+                        )
+                        return
+                    invite_chain_str = invite_link_record.get_full_invite_chain_str(
+                        operator_id
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
-                        [generate_text_message("请提供正确的QQ号或@某人。")],
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(
+                                f"{operator_id}邀请树结构\n\n"
+                                + invite_chain_str
+                                + f"\n\n消息将于30秒后撤回，请及时记录"
+                            ),
+                        ],
+                        note="del_msg=30",
                     )
                     return
-                # 调用查看邀请记录
 
-                # 生成完整邀请树路和树状结构
-                invite_chain_str = invite_link_record.get_full_invite_chain_str(
-                    operator_id
-                )
-                # 发送邀请记录
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(
-                            f"{operator_id}邀请树结构\n\n"
-                            + invite_chain_str
-                            + f"\n\n消息将于30秒后撤回，请及时记录"
-                        ),
-                    ],
-                    note="del_msg=30",
-                )
-                return
+                # 踢出邀请树命令
+                if self.raw_message.startswith(KICK_INVITE_RECORD):
+                    operator_id = None
+                    cq_match = re.search(r"\[CQ:at,qq=(\d+)\]", self.raw_message)
+                    if cq_match:
+                        operator_id = cq_match.group(1)
+                    else:
+                        num_match = re.search(
+                            rf"{KICK_INVITE_RECORD}\s+(\d+)", self.raw_message
+                        )
+                        if num_match:
+                            operator_id = num_match.group(1)
 
-            # 踢出邀请树命令
-            if self.raw_message.startswith(KICK_INVITE_RECORD):
-                # 使用正则提取参数，支持QQ号或CQ码
-                operator_id = None
-                # 匹配CQ码 [CQ:at,qq=123456789]
-                cq_match = re.search(r"\[CQ:at,qq=(\d+)\]", self.raw_message)
-                if cq_match:
-                    operator_id = cq_match.group(1)
-                else:
-                    # 匹配空格后面的纯数字QQ号
-                    num_match = re.search(
-                        rf"{KICK_INVITE_RECORD}\s+(\d+)", self.raw_message
+                    if not operator_id:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [generate_text_message("请提供正确的QQ号或@某人。")],
+                        )
+                        return
+
+                    related_users = invite_link_record.get_related_invite_users(
+                        operator_id
                     )
-                    if num_match:
-                        operator_id = num_match.group(1)
 
-                if not operator_id:
-                    # 没有找到参数，提示格式错误
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
-                        [generate_text_message("请提供正确的QQ号或@某人。")],
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(
+                                f"已查询群{self.group_id}，{operator_id} 的上下级相关邀请者，正在执行踢出邀请树，若数量较大则可能需要较长时间，请耐心等待。"
+                            ),
+                        ],
+                        note="del_msg=10",
+                    )
+                    for user_id in related_users:
+                        await set_group_kick(self.websocket, self.group_id, user_id)
+                        invite_link_record.delete_invite_record_by_invited_id(user_id)
+                        await asyncio.sleep(0.5)
+
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(
+                                f"已执行踢出邀请树: {','.join(related_users)}"
+                            ),
+                        ],
+                        note="del_msg=10",
                     )
                     return
-
-                # 获取相关邀请者
-                related_users = invite_link_record.get_related_invite_users(operator_id)
-
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(
-                            f"已查询群{self.group_id}，{operator_id} 的上下级相关邀请者，正在执行踢出邀请树，若数量较大则可能需要较长时间，请耐心等待。"
-                        ),
-                    ],
-                    note="del_msg=10",
-                )
-                # 发送踢出邀请树
-                for user_id in related_users:
-                    # 踢出邀请树
-                    await set_group_kick(self.websocket, self.group_id, user_id)
-                    # 删除邀请记录
-                    invite_link_record.delete_invite_record_by_invited_id(user_id)
-                    await asyncio.sleep(0.5)
-
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(
-                            f"已执行踢出邀请树: {','.join(related_users)}"
-                        ),
-                    ],
-                    note="del_msg=10",
-                )
-                return
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
