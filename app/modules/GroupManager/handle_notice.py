@@ -32,10 +32,10 @@ class NoticeHandler:
         """
         try:
             if self.notice_type.startswith("friend_"):
-                friend_handler = FriendNoticeHandler(self.msg)
+                friend_handler = FriendNoticeHandler(self.websocket, self.msg)
                 await friend_handler.handle_friend_notice()
             elif self.notice_type.startswith("group_"):
-                group_handler = GroupNoticeHandler(self.msg)
+                group_handler = GroupNoticeHandler(self.websocket, self.msg)
                 await group_handler.handle_group_notice()
             elif self.notice_type == "notify":
                 await self.handle_notify_notice()

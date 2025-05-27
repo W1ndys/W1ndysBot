@@ -8,8 +8,8 @@ class FriendNoticeHandler:
     好友通知处理器
     """
 
-    def __init__(self, msg):
-        self.websocket = msg.get("websocket")
+    def __init__(self, websocket, msg):
+        self.websocket = websocket
         self.msg = msg
         self.time = msg.get("time")
         self.formatted_time = msg.get("formatted_time")
