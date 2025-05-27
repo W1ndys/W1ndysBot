@@ -4,7 +4,7 @@ import navbar from "./navbar.js";
 import sidebar from "./sidebar.js";
 
 export default hopeTheme({
-  hostname: "https://groupbot.w1ndys.top",
+  hostname: "https://bot.w1ndys.top",
 
   author: {
     name: "W1ndys",
