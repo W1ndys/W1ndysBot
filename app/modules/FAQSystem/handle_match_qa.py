@@ -4,12 +4,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 import difflib
 from collections import defaultdict
 import jieba
-from .db_manager import QADatabaseManager
+from .db_manager import FAQDatabaseManager
 import scipy.sparse
 from typing import Optional
 
 
-class AdvancedQAMatcher:
+class AdvancedFAQMatcher:
     def __init__(self, group_id: str):
         """
         初始化高级问答匹配器，加载指定群组的问答对数据。
@@ -17,7 +17,7 @@ class AdvancedQAMatcher:
             group_id: str 群组ID
         """
         self.group_id = group_id
-        self.qa_pairs = []
+        self.FAQ_pairs = []
         self.vectorizer = TfidfVectorizer(tokenizer=self._tokenize)
         self.tfidf_matrix: Optional[scipy.sparse.csr_matrix] = None
         self.keyword_index = defaultdict(list)
@@ -28,8 +28,8 @@ class AdvancedQAMatcher:
         """
         从数据库加载所有问答对到内存。
         """
-        with QADatabaseManager(self.group_id) as db:
-            self.qa_pairs = [(id, q, a) for id, q, a in db.get_all_qa_pairs()]
+        with FAQDatabaseManager(self.group_id) as db:
+            self.FAQ_pairs = [(id, q, a) for id, q, a in db.get_all_FAQ_pairs()]
 
     def _tokenize(self, text):
         """
@@ -43,33 +43,33 @@ class AdvancedQAMatcher:
         tokens = list(jieba.cut(text))
         return [t for t in tokens if t.strip()]
 
-    def add_qa_pair(self, question, answer):
+    def add_FAQ_pair(self, question, answer):
         """
         添加新的问答对到内存和数据库。
         参数:
             question: str 问题
             answer: str 答案
         """
-        with QADatabaseManager(self.group_id) as db:
-            result_id = db.add_qa_pair(question, answer)
+        with FAQDatabaseManager(self.group_id) as db:
+            result_id = db.add_FAQ_pair(question, answer)
         if result_id:
-            self.qa_pairs.append((result_id, question, answer))
+            self.FAQ_pairs.append((result_id, question, answer))
             return result_id
         return None
 
-    def delete_qa_pair(self, qa_id: int) -> bool:
+    def delete_FAQ_pair(self, FAQ_id: int) -> bool:
         """
         从内存和数据库中删除指定ID的问答对。
         参数:
-            qa_id: int 问答对ID
+            FAQ_id: int 问答对ID
         返回:
             bool 是否删除成功
         """
         # 从内存中删除
-        self.qa_pairs = [(id, q, a) for id, q, a in self.qa_pairs if id != qa_id]
+        self.FAQ_pairs = [(id, q, a) for id, q, a in self.FAQ_pairs if id != FAQ_id]
         # 从数据库中删除
-        with QADatabaseManager(self.group_id) as db:
-            db.delete_qa_pair(qa_id)
+        with FAQDatabaseManager(self.group_id) as db:
+            db.delete_FAQ_pair(FAQ_id)
         return True
 
     def build_index(self):
@@ -77,12 +77,12 @@ class AdvancedQAMatcher:
         构建TF-IDF索引和关键词倒排索引，用于高效检索。
         """
         # 构建TF-IDF索引
-        questions = [q for _, q, a in self.qa_pairs]
+        questions = [q for _, q, a in self.FAQ_pairs]
         self.tfidf_matrix = self.vectorizer.fit_transform(questions).tocsr()  # type: ignore
 
         # 构建关键词倒排索引
         self.keyword_index.clear()
-        for idx, (id, q, a) in enumerate(self.qa_pairs):
+        for idx, (id, q, a) in enumerate(self.FAQ_pairs):
             keywords = set(self._tokenize(q))
             for word in keywords:
                 self.keyword_index[word].append(idx)
@@ -104,7 +104,7 @@ class AdvancedQAMatcher:
                 candidate_indices.update(self.keyword_index[word])
 
         return (
-            list(candidate_indices) if candidate_indices else range(len(self.qa_pairs))
+            list(candidate_indices) if candidate_indices else range(len(self.FAQ_pairs))
         )
 
     def find_best_match(self, query):
@@ -116,7 +116,7 @@ class AdvancedQAMatcher:
         返回:
             (orig_question, orig_answer, score, id) 或 (None, None, score, None)
         """
-        if not self.qa_pairs or self.tfidf_matrix is None:
+        if not self.FAQ_pairs or self.tfidf_matrix is None:
             return None, None, 0.0, None
 
         # 步骤1: 初步筛选候选问题
@@ -132,40 +132,40 @@ class AdvancedQAMatcher:
         similarities = cosine_similarity(query_vec, tfidf_candidates)  # type: ignore
         best_candidate_idx = np.argmax(similarities)
         best_score = similarities[0, best_candidate_idx]
-        best_qa_idx = indices[best_candidate_idx]
+        best_FAQ_idx = indices[best_candidate_idx]
 
         # 步骤3: 使用编辑距离进行二次验证
         seq_score = difflib.SequenceMatcher(
-            None, query, self.qa_pairs[best_qa_idx][1]
+            None, query, self.FAQ_pairs[best_FAQ_idx][1]
         ).ratio()
         # 优化加权方式：TF-IDF与编辑距离0.3:0.7
         combined_score = 0.3 * best_score + 0.7 * seq_score
 
         if combined_score >= self.threshold:
-            qa_id, orig_question, orig_answer = self.qa_pairs[best_qa_idx]
-            return orig_question, orig_answer, combined_score, qa_id
+            FAQ_id, orig_question, orig_answer = self.FAQ_pairs[best_FAQ_idx]
+            return orig_question, orig_answer, combined_score, FAQ_id
         return None, None, combined_score, None
 
-    def get_qa_id_by_question(self, question: str) -> int:
+    def get_FAQ_id_by_question(self, question: str) -> int:
         """
         根据问题查找对应的问答对ID，找不到返回-1。
         """
-        for qa_id, q, _ in self.qa_pairs:
+        for FAQ_id, q, _ in self.FAQ_pairs:
             if q == question:
-                return qa_id
+                return FAQ_id
         return -1
 
 
 if __name__ == "__main__":
-    matcher = AdvancedQAMatcher("1234567890")
+    matcher = AdvancedFAQMatcher("1234567890")
     matcher.build_index()
 
     while True:
         query = input("请输入问题: ")
-        orig_question, answer, score, qa_id = matcher.find_best_match(query)
+        orig_question, answer, score, FAQ_id = matcher.find_best_match(query)
         print(f"问题: {query}")
         if answer:
             print(f"数据库原句: {orig_question}")
-            print(f"匹配答案: {answer} (相似度: {score:.2f}) [ID: {qa_id}]")
+            print(f"匹配答案: {answer} (相似度: {score:.2f}) [ID: {FAQ_id}]")
         else:
             print(f"未找到合适答案 (相似度: {score:.2f})\n")
