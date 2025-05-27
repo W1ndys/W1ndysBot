@@ -92,8 +92,8 @@ class QaHandler:
                         fail_list.append(f"第{idx+1}行内容缺失")
                         continue
                     # 新增或更新
-                    old_id = matcher.get_qa_id_by_question(question)
-                    result_id = matcher.add_qa_pair(question, answer)
+                    old_id = matcher.get_FAQ_id_by_question(question)
+                    result_id = matcher.add_FAQ_pair(question, answer)
                     if result_id is not None:
                         if old_id != -1:
                             success_list.append(
@@ -167,8 +167,8 @@ class QaHandler:
                     )
                     return
                 # 新增或更新
-                old_id = matcher.get_qa_id_by_question(question)
-                result_id = matcher.add_qa_pair(question, answer)
+                old_id = matcher.get_FAQ_id_by_question(question)
+                result_id = matcher.add_FAQ_pair(question, answer)
                 if result_id is not None:
                     if old_id != -1:
                         await send_group_msg(
@@ -278,7 +278,7 @@ class QaHandler:
             for id_str in id_strs:
                 try:
                     qa_id = int(id_str)
-                    result = matcher.delete_qa_pair(qa_id)
+                    result = matcher.delete_FAQ_pair(qa_id)
                     if result:
                         success_ids.append(str(qa_id))
                     else:
