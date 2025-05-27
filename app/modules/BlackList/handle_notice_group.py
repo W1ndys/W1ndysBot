@@ -1,5 +1,6 @@
 from . import MODULE_NAME
 import logger
+from datetime import datetime
 from core.switchs import is_group_switch_on
 from .data_manager import BlackListDataManager
 from api.group import set_group_kick
@@ -14,7 +15,7 @@ class GroupNoticeHandler:
 
     def __init__(self, websocket, msg):
         self.websocket = websocket
-        self.websocket = msg.get("websocket")
+        self.msg = msg
         self.time = msg.get("time")
         self.formatted_time = datetime.fromtimestamp(self.time).strftime(
             "%Y-%m-%d %H:%M:%S"
