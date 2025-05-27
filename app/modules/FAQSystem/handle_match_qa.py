@@ -16,11 +16,11 @@ class AdvancedQAMatcher:
         参数:
             group_id: str 群组ID
         """
+        self.group_id = group_id
         self.qa_pairs = []
         self.vectorizer = TfidfVectorizer(tokenizer=self._tokenize)
         self.tfidf_matrix: Optional[scipy.sparse.csr_matrix] = None
         self.keyword_index = defaultdict(list)
-        self.db = QADatabaseManager(group_id)
         self._load_from_db()
         self.threshold = 0.6
 
@@ -28,8 +28,8 @@ class AdvancedQAMatcher:
         """
         从数据库加载所有问答对到内存。
         """
-        # 从数据库加载所有QA对，包含id
-        self.qa_pairs = [(id, q, a) for id, q, a in self.db.get_all_qa_pairs()]
+        with QADatabaseManager(self.group_id) as db:
+            self.qa_pairs = [(id, q, a) for id, q, a in db.get_all_qa_pairs()]
 
     def _tokenize(self, text):
         """
@@ -50,7 +50,8 @@ class AdvancedQAMatcher:
             question: str 问题
             answer: str 答案
         """
-        result_id = self.db.add_qa_pair(question, answer)
+        with QADatabaseManager(self.group_id) as db:
+            result_id = db.add_qa_pair(question, answer)
         if result_id:
             self.qa_pairs.append((result_id, question, answer))
             return result_id
@@ -67,7 +68,8 @@ class AdvancedQAMatcher:
         # 从内存中删除
         self.qa_pairs = [(id, q, a) for id, q, a in self.qa_pairs if id != qa_id]
         # 从数据库中删除
-        self.db.delete_qa_pair(qa_id)
+        with QADatabaseManager(self.group_id) as db:
+            db.delete_qa_pair(qa_id)
         return True
 
     def build_index(self):

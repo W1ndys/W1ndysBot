@@ -225,7 +225,7 @@ class QaHandler:
             logger.error(f"[{MODULE_NAME}]处理添加问答对命令失败: {e}")
         finally:
             if matcher is not None:
-                matcher.db._close()
+                pass  # 已不需要关闭db，由上下文管理器自动处理
 
     async def handle_delete_qa(self):
         """

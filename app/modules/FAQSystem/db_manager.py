@@ -17,6 +17,19 @@ class QADatabaseManager:
         self.cursor = self.conn.cursor()
         self._create_table()
 
+    def __enter__(self):
+        """
+        支持with语句的进入方法。
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        支持with语句的退出方法，自动关闭数据库连接。
+        """
+        self.cursor.close()
+        self.conn.close()
+
     def _create_table(self):
         """
         创建存储问答对的表（如不存在则新建）。
@@ -31,13 +44,6 @@ class QADatabaseManager:
         """
         )
         self.conn.commit()
-
-    def _close(self):
-        """
-        关闭数据库连接。
-        """
-        self.cursor.close()  # 关闭游标
-        self.conn.close()  # 关闭连接
 
     def add_qa_pair(self, question: str, answer: str) -> Optional[int]:
         """
