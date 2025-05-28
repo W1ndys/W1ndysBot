@@ -71,6 +71,15 @@ class GroupMessageHandler:
             from . import DORO_COMMANDS
 
             if self.raw_message.strip() == DORO_COMMANDS:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message("正在获取Doro表情包..."),
+                    ],
+                    note="del_msg=3",
+                )
                 api_url = "https://www.doro.asia/api/random-sticker"
                 async with aiohttp.ClientSession() as session:
                     async with session.get(api_url) as resp:
