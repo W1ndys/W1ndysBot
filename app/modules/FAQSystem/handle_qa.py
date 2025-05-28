@@ -9,7 +9,7 @@ import re
 import json
 
 
-RKEY_DIR = os.path.join("data", "nc_get_rkey.json")
+RKEY_DIR = os.path.join("data", "Core", "nc_get_rkey.json")
 
 
 class QaHandler:

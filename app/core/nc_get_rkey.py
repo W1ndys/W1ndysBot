@@ -7,7 +7,7 @@ import os
 import json
 import time
 
-DATA_DIR = os.path.join("data", "nc_get_rkey.json")
+DATA_DIR = os.path.join("data", "Core", "nc_get_rkey.json")
 
 # 全局变量，记录上次请求时间
 last_request_time = 0
