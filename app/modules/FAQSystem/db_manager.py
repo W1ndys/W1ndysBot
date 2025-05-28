@@ -47,7 +47,7 @@ class FAQDatabaseManager:
 
     def add_FAQ_pair(self, question: str, answer: str) -> Optional[int]:
         """
-        添加问答对到数据库。如果问题已存在，则更新答案，否则插入新问答对。
+        添加问答到数据库。如果问题已存在，则更新答案，否则插入新问答对。
         参数:
             question: str 问题内容
             answer: str 答案内容

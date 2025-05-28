@@ -34,10 +34,10 @@ class QaHandler:
         """
         处理群消息的主入口。
 
-        根据消息内容判断是添加问答对、删除问答对还是进行问答匹配，并调用相应的处理函数。
+        根据消息内容判断是添加问答、删除问答对还是进行问答匹配，并调用相应的处理函数。
         """
         try:
-            # 如果消息是添加问答对命令，则调用添加问答对函数
+            # 如果消息是添加问答命令，则调用添加问答函数
             if self.raw_message.startswith(ADD_FAQ):
                 await self.handle_add_qa()
                 return
@@ -54,9 +54,9 @@ class QaHandler:
 
     async def handle_add_qa(self):
         """
-        处理添加问答对命令。
+        处理添加问答命令。
 
-        支持单条和批量添加。仅群管理员或系统拥有者可添加问答对。添加成功后发送反馈消息。
+        支持单条和批量添加。仅群管理员或系统拥有者可添加问答。添加成功后发送反馈消息。
         批量格式：
         添加命令
         问题1 答案1
@@ -222,7 +222,7 @@ class QaHandler:
                         note="del_msg=20",
                     )
         except Exception as e:
-            logger.error(f"[{MODULE_NAME}]处理添加问答对命令失败: {e}")
+            logger.error(f"[{MODULE_NAME}]处理添加问答命令失败: {e}")
         finally:
             if matcher is not None:
                 pass  # 已不需要关闭db，由上下文管理器自动处理
