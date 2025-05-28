@@ -332,11 +332,14 @@ class QaHandler:
                 self.raw_message
             )
 
-            # 如果答案中有图片（包含rkey），则替换为本地缓存的rkey
-            # 示例图片格式：
-            # [CQ:image,file=92C3698A5D8CEB42EDE70B316514F211.jpg,sub_type=0,url=https://multimedia.nt.qq.com.cn/download?appid=1407&amp;fileid=xxx&amp;rkey=xxx,file_size=45934]
             if answer is not None:
 
+                # 如果答案中有被转义的换行，则替换为实际的换行
+                answer = re.sub(r"\\n", "\n", answer)
+
+                # 如果答案中有图片（包含rkey），则替换为本地缓存的rkey
+                # 示例图片格式：
+                # [CQ:image,file=92C3698A5D8CEB42EDE70B316514F211.jpg,sub_type=0,url=https://multimedia.nt.qq.com.cn/download?appid=1407&amp;fileid=xxx&amp;rkey=xxx,file_size=45934]
                 def replace_rkey(match):
                     cq_img = match.group(0)
                     # 查找rkey参数
