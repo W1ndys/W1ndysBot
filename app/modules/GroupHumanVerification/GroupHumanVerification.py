@@ -208,6 +208,7 @@ class GroupHumanVerificationHandler:
                             "格式错误，应为：拒绝入群验证 <群号> <QQ号> ⚠️"
                         )
                     ],
+                    note="del_msg=10",
                 )
                 return
             group_id = parts[1]
@@ -224,6 +225,7 @@ class GroupHumanVerificationHandler:
                             f"未找到群{group_id}、QQ号{user_id}的待验证记录 ❌"
                         )
                     ],
+                    note="del_msg=10",
                 )
                 return
             with DataManager() as dm:
@@ -236,6 +238,7 @@ class GroupHumanVerificationHandler:
                         f"已拒绝群{group_id}、QQ号{user_id}的入群验证请求 ❌"
                     )
                 ],
+                note="del_msg=10",
             )
             # 群内同步通知
             await send_group_msg(
@@ -247,6 +250,7 @@ class GroupHumanVerificationHandler:
                         f"({self.user_id})你的入群验证已被管理员拒绝，1分钟后将自动被踢出，如有疑问请联系管理员。❌"
                     ),
                 ],
+                note="del_msg=60",
             )
             # 暂停1分钟
             await asyncio.sleep(60)
@@ -334,6 +338,7 @@ class GroupHumanVerificationHandler:
                                 "你未完成入群验证，已达到最后一次警告，马上将被移出群聊！❌"
                             ),
                         ],
+                        note="del_msg=10",
                     )
                     await asyncio.sleep(2)  # 稍作延迟
                     await set_group_kick(self.websocket, group_id, user_id)

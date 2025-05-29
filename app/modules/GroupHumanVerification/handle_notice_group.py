@@ -87,9 +87,6 @@ class GroupNoticeHandler:
         处理群聊成员减少 - 成员被踢通知
         """
         try:
-            # 更新数据库
-            with DataManager() as dm:
-                dm.update_verify_status(self.user_id, self.group_id, "被踢出")
             # 群内通知
             await send_group_msg(
                 self.websocket,
