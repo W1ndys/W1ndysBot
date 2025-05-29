@@ -7,22 +7,14 @@ from . import (
 )
 import logger
 from core.switchs import is_private_switch_on, toggle_private_switch
-from api.message import send_private_msg, send_group_msg
+from api.message import send_private_msg
 from api.generate import (
     generate_reply_message,
     generate_text_message,
-    generate_at_message,
 )
 from datetime import datetime
-from .data_manager import DataManager
 from config import OWNER_ID
-from api.group import set_group_kick
-import asyncio
-from .GroupHumanVerification import (
-    handle_approve_request,
-    handle_reject_request,
-    handle_scan_request,
-)
+from .GroupHumanVerification import GroupHumanVerificationHandler
 
 
 class PrivateMessageHandler:
@@ -84,14 +76,18 @@ class PrivateMessageHandler:
             if self.raw_message == "请求添加你为好友":
                 return
 
+            # 初始化入群验证处理器
+            group_human_verification_handler = GroupHumanVerificationHandler(
+                self.websocket, self.user_id, self.raw_message
+            )
             # 如果是管理员，判断是否是批准信息
             if self.user_id == OWNER_ID:
                 if self.raw_message.startswith(APPROVE_VERIFICATION):
-                    await handle_approve_request(self)
+                    await group_human_verification_handler.handle_approve_request()
                 elif self.raw_message.startswith(REJECT_VERIFICATION):
-                    await handle_reject_request(self)
+                    await group_human_verification_handler.handle_reject_request()
                 elif self.raw_message.startswith(SCAN_VERIFICATION):
-                    await handle_scan_request(self)
+                    await group_human_verification_handler.handle_scan_request()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊消息失败: {e}")
