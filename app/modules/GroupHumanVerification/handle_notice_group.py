@@ -10,7 +10,7 @@ import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
 from api.group import set_group_ban
-from api.message import send_group_msg
+from api.message import send_group_msg, send_private_msg
 from api.generate import generate_text_message, generate_at_message
 import random
 from .data_manager import DataManager
@@ -32,9 +32,9 @@ class GroupNoticeHandler:
         )  # 格式化时间
         self.notice_type = msg.get("notice_type")
         self.sub_type = msg.get("sub_type")
-        self.user_id = msg.get("user_id")
-        self.group_id = msg.get("group_id")
-        self.operator_id = msg.get("operator_id")
+        self.user_id = str(msg.get("user_id"))
+        self.group_id = str(msg.get("group_id"))
+        self.operator_id = str(msg.get("operator_id"))
 
     async def handle_group_notice(self):
         """
@@ -69,7 +69,9 @@ class GroupNoticeHandler:
         处理群聊成员减少 - 主动退群通知
         """
         try:
-            pass
+            # 更新数据库
+            with DataManager() as dm:
+                dm.update_verify_status(self.user_id, self.group_id, "主动退群")
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 主动退群通知失败: {e}")
 
@@ -78,7 +80,9 @@ class GroupNoticeHandler:
         处理群聊成员减少 - 成员被踢通知
         """
         try:
-            pass
+            # 更新数据库
+            with DataManager() as dm:
+                dm.update_verify_status(self.user_id, self.group_id, "被踢出")
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 成员被踢通知失败: {e}")
 
@@ -87,6 +91,9 @@ class GroupNoticeHandler:
         处理群聊成员增加通知
         """
         try:
+            logger.info(
+                f"[{MODULE_NAME}]群聊 {self.group_id} 用户 {self.user_id} 增加成员，将进行入群验证"
+            )
             # 禁言用户
             await set_group_ban(self.websocket, self.group_id, self.user_id, BAN_TIME)
 
@@ -96,7 +103,7 @@ class GroupNoticeHandler:
                 random_suffix = random.randint(1000, 9999)  # 4位随机数
                 full_id = f"{timestamp}{random_suffix}"
                 unique_id = full_id[-random.randint(6, 15) :]  # 随机取6-15位
-                with DataManager(self.group_id) as dm:
+                with DataManager() as dm:
                     if not dm.check_unique_id_exists(unique_id):
                         break
             else:
@@ -106,7 +113,7 @@ class GroupNoticeHandler:
                 unique_id = None
 
             # 存入数据库
-            with DataManager(self.group_id) as dm:
+            with DataManager() as dm:
                 dm.insert_data(
                     self.group_id,
                     self.user_id,
@@ -134,7 +141,7 @@ class GroupNoticeHandler:
             )
 
             # 向管理员上报，包含群号、用户ID、验证码、时间
-            await send_group_msg(
+            await send_private_msg(
                 self.websocket,
                 OWNER_ID,
                 [

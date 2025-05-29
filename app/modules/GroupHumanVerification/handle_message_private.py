@@ -88,6 +88,9 @@ class PrivateMessageHandler:
                     await group_human_verification_handler.handle_reject_request()
                 elif self.raw_message.startswith(SCAN_VERIFICATION):
                     await group_human_verification_handler.handle_scan_request()
+            # 如果是普通用户，判断是否是用户发送的验证码
+            else:
+                await group_human_verification_handler.handle_verification_code()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊消息失败: {e}")
