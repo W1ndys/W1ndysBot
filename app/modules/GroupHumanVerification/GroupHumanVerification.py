@@ -127,35 +127,49 @@ class GroupHumanVerificationHandler:
 
     async def handle_approve_request(self):
         """
-        处理批准入群验证请求
+        处理批准入群验证请求，命令格式：同意入群验证 <群号> <QQ号>
         """
         try:
             parts = self.raw_message.strip().split()
-            if len(parts) < 2:
+            if len(parts) < 3:
                 await send_private_msg(
                     self.websocket,
                     self.user_id,
-                    [generate_text_message("格式错误，应为：同意入群验证 <唯一ID>")],
+                    [
+                        generate_text_message(
+                            "格式错误，应为：同意入群验证 <群号> <QQ号>"
+                        )
+                    ],
+                    note="del_msg=10",
                 )
                 return
-            unique_id = parts[1]
+            group_id = parts[1]
+            user_id = parts[2]
             with DataManager() as dm:
-                record = dm.get_record_by_unique_id(unique_id)
-            if not record:
+                # 查找该群该用户的待验证记录
+                records = dm.get_user_records_by_group_id_and_user_id(group_id, user_id)
+            if not records:
                 await send_private_msg(
                     self.websocket,
                     self.user_id,
-                    [generate_text_message(f"未找到唯一ID为{unique_id}的验证记录")],
+                    [
+                        generate_text_message(
+                            f"未找到群{group_id}、QQ号{user_id}的待验证记录"
+                        )
+                    ],
                 )
                 return
-            group_id = record[0]  # group_id
-            user_id = record[1]  # user_id
             with DataManager() as dm:
-                dm.update_verify_status(self.user_id, group_id, "已验证")
+                dm.update_verify_status(user_id, group_id, "管理员已批准")
             await send_private_msg(
                 self.websocket,
                 self.user_id,
-                [generate_text_message(f"已批准唯一ID为{unique_id}的入群验证请求")],
+                [
+                    generate_text_message(
+                        f"已批准群{group_id}、QQ号{user_id}的入群验证请求"
+                    )
+                ],
+                note="del_msg=10",
             )
             # 群内同步通知
             await send_group_msg(
@@ -167,7 +181,10 @@ class GroupHumanVerificationHandler:
                         f"({self.user_id})你的入群验证已被管理员手动通过，欢迎加入群聊！"
                     ),
                 ],
+                note="del_msg=120",
             )
+            # 解除禁言（duration=0）
+            await set_group_ban(self.websocket, group_id, user_id, 0)
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理批准入群验证请求失败: {e}")
             await send_private_msg(
@@ -178,35 +195,47 @@ class GroupHumanVerificationHandler:
 
     async def handle_reject_request(self):
         """
-        处理拒绝入群验证请求
+        处理拒绝入群验证请求，命令格式：拒绝入群验证 <群号> <QQ号>
         """
         try:
             parts = self.raw_message.strip().split()
-            if len(parts) < 2:
+            if len(parts) < 3:
                 await send_private_msg(
                     self.websocket,
                     self.user_id,
-                    [generate_text_message("格式错误，应为：拒绝入群验证 <唯一ID>")],
+                    [
+                        generate_text_message(
+                            "格式错误，应为：拒绝入群验证 <群号> <QQ号>"
+                        )
+                    ],
                 )
                 return
-            unique_id = parts[1]
+            group_id = parts[1]
+            user_id = parts[2]
             with DataManager() as dm:
-                record = dm.get_record_by_unique_id(unique_id)
-            if not record:
+                # 查找该群该用户的待验证记录
+                records = dm.get_user_records_by_group_id_and_user_id(group_id, user_id)
+            if not records:
                 await send_private_msg(
                     self.websocket,
                     self.user_id,
-                    [generate_text_message(f"未找到唯一ID为{unique_id}的验证记录")],
+                    [
+                        generate_text_message(
+                            f"未找到群{group_id}、QQ号{user_id}的待验证记录"
+                        )
+                    ],
                 )
                 return
-            group_id = record[0]  # group_id
-            user_id = record[1]  # user_id
             with DataManager() as dm:
-                dm.update_verify_status(self.user_id, group_id, "验证超时")
+                dm.update_verify_status(user_id, group_id, "管理员已拒绝")
             await send_private_msg(
                 self.websocket,
                 self.user_id,
-                [generate_text_message(f"已拒绝唯一ID为{unique_id}的入群验证请求")],
+                [
+                    generate_text_message(
+                        f"已拒绝群{group_id}、QQ号{user_id}的入群验证请求"
+                    )
+                ],
             )
             # 群内同步通知
             await send_group_msg(

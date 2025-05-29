@@ -162,6 +162,26 @@ class DataManager:
         )
         return self.cursor.fetchall()
 
+    def get_user_records_by_group_id_and_user_id(self, group_id, user_id):
+        """
+        获取指定群号和用户ID的记录
+        """
+        self.cursor.execute(
+            "SELECT * FROM group_human_verification WHERE group_id = ? AND user_id = ?",
+            (group_id, user_id),
+        )
+        return self.cursor.fetchone()
+
+    def get_user_records_by_group_id(self, group_id):
+        """
+        获取指定群号所有待验证记录
+        """
+        self.cursor.execute(
+            "SELECT * FROM group_human_verification WHERE group_id = ? AND verify_status = '未验证'",
+            (group_id,),
+        )
+        return self.cursor.fetchall()
+
     def get_unverified_users(self, group_id=None):
         """
         获取所有未验证用户
