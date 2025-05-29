@@ -163,12 +163,12 @@ class GroupNoticeHandler:
             await asyncio.sleep(0.5)
 
             # 向管理员发送处理文本，便于复制
-            await send_group_msg(
+            await send_private_msg(
                 self.websocket,
                 OWNER_ID,
                 [generate_text_message(f"{APPROVE_VERIFICATION} {unique_id}")],
             )
-            await send_group_msg(
+            await send_private_msg(
                 self.websocket,
                 OWNER_ID,
                 [generate_text_message(f"{REJECT_VERIFICATION} {unique_id}")],

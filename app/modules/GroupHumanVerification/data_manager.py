@@ -83,6 +83,7 @@ class DataManager:
     ):
         """
         插入数据
+        如果已存在相同的group_id和user_id，则覆盖原有记录，否则插入新记录
         1: group_id: 群聊ID
         2: user_id: 用户QQ号
         3: unique_id: 唯一ID
@@ -91,18 +92,44 @@ class DataManager:
         6: remaining_attempts: 剩余验证次数
         7: remaining_warnings: 剩余警告次数
         """
+        # 先检查是否已存在该群号和用户
         self.cursor.execute(
-            "INSERT INTO group_human_verification (group_id, user_id, unique_id, verify_status, join_time, remaining_attempts, remaining_warnings) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (
-                group_id,
-                user_id,
-                unique_id,
-                verify_status,
-                join_time,
-                remaining_attempts,
-                remaining_warnings,
-            ),
+            "SELECT id FROM group_human_verification WHERE group_id = ? AND user_id = ?",
+            (group_id, user_id),
         )
+        result = self.cursor.fetchone()
+        if result:
+            # 已存在，执行更新操作
+            self.cursor.execute(
+                """
+                UPDATE group_human_verification
+                SET unique_id = ?, verify_status = ?, join_time = ?, remaining_attempts = ?, remaining_warnings = ?, created_at = CURRENT_TIMESTAMP
+                WHERE group_id = ? AND user_id = ?
+                """,
+                (
+                    unique_id,
+                    verify_status,
+                    join_time,
+                    remaining_attempts,
+                    remaining_warnings,
+                    group_id,
+                    user_id,
+                ),
+            )
+        else:
+            # 不存在，插入新记录
+            self.cursor.execute(
+                "INSERT INTO group_human_verification (group_id, user_id, unique_id, verify_status, join_time, remaining_attempts, remaining_warnings) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (
+                    group_id,
+                    user_id,
+                    unique_id,
+                    verify_status,
+                    join_time,
+                    remaining_attempts,
+                    remaining_warnings,
+                ),
+            )
         self.conn.commit()
 
     def get_record_by_unique_id(self, unique_id):
