@@ -1,5 +1,5 @@
 import logger
-from . import MODULE_NAME
+from . import MODULE_NAME, MAX_WARNINGS
 from api.message import send_private_msg, send_group_msg
 from api.generate import generate_text_message, generate_at_message
 from .data_manager import DataManager
@@ -295,15 +295,17 @@ class GroupHumanVerificationHandler:
 
                     if remaining_warnings > 1:
                         new_count = remaining_warnings - 1
+                        warned_count = MAX_WARNINGS - new_count
                         with DataManager() as dm:
                             dm.update_warning_count(unique_id, new_count)
                         message_parts.append(generate_at_message(user_id))
                         message_parts.append(
                             generate_text_message(
-                                f"({user_id})请及时加我为好友私聊验证码【{unique_id}】进行验证（警告{new_count}/3）⚠️"
+                                f"({user_id})请及时加我为好友私聊验证码【{unique_id}】进行验证（警告{warned_count}/{MAX_WARNINGS}）⚠️"
                             )
                         )
                     elif remaining_warnings == 1:
+                        warned_count = MAX_WARNINGS
                         # 最后一次警告
                         with DataManager() as dm:
                             dm.update_warning_count(unique_id, 0)
