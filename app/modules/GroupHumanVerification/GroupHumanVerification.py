@@ -280,18 +280,18 @@ class GroupHumanVerificationHandler:
             # 按群分组
             group_map = {}
             for record in unverified_users:
-                gid = record[0]  # group_id
-                group_map.setdefault(gid, []).append(record)
+                group_id = record[1]  # group_id
+                group_map.setdefault(group_id, []).append(record)
 
-            for gid, users in group_map.items():
+            for group_id, users in group_map.items():
                 # 构建合并消息
                 message_parts = []
                 users_to_kick = []
 
                 for record in users:
                     unique_id = record[3]
-                    user_id = record[1]
-                    remaining_warnings = record[6]
+                    user_id = record[2]
+                    remaining_warnings = record[7]
 
                     if remaining_warnings > 1:
                         new_count = remaining_warnings - 1
@@ -307,25 +307,25 @@ class GroupHumanVerificationHandler:
                         # 最后一次警告
                         with DataManager() as dm:
                             dm.update_warning_count(unique_id, 0)
-                            dm.update_verify_status(user_id, gid, "验证超时")
+                            dm.update_verify_status(user_id, group_id, "验证超时")
                         users_to_kick.append((user_id, unique_id))
 
                 # 发送合并的警告消息
                 if message_parts:
-                    warning_message = (
-                        "\n".join(message_parts) + "\n超过3次将会被踢出群聊"
+                    message_parts.append(
+                        generate_text_message("超过3次将会被踢出群聊 ⚠️")
                     )
                     await send_group_msg(
                         self.websocket,
-                        gid,
-                        [generate_text_message(warning_message + " ⚠️")],
+                        group_id,
+                        message_parts,
                     )
 
                 # 处理需要踢出的用户
                 for user_id, unique_id in users_to_kick:
                     await send_group_msg(
                         self.websocket,
-                        gid,
+                        group_id,
                         [
                             generate_at_message(user_id),
                             generate_text_message(
@@ -334,7 +334,7 @@ class GroupHumanVerificationHandler:
                         ],
                     )
                     await asyncio.sleep(2)  # 稍作延迟
-                    await set_group_kick(self.websocket, gid, user_id)
+                    await set_group_kick(self.websocket, group_id, user_id)
 
             await send_private_msg(
                 self.websocket,
