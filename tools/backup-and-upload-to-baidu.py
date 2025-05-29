@@ -1,7 +1,6 @@
 import os
 import tarfile
 import requests
-from ..app.config import FEISHU_BOT_URL, FEISHU_BOT_SECRET
 import time
 import subprocess
 import datetime
@@ -16,6 +15,14 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
+# 飞书机器人URL
+FEISHU_BOT_URL = (
+    "https://open.feishu.cn/open-apis/bot/v2/hook/55648a44-6e84-4d8c-af16-30065ffba8c1"
+)
+
+# 飞书机器人Secret
+FEISHU_BOT_SECRET = "Z1TZCSlTgDFDEwnUYXeRDh"
 
 
 def send_feishu_notification(title: str, content: str):
@@ -523,11 +530,11 @@ def main():
     # 步骤1: 备份数据和日志
     archive_path = backup_data_and_logs()
     if not archive_path:
-        send_feishu_notification("W1ndysBot备份失败", "备份数据和日志失败")
+        send_feishu_notification("W1ndysBot-dev备份失败", "备份数据和日志失败")
         return
 
     # 步骤2: 上传到百度网盘
-    remote_dir = "/W1ndysBot/"
+    remote_dir = "/W1ndysBot-dev/"
     file_name = os.path.basename(archive_path)
     remote_file_path = f"{remote_dir}{file_name}"  # 构造完整的远程文件路径用于上传
 
@@ -587,7 +594,7 @@ def main():
 
     # 步骤3: 发送飞书通知
     if success:
-        feishu_title = f"W1ndysBot备份数据上传百度网盘成功"
+        feishu_title = f"W1ndysBot-dev备份数据上传百度网盘成功"
         feishu_content = f"文件名: {file_name}\n备份上传状态: {result_message}"
         feishu_content += deleted_files_report  # 添加旧备份删除信息
 
@@ -603,7 +610,7 @@ def main():
             logger.error(f"删除本地文件失败: {e}")
     else:
         send_feishu_notification(
-            "W1ndysBot备份数据上传百度网盘失败",
+            "W1ndysBot-dev备份数据上传百度网盘失败",
             f"文件名: {file_name}\n失败原因: {result_message}",
         )
         logger.error(f"上传失败，保留本地文件: {archive_path}")
