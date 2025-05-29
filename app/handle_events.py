@@ -3,7 +3,7 @@ import asyncio
 import logger
 import shutil
 import os
-import importlib.util
+import importlib
 import inspect
 
 
