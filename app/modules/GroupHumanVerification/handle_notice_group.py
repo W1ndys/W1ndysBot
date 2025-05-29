@@ -154,7 +154,7 @@ class GroupNoticeHandler:
                         f"时间：{self.formatted_time}"
                     ),
                     generate_text_message(
-                        f"你可以发送“{APPROVE_VERIFICATION}/{REJECT_VERIFICATION}+{unique_id}”来处理该请求"
+                        f"你可以发送“{APPROVE_VERIFICATION}/{REJECT_VERIFICATION}+{self.group_id}+{self.user_id}”来处理该请求"
                     ),
                 ],
             )
@@ -166,12 +166,20 @@ class GroupNoticeHandler:
             await send_private_msg(
                 self.websocket,
                 OWNER_ID,
-                [generate_text_message(f"{APPROVE_VERIFICATION} {unique_id}")],
+                [
+                    generate_text_message(
+                        f"{APPROVE_VERIFICATION} {self.group_id} {self.user_id}"
+                    )
+                ],
             )
             await send_private_msg(
                 self.websocket,
                 OWNER_ID,
-                [generate_text_message(f"{REJECT_VERIFICATION} {unique_id}")],
+                [
+                    generate_text_message(
+                        f"{REJECT_VERIFICATION} {self.group_id} {self.user_id}"
+                    )
+                ],
             )
 
             return

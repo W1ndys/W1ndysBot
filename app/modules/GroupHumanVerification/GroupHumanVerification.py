@@ -178,7 +178,7 @@ class GroupHumanVerificationHandler:
                 [
                     generate_at_message(user_id),
                     generate_text_message(
-                        f"({self.user_id})你的入群验证已被管理员手动通过，欢迎加入群聊！"
+                        f"({self.user_id})你的入群验证已被管理员手动通过，可以正常发言了！"
                     ),
                 ],
                 note="del_msg=120",
