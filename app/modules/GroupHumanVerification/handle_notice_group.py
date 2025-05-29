@@ -77,6 +77,7 @@ class GroupNoticeHandler:
                 self.websocket,
                 self.group_id,
                 [generate_text_message(f"({self.user_id})已退群了。👋")],
+                note="del_msg=10",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 主动退群通知失败: {e}")
@@ -94,6 +95,7 @@ class GroupNoticeHandler:
                 self.websocket,
                 self.group_id,
                 [generate_text_message(f"({self.user_id})已被踢出群聊。❌")],
+                note="del_msg=10",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 成员被踢通知失败: {e}")
