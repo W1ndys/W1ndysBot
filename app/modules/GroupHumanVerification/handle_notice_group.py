@@ -134,6 +134,7 @@ class GroupNoticeHandler:
                         f" ({self.user_id})欢迎加入群聊，请【先加我为好友(自动同意)】(否则无效），然后【私聊我发送验证码】进行验证。\n你的验证码是：{unique_id}"
                     ),
                 ],
+                note="del_msg=120",
             )
 
             logger.info(
