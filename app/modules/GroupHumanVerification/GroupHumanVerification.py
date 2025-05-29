@@ -51,7 +51,7 @@ class GroupHumanVerificationHandler:
                                 f"({self.user_id})恭喜你通过卷卷的验证，你可以正常发言了！🎉"
                             ),
                         ],
-                        note="del_msg=30",
+                        note="del_msg=10",
                     )
                     # 私聊通知
                     await send_private_msg(
@@ -62,7 +62,7 @@ class GroupHumanVerificationHandler:
                                 f"群{group_id}验证码验证成功，恭喜你通过卷卷的验证，你可以返回群聊正常发言了！🎉"
                             )
                         ],
-                        note="del_msg=30",
+                        note="del_msg=10",
                     )
                     matched = True
                     break
@@ -83,7 +83,7 @@ class GroupHumanVerificationHandler:
                                     f"验证码错误，你还有{attempts - 1}次机会 ⚠️"
                                 )
                             ],
-                            note="del_msg=30",
+                            note="del_msg=10",
                         )
                     else:
                         with DataManager() as dm:
@@ -98,7 +98,7 @@ class GroupHumanVerificationHandler:
                                     "验证码错误次数超过上限，你将在30秒后被移出群聊 ❌"
                                 )
                             ],
-                            note="del_msg=30",
+                            note="del_msg=10",
                         )
                         # 群内通知
                         await send_group_msg(
@@ -110,7 +110,7 @@ class GroupHumanVerificationHandler:
                                     "验证码错误次数超过上限，你将在30秒后被移出群聊 ❌"
                                 ),
                             ],
-                            note="del_msg=30",
+                            note="del_msg=10",
                         )
                         # 暂停30秒
                         await asyncio.sleep(30)
