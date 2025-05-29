@@ -326,11 +326,20 @@ class QaHandler:
         根据收到的消息内容，在问答库中查找最相似的问题，并返回对应的答案及相似度。
         """
         try:
+            # 检查输入消息是否为空或只包含停用词
+            if not self.raw_message or len(self.raw_message.strip()) == 0:
+                return
+
             matcher = AdvancedFAQMatcher(self.group_id)
             matcher.build_index()
-            orig_question, answer, score, qa_id = matcher.find_best_match(
-                self.raw_message
-            )
+
+            try:
+                orig_question, answer, score, qa_id = matcher.find_best_match(
+                    self.raw_message
+                )
+            except ValueError as ve:
+                logger.warning(f"[{MODULE_NAME}]文本分析失败: {ve}")
+                return
 
             if answer is not None:
 
