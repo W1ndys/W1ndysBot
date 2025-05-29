@@ -76,7 +76,7 @@ class GroupNoticeHandler:
             await send_group_msg(
                 self.websocket,
                 self.group_id,
-                [generate_text_message(f"({self.user_id})已退群了。")],
+                [generate_text_message(f"({self.user_id})已退群了。👋")],
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 主动退群通知失败: {e}")
@@ -93,7 +93,7 @@ class GroupNoticeHandler:
             await send_group_msg(
                 self.websocket,
                 self.group_id,
-                [generate_text_message(f"({self.user_id})已被踢出群聊。")],
+                [generate_text_message(f"({self.user_id})已被踢出群聊。❌")],
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 成员被踢通知失败: {e}")
@@ -143,7 +143,7 @@ class GroupNoticeHandler:
                 [
                     generate_at_message(self.user_id),
                     generate_text_message(
-                        f" ({self.user_id})欢迎加入群聊，请【先加我为好友(自动同意)】(否则无效），然后【私聊我发送验证码】进行验证。\n你的验证码是：{unique_id}"
+                        f" ({self.user_id})欢迎加入群聊，请【先加我为好友(自动同意)】(否则无效），然后【私聊我发送验证码】进行验证。\n你的验证码是：{unique_id} 🎉"
                     ),
                 ],
                 note="del_msg=120",
@@ -163,10 +163,10 @@ class GroupNoticeHandler:
                         f"群号：{self.group_id}\n"
                         f"用户ID：{self.user_id}\n"
                         f"验证码唯一ID：{unique_id}\n"
-                        f"时间：{self.formatted_time}"
+                        f"时间：{self.formatted_time} 🕒"
                     ),
                     generate_text_message(
-                        f"你可以发送“{APPROVE_VERIFICATION}/{REJECT_VERIFICATION}+{self.group_id}+{self.user_id}”来处理该请求"
+                        f"你可以发送"{APPROVE_VERIFICATION}/{REJECT_VERIFICATION}+{self.group_id}+{self.user_id}"来处理该请求 🛠️"
                     ),
                 ],
             )
@@ -180,7 +180,7 @@ class GroupNoticeHandler:
                 OWNER_ID,
                 [
                     generate_text_message(
-                        f"{APPROVE_VERIFICATION} {self.group_id} {self.user_id}"
+                        f"{APPROVE_VERIFICATION} {self.group_id} {self.user_id} ✅"
                     )
                 ],
             )
@@ -189,7 +189,7 @@ class GroupNoticeHandler:
                 OWNER_ID,
                 [
                     generate_text_message(
-                        f"{REJECT_VERIFICATION} {self.group_id} {self.user_id}"
+                        f"{REJECT_VERIFICATION} {self.group_id} {self.user_id} ❌"
                     )
                 ],
             )

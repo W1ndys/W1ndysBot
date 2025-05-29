@@ -37,7 +37,7 @@ class GroupMessageHandler:
             switch_status = "开启" if switch_status else "关闭"
             reply_message = generate_reply_message(self.message_id)
             text_message = generate_text_message(
-                f"[{MODULE_NAME}]群聊开关已切换为【{switch_status}】"
+                f"[{MODULE_NAME}]群聊开关已切换为【{switch_status}】 🔄"
             )
             await send_group_msg(
                 self.websocket,

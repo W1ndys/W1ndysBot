@@ -48,7 +48,7 @@ class GroupHumanVerificationHandler:
                         [
                             generate_at_message(self.user_id),
                             generate_text_message(
-                                f"({self.user_id})恭喜你通过卷卷的验证，你可以正常发言了！"
+                                f"({self.user_id})恭喜你通过卷卷的验证，你可以正常发言了！🎉"
                             ),
                         ],
                         note="del_msg=30",
@@ -59,7 +59,7 @@ class GroupHumanVerificationHandler:
                         self.user_id,
                         [
                             generate_text_message(
-                                f"群{group_id}验证码验证成功，恭喜你通过卷卷的验证，你可以返回群聊正常发言了！"
+                                f"群{group_id}验证码验证成功，恭喜你通过卷卷的验证，你可以返回群聊正常发言了！🎉"
                             )
                         ],
                         note="del_msg=30",
@@ -80,7 +80,7 @@ class GroupHumanVerificationHandler:
                             self.user_id,
                             [
                                 generate_text_message(
-                                    f"验证码错误，你还有{attempts - 1}次机会"
+                                    f"验证码错误，你还有{attempts - 1}次机会 ⚠️"
                                 )
                             ],
                             note="del_msg=30",
@@ -95,7 +95,7 @@ class GroupHumanVerificationHandler:
                             self.user_id,
                             [
                                 generate_text_message(
-                                    "验证码错误次数超过上限，你将在30秒后被移出群聊"
+                                    "验证码错误次数超过上限，你将在30秒后被移出群聊 ❌"
                                 )
                             ],
                             note="del_msg=30",
@@ -107,7 +107,7 @@ class GroupHumanVerificationHandler:
                             [
                                 generate_at_message(self.user_id),
                                 generate_text_message(
-                                    "验证码错误次数超过上限，你将在30秒后被移出群聊"
+                                    "验证码错误次数超过上限，你将在30秒后被移出群聊 ❌"
                                 ),
                             ],
                             note="del_msg=30",
@@ -122,7 +122,7 @@ class GroupHumanVerificationHandler:
             await send_private_msg(
                 self.websocket,
                 self.user_id,
-                [generate_text_message(f"处理失败: {e}")],
+                [generate_text_message(f"处理失败: {e} ❌")],
             )
 
     async def handle_approve_request(self):
@@ -137,7 +137,7 @@ class GroupHumanVerificationHandler:
                     self.user_id,
                     [
                         generate_text_message(
-                            "格式错误，应为：同意入群验证 <群号> <QQ号>"
+                            "格式错误，应为：同意入群验证 <群号> <QQ号> ⚠️"
                         )
                     ],
                     note="del_msg=10",
@@ -154,7 +154,7 @@ class GroupHumanVerificationHandler:
                     self.user_id,
                     [
                         generate_text_message(
-                            f"未找到群{group_id}、QQ号{user_id}的待验证记录"
+                            f"未找到群{group_id}、QQ号{user_id}的待验证记录 ❌"
                         )
                     ],
                 )
@@ -166,7 +166,7 @@ class GroupHumanVerificationHandler:
                 self.user_id,
                 [
                     generate_text_message(
-                        f"已批准群{group_id}、QQ号{user_id}的入群验证请求"
+                        f"已批准群{group_id}、QQ号{user_id}的入群验证请求 ✅"
                     )
                 ],
                 note="del_msg=10",
@@ -178,7 +178,7 @@ class GroupHumanVerificationHandler:
                 [
                     generate_at_message(user_id),
                     generate_text_message(
-                        f"({self.user_id})你的入群验证已被管理员手动通过，可以正常发言了！"
+                        f"({self.user_id})你的入群验证已被管理员手动通过，可以正常发言了！🎉"
                     ),
                 ],
                 note="del_msg=120",
@@ -190,7 +190,7 @@ class GroupHumanVerificationHandler:
             await send_private_msg(
                 self.websocket,
                 self.user_id,
-                [generate_text_message(f"处理失败: {e}")],
+                [generate_text_message(f"处理失败: {e} ❌")],
             )
 
     async def handle_reject_request(self):
@@ -205,7 +205,7 @@ class GroupHumanVerificationHandler:
                     self.user_id,
                     [
                         generate_text_message(
-                            "格式错误，应为：拒绝入群验证 <群号> <QQ号>"
+                            "格式错误，应为：拒绝入群验证 <群号> <QQ号> ⚠️"
                         )
                     ],
                 )
@@ -221,7 +221,7 @@ class GroupHumanVerificationHandler:
                     self.user_id,
                     [
                         generate_text_message(
-                            f"未找到群{group_id}、QQ号{user_id}的待验证记录"
+                            f"未找到群{group_id}、QQ号{user_id}的待验证记录 ❌"
                         )
                     ],
                 )
@@ -233,7 +233,7 @@ class GroupHumanVerificationHandler:
                 self.user_id,
                 [
                     generate_text_message(
-                        f"已拒绝群{group_id}、QQ号{user_id}的入群验证请求"
+                        f"已拒绝群{group_id}、QQ号{user_id}的入群验证请求 ❌"
                     )
                 ],
             )
@@ -244,7 +244,7 @@ class GroupHumanVerificationHandler:
                 [
                     generate_at_message(user_id),
                     generate_text_message(
-                        f"({self.user_id})你的入群验证已被管理员拒绝，1分钟后将自动被踢出，如有疑问请联系管理员。"
+                        f"({self.user_id})你的入群验证已被管理员拒绝，1分钟后将自动被踢出，如有疑问请联系管理员。❌"
                     ),
                 ],
             )
@@ -257,7 +257,7 @@ class GroupHumanVerificationHandler:
             await send_private_msg(
                 self.websocket,
                 self.user_id,
-                [generate_text_message(f"处理失败: {e}")],
+                [generate_text_message(f"处理失败: {e} ❌")],
             )
 
     async def handle_scan_request(self):
@@ -300,7 +300,7 @@ class GroupHumanVerificationHandler:
                         message_parts.append(generate_at_message(user_id))
                         message_parts.append(
                             generate_text_message(
-                                f"({user_id})请及时加我为好友私聊验证码【{unique_id}】进行验证（警告{new_count}/3）"
+                                f"({user_id})请及时加我为好友私聊验证码【{unique_id}】进行验证（警告{new_count}/3）⚠️"
                             )
                         )
                     elif remaining_warnings == 1:
@@ -318,7 +318,7 @@ class GroupHumanVerificationHandler:
                     await send_group_msg(
                         self.websocket,
                         gid,
-                        [generate_text_message(warning_message)],
+                        [generate_text_message(warning_message + " ⚠️")],
                     )
 
                 # 处理需要踢出的用户
@@ -329,7 +329,7 @@ class GroupHumanVerificationHandler:
                         [
                             generate_at_message(user_id),
                             generate_text_message(
-                                "你未完成入群验证，已达到最后一次警告，马上将被移出群聊！"
+                                "你未完成入群验证，已达到最后一次警告，马上将被移出群聊！❌"
                             ),
                         ],
                     )
@@ -339,12 +339,12 @@ class GroupHumanVerificationHandler:
             await send_private_msg(
                 self.websocket,
                 self.user_id,
-                [generate_text_message("扫描并处理完毕")],
+                [generate_text_message("扫描并处理完毕 ✅")],
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]扫描验证失败: {e}")
             await send_private_msg(
                 self.websocket,
                 self.user_id,
-                [generate_text_message(f"扫描失败: {e}")],
+                [generate_text_message(f"扫描失败: {e} ❌")],
             )
