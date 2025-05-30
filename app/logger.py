@@ -23,14 +23,14 @@ logging.addLevelName(NAPCATINFO, 'NAPCATINFO')
 # 添加napcatinfo方法到logging模块
 
 
-def napcatinfo(self, message, *args, **kwargs):
+def napcat(self, message, *args, **kwargs):
     if self.isEnabledFor(NAPCATINFO):
         self._log(NAPCATINFO, message, args, **kwargs)
 
 
 # 将success方法添加到Logger类
 logging.Logger.success = success
-logging.Logger.napcatinfo = napcatinfo
+logging.Logger.napcat = napcat
 
 
 class Logger:
@@ -84,7 +84,7 @@ class Logger:
                     "ERROR": "red",
                     "CRITICAL": "red,bg_white",
                     "SUCCESS": "green",
-                    "NAPCATINFO": "blue",
+                    "NAPCAT": "blue",
                 },
             )
         )
@@ -138,8 +138,8 @@ class Logger:
     def success(self, message):
         self.root_logger.success(message)
 
-    def napcatinfo(self, message):
-        self.root_logger.napcatinfo(message)
+    def napcat(self, message):
+        self.root_logger.napcat(message)
 
     def set_level(self, level):
         """动态设置日志级别"""
@@ -178,8 +178,8 @@ def success(message):
     logger.success(message)
 
 
-def napcatinfo(message):
-    logger.napcatinfo(message)
+def napcat(message):
+    logger.napcat(message)
 
 
 if __name__ == "__main__":
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     logger.error("这是一条错误日志")
     logger.critical("这是一条严重错误日志")
     logger.success("这是一条成功日志")
-    logger.napcatinfo("这是一条Napcat信息日志")
+    logger.napcat("这是一条Napcat信息日志")
     # 2. 使用便捷函数
     debug("使用便捷函数：调试信息")
     info("使用便捷函数：普通信息")
@@ -200,7 +200,7 @@ if __name__ == "__main__":
     error("使用便捷函数：错误信息")
     critical("使用便捷函数：严重错误")
     success("使用便捷函数：成功信息")
-    napcatinfo("使用便捷函数：Napcat信息")
+    napcat("使用便捷函数：Napcat信息")
 
     # 3. 修改日志级别
     print("\n修改日志级别为DEBUG后的输出:")
