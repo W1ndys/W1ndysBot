@@ -33,7 +33,7 @@ setattr(logging.Logger, "napcat", _logger_napcat)
 
 
 class Logger:
-    def __init__(self, logs_dir="logs", level=logging.INFO):
+    def __init__(self, logs_dir="logs", level=logging.DEBUG):
         self.root_logger = logging.getLogger()
         self.level = level
 
