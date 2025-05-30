@@ -77,12 +77,12 @@ class Logger:
                 "%(log_color)s%(asctime)s %(levelname)s:%(message)s",
                 datefmt="%Y-%m-%d %H:%M:%S",
                 log_colors={
-                    "DEBUG": "white",  # 调试信息（白色）
-                    "INFO": "green",  # 普通信息（绿色）
+                    "DEBUG": "cyan",  # 调试信息（青色）
+                    "INFO": "white",  # 普通信息（白色）
                     "WARNING": "yellow",  # 警告信息（黄色）
                     "ERROR": "red",  # 错误信息（红色）
                     "CRITICAL": "bold_red",  # 严重错误（加粗红色）
-                    "SUCCESS": "bold_green",  # 发送成功（加粗绿色）
+                    "SUCCESS": "green",  # 发送成功（绿色）
                     "NAPCAT": "bold_blue",  # 接收NapCatQQ的消息日志（加粗蓝色）
                 },
             )
