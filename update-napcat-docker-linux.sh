@@ -20,15 +20,16 @@ image_name=$(echo $pull_command | awk '{print $3}')
 # 打印提取到的镜像名称和版本
 log "提取到的镜像名称和版本: $image_name"
 
-container_name="napcat"
+# Step 2: 接受用户输入的容器名字
+log "请输入容器名字（默认: napcat）："
+read container_name
 
-log "执行 docker pull 命令"
-# 执行 docker pull 命令
-eval $pull_command || { log "镜像拉取失败"; exit 1; }
+# 如果用户没有输入，使用默认值
+if [ -z "$container_name" ]; then
+  container_name="napcat"
+fi
 
-log "镜像拉取成功"
-
-# Step 2: 删除当前定义容器名字的容器
+# 删除当前定义容器名字的容器
 log "删除容器 $container_name"
 docker stop $container_name
 docker rm $container_name
