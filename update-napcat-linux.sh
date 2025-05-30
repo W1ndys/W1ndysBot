@@ -41,6 +41,8 @@ NAPCAT_GID=1000
 log "以新版镜像运行同名容器 $container_name"
 docker run -d --name $container_name --restart=always \
   --network host \
+  --mac-address="02:42:ac:11:00:02" \
+  --hostname="napcat-host" \
   -e NAPCAT_UID=$NAPCAT_UID \
   -e NAPCAT_GID=$NAPCAT_GID \
   -e ACCOUNT=3649056059 \
