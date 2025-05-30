@@ -71,23 +71,30 @@ class Logger:
 
     def _create_handler(self, stream=False):
         """创建控制台或文件处理器"""
-        handler = colorlog.StreamHandler(stream=stream)
-        handler.setFormatter(
-            colorlog.ColoredFormatter(
-                "%(log_color)s[%(asctime)s %(levelname)s]: %(message)s",
-                datefmt="%Y-%m-%d %H:%M:%S",
-                log_colors={
-                    "DEBUG": "cyan",  # 调试信息（青色）
-                    "INFO": "white",  # 普通信息（白色）
-                    "WARNING": "yellow",  # 警告信息（黄色）
-                    "ERROR": "red",  # 错误信息（红色）
-                    "CRITICAL": "bold_red",  # 严重错误（加粗红色）
-                    "SUCCESS": "green",  # 发送成功（绿色）
-                    "NAPCAT": "bold_blue",  # 接收NapCatQQ的消息日志（加粗蓝色）
-                },
+        # 创建格式化器
+        log_format = "%(log_color)s[%(asctime)s %(levelname)s]: %(message)s"
+        date_format = "%Y-%m-%d %H:%M:%S"
+        log_colors = {
+            "DEBUG": "cyan",  # 调试信息（青色）
+            "INFO": "white",  # 普通信息（白色）
+            "WARNING": "yellow",  # 警告信息（黄色）
+            "ERROR": "red",  # 错误信息（红色）
+            "CRITICAL": "bold_red",  # 严重错误（加粗红色）
+            "SUCCESS": "green",  # 发送成功（绿色）
+            "NAPCAT": "bold_blue",  # 接收NapCatQQ的消息日志（加粗蓝色）
+        }
+        
+        if stream:
+            # 创建控制台处理器
+            handler = colorlog.StreamHandler()
+            handler.setFormatter(
+                colorlog.ColoredFormatter(
+                    log_format,
+                    datefmt=date_format,
+                    log_colors=log_colors,
+                )
             )
-        )
-        if not stream:
+        else:
             # 创建 logs 目录
             if not os.path.exists(self.logs_dir):
                 os.makedirs(self.logs_dir)
@@ -99,8 +106,15 @@ class Logger:
                     tz).strftime("%Y-%m-%d_%H-%M-%S.log")
             )
 
+            # 创建文件处理器
             handler = RotatingFileHandler(
                 self.log_filename, maxBytes=1024 * 1024, backupCount=5, encoding="utf-8"
+            )
+            handler.setFormatter(
+                logging.Formatter(
+                    "[%(asctime)s %(levelname)s]: %(message)s",
+                    datefmt=date_format
+                )
             )
             handler.namer = lambda name: name.replace(
                 ".log", f"_{datetime.now(tz).strftime('%Y-%m-%d_%H-%M-%S')}.log"
