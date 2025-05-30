@@ -16,16 +16,14 @@ def success(self, message, *args, **kwargs):
         self._log(SUCCESS, message, args, **kwargs)
 
 
-# 自定义NAPCATINFO日志级别 (在INFO和WARNING之间)
-NAPCATINFO = 26  # INFO是20，WARNING是30
-logging.addLevelName(NAPCATINFO, 'NAPCATINFO')
+# 自定义NAPCAT日志级别 (在INFO和WARNING之间)
+NAPCAT = 26  # INFO是20，WARNING是30
+logging.addLevelName(NAPCAT, 'NAPCAT')
 
-# 添加napcatinfo方法到logging模块
-
-
+# 添加napcat方法到logging模块
 def napcat(self, message, *args, **kwargs):
-    if self.isEnabledFor(NAPCATINFO):
-        self._log(NAPCATINFO, message, args, **kwargs)
+    if self.isEnabledFor(NAPCAT):
+        self._log(NAPCAT, message, args, **kwargs)
 
 
 # 将success方法添加到Logger类
