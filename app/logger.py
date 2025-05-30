@@ -6,29 +6,30 @@ from logging.handlers import RotatingFileHandler
 
 # 自定义SUCCESS日志级别 (在INFO和WARNING之间)
 SUCCESS = 25  # INFO是20，WARNING是30
-logging.addLevelName(SUCCESS, 'SUCCESS')
+logging.addLevelName(SUCCESS, "SUCCESS")
 
 # 添加success方法到logging模块
 
 
-def success(self, message, *args, **kwargs):
+def _logger_success(self, message, *args, **kwargs):
     if self.isEnabledFor(SUCCESS):
         self._log(SUCCESS, message, args, **kwargs)
 
 
 # 自定义NAPCAT日志级别 (在INFO和WARNING之间)
 NAPCAT = 26  # INFO是20，WARNING是30
-logging.addLevelName(NAPCAT, 'NAPCAT')
+logging.addLevelName(NAPCAT, "NAPCAT")
+
 
 # 添加napcat方法到logging模块
-def napcat(self, message, *args, **kwargs):
+def _logger_napcat(self, message, *args, **kwargs):
     if self.isEnabledFor(NAPCAT):
         self._log(NAPCAT, message, args, **kwargs)
 
 
-# 将success方法添加到Logger类
-logging.Logger.success = success
-logging.Logger.napcat = napcat
+# 将success方法添加到Logger类 - 使用setattr避免类型检查问题
+setattr(logging.Logger, "success", _logger_success)
+setattr(logging.Logger, "napcat", _logger_napcat)
 
 
 class Logger:
@@ -76,13 +77,13 @@ class Logger:
                 "%(log_color)s%(asctime)s %(levelname)s:%(message)s",
                 datefmt="%Y-%m-%d %H:%M:%S",
                 log_colors={
-                    "DEBUG": "cyan",
-                    "INFO": "white",
-                    "WARNING": "yellow",
-                    "ERROR": "red",
-                    "CRITICAL": "red,bg_white",
-                    "SUCCESS": "green",
-                    "NAPCAT": "blue",
+                    "DEBUG": "white",  # 调试信息（白色）
+                    "INFO": "green",  # 普通信息（绿色）
+                    "WARNING": "yellow",  # 警告信息（黄色）
+                    "ERROR": "red",  # 错误信息（红色）
+                    "CRITICAL": "bold_red",  # 严重错误（加粗红色）
+                    "SUCCESS": "bold_green",  # 发送成功（加粗绿色）
+                    "NAPCAT": "bold_blue",  # 接收NapCatQQ的消息日志（加粗蓝色）
                 },
             )
         )
@@ -134,10 +135,10 @@ class Logger:
         logging.critical(message)
 
     def success(self, message):
-        self.root_logger.success(message)
+        logging.log(SUCCESS, message)
 
     def napcat(self, message):
-        self.root_logger.napcat(message)
+        logging.log(NAPCAT, message)
 
     def set_level(self, level):
         """动态设置日志级别"""

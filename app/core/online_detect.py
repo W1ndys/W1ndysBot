@@ -26,7 +26,7 @@ async def handle_events(websocket, message):
                 time.localtime(message.get("time", int(time.time()))),
             )
             connect_msg = f"W1ndysBot-dev已上线！\n机器人ID: {message.get('self_id')}\n上线时间: {current_time}"
-            logger.info(f"机器人首次连接: {connect_msg}")
+            logger.success(f"机器人连接成功")
 
             # 向管理员发送私聊消息
             try:
@@ -67,7 +67,7 @@ async def handle_events(websocket, message):
             )
 
             # 发送通知
-            logger.info(f"机器人状态变更: {status_text}")
+            logger.warning(f"机器人状态变更: {status_text}")
             try:
                 # 发送飞书通知
                 feishu_result = feishu(title, content)
