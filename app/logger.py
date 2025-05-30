@@ -72,7 +72,7 @@ class Logger:
     def _create_handler(self, stream=False):
         """创建控制台或文件处理器"""
         # 创建格式化器
-        log_format = "%(log_color)s[%(asctime)s %(levelname)s]: %(message)s"
+        log_format = "%(log_color)s[%(asctime)s] [%(levelname)s]: %(message)s"
         date_format = "%Y-%m-%d %H:%M:%S"
         log_colors = {
             "DEBUG": "cyan",  # 调试信息（青色）
@@ -83,7 +83,7 @@ class Logger:
             "SUCCESS": "green",  # 发送成功（绿色）
             "NAPCAT": "bold_blue",  # 接收NapCatQQ的消息日志（加粗蓝色）
         }
-        
+
         if stream:
             # 创建控制台处理器
             handler = colorlog.StreamHandler()
