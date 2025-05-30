@@ -4,6 +4,18 @@ import os
 from datetime import datetime, timezone, timedelta
 from logging.handlers import RotatingFileHandler
 
+# 自定义SUCCESS日志级别 (在INFO和WARNING之间)
+SUCCESS = 25  # INFO是20，WARNING是30
+logging.addLevelName(SUCCESS, 'SUCCESS')
+
+# 添加success方法到logging模块
+def success(self, message, *args, **kwargs):
+    if self.isEnabledFor(SUCCESS):
+        self._log(SUCCESS, message, args, **kwargs)
+
+# 将success方法添加到Logger类
+logging.Logger.success = success
+
 
 class Logger:
     def __init__(self, logs_dir="logs", level=logging.INFO):
@@ -47,14 +59,15 @@ class Logger:
         handler = colorlog.StreamHandler()
         handler.setFormatter(
             colorlog.ColoredFormatter(
-                "%(log_color)s%(asctime)s %(levelname)s:\n%(message)s\n",
+                "%(log_color)s%(asctime)s %(levelname)s:%(message)s",
                 datefmt="%Y-%m-%d %H:%M:%S",
                 log_colors={
                     "DEBUG": "cyan",
-                    "INFO": "light_green",
+                    "INFO": "white",
                     "WARNING": "yellow",
                     "ERROR": "red",
                     "CRITICAL": "red,bg_white",
+                    "SUCCESS": "green",
                 },
             )
         )
@@ -105,6 +118,9 @@ class Logger:
     def critical(self, message):
         logging.critical(message)
 
+    def success(self, message):
+        self.root_logger.success(message)
+
     def set_level(self, level):
         """动态设置日志级别"""
         self.level = level
@@ -138,6 +154,10 @@ def critical(message):
     logger.critical(message)
 
 
+def success(message):
+    logger.success(message)
+
+
 if __name__ == "__main__":
     # 演示logger的使用方法
 
@@ -154,6 +174,7 @@ if __name__ == "__main__":
     warning("使用便捷函数：警告信息")
     error("使用便捷函数：错误信息")
     critical("使用便捷函数：严重错误")
+    success("使用便捷函数：成功信息")
 
     # 3. 修改日志级别
     print("\n修改日志级别为DEBUG后的输出:")
