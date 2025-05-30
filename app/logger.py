@@ -50,11 +50,8 @@ class Logger:
         # 清除之前的处理器
         self.root_logger.handlers = []
 
-        # 创建控制台处理器
-        console_handler = self._create_handler(stream=True)
-
-        # 创建文件处理器
-        file_handler = self._create_handler()
+        # 创建控制台和文件处理器
+        console_handler, file_handler = self._create_handlers()
 
         # 设置根日志记录器的级别和处理器
         self.root_logger.setLevel(self.level)
@@ -65,14 +62,13 @@ class Logger:
         for handler in self.root_logger.handlers:
             handler.flush()
 
-        self.info(f"初始化日志器，日志文件名: {self.log_filename}")
+        self.success(f"初始化日志器，日志文件名: {self.log_filename}")
 
         return self.log_filename
 
-    def _create_handler(self, stream=False):
-        """创建控制台或文件处理器"""
-        # 创建格式化器
-        log_format = "%(log_color)s[%(asctime)s] [%(levelname)s]: %(message)s"
+    def _create_handlers(self):
+        """创建控制台和文件处理器"""
+        # 通用配置
         date_format = "%Y-%m-%d %H:%M:%S"
         log_colors = {
             "DEBUG": "cyan",  # 调试信息（青色）
@@ -84,44 +80,45 @@ class Logger:
             "NAPCAT": "bold_blue",  # 接收NapCatQQ的消息日志（加粗蓝色）
         }
 
-        if stream:
-            # 创建控制台处理器
-            handler = colorlog.StreamHandler()
-            handler.setFormatter(
-                colorlog.ColoredFormatter(
-                    log_format,
-                    datefmt=date_format,
-                    log_colors=log_colors,
-                )
+        # 创建控制台处理器
+        console_handler = colorlog.StreamHandler()
+        console_handler.setFormatter(
+            colorlog.ColoredFormatter(
+                "%(log_color)s%(asctime)s [%(levelname)s]: %(message)s",
+                datefmt=date_format,
+                log_colors=log_colors,
             )
-        else:
-            # 创建 logs 目录
-            if not os.path.exists(self.logs_dir):
-                os.makedirs(self.logs_dir)
+        )
+        console_handler.setLevel(self.level)
 
-            # 以当前启动时间为文件名，使用东八区时间
-            tz = timezone(timedelta(hours=8))
-            self.log_filename = os.path.join(
-                self.logs_dir, datetime.now(
-                    tz).strftime("%Y-%m-%d_%H-%M-%S.log")
-            )
+        # 创建文件处理器
+        # 创建 logs 目录
+        if not os.path.exists(self.logs_dir):
+            os.makedirs(self.logs_dir)
 
-            # 创建文件处理器
-            handler = RotatingFileHandler(
-                self.log_filename, maxBytes=1024 * 1024, backupCount=5, encoding="utf-8"
+        # 以当前启动时间为文件名，使用东八区时间
+        tz = timezone(timedelta(hours=8))
+        self.log_filename = os.path.join(
+            self.logs_dir, datetime.now(
+                tz).strftime("%Y-%m-%d_%H-%M-%S.log")
+        )
+
+        file_handler = RotatingFileHandler(
+            self.log_filename, maxBytes=1024 * 1024, backupCount=5, encoding="utf-8"
+        )
+        file_handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s [%(levelname)s]: %(message)s",
+                datefmt=date_format
             )
-            handler.setFormatter(
-                logging.Formatter(
-                    "[%(asctime)s %(levelname)s]: %(message)s",
-                    datefmt=date_format
-                )
-            )
-            handler.namer = lambda name: name.replace(
-                ".log", f"_{datetime.now(tz).strftime('%Y-%m-%d_%H-%M-%S')}.log"
-            )
-            handler.rotator = lambda source, dest: os.rename(source, dest)
-        handler.setLevel(self.level)
-        return handler
+        )
+        file_handler.namer = lambda name: name.replace(
+            ".log", f"_{datetime.now(tz).strftime('%Y-%m-%d_%H-%M-%S')}.log"
+        )
+        file_handler.rotator = lambda source, dest: os.rename(source, dest)
+        file_handler.setLevel(self.level)
+
+        return console_handler, file_handler
 
     # 便捷日志方法
     def debug(self, message):
