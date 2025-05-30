@@ -145,6 +145,7 @@ class GroupNoticeHandler:
                         f"你的验证码是：【{unique_id}】🎉"
                     ),
                 ],
+                note="del_msg=30",
             )
 
             logger.info(
