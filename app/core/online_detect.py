@@ -67,7 +67,7 @@ async def handle_events(websocket, message):
             )
 
             # 发送通知
-            logger.warning(f"机器人状态变更: {status_text}")
+            logger.success(f"机器人状态变更: {status_text}")
             try:
                 # 发送飞书通知
                 feishu_result = feishu(title, content)
