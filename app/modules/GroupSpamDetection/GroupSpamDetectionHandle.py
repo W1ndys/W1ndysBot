@@ -75,7 +75,7 @@ class GroupSpamDetectionHandle:
                         generate_text_message(f"({self.user_id})"),
                         generate_text_message("禁止刷屏，请注意发言频率"),
                     ],
-                    note="del_msg=10",
+                    note="del_msg=120",
                 )
                 # 记录本分钟已警告
                 GroupSpamDetectionHandle.warned_users_minute[self.group_id][
@@ -105,7 +105,7 @@ class GroupSpamDetectionHandle:
                             generate_text_message(f"({self.user_id})"),
                             generate_text_message("禁止刷屏，请注意发言频率"),
                         ],
-                        note="del_msg=10",
+                        note="del_msg=120",
                     )
                     # 记录本分钟已警告
                     GroupSpamDetectionHandle.warned_users_minute[self.group_id][
