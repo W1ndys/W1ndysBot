@@ -72,24 +72,28 @@ class MetaEventHandler:
                     analyzer = QQMessageAnalyzer(group_id)
                     img_base64 = analyzer.generate_wordcloud_image_base64()
                     wordcloud_data, top10_words = analyzer.generate_daily_report()
+                    messages = [
+                        generate_text_message(f"群{group_id}的词云和top10词汇如下：\n"),
+                        generate_text_message(
+                            "top10词汇：\n"
+                            + "\n".join(
+                                [
+                                    f"{i+1}. {word}（{count}次）"
+                                    for i, (word, count) in enumerate(top10_words)
+                                ]
+                            )
+                        ),
+                    ]
+                    if img_base64 is not None:
+                        messages.append(generate_image_message(img_base64))
+                    else:
+                        logger.warning(
+                            f"[{MODULE_NAME}]群{group_id}的词云图片生成失败，img_base64为None"
+                        )
                     await send_group_msg(
                         self.websocket,
                         group_id,
-                        [
-                            generate_text_message(
-                                f"群{group_id}的词云和top10词汇如下：\n"
-                            ),
-                            generate_text_message(
-                                "top10词汇：\n"
-                                + "\n".join(
-                                    [
-                                        f"{i+1}. {word}（{count}次）"
-                                        for i, (word, count) in enumerate(top10_words)
-                                    ]
-                                )
-                            ),
-                            generate_image_message(img_base64),
-                        ],
+                        messages,
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")
