@@ -99,6 +99,9 @@ class EventHandler:
         status = msg.get("status")
         if status in ("ok", "failed", "timeout"):
             post_type = "状态"
+            echo = msg.get("echo")
+            if echo:
+                format_msg += f" | 回声: {echo}"
             if status == "ok":
                 data = msg.get("data")
                 format_msg += f" | 数据体: {data}"
