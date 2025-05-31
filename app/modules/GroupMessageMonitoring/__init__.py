@@ -2,13 +2,15 @@ import os
 
 
 # 模块名称
-MODULE_NAME = "Template"
+MODULE_NAME = "GroupMessageMonitoring"
 
 # 模块开关名称
-SWITCH_NAME = "template"
+SWITCH_NAME = "GMM"
 
 # 模块描述
-MODULE_DESCRIPTION = "模板模块"
+MODULE_DESCRIPTION = (
+    "群消息监控模块,用于监控敏感消息、敏感图片、敏感视频，常用于广告监控"
+)
 
 # 数据目录
 DATA_DIR = os.path.join("data", MODULE_NAME)
