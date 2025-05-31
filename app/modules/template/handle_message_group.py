@@ -62,9 +62,9 @@ class GroupMessageHandler:
                 return
 
             # 示例：使用DataManager进行数据库操作
-            dm = DataManager(self.group_id)
-            # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-            pass
+            with DataManager(self.group_id) as dm:
+                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
+                pass
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")

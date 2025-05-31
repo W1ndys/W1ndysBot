@@ -70,56 +70,47 @@ def generate_face_message(face_id):
     return {"type": "face", "data": {"id": face_id}}
 
 
-def generate_image_message(file, type="base64", cache=True, proxy=True, timeout=None):
+def generate_image_message(file, type="file", cache=True, proxy=True, timeout=None):
     """
     生成图片消息
 
-    参数:
+    Args:
         file (str): 图片文件路径、URL或Base64编码
         type (str): 图片类型，可选值:
-            - file: 本地文件路径（如 D:/a.jpg）
-            - url: 网络图片URL（如 http://xxx/xxx.png）
-            - base64: Base64编码的图片数据（如 xxxxxxxx）
+            - file: 本地文件路径
+            - url: 网络图片URL
+            - base64: Base64编码的图片数据
         cache (bool): 是否使用已缓存的文件
         proxy (bool): 是否通过代理下载文件
         timeout (int): 下载文件的超时时间(秒)
 
-    返回:
+    Returns:
         dict: 包含图片消息段的字典，格式为:
         {
             "type": "image",
             "data": {
-                "file": "file://D:/a.jpg" 或 "http://xxx/xxx.png" 或 "base64://xxxxxx",
+                "file": file,
+                "type": type,
                 "cache": cache,
                 "proxy": proxy,
                 "timeout": timeout
             }
         }
 
-    说明:
+    Note:
         - 支持发送本地图片、网络图片和Base64编码的图片
-        - 本地图片需加前缀 file://，Base64需加前缀 base64://
         - 图片大小限制为10MB
         - 建议使用cache=True提高发送效率
     """
-    # 自动处理file前缀
-    if type == "file":
-        if not file.startswith("file://"):
-            file = f"file://{file}"
-    elif type == "base64":
-        if not file.startswith("base64://"):
-            file = f"base64://{file}"
-    # 网络图片直接使用URL，无需前缀
-    # 组装data字典
-    data = {
-        "file": file,
-        "cache": cache,
-        "proxy": proxy,
-        "timeout": timeout,
-    }
     return {
         "type": "image",
-        "data": data,
+        "data": {
+            "file": file,
+            "type": type,
+            "cache": cache,
+            "proxy": proxy,
+            "timeout": timeout,
+        },
     }
 
 

@@ -160,13 +160,3 @@ def load_group_all_switch(group_id):
         except Exception as e:
             logger.error(f"加载模块 {module_name} 的开关数据失败: {e}")
     return switch
-
-
-def get_all_enabled_groups(MODULE_NAME):
-    """
-    获取某模块所有已开启的群聊列表
-    MODULE_NAME: 模块名称
-    返回值: 开启的群号列表
-    """
-    switch = load_switch(MODULE_NAME)
-    return [group_id for group_id, status in switch.get("group", {}).items() if status]
