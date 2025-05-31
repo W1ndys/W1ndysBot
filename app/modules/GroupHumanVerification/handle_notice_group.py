@@ -76,8 +76,8 @@ class GroupNoticeHandler:
             await send_group_msg(
                 self.websocket,
                 self.group_id,
-                [generate_text_message(f"({self.user_id})已退群了。👋")],
-                note="del_msg=10",
+                [generate_text_message(f"({self.user_id})退群了。👋")],
+                note="del_msg=60",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 主动退群通知失败: {e}")
@@ -92,7 +92,7 @@ class GroupNoticeHandler:
                 self.websocket,
                 self.group_id,
                 [generate_text_message(f"({self.user_id})已被踢出群聊。❌")],
-                note="del_msg=10",
+                note="del_msg=60",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 成员被踢通知失败: {e}")
@@ -103,7 +103,8 @@ class GroupNoticeHandler:
         """
         try:
             logger.info(
-                f"[{MODULE_NAME}]群聊 {self.group_id} 用户 {self.user_id} 增加成员，将进行入群验证")
+                f"[{MODULE_NAME}]群聊 {self.group_id} 用户 {self.user_id} 增加成员，将进行入群验证"
+            )
             # 禁言用户
             await set_group_ban(self.websocket, self.group_id, self.user_id, BAN_TIME)
 
@@ -112,7 +113,7 @@ class GroupNoticeHandler:
                 timestamp = int(datetime.now().timestamp())  # 秒级时间戳
                 random_suffix = random.randint(1000, 9999)  # 4位随机数
                 full_id = f"{timestamp}{random_suffix}"
-                unique_id = full_id[-random.randint(6, 15):]  # 随机取6-15位
+                unique_id = full_id[-random.randint(6, 15) :]  # 随机取6-15位
                 with DataManager() as dm:
                     if not dm.check_unique_id_exists(unique_id):
                         break
@@ -179,7 +180,8 @@ class GroupNoticeHandler:
                 OWNER_ID,
                 [
                     generate_text_message(
-                        f"{APPROVE_VERIFICATION} {self.group_id} {self.user_id} ✅")
+                        f"{APPROVE_VERIFICATION} {self.group_id} {self.user_id} ✅"
+                    )
                 ],
             )
             await send_private_msg(
@@ -187,7 +189,8 @@ class GroupNoticeHandler:
                 OWNER_ID,
                 [
                     generate_text_message(
-                        f"{REJECT_VERIFICATION} {self.group_id} {self.user_id} ❌")
+                        f"{REJECT_VERIFICATION} {self.group_id} {self.user_id} ❌"
+                    )
                 ],
             )
 
