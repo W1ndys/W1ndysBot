@@ -91,12 +91,72 @@ class EventHandler:
         except Exception as e:
             logger.error(f"模块 {handler} 处理消息时出错: {e}")
 
+    def format_napcat_msg(self, msg):
+        """美化napcat日志"""
+        time = msg.get("time", "未知时间戳")
+        post_type = msg.get("post_type", "未知消息类型")
+        format_msg = f"时间戳: {time} | 事件类型: {post_type}"
+
+        # 元事件
+        if post_type == "meta_event":
+            meta_event_type = msg.get("meta_event_type")
+            if meta_event_type is not None:
+                format_msg += f" | 元事件类型: {meta_event_type}"
+            sub_type = msg.get("sub_type")
+            if sub_type is not None:
+                format_msg += f" | 子事件类型: {sub_type}"
+
+        # 消息事件
+        elif post_type == "message":
+            message_type = msg.get("message_type")
+            if message_type is not None:
+                format_msg += f" | 消息类型: {message_type}"
+            sub_type = msg.get("sub_type")
+            if sub_type is not None:
+                format_msg += f" | 子消息类型: {sub_type}"
+            sender = msg.get("sender", {})
+            sender_id = sender.get("user_id")
+            if sender_id is not None:
+                format_msg += f" | 发送者ID: {sender_id}"
+            sender_nickname = sender.get("nickname")
+            if sender_nickname is not None:
+                format_msg += f" | 发送者昵称: {sender_nickname}"
+            sender_card = sender.get("card")
+            if sender_card is not None:
+                format_msg += f" | 发送者名片: {sender_card}"
+            sender_level = sender.get("level")
+            if sender_level is not None:
+                format_msg += f" | 发送者等级: {sender_level}"
+            sender_role = sender.get("role")
+            if sender_role is not None:
+                format_msg += f" | 发送者身份: {sender_role}"
+            sender_title = sender.get("title")
+            if sender_title is not None:
+                format_msg += f" | 发送者头衔: {sender_title}"
+            sender_avatar = sender.get("avatar")
+            if sender_avatar is not None:
+                format_msg += f" | 发送者头像: {sender_avatar}"
+            sender_age = sender.get("age")
+            if sender_age is not None:
+                format_msg += f" | 发送者年龄: {sender_age}"
+            message_id = msg.get("message_id")
+            if message_id is not None:
+                format_msg += f" | 消息ID: {message_id}"
+            raw_message = msg.get("raw_message")
+            if raw_message is not None:
+                format_msg += f" | 原消息内容: {raw_message}"
+
+        return format_msg
+
     async def handle_message(self, websocket, message):
         """处理websocket消息"""
         try:
             msg = json.loads(message)
 
-            logger.napcat(f"接收到消息: {msg}")
+            logger.debug(f"接收到websocket消息: {msg}")
+            # 美化napcat日志
+            formatted_msg = self.format_napcat_msg(msg)
+            logger.napcat(f"{formatted_msg}")
 
             # 每个 handler 独立异步后台处理
             for handler in self.handlers:
