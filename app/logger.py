@@ -101,8 +101,7 @@ class Logger:
         # 以当前启动时间为文件名，使用东八区时间
         tz = timezone(timedelta(hours=8))
         self.log_filename = os.path.join(
-            self.logs_dir, datetime.now(
-                tz).strftime("%Y-%m-%d_%H-%M-%S.log")
+            self.logs_dir, datetime.now(tz).strftime("%Y-%m-%d_%H-%M-%S.log")
         )
 
         file_handler = RotatingFileHandler(
@@ -110,8 +109,7 @@ class Logger:
         )
         file_handler.setFormatter(
             logging.Formatter(
-                "%(asctime)s [%(levelname)s]: %(message)s",
-                datefmt=date_format
+                "%(asctime)s [%(levelname)s]: %(message)s", datefmt=date_format
             )
         )
         file_handler.namer = lambda name: name.replace(
@@ -211,5 +209,5 @@ if __name__ == "__main__":
     logger.debug("修改级别后可以看到的调试日志")
 
     # 4. 创建自定义日志实例
-    custom_logger = Logger(logs_dir="custom_logs", level=logging.DEBUG)
+    custom_logger = Logger(logs_dir="custom_logs", level=LOG_LEVEL)
     custom_logger.info("这是来自自定义日志器的消息")
