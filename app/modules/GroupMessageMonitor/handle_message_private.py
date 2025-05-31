@@ -4,7 +4,7 @@ from core.switchs import is_private_switch_on, toggle_private_switch
 from api.message import send_private_msg
 from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
-from .data_manager import DataManager
+from .data_manager_words import DataManager
 
 
 class PrivateMessageHandler:
