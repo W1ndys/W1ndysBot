@@ -315,12 +315,12 @@ class GroupHumanVerificationHandler:
                         warned_count = MAX_WARNINGS - new_count
                         with DataManager() as dm:
                             dm.update_warning_count(unique_id, new_count)
-                        message_parts.append(generate_at_message(user_id))
-                        message_parts.append(
+                        message_parts.extend([
+                            generate_at_message(user_id),
                             generate_text_message(
                                 f"({user_id})请及时加我为好友私聊验证码【{unique_id}】进行验证（警告{warned_count}/{MAX_WARNINGS}）⚠️"
                             )
-                        )
+                        ])
                         # 添加到警告用户列表
                         group_reports[group_id]["warned_users"].append(
                             (user_id, warned_count))
