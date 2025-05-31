@@ -63,8 +63,6 @@ class QQMessageAnalyzer:
         """文本清洗"""
         # 移除URL
         text = re.sub(r"http[s]?://\S+", "", text)
-        # 移除非中文字符
-        text = re.sub(r"[^\u4e00-\u9fa5a-zA-Z0-9]", " ", text)
         return text.strip()
 
     def generate_daily_report(self, query_date=None):
@@ -81,7 +79,8 @@ class QQMessageAnalyzer:
         for msg in messages:
             cleaned = self._clean_text(msg)
             words = jieba.lcut(cleaned)  # 使用结巴分词
-            word_counter.update(w for w in words if len(w) > 1)  # 过滤单字
+            # 直接统计所有词的出现次数，包括重复出现的词
+            word_counter.update([w for w in words if len(w) > 1])  # 过滤单字
 
         # 获取前10高频词
         top10 = word_counter.most_common(10)
