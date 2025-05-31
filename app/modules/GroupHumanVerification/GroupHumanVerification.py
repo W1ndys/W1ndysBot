@@ -337,7 +337,7 @@ class GroupHumanVerificationHandler:
                 # 发送合并的警告消息
                 if message_parts:
                     message_parts.append(
-                        generate_text_message("超过3次将会被踢出群聊 ⚠️")
+                        generate_text_message(f"超过{MAX_WARNINGS}次将会被踢出群聊 ⚠️")
                     )
                     await send_group_msg(
                         self.websocket,
