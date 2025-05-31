@@ -50,10 +50,7 @@ class QQMessageAnalyzer:
 
     def _is_filtered(self, content):
         """判断消息是否需要被过滤"""
-        for pattern in self.filter_patterns:
-            if re.search(pattern, content):
-                return True
-        return False
+        return any(re.search(pattern, content) for pattern in self.filter_patterns)
 
     def add_message(self, content, sender_id=None):
         """存储单条消息，新增正则过滤"""
