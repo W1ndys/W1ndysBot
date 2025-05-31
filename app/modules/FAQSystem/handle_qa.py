@@ -10,6 +10,7 @@ import json
 
 
 RKEY_DIR = os.path.join("data", "Core", "nc_get_rkey.json")
+DELETE_TIME = 300
 
 
 class QaHandler:
@@ -382,13 +383,13 @@ class QaHandler:
                     f"💡 回复：\n{answer}\n"
                     "━━━━━━━━━━━━━━\n"
                     f"🔎 相似度：{score:.2f}   🆔 ID：{qa_id}\n"
-                    "⏳ 本消息将在30秒后撤回，请及时保存"
+                    f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存"
                 )
                 await send_group_msg_with_cq(
                     self.websocket,
                     self.group_id,
                     msg,
-                    note="del_msg=30",
+                    note=f"del_msg={DELETE_TIME}",
                 )
                 return
         except Exception as e:
