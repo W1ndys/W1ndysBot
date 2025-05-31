@@ -27,3 +27,18 @@ class DataManager:
             )
 
     # 其他函数，使用sqlite3.connect(self.db_path) as conn:进行数据库操作
+    def insert_data(self, data):
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("INSERT INTO data_table (data) VALUES (?)", (data,))
+            conn.commit()
+
+    def get_data(self):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute("SELECT data FROM data_table")
+            data = cursor.fetchall()
+            return [row[0] for row in data]
+
+    def delete_data(self, id: int):
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("DELETE FROM data_table WHERE id = ?", (id,))
+            conn.commit()
