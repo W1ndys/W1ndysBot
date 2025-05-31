@@ -68,9 +68,8 @@ async def handle_events(websocket, msg):
                         rkey_type = item.get("type")
                         # 保存到文件
                         save_rkey_to_file(item)
-                        logger.info(
-                            f"获取到nc_get_rkey: rkey={rkey}, ttl={ttl}, time={rkey_time}, type={rkey_type}，已保存到文件"
-                        )
+                        logger.success(
+                            f"获取到nc_get_rkey: rkey={rkey}, ttl={ttl}, time={rkey_time}, type={rkey_type}，已保存到文件")
                 else:
                     logger.warning("未获取到有效的rkey数据列表")
     except Exception as e:
