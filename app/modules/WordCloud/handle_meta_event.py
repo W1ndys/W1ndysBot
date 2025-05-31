@@ -7,15 +7,13 @@ from api.generate import generate_image_message, generate_text_message
 from .WordCloud import QQMessageAnalyzer
 
 
-# 用于记录上次执行的分钟，防止一分钟内重复执行
-_last_execute_minute = None
-
-
 class MetaEventHandler:
     """
     元事件处理器/定时任务处理器
     元事件可利用心跳来实现定时任务
     """
+
+    _last_execute_minute = None  # 作为类变量
 
     def __init__(self, websocket, msg):
         self.websocket = websocket
@@ -57,15 +55,14 @@ class MetaEventHandler:
         仅在每天23:59执行，并且一分钟内只允许执行一次
         """
         try:
-            global _last_execute_minute
             now = datetime.now()
             # 只在23:59执行
             if now.hour == 23 and now.minute == 59:
                 current_minute = now.strftime("%Y-%m-%d %H:%M")
-                if _last_execute_minute == current_minute:
+                if MetaEventHandler._last_execute_minute == current_minute:
                     # 已经执行过，不再重复执行
                     return
-                _last_execute_minute = current_minute
+                MetaEventHandler._last_execute_minute = current_minute
 
                 # 获取所有开启的群聊开关
                 group_switches = get_all_enabled_groups(MODULE_NAME)
