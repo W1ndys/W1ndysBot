@@ -13,11 +13,19 @@ import base64
 
 
 class QQMessageAnalyzer:
-    def __init__(self, group_id, db_path=os.path.join(DATA_DIR, "qq_messages.db")):
+    def __init__(
+        self,
+        group_id,
+        db_path=os.path.join(DATA_DIR, "qq_messages.db"),
+    ):
         self.db_path = db_path
         self.group_id = str(group_id)
         self.table_name = f"group_messages_{self.group_id}"
         self._init_db()
+        # 正则过滤
+        self.filter_patterns = [
+            r"\[CQ:.*\]",  # CQ码消息
+        ]
 
     def _init_db(self):
         """初始化数据库和表（按群号分表）"""
@@ -40,8 +48,17 @@ class QQMessageAnalyzer:
             """
             )
 
+    def _is_filtered(self, content):
+        """判断消息是否需要被过滤"""
+        for pattern in self.filter_patterns:
+            if re.search(pattern, content):
+                return True
+        return False
+
     def add_message(self, content, sender_id=None):
-        """存储单条消息"""
+        """存储单条消息，新增正则过滤"""
+        if self._is_filtered(content):
+            return  # 匹配过滤规则则不存储
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
                 f"INSERT INTO {self.table_name} (message_content, sender_id) VALUES (?, ?)",
@@ -63,8 +80,8 @@ class QQMessageAnalyzer:
         """文本清洗"""
         # 移除URL
         text = re.sub(r"http[s]?://\S+", "", text)
-        # 移除非中文字符
-        text = re.sub(r"[^\u4e00-\u9fa5a-zA-Z0-9]", " ", text)
+        # 移除CQ码
+        text = re.sub(r"\[CQ:.*\]", "", text)
         return text.strip()
 
     def generate_daily_report(self, query_date=None):
@@ -81,7 +98,8 @@ class QQMessageAnalyzer:
         for msg in messages:
             cleaned = self._clean_text(msg)
             words = jieba.lcut(cleaned)  # 使用结巴分词
-            word_counter.update(w for w in words if len(w) > 1)  # 过滤单字
+            # 直接统计所有词的出现次数，包括重复出现的词
+            word_counter.update([w for w in words if len(w) > 1])  # 过滤单字
 
         # 获取前10高频词
         top10 = word_counter.most_common(10)
