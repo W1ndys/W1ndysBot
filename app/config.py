@@ -1,23 +1,27 @@
 # ==================== 配置项 ====================
 
+import os
+from dotenv import load_dotenv
+
+# 加载.env文件中的环境变量
+load_dotenv()
+
 # 机器人顶级管理员QQ，必填
-OWNER_ID = "482548878"
+OWNER_ID = os.getenv("OWNER_ID", "482548878")
 
 # 连接到NapCatQQ的WebSocket连接地址，默认使用3001端口
-WS_URL = "ws://192.168.229.133:3001"
+WS_URL = os.getenv("WS_URL", "ws://192.168.229.133:3001")
 
 # 连接到NapCatQQ的机器人Token
-TOKEN = ""
+TOKEN = os.getenv("TOKEN", "")
 
 # 日志等级，可选值：DEBUG, INFO, WARNING, ERROR, CRITICAL
-LOG_LEVEL = "INFO"
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
 # 飞书机器人URL，选填，掉线时使用
-FEISHU_BOT_URL = (
-    "https://open.feishu.cn/open-apis/bot/v2/hook/55648a44-6e84-4d8c-af16-30065ffba8c1"
-)
+FEISHU_BOT_URL = os.getenv("FEISHU_BOT_URL", "")
 
 # 飞书机器人Secret，选填，掉线时使用
-FEISHU_BOT_SECRET = "Z1TZCSlTgDFDEwnUYXeRDh"
+FEISHU_BOT_SECRET = os.getenv("FEISHU_BOT_SECRET", "")
 
 # ==================== 配置项结束 ====================
