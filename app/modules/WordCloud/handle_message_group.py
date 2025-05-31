@@ -72,6 +72,14 @@ class GroupMessageHandler:
                 # 生成今日词云图片和top10词汇
                 img_base64 = analyzer.generate_wordcloud_image_base64()
                 wordcloud_data, top10_words = analyzer.generate_daily_report()
+                # 检查 img_base64 是否为 None
+                if img_base64 is None:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [generate_text_message("词云图片生成失败，请稍后重试。")],
+                    )
+                    return
                 # 发送词云图片
                 await send_group_msg(
                     self.websocket,
