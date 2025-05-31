@@ -10,7 +10,7 @@ WS_URL = "ws://192.168.229.133:3001"
 TOKEN = ""
 
 # 日志等级，可选值：DEBUG, INFO, WARNING, ERROR, CRITICAL
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "INFO"
 
 # 飞书机器人URL，选填，掉线时使用
 FEISHU_BOT_URL = (
