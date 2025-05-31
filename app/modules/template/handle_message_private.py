@@ -59,9 +59,9 @@ class PrivateMessageHandler:
                 return
 
             # 示例：使用DataManager进行数据库操作
-            with DataManager(self.user_id) as dm:
-                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                pass
+            dm = DataManager(self.user_id)
+            # 这里可以进行数据库操作，如：dm.cursor.execute(...)
+            pass
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊消息失败: {e}")
