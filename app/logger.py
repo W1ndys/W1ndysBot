@@ -3,6 +3,8 @@ import colorlog
 import os
 from datetime import datetime, timezone, timedelta
 from logging.handlers import RotatingFileHandler
+from config import LOG_LEVEL
+
 
 # 自定义SUCCESS日志级别 (在INFO和WARNING之间)
 SUCCESS = 25  # INFO是20，WARNING是30
@@ -33,7 +35,7 @@ setattr(logging.Logger, "napcat", _logger_napcat)
 
 
 class Logger:
-    def __init__(self, logs_dir="logs", level=logging.INFO):
+    def __init__(self, logs_dir="logs", level=LOG_LEVEL):
         self.root_logger = logging.getLogger()
         self.level = level
 

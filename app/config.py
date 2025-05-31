@@ -9,6 +9,9 @@ WS_URL = "ws://192.168.229.133:3001"
 # 连接到NapCatQQ的机器人Token
 TOKEN = ""
 
+# 日志等级，可选值：DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_LEVEL = "INFO"
+
 # 飞书机器人URL，选填，掉线时使用
 FEISHU_BOT_URL = (
     "https://open.feishu.cn/open-apis/bot/v2/hook/55648a44-6e84-4d8c-af16-30065ffba8c1"
