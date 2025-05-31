@@ -266,16 +266,44 @@ class GroupHumanVerificationHandler:
                 self.user_id,
                 [generate_text_message(f"处理失败: {e} ❌")],
             )
-            # 生成处理结果报告
-            report_parts = []
+
+    async def handle_scan_request(self):
+        """
+        管理员扫描未验证用户，群内警告，超限则踢出并标记为验证超时
+        按照数据库建表顺序严格取字段
+        """
+        try:
+            parts = self.raw_message.strip().split()
+            group_id = parts[1] if len(parts) > 1 else None
+            with DataManager() as dm:
+                unverified_users = dm.get_unverified_users(group_id)
+            if not unverified_users:
+                await send_private_msg(
+                    self.websocket,
+                    self.user_id,
+                    [generate_text_message("未找到未验证用户")],
+                )
+                return
+            # 按群分组
+            group_map = {}
+            for record in unverified_users:
+                group_id = record[1]  # group_id
+                group_map.setdefault(group_id, []).append(record)
+
+            # 用于记录每个群的处理情况
+            group_reports = {}
 
             for group_id, users in group_map.items():
-                # 该群的踢出用户
-                kicked_users = []
-                # 该群的警告用户
-                warned_users = []
-                # 该群的最后一次警告用户
-                last_warn_users = []
+                # 初始化群报告
+                group_reports[group_id] = {
+                    "warned_users": [],  # 警告用户列表
+                    "kicked_users": [],  # 踢出用户列表
+                    "total_users": len(users)  # 总用户数
+                }
+
+                # 构建合并消息
+                message_parts = []
+                users_to_kick = []
 
                 for record in users:
                     unique_id = record[3]
@@ -287,47 +315,94 @@ class GroupHumanVerificationHandler:
                         warned_count = MAX_WARNINGS - new_count
                         with DataManager() as dm:
                             dm.update_warning_count(unique_id, new_count)
-                        warned_users.append(user_id)
+                        message_parts.append(generate_at_message(user_id))
+                        message_parts.append(
+                            generate_text_message(
+                                f"({user_id})请及时加我为好友私聊验证码【{unique_id}】进行验证（警告{warned_count}/{MAX_WARNINGS}）⚠️"
+                            )
+                        )
+                        # 添加到警告用户列表
+                        group_reports[group_id]["warned_users"].append(
+                            (user_id, warned_count))
                     elif remaining_warnings == 1:
                         warned_count = MAX_WARNINGS
                         # 最后一次警告
                         with DataManager() as dm:
                             dm.update_warning_count(unique_id, 0)
                             dm.update_verify_status(user_id, group_id, "验证超时")
-                        kicked_users.append(user_id)
-                        last_warn_users.append(user_id)
+                        users_to_kick.append((user_id, unique_id))
+                        # 添加到踢出用户列表
+                        group_reports[group_id]["kicked_users"].append(user_id)
 
                 # 发送合并的警告消息
-                if warned_users or kicked_users or last_warn_users:
-                    report_parts.append(
-                        generate_text_message(
-                            f"群 {group_id} 的处理结果："
-                        )
+                if message_parts:
+                    message_parts.append(
+                        generate_text_message("超过3次将会被踢出群聊 ⚠️")
                     )
-                    if kicked_users:
-                        report_parts.append(
-                            generate_text_message(
-                                f"踢出用户：{', '.join([str(u) for u in kicked_users])}"
-                            )
-                        )
-                    if warned_users:
-                        report_parts.append(
-                            generate_text_message(
-                                f"警告用户：{', '.join([str(u) for u in warned_users])}"
-                            )
-                        )
-                    if last_warn_users:
-                        report_parts.append(
-                            generate_text_message(
-                                f"最后一次警告用户：{', '.join([str(u) for u in last_warn_users])}"
-                            )
-                        )
-                    report_parts.append(
-                        generate_text_message(" ")
+                    await send_group_msg(
+                        self.websocket,
+                        group_id,
+                        message_parts,
                     )
-            if report_parts:
-                await send_private_msg(
-                    self.websocket,
-                    self.user_id,
-                    report_parts,
-                )
+
+                # 处理需要踢出的用户
+                for user_id, unique_id in users_to_kick:
+                    await send_group_msg(
+                        self.websocket,
+                        group_id,
+                        [
+                            generate_at_message(user_id),
+                            generate_text_message(
+                                "你未完成入群验证，已达到最后一次警告，马上将被移出群聊！❌"
+                            ),
+                        ],
+                        note="del_msg=10",
+                    )
+                    await asyncio.sleep(2)  # 稍作延迟
+                    await set_group_kick(self.websocket, group_id, user_id)
+
+            # 生成汇总报告并发送给管理员
+            summary_messages = [generate_text_message("扫描处理汇总报告：")]
+            for group_id, report in group_reports.items():
+                total = report["total_users"]
+                warned = len(report["warned_users"])
+                kicked = len(report["kicked_users"])
+
+                group_summary = f"\n群 {group_id} 处理情况：\n"
+                group_summary += f"- 总共未验证用户: {total}人\n"
+                group_summary += f"- 发出警告: {warned}人\n"
+                group_summary += f"- 踢出群聊: {kicked}人\n"
+
+                # 添加警告用户详情
+                if warned > 0:
+                    group_summary += "\n警告用户详情：\n"
+                    for user_id, warn_count in report["warned_users"]:
+                        group_summary += f"- {user_id} (警告{warn_count}/{MAX_WARNINGS})\n"
+
+                # 添加踢出用户详情
+                if kicked > 0:
+                    group_summary += "\n踢出用户详情：\n"
+                    for user_id in report["kicked_users"]:
+                        group_summary += f"- {user_id}\n"
+
+                summary_messages.append(generate_text_message(group_summary))
+
+            # 发送汇总报告给管理员
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                summary_messages,
+            )
+
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                [generate_text_message("扫描并处理完毕 ✅")],
+            )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]扫描验证失败: {e}")
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                [generate_text_message(f"扫描失败: {e} ❌")],
+            )
