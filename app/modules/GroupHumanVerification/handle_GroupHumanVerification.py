@@ -2,7 +2,13 @@ from datetime import datetime
 import asyncio
 import logger
 from .data_manager import DataManager
-from . import MODULE_NAME, SCAN_VERIFICATION, STATUS_KICKED, WARNING_COUNT
+from . import (
+    MODULE_NAME,
+    SCAN_VERIFICATION,
+    STATUS_KICKED,
+    STATUS_VERIFIED,
+    WARNING_COUNT,
+)
 from api.group import set_group_kick
 from api.message import send_group_msg
 from api.generate import generate_text_message, generate_at_message
@@ -18,6 +24,7 @@ class GroupHumanVerificationHandler:
         )  # 格式化时间
         self.sub_type = msg.get("sub_type", "")  # 子类型,friend/group
         self.user_id = str(msg.get("user_id", ""))  # 发送者QQ号
+        self.group_id = str(msg.get("group_id", ""))  # 群组ID
         self.message_id = str(msg.get("message_id", ""))  # 消息ID
         self.message = msg.get("message", {})  # 消息段数组
         self.raw_message = msg.get("raw_message", "")  # 原始消息
@@ -60,6 +67,8 @@ class GroupHumanVerificationHandler:
                             dm.update_status(group_id, user_id, STATUS_KICKED)
                             # 踢人操作间隔1秒，防止风控
                             await asyncio.sleep(1)
+                        # 发消息间隔1秒，防止风控
+                        await asyncio.sleep(1)
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理扫描入群验证失败: {e}")
 
@@ -78,6 +87,23 @@ class GroupHumanVerificationHandler:
         处理用户命令
         """
         try:
-            pass
+            with DataManager() as dm:
+                # 根据群组ID和用户ID获取验证码
+                code = dm.get_code(self.group_id, self.user_id)
+                # 验证是否正确
+                if self.raw_message == code:
+                    # 验证成功
+                    dm.update_status(self.group_id, self.user_id, STATUS_VERIFIED)
+                    # 群内通知
+                    msg_at = generate_at_message(self.user_id)
+                    msg_text = generate_text_message(
+                        f"({self.user_id}) 验证成功，你可以正常发言了！"
+                    )
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [msg_at, msg_text],
+                        note="del_msg=60",
+                    )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理用户命令失败: {e}")
