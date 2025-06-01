@@ -101,7 +101,7 @@ class DataManager:
         else:
             return None
 
-    def get_code(self, group_id, user_id):
+    def get_code_with_group_and_user(self, group_id, user_id):
         """
         根据群号和QQ号获取对应的验证码
         :param group_id: 群号
@@ -111,6 +111,23 @@ class DataManager:
         self.cursor.execute(
             "SELECT code FROM data_table WHERE group_id=? AND user_id=?",
             (group_id, user_id),
+        )
+        row = self.cursor.fetchone()
+        if row:
+            return row[0]
+        else:
+            return None
+
+    def get_group_with_code_and_user(self, user_id, code):
+        """
+        根据用户ID和验证码获取未验证的群号
+        :param user_id: QQ号
+        :param code: 验证码
+        :return: 群号字符串或None
+        """
+        self.cursor.execute(
+            "SELECT group_id FROM data_table WHERE user_id=? AND code=? AND status=?",
+            (user_id, code, STATUS_UNVERIFIED),
         )
         row = self.cursor.fetchone()
         if row:
