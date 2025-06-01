@@ -373,6 +373,13 @@ async def send_forward_msg(
         websocket: WebSocket连接实例
         user_id (Union[int, str], optional): 好友的QQ号 (私聊发送)
         group_id (Union[int, str], optional): 群号 (群聊发送)
+        message (list, optional): 消息段 (必填)
+        news (str, optional): 消息预览 (默认值为“消息预览”)
+        prompt (str, optional): 消息外显 (默认值为“消息外显”)
+        summary (str, optional): 消息摘要 (默认值为“消息摘要”)
+        source (str, optional): 消息来源 (默认值为“消息来源”)
+        note (str, optional): 消息备注 (默认值为空字符串)
+
 
     Returns:
         bool: 发送是否成功
