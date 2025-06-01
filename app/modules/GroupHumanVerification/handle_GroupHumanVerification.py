@@ -8,6 +8,7 @@ from . import (
     STATUS_KICKED,
     STATUS_VERIFIED,
     WARNING_COUNT,
+    STATUS_UNVERIFIED,
 )
 from api.group import set_group_kick
 from api.message import send_group_msg
@@ -88,22 +89,39 @@ class GroupHumanVerificationHandler:
         """
         try:
             with DataManager() as dm:
-                # 根据群组ID和用户ID获取验证码
-                code = dm.get_code(self.group_id, self.user_id)
-                # 验证是否正确
-                if self.raw_message == code:
-                    # 验证成功
-                    dm.update_status(self.group_id, self.user_id, STATUS_VERIFIED)
-                    # 群内通知
-                    msg_at = generate_at_message(self.user_id)
-                    msg_text = generate_text_message(
-                        f"({self.user_id}) 验证成功，你可以正常发言了！"
+                # 有群号时，按群号和用户ID检测验证码
+                if self.group_id:
+                    code = dm.get_code_with_group_and_user(self.group_id, self.user_id)
+                    if self.raw_message == code:
+                        dm.update_status(self.group_id, self.user_id, STATUS_VERIFIED)
+                        msg_at = generate_at_message(self.user_id)
+                        msg_text = generate_text_message(
+                            f"({self.user_id}) 验证成功，你可以正常发言了！"
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [msg_at, msg_text],
+                            note="del_msg=60",
+                        )
+                else:
+                    # 无群号时，根据用户发的消息和QQ号检测数据库里该验证码所在群的状态是否是未验证
+                    group_id = dm.get_group_with_code_and_user(
+                        self.user_id, self.raw_message
                     )
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [msg_at, msg_text],
-                        note="del_msg=60",
-                    )
+                    if group_id:
+                        # 找到未验证的群，更新其状态
+                        dm.update_status(group_id, self.user_id, STATUS_VERIFIED)
+                        msg_at = generate_at_message(self.user_id)
+                        msg_text = generate_text_message(
+                            f"({self.user_id}) 验证成功，你可以正常发言了！"
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            group_id,
+                            [msg_at, msg_text],
+                            note="del_msg=60",
+                        )
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理用户命令失败: {e}")
