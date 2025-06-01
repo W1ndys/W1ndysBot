@@ -148,6 +148,14 @@ class GroupManagerHandle:
                 await set_group_kick(
                     self.websocket, self.group_id, target_user_id, False
                 )
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_text_message(f"已踢出用户 {target_user_id}"),
+                    ],
+                    note="del_msg=30",
+                )
 
         except Exception as e:
             await self.send_error_message(f"踢出操作失败: {str(e)}")
