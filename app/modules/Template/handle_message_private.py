@@ -58,10 +58,22 @@ class PrivateMessageHandler:
             if not is_private_switch_on(MODULE_NAME):
                 return
 
-            # 示例：使用with语句块进行数据库操作
-            with DataManager() as dm:
-                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                pass
+            # 新增：根据sub_type判断消息类型
+            if self.sub_type == "friend":
+                # 处理好友私聊消息
+                with DataManager() as dm:
+                    # 这里可以进行数据库操作，如：dm.cursor.execute(...)
+                    pass
+            elif self.sub_type == "group":
+                # 处理临时会话消息（如群临时会话）
+                with DataManager() as dm:
+                    # 这里可以进行数据库操作，如：dm.cursor.execute(...)
+                    pass
+            else:
+                # 其他类型的私聊消息
+                logger.info(
+                    f"[{MODULE_NAME}]收到未知sub_type的私聊消息: {self.sub_type}"
+                )
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊消息失败: {e}")
