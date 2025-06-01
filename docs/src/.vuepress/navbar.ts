@@ -13,4 +13,9 @@ export default navbar([
     icon: "book",
     link: "/UserManual/",
   },
+  {
+    text: "更新日志",
+    icon: "fa-solid fa-clipboard-list",
+    link: "/Update/README.md",
+  },
 ]);

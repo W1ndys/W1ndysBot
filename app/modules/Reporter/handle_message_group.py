@@ -1,8 +1,12 @@
-from . import MODULE_NAME, SWITCH_NAME
+from . import MODULE_NAME, SWITCH_NAME, TEST_COMMAND
 import logger
 from core.switchs import is_group_switch_on, toggle_group_switch
-from api.message import send_group_msg
-from api.generate import generate_reply_message, generate_text_message
+from api.message import send_group_msg, send_forward_msg
+from api.generate import (
+    generate_reply_message,
+    generate_text_message,
+    generate_node_message,
+)
 from datetime import datetime
 
 
@@ -61,7 +65,7 @@ class GroupMessageHandler:
                 return
 
             # 测试消息
-            if self.raw_message.lower() in ["测试", "test"]:
+            if self.raw_message.lower() in [TEST_COMMAND.lower()]:
                 reply_message = generate_reply_message(self.message_id)
                 text_message = generate_text_message(f"[{MODULE_NAME}]测试成功")
                 await send_group_msg(
@@ -69,6 +73,23 @@ class GroupMessageHandler:
                     self.group_id,
                     [reply_message, text_message],
                     note="del_msg=10",
+                )
+
+                await send_forward_msg(
+                    self.websocket,
+                    group_id=self.group_id,
+                    message=[
+                        generate_node_message(
+                            user_id=f"{self.user_id}",
+                            nickname=f"{self.nickname}",
+                            content=[generate_text_message("这是一条echo的测试消息")],
+                        )
+                    ],
+                    news="这是一条echo消息",
+                    prompt="这是一条echo消息",
+                    summary="这是一条echo消息",
+                    source="这是一条echo消息",
+                    note="del_msg=120",
                 )
                 return
 

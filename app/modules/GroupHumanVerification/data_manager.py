@@ -58,6 +58,14 @@ class DataManager:
         )
         return self.cursor.fetchone()[0] > 0
 
+    def get_verify_status(self, user_id, group_id):
+        """获取验证状态"""
+        self.cursor.execute(
+            "SELECT verify_status FROM group_human_verification WHERE user_id = ? AND group_id = ?",
+            (user_id, group_id),
+        )
+        return self.cursor.fetchone()[0]
+
     def update_verify_status(self, user_id, group_id, verify_status):
         """
         更新验证状态

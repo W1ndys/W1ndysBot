@@ -149,19 +149,6 @@ class GroupManagerHandle:
                     self.websocket, self.group_id, target_user_id, False
                 )
 
-            # 发送成功消息
-            await send_group_msg(
-                self.websocket,
-                self.group_id,
-                [
-                    generate_reply_message(self.message_id),
-                    generate_text_message(
-                        f"已成功踢出用户：{'、'.join(target_user_ids)}"
-                    ),
-                ],
-                note="del_msg=10",
-            )
-
         except Exception as e:
             await self.send_error_message(f"踢出操作失败: {str(e)}")
             logger.error(f"[{MODULE_NAME}]踢出操作失败: {e}")

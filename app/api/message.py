@@ -355,15 +355,31 @@ async def get_forward_msg(websocket, message_id, note=""):
         logger.error(f"[API]执行获取合并转发消息失败: {e}")
 
 
-async def send_forward_msg(websocket, user_id=None, group_id=None, message=None):
+async def send_forward_msg(
+    websocket,
+    user_id=None,
+    group_id=None,
+    message=None,
+    news="消息预览",
+    prompt="消息外显",
+    summary="消息摘要",
+    source="消息来源",
+    note="",
+):
     """
     发送合并转发消息
 
     Args:
         websocket: WebSocket连接实例
-        message_id (Union[int, str]): 合并转发消息的message_id
         user_id (Union[int, str], optional): 好友的QQ号 (私聊发送)
         group_id (Union[int, str], optional): 群号 (群聊发送)
+        message (list, optional): 消息段 (必填)
+        news (str, optional): 消息预览 (默认值为“消息预览”)
+        prompt (str, optional): 消息外显 (默认值为“消息外显”)
+        summary (str, optional): 消息摘要 (默认值为“消息摘要”)
+        source (str, optional): 消息来源 (默认值为“消息来源”)
+        note (str, optional): 消息备注 (默认值为空字符串)
+
 
     Returns:
         bool: 发送是否成功
@@ -385,7 +401,13 @@ async def send_forward_msg(websocket, user_id=None, group_id=None, message=None)
             logger.error("[API]执行发送合并转发消息失败: message不能为空")
 
         # 构建请求参数
-        params = {"message": message}
+        params = {
+            "messages": message,
+            "news": [{"text": news}],
+            "prompt": prompt,
+            "summary": summary,
+            "source": source,
+        }
 
         if user_id is not None:
             params["user_id"] = user_id
@@ -395,7 +417,7 @@ async def send_forward_msg(websocket, user_id=None, group_id=None, message=None)
         payload = {
             "action": "send_forward_msg",
             "params": params,
-            "echo": "send_forward_msg",
+            "echo": f"send_forward_msg-{note}",
         }
 
         # 发送请求
