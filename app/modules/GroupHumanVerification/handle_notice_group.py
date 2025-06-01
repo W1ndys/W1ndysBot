@@ -1,7 +1,11 @@
-from . import MODULE_NAME
+from . import MODULE_NAME, BAN_TIME, STATUS_UNVERIFIED
 import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
+from api.group import set_group_ban
+from api.message import send_group_msg
+from api.generate import generate_at_message, generate_text_message
+from .data_manager import DataManager
 
 
 class GroupNoticeHandler:
@@ -164,10 +168,31 @@ class GroupNoticeHandler:
         处理群聊成员增加通知
         """
         try:
-            if self.sub_type == "approve":
-                await self.handle_group_increase_approve()
-            elif self.sub_type == "invite":
-                await self.handle_group_increase_invite()
+            # 禁言
+            await set_group_ban(self.websocket, self.group_id, self.user_id, BAN_TIME)
+
+            # 随机生成6-15位纯数字唯一ID
+            import random
+
+            code = "".join(
+                [str(random.randint(0, 9)) for _ in range(random.randint(6, 15))]
+            )
+
+            with DataManager() as dm:
+                dm.add_data(
+                    self.group_id,
+                    self.user_id,
+                    code,
+                    STATUS_UNVERIFIED,
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                )
+
+            # 群内通知
+            msg_at = generate_at_message(self.user_id)
+            msg_text = generate_text_message(
+                f"({self.user_id}) 欢迎加入群聊！请在群内发言，发言前请先私聊我验证码【{code}】完成人机验证。"
+            )
+            await send_group_msg(self.websocket, self.group_id, [msg_at, msg_text])
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
 

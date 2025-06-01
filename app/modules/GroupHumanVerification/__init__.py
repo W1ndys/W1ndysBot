@@ -23,6 +23,9 @@ SCAN_VERIFICATION = "扫描入群验证"
 WARNING_COUNT = 3
 """剩余警告次数"""
 
+BAN_TIME = 30 * 24 * 60 * 60
+"""禁言时间"""
+
 # 各种验证状态
 
 STATUS_VERIFIED = "已验证"
