@@ -285,7 +285,7 @@ def generate_node_message(user_id, nickname, content):
     Args:
         user_id (int): 用户ID
         nickname (str): 昵称
-        content (str): 内容
+        content (list): 内容
 
     Returns:
         dict: 包含合并转发消息段的字典，格式为:
