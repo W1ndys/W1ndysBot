@@ -58,12 +58,7 @@ class DataManager:
     def calc_message_weight(self, message):
         """计算消息的违禁程度（所有命中违禁词的权值求和）"""
         self.cursor.execute("SELECT word, weight FROM data_table")
-        words = self.cursor.fetchall()
-        total_weight = 0
-        for word, weight in words:
-            if word in message:
-                total_weight += weight
-        return total_weight
+        return sum(weight for word, weight in self.cursor.fetchall() if word in message)
 
 
 if __name__ == "__main__":
