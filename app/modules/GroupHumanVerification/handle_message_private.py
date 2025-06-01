@@ -1,20 +1,11 @@
-from . import (
-    MODULE_NAME,
-    SWITCH_NAME,
-    APPROVE_VERIFICATION,
-    REJECT_VERIFICATION,
-    SCAN_VERIFICATION,
-)
+from . import MODULE_NAME, SWITCH_NAME
 import logger
 from core.switchs import is_private_switch_on, toggle_private_switch
 from api.message import send_private_msg
-from api.generate import (
-    generate_reply_message,
-    generate_text_message,
-)
+from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
 from config import OWNER_ID
-from .GroupHumanVerification import GroupHumanVerificationHandler
+from .handle_GroupHumanVerification import GroupHumanVerificationHandler
 
 
 class PrivateMessageHandler:
@@ -44,7 +35,7 @@ class PrivateMessageHandler:
             switch_status = "开启" if switch_status else "关闭"
             reply_message = generate_reply_message(self.message_id)
             text_message = generate_text_message(
-                f"[{MODULE_NAME}]私聊开关已切换为【{switch_status}】 🔄"
+                f"[{MODULE_NAME}]私聊开关已切换为【{switch_status}】"
             )
             await send_private_msg(
                 self.websocket,
@@ -68,29 +59,18 @@ class PrivateMessageHandler:
             if not is_private_switch_on(MODULE_NAME):
                 return
 
-            # 如果不是好友类型，则不处理
-            if self.sub_type != "friend":
-                return
-
-            # 如果是默认的加好友打招呼消息，则不处理
-            if self.raw_message == "请求添加你为好友":
-                return
-
             # 初始化入群验证处理器
             group_human_verification_handler = GroupHumanVerificationHandler(
-                self.websocket, self.user_id, self.raw_message
+                self.websocket, self.msg
             )
-            # 如果是管理员，判断是否是批准信息
+
+            # 如果用户是管理员，则处理管理员命令
             if self.user_id == OWNER_ID:
-                if self.raw_message.startswith(APPROVE_VERIFICATION):
-                    await group_human_verification_handler.handle_approve_request()
-                elif self.raw_message.startswith(REJECT_VERIFICATION):
-                    await group_human_verification_handler.handle_reject_request()
-                elif self.raw_message.startswith(SCAN_VERIFICATION):
-                    await group_human_verification_handler.handle_scan_request()
-            # 如果是普通用户，判断是否是用户发送的验证码
-            else:
-                await group_human_verification_handler.handle_verification_code()
+                await group_human_verification_handler.handle_admin_command()
+                return
+
+            # 如果用户不是管理员，则处理用户命令
+            await group_human_verification_handler.handle_user_command()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊消息失败: {e}")

@@ -1,13 +1,13 @@
 import sqlite3
 import os
-from . import MODULE_NAME, MAX_ATTEMPTS, MAX_WARNINGS
+from . import MODULE_NAME, STATUS_UNVERIFIED, WARNING_COUNT
 
 
 class DataManager:
     def __init__(self):
         data_dir = os.path.join("data", MODULE_NAME)
         os.makedirs(data_dir, exist_ok=True)
-        db_path = os.path.join(data_dir, "group_human_verification.db")
+        db_path = os.path.join(data_dir, f"data.db")
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         self._create_table()
@@ -15,29 +15,35 @@ class DataManager:
     def _create_table(self):
         """
         建表函数，如果表不存在则创建
-        0: id: 记录ID
-        1: group_id: 群聊ID
-        2: user_id: 用户QQ号
-        3: unique_id: 唯一ID(验证码)
-        4: verify_status: 验证状态
-        5: join_time: 入群时间
-        6: remaining_attempts: 剩余验证次数
-        7: remaining_warnings: 剩余警告次数
-        8: created_at: 创建时间
+        列：
+        group_id: 群号 字符串
+        user_id: 用户ID 字符串
+        code: 验证码 字符串
+        status: 验证状态 字符串
+        created_at: 创建时间（字符串格式，建议为'YYYY-MM-DD HH:MM:SS'）
+        warning_count: 剩余警告次数 整数
+        要求：群号和QQ号两者无重复（即二者联合唯一）
         """
         self.cursor.execute(
-            f"""CREATE TABLE IF NOT EXISTS group_human_verification (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                group_id TEXT,
-                user_id TEXT,
-                unique_id TEXT,
-                verify_status TEXT DEFAULT '未验证',
-                join_time INTEGER,
-                remaining_attempts INTEGER DEFAULT {MAX_ATTEMPTS},
-                remaining_warnings INTEGER DEFAULT {MAX_WARNINGS},
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            """CREATE TABLE IF NOT EXISTS data_table (
+            group_id TEXT,
+            user_id TEXT,
+            code TEXT,
+            status TEXT,
+            created_at TEXT,  -- 存储为字符串格式的时间，如'2024-06-01 12:00:00'
+            warning_count INTEGER,  -- 剩余警告次数
+            UNIQUE(group_id, user_id)
             )"""
         )
+        # 检查 warning_count 列是否存在，不存在则添加（用于老库升级）
+        self.cursor.execute("PRAGMA table_info(data_table)")
+        columns = [row[1] for row in self.cursor.fetchall()]
+        if "warning_count" not in columns:
+            self.cursor.execute(
+                "ALTER TABLE data_table ADD COLUMN warning_count INTEGER DEFAULT ?",
+                (WARNING_COUNT,),
+            )
+            self.conn.commit()
 
     def __enter__(self):
         return self
@@ -45,183 +51,127 @@ class DataManager:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.conn.close()
 
-    def get_max_id(self):
-        """获取当前最大ID"""
-        self.cursor.execute("SELECT MAX(id) FROM group_human_verification")
-        return self.cursor.fetchone()[0]
-
-    def check_unique_id_exists(self, unique_id):
-        """检查唯一ID是否存在"""
-        self.cursor.execute(
-            "SELECT COUNT(*) FROM group_human_verification WHERE unique_id = ?",
-            (unique_id,),
-        )
-        return self.cursor.fetchone()[0] > 0
-
-    def get_verify_status(self, user_id, group_id):
-        """获取验证状态"""
-        self.cursor.execute(
-            "SELECT verify_status FROM group_human_verification WHERE user_id = ? AND group_id = ?",
-            (user_id, group_id),
-        )
-        return self.cursor.fetchone()[0]
-
-    def update_verify_status(self, user_id, group_id, verify_status):
-        """
-        更新验证状态
-        0: user_id: 用户QQ号
-        1: group_id: 群聊ID
-        2: verify_status: 验证状态
-        """
-        self.cursor.execute(
-            "UPDATE group_human_verification SET verify_status = ? WHERE user_id = ? AND group_id = ?",
-            (verify_status, user_id, group_id),
-        )
-        self.conn.commit()
-
-    def insert_data(
-        self,
-        group_id,
-        user_id,
-        unique_id,
-        verify_status,
-        join_time,
-        remaining_attempts,
-        remaining_warnings,
+    def add_data(
+        self, group_id, user_id, code, status, created_at, warning_count=WARNING_COUNT
     ):
         """
-        插入数据
-        如果已存在相同的group_id和user_id，则覆盖原有记录，否则插入新记录
-        1: group_id: 群聊ID
-        2: user_id: 用户QQ号
-        3: unique_id: 唯一ID
-        4: verify_status: 验证状态
-        5: join_time: 入群时间
-        6: remaining_attempts: 剩余验证次数
-        7: remaining_warnings: 剩余警告次数
+        增加一条数据，如果已存在则更新
+        :param group_id: 群号
+        :param user_id: QQ号
+        :param code: 验证码
+        :param status: 验证状态
+        :param created_at: 创建时间（字符串格式）
+        :param warning_count: 剩余警告次数
         """
-        # 先检查是否已存在该群号和用户
         self.cursor.execute(
-            "SELECT id FROM group_human_verification WHERE group_id = ? AND user_id = ?",
+            """
+            INSERT INTO data_table (group_id, user_id, code, status, created_at, warning_count)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(group_id, user_id) DO UPDATE SET
+                code=excluded.code,
+                status=excluded.status,
+                created_at=excluded.created_at,
+                warning_count=excluded.warning_count
+            """,
+            (group_id, user_id, code, status, created_at, warning_count),
+        )
+        self.conn.commit()
+
+    def get_data(self, group_id, user_id):
+        """
+        根据群号和QQ号获取一条数据
+        :param group_id: 群号
+        :param user_id: QQ号
+        :return: 数据字典或None
+        """
+        self.cursor.execute(
+            "SELECT group_id, user_id, code, status, created_at, warning_count FROM data_table WHERE group_id=? AND user_id=?",
             (group_id, user_id),
         )
-        result = self.cursor.fetchone()
-        if result:
-            # 已存在，执行更新操作
-            self.cursor.execute(
-                """
-                UPDATE group_human_verification
-                SET unique_id = ?, verify_status = ?, join_time = ?, remaining_attempts = ?, remaining_warnings = ?, created_at = CURRENT_TIMESTAMP
-                WHERE group_id = ? AND user_id = ?
-                """,
-                (
-                    unique_id,
-                    verify_status,
-                    join_time,
-                    remaining_attempts,
-                    remaining_warnings,
-                    group_id,
-                    user_id,
-                ),
-            )
+        row = self.cursor.fetchone()
+        if row:
+            return {
+                "group_id": row[0],
+                "user_id": row[1],
+                "code": row[2],
+                "status": row[3],
+                "created_at": row[4],
+                "warning_count": row[5],
+            }
         else:
-            # 不存在，插入新记录
-            self.cursor.execute(
-                "INSERT INTO group_human_verification (group_id, user_id, unique_id, verify_status, join_time, remaining_attempts, remaining_warnings) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (
-                    group_id,
-                    user_id,
-                    unique_id,
-                    verify_status,
-                    join_time,
-                    remaining_attempts,
-                    remaining_warnings,
-                ),
-            )
-        self.conn.commit()
+            return None
 
-    def get_record_by_unique_id(self, unique_id):
+    def get_code(self, group_id, user_id):
         """
-        通过unique_id获取一条验证记录
-        返回：tuple，包含记录的各个字段
-            0: id: 记录ID
-            1: group_id: 群聊ID
-            2: user_id: 用户QQ号
-            3: unique_id: 唯一ID(验证码)
-            4: verify_status: 验证状态
-            5: join_time: 入群时间
-            6: remaining_attempts: 剩余验证次数
-            7: remaining_warnings: 剩余警告次数
-            8: created_at: 创建时间
+        根据群号和QQ号获取对应的验证码
+        :param group_id: 群号
+        :param user_id: QQ号
+        :return: 验证码字符串或None
         """
         self.cursor.execute(
-            "SELECT * FROM group_human_verification WHERE unique_id = ?",
-            (unique_id,),
-        )
-        return self.cursor.fetchone()
-
-    def get_user_records(self, user_id):
-        """
-        获取指定用户所有待验证记录
-        """
-        self.cursor.execute(
-            "SELECT * FROM group_human_verification WHERE user_id = ? AND verify_status = '未验证'",
-            (user_id,),
-        )
-        return self.cursor.fetchall()
-
-    def get_user_records_by_group_id_and_user_id(self, group_id, user_id):
-        """
-        获取指定群号和用户ID的记录
-        """
-        self.cursor.execute(
-            "SELECT * FROM group_human_verification WHERE group_id = ? AND user_id = ?",
+            "SELECT code FROM data_table WHERE group_id=? AND user_id=?",
             (group_id, user_id),
         )
-        return self.cursor.fetchone()
-
-    def get_user_records_by_group_id(self, group_id):
-        """
-        获取指定群号所有待验证记录
-        """
-        self.cursor.execute(
-            "SELECT * FROM group_human_verification WHERE group_id = ? AND verify_status = '未验证'",
-            (group_id,),
-        )
-        return self.cursor.fetchall()
-
-    def get_unverified_users(self, group_id=None):
-        """
-        获取所有未验证用户
-        group_id: 指定群号，若为None则获取所有群的未验证用户
-        """
-        if group_id:
-            self.cursor.execute(
-                "SELECT * FROM group_human_verification WHERE group_id = ? AND verify_status = '未验证'",
-                (group_id,),
-            )
+        row = self.cursor.fetchone()
+        if row:
+            return row[0]
         else:
-            self.cursor.execute(
-                "SELECT * FROM group_human_verification WHERE verify_status = '未验证'"
-            )
-        return self.cursor.fetchall()
+            return None
 
-    def update_warning_count(self, unique_id, new_count):
+    def update_status(self, group_id, user_id, new_status):
         """
-        更新剩余警告次数
+        更新验证状态
+        :param group_id: 群号
+        :param user_id: QQ号
+        :param new_status: 新的验证状态
         """
         self.cursor.execute(
-            "UPDATE group_human_verification SET remaining_warnings = ? WHERE unique_id = ?",
-            (new_count, unique_id),
+            "UPDATE data_table SET status=? WHERE group_id=? AND user_id=?",
+            (new_status, group_id, user_id),
         )
         self.conn.commit()
 
-    def update_attempt_count(self, unique_id, new_count):
+    def get_warning_count(self, group_id, user_id):
         """
-        更新剩余验证次数
+        获取指定用户的剩余警告次数
+        :param group_id: 群号
+        :param user_id: QQ号
+        :return: 剩余警告次数（int）或 None
         """
         self.cursor.execute(
-            "UPDATE group_human_verification SET remaining_attempts = ? WHERE unique_id = ?",
-            (new_count, unique_id),
+            "SELECT warning_count FROM data_table WHERE group_id=? AND user_id=?",
+            (group_id, user_id),
+        )
+        row = self.cursor.fetchone()
+        if row:
+            return row[0]
+        else:
+            return None
+
+    def update_warning_count(self, group_id, user_id, new_count):
+        """
+        更新指定用户的剩余警告次数
+        :param group_id: 群号
+        :param user_id: QQ号
+        :param new_count: 新的剩余警告次数
+        """
+        self.cursor.execute(
+            "UPDATE data_table SET warning_count=? WHERE group_id=? AND user_id=?",
+            (new_count, group_id, user_id),
         )
         self.conn.commit()
+
+    def get_all_unverified_users_with_code_and_warning(self):
+        """
+        获取所有未验证的用户，按群号分类返回，并包含用户的验证码和剩余警告次数
+        :return: {group_id: [(user_id, warning_count, code), ...], ...}
+        """
+        self.cursor.execute(
+            "SELECT group_id, user_id, warning_count, code FROM data_table WHERE status=?",
+            (STATUS_UNVERIFIED,),
+        )
+        rows = self.cursor.fetchall()
+        result = {}
+        for group_id, user_id, warning_count, code in rows:
+            result.setdefault(group_id, []).append((user_id, warning_count, code))
+        return result
