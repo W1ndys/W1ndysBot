@@ -276,3 +276,33 @@ def generate_share_message(url, title, content="", image=""):
         "type": "share",
         "data": {"url": url, "title": title, "content": content, "image": image},
     }
+
+
+def generate_node_message(user_id, nickname, content):
+    """
+    生成合并转发消息
+
+    Args:
+        user_id (int): 用户ID
+        nickname (str): 昵称
+        content (str): 内容
+
+    Returns:
+        dict: 包含合并转发消息段的字典，格式为:
+        {
+            "type": "node",
+            "data": {
+                "user_id": user_id,
+                "nickname": nickname,
+                "content": content
+            }
+        }
+
+    Note:
+        - 支持发送合并转发消息
+        - 可以自定义用户ID、昵称和内容
+    """
+    return {
+        "type": "node",
+        "data": {"user_id": user_id, "nickname": nickname, "content": content},
+    }
