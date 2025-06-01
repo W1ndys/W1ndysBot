@@ -1,5 +1,5 @@
 import websockets
-from config import *
+from config import WS_URL, TOKEN
 from logger import logger
 from handle_events import EventHandler
 
@@ -7,6 +7,10 @@ from handle_events import EventHandler
 async def connect_to_bot():
     """连接到机器人并开始接收消息"""
     handler = EventHandler()  # 为每个连接创建一个独立实例
+
+    if WS_URL is None:
+        logger.error("WS_URL未设置，请在环境变量中设置")
+        exit()
 
     # 如果 token 不为 None，则在 URL 中添加 token 参数
     connection_url = WS_URL
