@@ -385,6 +385,18 @@ class QaHandler:
                     f"🔎 相似度：{score:.2f}   🆔 ID：{qa_id}\n"
                     f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存"
                 )
+
+                # 由于部分结果发送时间可能长达1秒，所以先发送成功的通知
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message("✅ 为你找到可能匹配的问答，即将发出\n"),
+                    ],
+                    note="del_msg=3",
+                )
+
                 await send_group_msg_with_cq(
                     self.websocket,
                     self.group_id,
