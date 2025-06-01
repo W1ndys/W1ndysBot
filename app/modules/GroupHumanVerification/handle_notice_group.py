@@ -49,8 +49,39 @@ class GroupNoticeHandler:
                 await self.handle_group_decrease()
             elif self.notice_type == "group_increase":
                 await self.handle_group_increase()
+            elif self.notice_type == "group_ban":
+                await self.handle_group_ban()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊通知失败: {e}")
+
+    async def handle_group_ban(self):
+        """
+        处理群聊禁言通知
+        """
+        try:
+            # 如果被解禁，且验证状态为未验证，则视为验证通过
+            if self.sub_type == "lift_ban":
+                with DataManager() as dm:
+                    if dm.get_verify_status(self.user_id, self.group_id) == "未验证":
+                        dm.update_verify_status(
+                            self.user_id,
+                            self.group_id,
+                            f"被管理员解禁({self.operator_id})",
+                        )
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_at_message(self.user_id),
+                        generate_text_message(
+                            f"({self.user_id})检测到您被管理员解禁，已自动通过验证。✅"
+                        ),
+                    ],
+                    note="del_msg=30",
+                )
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理群聊禁言通知失败: {e}")
 
     async def handle_group_decrease(self):
         """
