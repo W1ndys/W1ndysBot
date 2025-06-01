@@ -37,7 +37,7 @@ class GroupMessageHandler:
             switch_status = "开启" if switch_status else "关闭"
             reply_message = generate_reply_message(self.message_id)
             text_message = generate_text_message(
-                f"[{MODULE_NAME}]群聊开关已切换为【{switch_status}】 🔄"
+                f"[{MODULE_NAME}]群聊开关已切换为【{switch_status}】"
             )
             await send_group_msg(
                 self.websocket,
@@ -60,6 +60,11 @@ class GroupMessageHandler:
             # 如果没开启群聊开关，则不处理
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
+
+            # 示例：使用with语句块进行数据库操作
+            with DataManager() as dm:
+                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
+                pass
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
