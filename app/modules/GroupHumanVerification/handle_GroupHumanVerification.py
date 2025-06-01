@@ -45,7 +45,7 @@ class GroupHumanVerificationHandler:
                                 # 生成@和文本消息
                                 msg_at = generate_at_message(user_id)
                                 msg_text = generate_text_message(
-                                    f"({user_id}) 请尽快完成验证，你的验证码是：{code}，(剩余警告{warning_count - 1}/{WARNING_COUNT})，超过{WARNING_COUNT}次将自动踢出"
+                                    f"({user_id}) 请尽快完成验证，你的验证码是：{code}，(剩余警告{warning_count - 1}/{WARNING_COUNT})"
                                 )
                                 msg_list.extend([msg_at, msg_text])
                             else:
