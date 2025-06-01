@@ -22,9 +22,9 @@ class GroupNoticeHandler:
         )  # 格式化时间
         self.notice_type = msg.get("notice_type")
         self.sub_type = msg.get("sub_type")
-        self.user_id = msg.get("user_id")
-        self.group_id = msg.get("group_id")
-        self.operator_id = msg.get("operator_id")
+        self.user_id = str(msg.get("user_id"))
+        self.group_id = str(msg.get("group_id"))
+        self.operator_id = str(msg.get("operator_id"))
 
     async def handle_group_notice(self):
         """
