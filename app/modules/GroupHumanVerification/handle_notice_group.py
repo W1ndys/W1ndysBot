@@ -241,13 +241,13 @@ class GroupNoticeHandler:
             msg_at = generate_at_message(self.user_id)
             msg_text = generate_text_message(
                 f"({self.user_id}) 欢迎加入群聊！请在群内发言，发言前请先私聊我验证码完成人机验证。\n"
-                f"您的验证码是下面的UUID字符串\n\n\n{code}"
+                f"您的验证码是下面的UUID字符串\n\n\n\n{code}"
             )
             await send_group_msg(
                 self.websocket,
                 self.group_id,
                 [msg_at, msg_text],
-                note="del_msg=120",
+                note="del_msg=300",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
