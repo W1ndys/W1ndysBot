@@ -11,7 +11,7 @@ from . import (
     STATUS_UNVERIFIED,
 )
 from api.group import set_group_kick
-from api.message import send_group_msg
+from api.message import send_group_msg, send_private_msg
 from api.generate import generate_text_message, generate_at_message
 from config import OWNER_ID
 
@@ -40,6 +40,7 @@ class GroupHumanVerificationHandler:
         try:
             with DataManager() as dm:
                 unverified_users = dm.get_all_unverified_users_with_code_and_warning()
+                result_msgs = []  # 新增：用于统计结果
                 if unverified_users:
                     for group_id, user_list in unverified_users.items():
                         # 记录需要踢出的用户
@@ -54,12 +55,19 @@ class GroupHumanVerificationHandler:
                                 # 生成@和文本消息
                                 msg_at = generate_at_message(user_id)
                                 msg_text = generate_text_message(
-                                    f"({user_id}) 请尽快完成验证，你的验证码是：{code}，(剩余警告{warning_count - 1}/{WARNING_COUNT})"
+                                    f"({user_id}) 请尽快完成验证，你的验证码是：{code}（剩余警告{warning_count - 1}/{WARNING_COUNT}）"
                                 )
                                 msg_list.extend([msg_at, msg_text])
+                                # 统计
+                                result_msgs.append(
+                                    f"群{group_id} 用户{user_id} 警告-1，剩余{warning_count-1}"
+                                )
                             else:
                                 # 警告次数为0，踢群并标记为超时
                                 kick_users.append(user_id)
+                                result_msgs.append(
+                                    f"群{group_id} 用户{user_id} 已被踢出（警告用尽）"
+                                )
                         # 合并提醒消息，一次性发到群里
                         if msg_list:
                             await send_group_msg(self.websocket, group_id, msg_list)
@@ -71,6 +79,16 @@ class GroupHumanVerificationHandler:
                             await asyncio.sleep(1)
                         # 发消息间隔1秒，防止风控
                         await asyncio.sleep(1)
+                # 新增：扫描结果私聊通知管理员
+                if result_msgs:
+                    msg = "\n".join(result_msgs)
+                    await send_private_msg(
+                        self.websocket, self.user_id, f"[扫描验证结果]\n{msg}"
+                    )
+                else:
+                    await send_private_msg(
+                        self.websocket, self.user_id, "[扫描验证结果] 当前无未验证用户"
+                    )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理扫描入群验证失败: {e}")
 
