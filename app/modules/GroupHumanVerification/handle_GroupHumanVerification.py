@@ -73,18 +73,20 @@ class GroupHumanVerificationHandler:
                             await send_group_msg(self.websocket, group_id, msg_list)
                         # 依次踢出需要踢出的用户前，群内合并通知
                         if kick_users:
-                            kick_lines = []
-                            msg_ats = []
+                            message = []
                             for user_id in kick_users:
-                                msg_ats.append(generate_at_message(user_id))
-                                kick_lines.append(
-                                    f"({user_id}) 你已经超过警告次数，即将被踢出群聊"
+                                message.extend(
+                                    [
+                                        generate_at_message(user_id),
+                                        generate_text_message(
+                                            f"({user_id}) 你已经超过警告次数，即将被踢出群聊"
+                                        ),
+                                    ]
                                 )
-                            msg_text = generate_text_message("\n".join(kick_lines))
                             await send_group_msg(
                                 self.websocket,
                                 group_id,
-                                msg_ats + [msg_text],
+                                message,
                                 note="del_msg=60",
                             )
                         for user_id in kick_users:
