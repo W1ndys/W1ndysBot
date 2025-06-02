@@ -1,4 +1,5 @@
 from . import MODULE_NAME, BAN_TIME, STATUS_UNVERIFIED
+import uuid
 import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
@@ -22,6 +23,7 @@ class GroupNoticeHandler:
         )  # 格式化时间
         self.notice_type = msg.get("notice_type")
         self.sub_type = msg.get("sub_type")
+        self.self_id = str(msg.get("self_id"))
         self.user_id = str(msg.get("user_id"))
         self.group_id = str(msg.get("group_id"))
         self.operator_id = str(msg.get("operator_id"))
@@ -171,12 +173,8 @@ class GroupNoticeHandler:
             # 禁言
             await set_group_ban(self.websocket, self.group_id, self.user_id, BAN_TIME)
 
-            # 随机生成6-15位纯数字唯一ID
-            import random
-
-            code = "".join(
-                [str(random.randint(0, 9)) for _ in range(random.randint(6, 15))]
-            )
+            # 生成唯一验证码
+            code = str(uuid.uuid4())
 
             with DataManager() as dm:
                 dm.add_data(
@@ -190,7 +188,8 @@ class GroupNoticeHandler:
             # 群内通知
             msg_at = generate_at_message(self.user_id)
             msg_text = generate_text_message(
-                f"({self.user_id}) 欢迎加入群聊！请在群内发言，发言前请先私聊我验证码【{code}】完成人机验证。"
+                f"({self.user_id}) 欢迎加入群聊！请在群内发言，发言前请先私聊我验证码完成人机验证。\n"
+                f"您的验证码是下面的UUID字符串\n\n\n{code}"
             )
             await send_group_msg(self.websocket, self.group_id, [msg_at, msg_text])
         except Exception as e:

@@ -64,12 +64,10 @@ class PrivateMessageHandler:
                 self.websocket, self.msg
             )
 
-            # 如果用户是管理员，则处理管理员命令
-            if self.user_id == OWNER_ID:
-                await group_human_verification_handler.handle_admin_command()
-                return
+            # 处理管理员命令
+            await group_human_verification_handler.handle_admin_command()
 
-            # 如果用户不是管理员，则处理用户命令
+            # 处理用户命令
             await group_human_verification_handler.handle_user_command()
 
         except Exception as e:
