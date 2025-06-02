@@ -10,7 +10,7 @@ from . import (
     WARNING_COUNT,
     STATUS_UNVERIFIED,
 )
-from api.group import set_group_kick
+from api.group import set_group_kick, set_group_ban
 from api.message import send_group_msg, send_private_msg
 from api.generate import generate_text_message, generate_at_message
 from config import OWNER_ID
@@ -140,6 +140,10 @@ class GroupHumanVerificationHandler:
                         msg_text = generate_text_message(
                             f"({self.user_id}) 你在群 {self.group_id} 的验证已通过，你可以正常发言了！"
                         )
+                        # 解除禁言
+                        await set_group_ban(
+                            self.websocket, self.group_id, self.user_id, 0
+                        )
                         await send_group_msg(
                             self.websocket,
                             self.group_id,
@@ -159,6 +163,8 @@ class GroupHumanVerificationHandler:
                         msg_text = generate_text_message(
                             f"({self.user_id}) 你在群 {group_id} 的验证已通过，你可以正常发言了！"
                         )
+                        # 解除禁言
+                        await set_group_ban(self.websocket, group_id, self.user_id, 0)
                         await send_group_msg(
                             self.websocket,
                             group_id,
