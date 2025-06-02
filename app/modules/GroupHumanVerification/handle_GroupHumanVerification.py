@@ -13,6 +13,7 @@ from . import (
 from api.group import set_group_kick
 from api.message import send_group_msg
 from api.generate import generate_text_message, generate_at_message
+from config import OWNER_ID
 
 
 class GroupHumanVerificationHandler:
@@ -78,6 +79,11 @@ class GroupHumanVerificationHandler:
         处理管理员命令
         """
         try:
+            # 鉴权
+            if self.user_id != OWNER_ID:
+                return
+
+            # 处理扫描入群验证
             if self.raw_message.startswith(SCAN_VERIFICATION):
                 await self.handle_scan_verification()
         except Exception as e:
@@ -96,7 +102,7 @@ class GroupHumanVerificationHandler:
                         dm.update_status(self.group_id, self.user_id, STATUS_VERIFIED)
                         msg_at = generate_at_message(self.user_id)
                         msg_text = generate_text_message(
-                            f"({self.user_id}) 验证成功，你可以正常发言了！"
+                            f"({self.user_id}) 你在群 {self.group_id} 的验证已通过，你可以正常发言了！"
                         )
                         await send_group_msg(
                             self.websocket,
@@ -106,6 +112,7 @@ class GroupHumanVerificationHandler:
                         )
                 else:
                     # 无群号时，根据用户发的消息和QQ号检测数据库里该验证码所在群的状态是否是未验证
+                    # 某用户在多个群的验证码相同的情况极少发生
                     group_id = dm.get_group_with_code_and_user(
                         self.user_id, self.raw_message
                     )
@@ -114,7 +121,7 @@ class GroupHumanVerificationHandler:
                         dm.update_status(group_id, self.user_id, STATUS_VERIFIED)
                         msg_at = generate_at_message(self.user_id)
                         msg_text = generate_text_message(
-                            f"({self.user_id}) 验证成功，你可以正常发言了！"
+                            f"({self.user_id}) 你在群 {group_id} 的验证已通过，你可以正常发言了！"
                         )
                         await send_group_msg(
                             self.websocket,
