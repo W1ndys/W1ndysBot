@@ -100,7 +100,7 @@ class Logger:
         # 以当前启动时间为文件名，使用东八区时间
         tz = timezone(timedelta(hours=8))
         self.log_filename = os.path.join(
-            self.logs_dir, datetime.now(tz).strftime("%Y-%m-%d_%H-%M-%S.log")
+            self.logs_dir, f"app_{datetime.now(tz).strftime('%Y-%m-%d_%H-%M-%S')}.log"
         )
 
         file_handler = RotatingFileHandler(
@@ -111,9 +111,22 @@ class Logger:
                 "%(asctime)s [%(levelname)s]: %(message)s", datefmt=date_format
             )
         )
-        file_handler.namer = lambda name: name.replace(
-            ".log", f"_{datetime.now(tz).strftime('%Y-%m-%d_%H-%M-%S')}.log"
-        )
+
+        # 修改namer函数，添加part序号，格式为 app_YYYY-MM-DD_HH-MM-SS_partN.log
+        def custom_namer(name):
+            import re
+
+            # 匹配原始文件名和轮转序号
+            match = re.match(r"(.+?)(?:\\.log)?(?:\\.(\\d+))?$", name)
+            if match:
+                base, idx = match.groups()
+                if idx:
+                    return f"{base}_part{idx}.log"
+                else:
+                    return f"{base}.log"
+            return name
+
+        file_handler.namer = custom_namer
         file_handler.rotator = lambda source, dest: os.rename(source, dest)
         file_handler.setLevel(self.level)
 
