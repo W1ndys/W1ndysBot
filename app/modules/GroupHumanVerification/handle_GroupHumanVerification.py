@@ -71,12 +71,28 @@ class GroupHumanVerificationHandler:
                         # 合并提醒消息，一次性发到群里
                         if msg_list:
                             await send_group_msg(self.websocket, group_id, msg_list)
-                        # 依次踢出需要踢出的用户
+                        # 依次踢出需要踢出的用户前，群内合并通知
+                        if kick_users:
+                            kick_lines = []
+                            msg_ats = []
+                            for user_id in kick_users:
+                                msg_ats.append(generate_at_message(user_id))
+                                kick_lines.append(
+                                    f"({user_id}) 你已经超过警告次数，即将被踢出群聊"
+                                )
+                            msg_text = generate_text_message("\n".join(kick_lines))
+                            await send_group_msg(
+                                self.websocket,
+                                group_id,
+                                msg_ats + [msg_text],
+                                note="del_msg=60",
+                            )
                         for user_id in kick_users:
                             await set_group_kick(self.websocket, group_id, user_id)
                             dm.update_status(group_id, user_id, STATUS_KICKED)
                             # 踢人操作间隔1秒，防止风控
                             await asyncio.sleep(1)
+
                         # 发消息间隔1秒，防止风控
                         await asyncio.sleep(1)
                 # 新增：扫描结果私聊通知管理员
