@@ -81,11 +81,14 @@ class GroupHumanVerificationHandler:
                                 message.extend(
                                     [
                                         generate_at_message(user_id),
-                                        generate_text_message(
-                                            f"({user_id}) 你已经超过警告次数，即将被踢出群聊"
-                                        ),
+                                        generate_text_message(f"({user_id})"),
                                     ]
                                 )
+                            message.append(
+                                generate_text_message(
+                                    "以上用户已超过警告次数，即将被踢出群聊"
+                                )
+                            )
                             await send_group_msg(
                                 self.websocket,
                                 group_id,
