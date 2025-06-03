@@ -45,19 +45,20 @@ class GroupHumanVerificationHandler:
                     for group_id, user_list in unverified_users.items():
                         # 记录需要踢出的用户
                         kick_users = []
-                        # 记录需要提醒的用户消息
-                        msg_list = []
+                        # 记录需要提醒的用户消息（每行@和文本分开生成，合成列表）
+                        warning_msg_list = []
                         for user_id, warning_count, code in user_list:
                             if warning_count > 1:
                                 dm.update_warning_count(
                                     group_id, user_id, warning_count - 1
                                 )
-                                # 生成@和文本消息
-                                msg_at = generate_at_message(user_id)
-                                msg_text = generate_text_message(
-                                    f"({user_id}) 请尽快完成验证，你的验证码是：{code}（剩余警告{warning_count - 1}/{WARNING_COUNT}）"
+                                # 每行用generate_at_message和generate_text_message生成
+                                warning_msg_list.append(generate_at_message(user_id))
+                                warning_msg_list.append(
+                                    generate_text_message(
+                                        f"({user_id}) 请尽快完成验证，你的验证码是：{code}（剩余警告{warning_count - 1}/{WARNING_COUNT}）"
+                                    )
                                 )
-                                msg_list.extend([msg_at, msg_text])
                                 # 统计
                                 result_msgs.append(
                                     f"群{group_id} 用户{user_id} 警告-1，剩余{warning_count-1}"
@@ -68,9 +69,11 @@ class GroupHumanVerificationHandler:
                                 result_msgs.append(
                                     f"群{group_id} 用户{user_id} 已被踢出（警告用尽）"
                                 )
-                        # 合并提醒消息，一次性发到群里
-                        if msg_list:
-                            await send_group_msg(self.websocket, group_id, msg_list)
+                        # 合并提醒消息，一次性发到群里（每行@和文本分开生成，合成列表）
+                        if warning_msg_list:
+                            await send_group_msg(
+                                self.websocket, group_id, warning_msg_list
+                            )
                         # 依次踢出需要踢出的用户前，群内合并通知
                         if kick_users:
                             message = []
