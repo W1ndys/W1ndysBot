@@ -1,8 +1,13 @@
 from . import MODULE_NAME, SWITCH_NAME
 from . import (
-    CMD_SET_REGEX, CMD_GET_REGEX, CMD_DEL_REGEX,
-    CMD_SET_DEFAULT, CMD_GET_DEFAULT,
-    CMD_SET_LOCK, CMD_GET_LOCK, CMD_DEL_LOCK
+    CMD_SET_REGEX,
+    CMD_GET_REGEX,
+    CMD_DEL_REGEX,
+    CMD_SET_DEFAULT,
+    CMD_GET_DEFAULT,
+    CMD_SET_LOCK,
+    CMD_GET_LOCK,
+    CMD_DEL_LOCK,
 )
 import logger
 from core.switchs import is_group_switch_on, toggle_group_switch
@@ -13,6 +18,22 @@ from datetime import datetime
 from .data_manager import DataManager
 import re
 from core.auth import is_group_admin
+
+
+def decode_unicode_escape(s):
+    """
+    解码字符串中的unicode编码（如\\uXXXX、&#NNN;等）为原字符
+    """
+    # 先处理HTML实体（如&#91; -> [）
+    import html
+
+    s = html.unescape(s)
+    # 再处理\\uXXXX
+    try:
+        s = s.encode("utf-8").decode("unicode_escape")
+    except Exception:
+        pass
+    return s
 
 
 class GroupMessageHandler:
@@ -75,14 +96,24 @@ class GroupMessageHandler:
                     return is_group_admin(self.role)
 
                 # 管理命令处理（仅群主/管理员）
-                if self.raw_message.startswith((CMD_SET_REGEX, CMD_GET_REGEX, CMD_DEL_REGEX,
-                                               CMD_SET_DEFAULT, CMD_GET_DEFAULT,
-                                               CMD_SET_LOCK, CMD_GET_LOCK, CMD_DEL_LOCK)):
+                if self.raw_message.startswith(
+                    (
+                        CMD_SET_REGEX,
+                        CMD_GET_REGEX,
+                        CMD_DEL_REGEX,
+                        CMD_SET_DEFAULT,
+                        CMD_GET_DEFAULT,
+                        CMD_SET_LOCK,
+                        CMD_GET_LOCK,
+                        CMD_DEL_LOCK,
+                    )
+                ):
                     if not is_admin():
                         return
 
                 if self.raw_message.startswith(CMD_SET_REGEX):
-                    regex = self.raw_message[len(CMD_SET_REGEX):].strip()
+                    regex = self.raw_message[len(CMD_SET_REGEX) :].strip()
+                    regex = decode_unicode_escape(regex)
                     dm.set_group_regex(self.group_id, regex)
                     await self.send_text(f"群正则已设置为: {regex}")
                     return
@@ -95,19 +126,21 @@ class GroupMessageHandler:
                     await self.send_text("群正则已删除")
                     return
                 elif self.raw_message.startswith(CMD_SET_DEFAULT):
-                    default_name = self.raw_message[len(CMD_SET_DEFAULT):].strip()
+                    default_name = self.raw_message[len(CMD_SET_DEFAULT) :].strip()
                     dm.set_group_default_name(self.group_id, default_name)
                     await self.send_text(f"群默认名已设置为: {default_name}")
                     return
                 elif self.raw_message.startswith(CMD_GET_DEFAULT):
                     default_name = dm.get_group_default_name(self.group_id)
-                    await self.send_text(f"当前群默认名: {default_name if default_name else '未设置'}")
+                    await self.send_text(
+                        f"当前群默认名: {default_name if default_name else '未设置'}"
+                    )
                     return
                 elif self.raw_message.startswith(CMD_SET_LOCK):
                     # 格式: 锁定昵称 QQ号 昵称
-                    args = self.raw_message[len(CMD_SET_LOCK):].strip().split()
+                    args = self.raw_message[len(CMD_SET_LOCK) :].strip().split()
                     if len(args) >= 2:
-                        user_id, lock_name = args[0], ' '.join(args[1:])
+                        user_id, lock_name = args[0], " ".join(args[1:])
                         dm.set_user_lock_name(self.group_id, user_id, lock_name)
                         await self.send_text(f"已锁定{user_id}昵称为: {lock_name}")
                     else:
@@ -116,14 +149,16 @@ class GroupMessageHandler:
                 elif self.raw_message.startswith(CMD_GET_LOCK):
                     locks = dm.get_all_user_locks(self.group_id)
                     if locks:
-                        msg = "锁定昵称列表:\n" + '\n'.join([f"{u}: {n}" for u, n in locks])
+                        msg = "锁定昵称列表:\n" + "\n".join(
+                            [f"{u}: {n}" for u, n in locks]
+                        )
                     else:
                         msg = "无锁定昵称"
                     await self.send_text(msg)
                     return
                 elif self.raw_message.startswith(CMD_DEL_LOCK):
                     # 格式: 删除锁定 QQ号
-                    args = self.raw_message[len(CMD_DEL_LOCK):].strip().split()
+                    args = self.raw_message[len(CMD_DEL_LOCK) :].strip().split()
                     if len(args) >= 1:
                         user_id = args[0]
                         dm.del_user_lock_name(self.group_id, user_id)
@@ -136,17 +171,30 @@ class GroupMessageHandler:
                 # 1. 检查用户锁定昵称（优先级高）
                 lock_name = dm.get_user_lock_name(self.group_id, self.user_id)
                 if lock_name and self.card != lock_name:
-                    await set_group_card(self.websocket, self.group_id, self.user_id, lock_name)
-                    logger.info(f"[{MODULE_NAME}]用户{self.user_id}群名片不符锁定，已自动改为: {lock_name}")
+                    await set_group_card(
+                        self.websocket, self.group_id, self.user_id, lock_name
+                    )
+                    logger.info(
+                        f"[{MODULE_NAME}]用户{self.user_id}群名片不符锁定，已自动改为: {lock_name}"
+                    )
                     return
                 # 2. 检查群正则
                 regex = dm.get_group_regex(self.group_id)
                 if regex:
                     try:
                         if not re.fullmatch(regex, self.card):
-                            default_name = dm.get_group_default_name(self.group_id) or "默认昵称"
-                            await set_group_card(self.websocket, self.group_id, self.user_id, default_name)
-                            logger.info(f"[{MODULE_NAME}]用户{self.user_id}群名片不符正则，已自动改为默认名: {default_name}")
+                            default_name = (
+                                dm.get_group_default_name(self.group_id) or "默认昵称"
+                            )
+                            await set_group_card(
+                                self.websocket,
+                                self.group_id,
+                                self.user_id,
+                                default_name,
+                            )
+                            logger.info(
+                                f"[{MODULE_NAME}]用户{self.user_id}群名片不符正则，已自动改为默认名: {default_name}"
+                            )
                             return
                     except Exception as e:
                         logger.error(f"[{MODULE_NAME}]正则检测异常: {e}")
