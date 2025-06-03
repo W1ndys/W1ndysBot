@@ -25,7 +25,7 @@ async def handle_events(websocket, message):
                 "%Y-%m-%d %H:%M:%S",
                 time.localtime(message.get("time", int(time.time()))),
             )
-            connect_msg = f"W1ndysBot-dev已上线！\n机器人ID: {message.get('self_id')}\n上线时间: {current_time}"
+            connect_msg = f"W1ndysBot-dev已上线！\n机器人ID: {message.get('self_id')}\n管理员ID: {OWNER_ID}\n上线时间: {current_time}"
             logger.success(f"机器人连接成功")
 
             # 向管理员发送私聊消息
