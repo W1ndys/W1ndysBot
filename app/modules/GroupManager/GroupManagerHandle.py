@@ -6,7 +6,7 @@ import logger
 from . import MODULE_NAME, GROUP_RECALL_COMMAND
 from api.group import set_group_ban, set_group_kick, set_group_whole_ban
 from api.message import send_group_msg, delete_msg
-from api.generate import generate_reply_message, generate_text_message
+from api.generate import generate_text_message
 import re
 
 
@@ -50,16 +50,6 @@ class GroupManagerHandle:
             # 添加QQ号格式的目标
             target_user_ids.extend(parts)
 
-            if not target_user_ids:
-                raise ValueError(
-                    "格式错误，请使用 '@用户 时间' 或 'QQ号 时间' 的格式，支持多个用户"
-                )
-
-            # 检查所有QQ号是否有效
-            for user_id in target_user_ids:
-                if not user_id.isdigit():
-                    raise ValueError(f"无效的QQ号: {user_id}")
-
             # 批量执行禁言操作
             for target_user_id in target_user_ids:
                 await set_group_ban(
@@ -70,14 +60,6 @@ class GroupManagerHandle:
                 )
 
         except Exception as e:
-            await send_group_msg(
-                self.websocket,
-                self.group_id,
-                [
-                    generate_reply_message(self.message_id),
-                    generate_text_message(f"禁言操作失败: {str(e)}"),
-                ],
-            )
             logger.error(f"[{MODULE_NAME}]禁言操作失败: {e}")
 
     async def handle_unmute(self):
@@ -100,22 +82,11 @@ class GroupManagerHandle:
             qq_numbers = [part for part in message_parts[1:] if part.isdigit()]
             target_user_ids.extend(qq_numbers)
 
-            if not target_user_ids:
-                raise ValueError(
-                    "格式错误，请使用 '@用户' 或 'QQ号' 的格式，支持多个用户"
-                )
-
-            # 检查所有QQ号是否有效
-            for user_id in target_user_ids:
-                if not user_id.isdigit():
-                    raise ValueError(f"无效的QQ号: {user_id}")
-
             # 批量执行解禁操作
             for target_user_id in target_user_ids:
                 await set_group_ban(self.websocket, self.group_id, target_user_id, 0)
 
         except Exception as e:
-            await self.send_error_message(f"解禁操作失败: {str(e)}")
             logger.error(f"[{MODULE_NAME}]解禁操作失败: {e}")
 
     async def handle_kick(self):
@@ -138,11 +109,6 @@ class GroupManagerHandle:
             qq_numbers = [part for part in message_parts[1:] if part.isdigit()]
             target_user_ids.extend(qq_numbers)
 
-            if not target_user_ids:
-                raise ValueError(
-                    "格式错误，请使用 '@用户' 或 'QQ号' 的格式，支持多个用户"
-                )
-
             # 批量执行踢出操作
             for target_user_id in target_user_ids:
                 await set_group_kick(
@@ -158,7 +124,6 @@ class GroupManagerHandle:
                 )
 
         except Exception as e:
-            await self.send_error_message(f"踢出操作失败: {str(e)}")
             logger.error(f"[{MODULE_NAME}]踢出操作失败: {e}")
 
     async def handle_all_mute(self):
@@ -168,7 +133,6 @@ class GroupManagerHandle:
         try:
             await set_group_whole_ban(self.websocket, self.group_id, True)
         except Exception as e:
-            await self.send_error_message(f"全员禁言操作失败: {str(e)}")
             logger.error(f"[{MODULE_NAME}]全员禁言操作失败: {e}")
 
     async def handle_all_unmute(self):
@@ -178,7 +142,6 @@ class GroupManagerHandle:
         try:
             await set_group_whole_ban(self.websocket, self.group_id, False)
         except Exception as e:
-            await self.send_error_message(f"全员解禁操作失败: {str(e)}")
             logger.error(f"[{MODULE_NAME}]全员解禁操作失败: {e}")
 
     async def handle_recall(self):
@@ -192,31 +155,9 @@ class GroupManagerHandle:
             match = re.search(pattern, self.raw_message)
             if match:
                 message_id = match.group(1)
-            else:
-                raise ValueError("未找到消息ID")
-
-            # 提取 message_id
-            message_id = re.search(r"\[CQ:reply,id=(\d+)\]", self.raw_message)
-            if message_id:
-                message_id = message_id.group(1)
-            else:
-                raise ValueError("未找到消息ID")
 
             # 执行撤回操作
             await delete_msg(self.websocket, message_id)
 
         except Exception as e:
-            await self.send_error_message(f"撤回操作失败: {str(e)}")
             logger.error(f"[{MODULE_NAME}]撤回操作失败: {e}")
-
-    async def send_error_message(self, error_text):
-        """
-        发送错误消息
-        """
-        reply_message = generate_reply_message(self.message_id)
-        text_message = generate_text_message(f"[{MODULE_NAME}]错误: {error_text}")
-        await send_group_msg(
-            self.websocket,
-            self.group_id,
-            [reply_message, text_message],
-        )
