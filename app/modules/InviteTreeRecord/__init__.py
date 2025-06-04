@@ -19,4 +19,11 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # ------------------------------------------------------------
 VIEW_INVITE_RECORD = "查询邀请树"
 KICK_INVITE_RECORD = "踢出邀请树"
+
+MENU_COMMAND = "menu"
+
+COMMANDS = {
+    VIEW_INVITE_RECORD: "查询邀请树",
+    KICK_INVITE_RECORD: "踢出邀请树",
+}
 # ------------------------------------------------------------

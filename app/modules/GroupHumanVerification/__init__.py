@@ -48,3 +48,9 @@ STATUS_UNMUTED = "管理员已解禁"
 
 
 # ------------------------------------------------------------
+
+MENU_COMMAND = "menu"
+
+COMMANDS = {
+    SCAN_VERIFICATION: "扫描入群验证",
+}

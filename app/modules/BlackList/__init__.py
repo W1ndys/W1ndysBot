@@ -22,3 +22,12 @@ BLACKLIST_REMOVE_COMMAND = "解黑"  # 移除黑名单命令
 BLACKLIST_LIST_COMMAND = "看黑"  # 查看黑名单命令
 BLACKLIST_CLEAR_COMMAND = "清黑"  # 清空黑名单命令
 # ------------------------------------------------------------
+
+MENU_COMMAND = "menu"
+
+COMMANDS = {
+    BLACKLIST_ADD_COMMAND: "添加黑名单",
+    BLACKLIST_REMOVE_COMMAND: "移除黑名单",
+    BLACKLIST_LIST_COMMAND: "查看黑名单",
+    BLACKLIST_CLEAR_COMMAND: "清空黑名单",
+}

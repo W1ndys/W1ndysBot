@@ -1,4 +1,4 @@
-from . import MODULE_NAME, SWITCH_NAME
+from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND, COMMANDS
 import logger
 from core.switchs import is_private_switch_on, toggle_private_switch
 from api.message import send_private_msg
@@ -44,6 +44,25 @@ class PrivateMessageHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理模块开关命令失败: {e}")
 
+    async def handle_menu(self):
+        """
+        处理菜单命令
+        """
+        try:
+            reply_message = generate_reply_message(self.message_id)
+            menu_text = f"[{MODULE_NAME}]可用命令列表：\n"
+            for cmd, desc in COMMANDS.items():
+                menu_text += f"- {cmd}: {desc}\n"
+            text_message = generate_text_message(menu_text)
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                [reply_message, text_message],
+                note="del_msg=30",
+            )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理菜单命令失败: {e}")
+
     async def handle(self):
         """
         处理私聊消息
@@ -53,6 +72,10 @@ class PrivateMessageHandler:
                 await self.handle_module_switch()
                 return
 
+            # 处理菜单命令（无视开关状态）
+            if self.raw_message.lower() == (SWITCH_NAME + MENU_COMMAND).lower():
+                await self.handle_menu()
+                return
             # 如果没开启私聊开关，则不处理
             if not is_private_switch_on(MODULE_NAME):
                 return

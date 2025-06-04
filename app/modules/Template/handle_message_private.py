@@ -74,7 +74,7 @@ class PrivateMessageHandler:
                 return
 
             # 处理菜单命令（无视开关状态）
-            if self.raw_message.lower() == f"{SWITCH_NAME}{MENU_COMMAND}":
+            if self.raw_message.lower() == (SWITCH_NAME + MENU_COMMAND).lower():
                 await self.handle_menu()
                 return
 
