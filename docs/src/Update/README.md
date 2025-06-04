@@ -7,6 +7,7 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-04
 
+- **系统**：在 BlackList、Doro、FAQSystem、Reporter、InviteTreeRecord、Template、WordCloud 和 GroupHumanVerification 模块中实现通用的菜单命令接口
 - **GroupHumanVerification**：优化验证码匹配逻辑，支持根据用户复制消息全部内容进行验证。
 - **GroupHumanVerification**：新增 UUID 提取功能，优化用户命令处理逻辑。
 - **GroupHumanVerification**：优化被踢通知和逻辑，增加拒绝状态的提示信息。
