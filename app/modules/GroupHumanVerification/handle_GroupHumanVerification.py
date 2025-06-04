@@ -8,10 +8,9 @@ from . import (
     STATUS_KICKED,
     STATUS_VERIFIED,
     WARNING_COUNT,
-    STATUS_UNVERIFIED,
 )
 from api.group import set_group_kick, set_group_ban
-from api.message import send_group_msg, send_private_msg
+from api.message import send_group_msg, send_private_msg, delete_msg
 from api.generate import generate_text_message, generate_at_message
 from config import OWNER_ID
 import re
@@ -165,6 +164,11 @@ class GroupHumanVerificationHandler:
                             [msg_at, msg_text],
                             note="del_msg=60",
                         )
+                        # 撤回验证码消息
+                        message_id = dm.get_message_id(self.group_id, self.user_id)
+                        if message_id:
+                            await delete_msg(self.websocket, message_id)
+
                         verified = True
                 # 如果没有群号，或者上面未通过，则遍历所有UUID，查找该用户在所有群的未验证状态
                 if not verified:
@@ -189,6 +193,11 @@ class GroupHumanVerificationHandler:
                                 [msg_at, msg_text],
                                 note="del_msg=60",
                             )
+                            # 撤回验证码消息
+                            message_id = dm.get_message_id(group_id, self.user_id)
+                            if message_id:
+                                await delete_msg(self.websocket, message_id)
+
                             verified = True
                             break  # 只处理一个群
         except Exception as e:

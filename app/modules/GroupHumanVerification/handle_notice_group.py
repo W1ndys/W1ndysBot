@@ -5,6 +5,7 @@ from . import (
     STATUS_REJECTED,
     STATUS_LEFT,
     STATUS_UNMUTED,
+    NOTE_CONDITION,
 )
 import uuid
 import logger
@@ -246,7 +247,12 @@ class GroupNoticeHandler:
                 f"【你可以直接复制此消息全部内容发送给机器人进行验证，无需单独复制验证码。】\n\n"
                 f"{code}"
             )
-            await send_group_msg(self.websocket, self.group_id, [msg_at, msg_text])
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [msg_at, msg_text],
+                note=f"{NOTE_CONDITION}-group_id={self.group_id}-user_id={self.user_id}",
+            )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
 

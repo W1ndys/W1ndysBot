@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from . import MODULE_NAME, STATUS_UNVERIFIED, WARNING_COUNT
+import logger
 
 
 class DataManager:
@@ -22,6 +23,7 @@ class DataManager:
         status: 验证状态 字符串
         created_at: 创建时间（字符串格式，建议为'YYYY-MM-DD HH:MM:SS'）
         warning_count: 剩余警告次数 整数
+        message_id: 入群验证提示消息的消息id
         要求：群号和QQ号两者无重复（即二者联合唯一）
         """
         self.cursor.execute(
@@ -32,10 +34,11 @@ class DataManager:
             status TEXT,
             created_at TEXT,  -- 存储为字符串格式的时间，如'2024-06-01 12:00:00'
             warning_count INTEGER,  -- 剩余警告次数
+            message_id TEXT,  -- 入群验证提示消息的消息id
             UNIQUE(group_id, user_id)
             )"""
         )
-        # 检查 warning_count 列是否存在，不存在则添加（用于老库升级）
+        # 检查 warning_count 和 message_id 列是否存在，不存在则添加（用于老库升级）
         self.cursor.execute("PRAGMA table_info(data_table)")
         columns = [row[1] for row in self.cursor.fetchall()]
         if "warning_count" not in columns:
@@ -43,6 +46,9 @@ class DataManager:
                 "ALTER TABLE data_table ADD COLUMN warning_count INTEGER DEFAULT ?",
                 (WARNING_COUNT,),
             )
+            self.conn.commit()
+        if "message_id" not in columns:
+            self.cursor.execute("ALTER TABLE data_table ADD COLUMN message_id TEXT")
             self.conn.commit()
 
     def __enter__(self):
@@ -76,6 +82,9 @@ class DataManager:
             (group_id, user_id, code, status, created_at, warning_count),
         )
         self.conn.commit()
+        logger.info(
+            f"添加数据成功，group_id={group_id}, user_id={user_id}, code={code}, status={status}, created_at={created_at}, warning_count={warning_count}"
+        )
 
     def get_data(self, group_id, user_id):
         """
@@ -90,6 +99,9 @@ class DataManager:
         )
         row = self.cursor.fetchone()
         if row:
+            logger.info(
+                f"获取数据成功，group_id={row[0]}, user_id={row[1]}, code={row[2]}, status={row[3]}, created_at={row[4]}, warning_count={row[5]}"
+            )
             return {
                 "group_id": row[0],
                 "user_id": row[1],
@@ -114,6 +126,9 @@ class DataManager:
         )
         row = self.cursor.fetchone()
         if row:
+            logger.info(
+                f"获取验证码成功，group_id={group_id}, user_id={user_id}, code={row[0]}"
+            )
             return row[0]
         else:
             return None
@@ -131,6 +146,9 @@ class DataManager:
         )
         row = self.cursor.fetchone()
         if row:
+            logger.info(
+                f"获取群号成功，group_id={row[0]}, user_id={user_id}, code={code}"
+            )
             return row[0]
         else:
             return None
@@ -161,6 +179,9 @@ class DataManager:
         )
         row = self.cursor.fetchone()
         if row:
+            logger.info(
+                f"获取剩余警告次数成功，group_id={group_id}, user_id={user_id}, warning_count={row[0]}"
+            )
             return row[0]
         else:
             return None
@@ -177,6 +198,9 @@ class DataManager:
             (new_count, group_id, user_id),
         )
         self.conn.commit()
+        logger.info(
+            f"更新剩余警告次数成功，group_id={group_id}, user_id={user_id}, new_count={new_count}"
+        )
 
     def get_all_unverified_users_with_code_and_warning(self):
         """
@@ -191,4 +215,41 @@ class DataManager:
         result = {}
         for group_id, user_id, warning_count, code in rows:
             result.setdefault(group_id, []).append((user_id, warning_count, code))
+        logger.info(f"获取所有未验证的用户成功，result={result}")
         return result
+
+    def add_message_id(self, group_id, user_id, message_id):
+        """
+        根据群号和用户ID添加或更新消息id
+        :param group_id: 群号
+        :param user_id: QQ号
+        :param message_id: 消息id
+        """
+        self.cursor.execute(
+            "UPDATE data_table SET message_id=? WHERE group_id=? AND user_id=?",
+            (message_id, group_id, user_id),
+        )
+        self.conn.commit()
+        logger.info(
+            f"更新消息id成功，group_id={group_id}, user_id={user_id}, message_id={message_id}"
+        )
+
+    def get_message_id(self, group_id, user_id):
+        """
+        根据群号和用户ID查询消息id
+        :param group_id: 群号
+        :param user_id: QQ号
+        :return: 消息id字符串或None
+        """
+        self.cursor.execute(
+            "SELECT message_id FROM data_table WHERE group_id=? AND user_id=?",
+            (group_id, user_id),
+        )
+        row = self.cursor.fetchone()
+        if row:
+            logger.info(
+                f"获取消息id成功，group_id={group_id}, user_id={user_id}, message_id={row[0]}"
+            )
+            return row[0]
+        else:
+            return None

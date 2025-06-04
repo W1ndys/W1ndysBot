@@ -46,6 +46,9 @@ STATUS_KICKED = "管理员已踢出"
 STATUS_UNMUTED = "管理员已解禁"
 """管理员已解禁"""
 
+# 用于表示发出验证码的消息的消息ID的echo的note条件
+NOTE_CONDITION = "GHV_VERIFICATION_CODE"
+"""用于表示发出验证码的消息的消息ID的echo的note条件"""
 
 # ------------------------------------------------------------
 
