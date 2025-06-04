@@ -14,6 +14,7 @@ from api.group import set_group_kick, set_group_ban
 from api.message import send_group_msg, send_private_msg
 from api.generate import generate_text_message, generate_at_message
 from config import OWNER_ID
+import re
 
 
 class GroupHumanVerificationHandler:
@@ -133,14 +134,22 @@ class GroupHumanVerificationHandler:
 
     async def handle_user_command(self):
         """
-        处理用户命令
+        处理用户命令，自动从文本中提取UUID验证码
         """
         try:
+            # 使用正则表达式提取所有UUID字符串
+            uuid_pattern = r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+            uuids = re.findall(uuid_pattern, self.raw_message)
+            if not uuids:
+                # 没有找到UUID，直接返回
+                return
+
             with DataManager() as dm:
-                # 有群号时，按群号和用户ID检测验证码
+                verified = False
+                # 有群号时，优先用群号和用户ID检测验证码
                 if self.group_id:
                     code = dm.get_code_with_group_and_user(self.group_id, self.user_id)
-                    if self.raw_message == code:
+                    if code and code in uuids:
                         dm.update_status(self.group_id, self.user_id, STATUS_VERIFIED)
                         msg_at = generate_at_message(self.user_id)
                         msg_text = generate_text_message(
@@ -156,27 +165,31 @@ class GroupHumanVerificationHandler:
                             [msg_at, msg_text],
                             note="del_msg=60",
                         )
-                else:
-                    # 无群号时，根据用户发的消息和QQ号检测数据库里该验证码所在群的状态是否是未验证
-                    # 某用户在多个群的验证码相同的情况极少发生
-                    group_id = dm.get_group_with_code_and_user(
-                        self.user_id, self.raw_message
-                    )
-                    if group_id:
-                        # 找到未验证的群，更新其状态
-                        dm.update_status(group_id, self.user_id, STATUS_VERIFIED)
-                        msg_at = generate_at_message(self.user_id)
-                        msg_text = generate_text_message(
-                            f"({self.user_id}) 你在群 {group_id} 的验证已通过，你可以正常发言了！"
+                        verified = True
+                # 如果没有群号，或者上面未通过，则遍历所有UUID，查找该用户在所有群的未验证状态
+                if not verified:
+                    for uuid_code in uuids:
+                        group_id = dm.get_group_with_code_and_user(
+                            self.user_id, uuid_code
                         )
-                        # 解除禁言
-                        await set_group_ban(self.websocket, group_id, self.user_id, 0)
-                        await send_group_msg(
-                            self.websocket,
-                            group_id,
-                            [msg_at, msg_text],
-                            note="del_msg=60",
-                        )
-
+                        if group_id:
+                            # 找到未验证的群，更新其状态
+                            dm.update_status(group_id, self.user_id, STATUS_VERIFIED)
+                            msg_at = generate_at_message(self.user_id)
+                            msg_text = generate_text_message(
+                                f"({self.user_id}) 你在群 {group_id} 的验证已通过，你可以正常发言了！"
+                            )
+                            # 解除禁言
+                            await set_group_ban(
+                                self.websocket, group_id, self.user_id, 0
+                            )
+                            await send_group_msg(
+                                self.websocket,
+                                group_id,
+                                [msg_at, msg_text],
+                                note="del_msg=60",
+                            )
+                            verified = True
+                            break  # 只处理一个群
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理用户命令失败: {e}")
