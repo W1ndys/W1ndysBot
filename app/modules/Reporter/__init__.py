@@ -4,7 +4,7 @@ import os
 MODULE_NAME = "Reporter"
 
 # 模块开关名称
-SWITCH_NAME = "reporter"
+SWITCH_NAME = "rp"
 
 # 模块描述
 MODULE_DESCRIPTION = "主要用于把私聊bot、加bot为好友，邀请bot入群等操作的通知报告"
