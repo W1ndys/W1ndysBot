@@ -2,6 +2,7 @@ websockets
 requests
 colorlog
 aiohttp
+python-dotenv
 numpy
 scikit-learn
 jieba
