@@ -188,17 +188,21 @@ class GroupNoticeHandler:
         try:
             with DataManager() as dm:
                 data = dm.get_data(self.group_id, self.user_id)
+                msg_at = generate_at_message(self.user_id)
                 if data and data["status"] == STATUS_UNVERIFIED:
                     dm.update_status(self.group_id, self.user_id, STATUS_REJECTED)
-                    msg_at = generate_at_message(self.user_id)
+                    msg_text = generate_text_message(
+                        f"({self.user_id})被管理员{self.operator_id}踢了（待验证状态，已标记为拒绝）"
+                    )
+                else:
                     msg_text = generate_text_message(
                         f"({self.user_id})被管理员{self.operator_id}踢了"
                     )
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [msg_at, msg_text],
-                    )
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [msg_at, msg_text],
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 成员被踢通知失败: {e}")
 
