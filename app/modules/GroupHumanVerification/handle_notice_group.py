@@ -130,13 +130,13 @@ class GroupNoticeHandler:
                         )
                         msg_at = generate_at_message(self.user_id)
                         msg_text = generate_text_message(
-                            f"({self.user_id}) 已被管理员{self.operator_id}解除禁言，自动视为验证通过。"
+                            f"({self.user_id})已被管理员{self.operator_id}解除禁言，自动视为验证通过。"
                         )
                         await send_group_msg(
                             self.websocket,
                             self.group_id,
                             [msg_at, msg_text],
-                            note="del_msg=60",
+                            note="del_msg=120",
                         )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊禁言 - 取消禁言通知失败: {e}")
@@ -174,14 +174,9 @@ class GroupNoticeHandler:
                 if data and data["status"] == STATUS_UNVERIFIED:
                     dm.update_status(self.group_id, self.user_id, STATUS_LEFT)
                     msg_at = generate_at_message(self.user_id)
-                    msg_text = generate_text_message(
-                        f"({self.user_id}) 已主动退群，验证流程已终止。"
-                    )
+                    msg_text = generate_text_message(f"({self.user_id})退群了")
                     await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [msg_at, msg_text],
-                        note="del_msg=60",
+                        self.websocket, self.group_id, [msg_at, msg_text]
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 主动退群通知失败: {e}")
@@ -197,13 +192,12 @@ class GroupNoticeHandler:
                     dm.update_status(self.group_id, self.user_id, STATUS_REJECTED)
                     msg_at = generate_at_message(self.user_id)
                     msg_text = generate_text_message(
-                        f"({self.user_id}) 已被管理员{self.operator_id}移出群聊，验证流程已终止。"
+                        f"({self.user_id})被管理员{self.operator_id}踢了"
                     )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [msg_at, msg_text],
-                        note="del_msg=60",
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 成员被踢通知失败: {e}")
@@ -240,39 +234,12 @@ class GroupNoticeHandler:
             # 群内通知
             msg_at = generate_at_message(self.user_id)
             msg_text = generate_text_message(
-                f"({self.user_id}) 欢迎加入群聊！请在群内发言，发言前请先私聊我验证码完成人机验证。\n"
-                f"您的验证码是下面的UUID字符串\n\n\n\n{code}"
+                f"({self.user_id}) 欢迎加入群聊！请先私聊我验证码完成人机验证以确保您是真人。\n"
+                f"您的验证码是下面的UUID字符串\n\n{code}"
             )
-            await send_group_msg(
-                self.websocket,
-                self.group_id,
-                [msg_at, msg_text],
-                note="del_msg=300",
-            )
+            await send_group_msg(self.websocket, self.group_id, [msg_at, msg_text])
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
-
-    async def handle_group_increase_approve(self):
-        """
-        处理群聊成员增加 - 管理员已同意入群通知
-        """
-        try:
-            pass
-        except Exception as e:
-            logger.error(
-                f"[{MODULE_NAME}]处理群聊成员增加 - 管理员已同意入群通知失败: {e}"
-            )
-
-    async def handle_group_increase_invite(self):
-        """
-        处理群聊成员增加 - 管理员邀请入群通知
-        """
-        try:
-            pass
-        except Exception as e:
-            logger.error(
-                f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知失败: {e}"
-            )
 
     async def handle_group_recall(self):
         """
