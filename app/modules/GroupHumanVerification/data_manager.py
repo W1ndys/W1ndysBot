@@ -103,14 +103,14 @@ class DataManager:
 
     def get_code_with_group_and_user(self, group_id, user_id):
         """
-        根据群号和QQ号获取对应的验证码
+        根据群号和QQ号获取对应的验证码，且验证状态必须为待验证
         :param group_id: 群号
         :param user_id: QQ号
         :return: 验证码字符串或None
         """
         self.cursor.execute(
-            "SELECT code FROM data_table WHERE group_id=? AND user_id=?",
-            (group_id, user_id),
+            "SELECT code FROM data_table WHERE group_id=? AND user_id=? AND status=?",
+            (group_id, user_id, STATUS_UNVERIFIED),
         )
         row = self.cursor.fetchone()
         if row:
