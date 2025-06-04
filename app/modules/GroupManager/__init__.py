@@ -27,3 +27,14 @@ GROUP_ALL_MUTE_COMMAND = "banall"  # 全员禁言命令
 GROUP_ALL_UNMUTE_COMMAND = "unbanall"  # 全员解禁命令
 GROUP_RECALL_COMMAND = "recall"  # 撤回消息命令
 # ------------------------------------------------------------
+
+MENU_COMMAND = "menu"
+
+COMMANDS = {
+    GROUP_MUTE_COMMAND: "禁言",
+    GROUP_UNMUTE_COMMAND: "解禁",
+    GROUP_KICK_COMMAND: "踢出",
+    GROUP_ALL_MUTE_COMMAND: "全员禁言",
+    GROUP_ALL_UNMUTE_COMMAND: "全员解禁",
+    GROUP_RECALL_COMMAND: "撤回消息",
+}
