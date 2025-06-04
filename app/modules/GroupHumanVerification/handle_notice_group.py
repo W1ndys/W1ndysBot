@@ -171,13 +171,17 @@ class GroupNoticeHandler:
         try:
             with DataManager() as dm:
                 data = dm.get_data(self.group_id, self.user_id)
+                msg_at = generate_at_message(self.user_id)
+                # 存在未验证状态时，更新状态并播报
                 if data and data["status"] == STATUS_UNVERIFIED:
                     dm.update_status(self.group_id, self.user_id, STATUS_LEFT)
-                    msg_at = generate_at_message(self.user_id)
-                    msg_text = generate_text_message(f"({self.user_id})退群了")
-                    await send_group_msg(
-                        self.websocket, self.group_id, [msg_at, msg_text]
+                    msg_text = generate_text_message(
+                        f"({self.user_id})退群了（待验证状态，已标记为离开）"
                     )
+                else:
+                    # 没有状态或不是未验证，直接播报
+                    msg_text = generate_text_message(f"({self.user_id})退群了")
+                await send_group_msg(self.websocket, self.group_id, [msg_at, msg_text])
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 主动退群通知失败: {e}")
 

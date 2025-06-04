@@ -17,6 +17,7 @@ icon: fa-solid fa-clipboard-list
 - **Permission**：精简群管理模块中的错误处理逻辑，移除冗余的用户 ID 验证和错误消息发送。
 - **GroupHumanVerification**：优化消息格式，调整禁言解除通知的文本内容，同时修改验证码提示的格式。
 - **GroupHumanVerification**：优化用户警告消息格式，调整验证码提示为更易读的格式。
+- **GroupHumanVerification**：优化群聊成员减少通知逻辑，增加对退群成员的标记，非未验证状态也会通知。
 
 ## 2025-06-03
 
