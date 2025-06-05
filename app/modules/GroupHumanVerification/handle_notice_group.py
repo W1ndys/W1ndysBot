@@ -131,7 +131,7 @@ class GroupNoticeHandler:
                         )
                         msg_at = generate_at_message(self.user_id)
                         msg_text = generate_text_message(
-                            f"({self.user_id})已被管理员{self.operator_id}解除禁言，自动视为验证通过。"
+                            f"({self.user_id})已被管理员解除禁言，自动视为验证通过。"
                         )
                         await send_group_msg(
                             self.websocket,
@@ -182,7 +182,12 @@ class GroupNoticeHandler:
                 else:
                     # 没有状态或不是未验证，直接播报
                     msg_text = generate_text_message(f"({self.user_id})退群了")
-                await send_group_msg(self.websocket, self.group_id, [msg_at, msg_text])
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [msg_at, msg_text],
+                    note="del_msg=120",
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 主动退群通知失败: {e}")
 
@@ -191,23 +196,26 @@ class GroupNoticeHandler:
         处理群聊成员减少 - 成员被踢通知
         """
         try:
-            with DataManager() as dm:
-                data = dm.get_data(self.group_id, self.user_id)
-                msg_at = generate_at_message(self.user_id)
-                if data and data["status"] == STATUS_UNVERIFIED:
-                    dm.update_status(self.group_id, self.user_id, STATUS_REJECTED)
-                    msg_text = generate_text_message(
-                        f"({self.user_id})被管理员{self.operator_id}踢了（待验证状态，已标记为拒绝）"
+            # 只有操作者不是机器人（即为其他管理员）时，才处理
+            if self.operator_id != self.self_id:
+                with DataManager() as dm:
+                    data = dm.get_data(self.group_id, self.user_id)
+                    msg_at = generate_at_message(self.user_id)
+                    if data and data["status"] == STATUS_UNVERIFIED:
+                        dm.update_status(self.group_id, self.user_id, STATUS_REJECTED)
+                        msg_text = generate_text_message(
+                            f"({self.user_id})被管理员踢了（待验证状态，已标记为拒绝）"
+                        )
+                    else:
+                        msg_text = generate_text_message(
+                            f"({self.user_id})被管理员踢了"
+                        )
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [msg_at, msg_text],
+                        note="del_msg=120",
                     )
-                else:
-                    msg_text = generate_text_message(
-                        f"({self.user_id})被管理员{self.operator_id}踢了"
-                    )
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [msg_at, msg_text],
-                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 成员被踢通知失败: {e}")
 
