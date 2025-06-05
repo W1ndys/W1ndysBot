@@ -207,19 +207,18 @@ class GroupMessageHandler:
                 if regex:
                     try:
                         if not re.fullmatch(regex, self.card):
-                            default_name = (
-                                dm.get_group_default_name(self.group_id) or "默认昵称"
-                            )
-                            await set_group_card(
-                                self.websocket,
-                                self.group_id,
-                                self.user_id,
-                                default_name,
-                            )
-                            logger.info(
-                                f"[{MODULE_NAME}]用户{self.user_id}群名片不符正则，已自动改为默认名: {default_name}"
-                            )
-                            return
+                            default_name = dm.get_group_default_name(self.group_id)
+                            if default_name:
+                                await set_group_card(
+                                    self.websocket,
+                                    self.group_id,
+                                    self.user_id,
+                                    default_name,
+                                )
+                                logger.info(
+                                    f"[{MODULE_NAME}]用户{self.user_id}群名片不符正则，已自动改为默认名: {default_name}"
+                                )
+                                return
                     except Exception as e:
                         logger.error(f"[{MODULE_NAME}]正则检测异常: {e}")
 

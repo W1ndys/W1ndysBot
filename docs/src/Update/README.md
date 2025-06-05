@@ -10,7 +10,8 @@ icon: fa-solid fa-clipboard-list
 - **GroupHumanVerification**：被踢逻辑优化，仅处理非机器人号踢人事件，减少多次通知
 - **GroupHumanVerification**： 优化退群和踢人通知逻辑，新增消息 ID 字段，优化撤回消息功能
 - **GroupHumanVerification**：优化用户警告消息格式，增加一次换行，调整验证码提示为更易读的格式
-- **GroupHumanVerification**：在群人机验证模块中增加消息删除逻辑，优化解除禁言后的消息处理，提升用户体验
+- **GroupHumanVerification**：在群人机验证模块中增加消息删除逻辑，优化解除禁言后的消息处理
+- **GroupNickNameLock**：优化群名片设置逻辑，新增群成员通知时自动设置默认名功能，并且当群设置了默认名时，用户群名片不符正则时，才自动设置默认名
 
 ## 2025-06-04
 

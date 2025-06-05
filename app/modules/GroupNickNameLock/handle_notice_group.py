@@ -2,6 +2,8 @@ from . import MODULE_NAME
 import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
+from api.group import set_group_card
+from .data_manager import DataManager
 
 
 class GroupNoticeHandler:
@@ -176,7 +178,15 @@ class GroupNoticeHandler:
         处理群聊成员增加 - 管理员已同意入群通知
         """
         try:
-            pass
+            with DataManager() as dm:
+                default_name = dm.get_group_default_name(self.group_id)
+            if default_name:
+                await set_group_card(
+                    self.websocket, self.group_id, self.user_id, default_name
+                )
+                logger.info(
+                    f"[{MODULE_NAME}]新成员{self.user_id}已自动改为群默认名: {default_name}"
+                )
         except Exception as e:
             logger.error(
                 f"[{MODULE_NAME}]处理群聊成员增加 - 管理员已同意入群通知失败: {e}"
@@ -187,7 +197,15 @@ class GroupNoticeHandler:
         处理群聊成员增加 - 管理员邀请入群通知
         """
         try:
-            pass
+            with DataManager() as dm:
+                default_name = dm.get_group_default_name(self.group_id)
+            if default_name:
+                await set_group_card(
+                    self.websocket, self.group_id, self.user_id, default_name
+                )
+                logger.info(
+                    f"[{MODULE_NAME}]新成员{self.user_id}已自动改为群默认名: {default_name}"
+                )
         except Exception as e:
             logger.error(
                 f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知失败: {e}"
