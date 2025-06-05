@@ -56,7 +56,7 @@ class GroupHumanVerificationHandler:
                                 warning_msg_list.append(generate_at_message(user_id))
                                 warning_msg_list.append(
                                     generate_text_message(
-                                        f"({user_id})请尽快私聊我验证码【{code}】（剩余警告{warning_count - 1}/{WARNING_COUNT}）\n"
+                                        f"({user_id})请尽快私聊我验证码【{code}】（剩余警告{warning_count - 1}/{WARNING_COUNT}）\n\n"
                                     )
                                 )
                                 # 统计
