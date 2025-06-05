@@ -133,6 +133,10 @@ class GroupNoticeHandler:
                         msg_text = generate_text_message(
                             f"({self.user_id})已被管理员解除禁言，自动视为验证通过。"
                         )
+
+                        if data["message_id"]:
+                            await delete_msg(self.websocket, data["message_id"])
+
                         await send_group_msg(
                             self.websocket,
                             self.group_id,
