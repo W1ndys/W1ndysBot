@@ -12,7 +12,7 @@ import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
 from api.group import set_group_ban
-from api.message import send_group_msg
+from api.message import send_group_msg, delete_msg
 from api.generate import generate_at_message, generate_text_message
 from .data_manager import DataManager
 
@@ -179,6 +179,8 @@ class GroupNoticeHandler:
                     msg_text = generate_text_message(
                         f"({self.user_id})退群了（待验证状态，已标记为离开）"
                     )
+                    if data["message_id"]:
+                        await delete_msg(self.websocket, data["message_id"])
                 else:
                     # 没有状态或不是未验证，直接播报
                     msg_text = generate_text_message(f"({self.user_id})退群了")
@@ -206,6 +208,8 @@ class GroupNoticeHandler:
                         msg_text = generate_text_message(
                             f"({self.user_id})被管理员踢了（待验证状态，已标记为拒绝）"
                         )
+                        if data["message_id"]:
+                            await delete_msg(self.websocket, data["message_id"])
                     else:
                         msg_text = generate_text_message(
                             f"({self.user_id})被管理员踢了"

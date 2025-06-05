@@ -94,7 +94,7 @@ class DataManager:
         :return: 数据字典或None
         """
         self.cursor.execute(
-            "SELECT group_id, user_id, code, status, created_at, warning_count FROM data_table WHERE group_id=? AND user_id=?",
+            "SELECT group_id, user_id, code, status, created_at, warning_count, message_id FROM data_table WHERE group_id=? AND user_id=?",
             (group_id, user_id),
         )
         row = self.cursor.fetchone()
@@ -109,6 +109,7 @@ class DataManager:
                 "status": row[3],
                 "created_at": row[4],
                 "warning_count": row[5],
+                "message_id": row[6],
             }
         else:
             return None

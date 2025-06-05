@@ -8,6 +8,7 @@ icon: fa-solid fa-clipboard-list
 ## 2025-06-05
 
 - **GroupHumanVerification**：被踢逻辑优化，仅处理非机器人号踢人事件，减少多次通知
+- **GroupHumanVerification**： 优化退群和踢人通知逻辑，新增消息 ID 字段，优化撤回消息功能
 
 ## 2025-06-04
 
