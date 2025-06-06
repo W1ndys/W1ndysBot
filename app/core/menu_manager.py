@@ -37,6 +37,24 @@ class MenuManager:
             return None
 
     @staticmethod
+    def get_module_commands_text(module_name: str) -> str:
+        """
+        获取单个模块的可用命令及其解释，返回格式化文本
+        """
+        try:
+            module = importlib.import_module(f"modules.{module_name}")
+            commands = getattr(module, "COMMANDS", {})
+            if not commands:
+                return "暂无可用命令。"
+            text = ""
+            for cmd, desc in commands.items():
+                text += f"- {cmd}: {desc}\n"
+            return text
+        except Exception as e:
+            logger.error(f"获取模块 {module_name} 命令信息失败: {e}")
+            return "获取命令信息失败。"
+
+    @staticmethod
     def generate_menu_text() -> str:
         """生成完整的菜单文本"""
         menu_text = "📋 功能菜单\n\n"

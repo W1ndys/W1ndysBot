@@ -15,7 +15,7 @@
 import os
 import json
 import logger
-from core.auth import is_system_owner
+from core.auth import is_system_owner, is_group_admin
 from api.generate import generate_reply_message, generate_text_message
 from api.message import send_private_msg, send_group_msg
 
@@ -184,6 +184,10 @@ async def handle_module_private_switch(MODULE_NAME, websocket, user_id, message_
     处理模块私聊开关命令
     """
     try:
+        # 鉴权
+        if not is_system_owner(user_id):
+            logger.error(f"[{MODULE_NAME}]{user_id}无权限切换私聊开关")
+            return
         switch_status = toggle_private_switch(MODULE_NAME, user_id)
         switch_status = "开启" if switch_status else "关闭"
         reply_message = generate_reply_message(message_id)
@@ -200,11 +204,17 @@ async def handle_module_private_switch(MODULE_NAME, websocket, user_id, message_
         logger.error(f"[{MODULE_NAME}]处理模块私聊开关命令失败: {e}")
 
 
-async def handle_module_group_switch(MODULE_NAME, websocket, group_id, message_id):
+async def handle_module_group_switch(
+    MODULE_NAME, websocket, group_id, user_id, role, message_id
+):
     """
     处理模块群聊开关命令
     """
     try:
+        # 鉴权
+        if not is_group_admin(role) and not is_system_owner(user_id):
+            logger.error(f"[{MODULE_NAME}]{user_id}无权限切换群聊开关")
+            return
         switch_status = toggle_group_switch(group_id, MODULE_NAME)
         switch_status = "开启" if switch_status else "关闭"
         reply_message = generate_reply_message(message_id)

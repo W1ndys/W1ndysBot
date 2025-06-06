@@ -1,9 +1,9 @@
 from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND, COMMANDS
 import logger
-from core.switchs import is_private_switch_on, toggle_private_switch
+from core.switchs import is_private_switch_on, handle_module_private_switch
 from api.message import send_private_msg
-from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
+from core.menu_manager import MenuManager
 
 
 class PrivateMessageHandler:
@@ -24,57 +24,29 @@ class PrivateMessageHandler:
         self.sender = msg.get("sender", {})  # 发送者信息
         self.nickname = self.sender.get("nickname", "")  # 昵称
 
-    async def handle_module_switch(self):
-        """
-        处理模块开关命令
-        """
-        try:
-            switch_status = toggle_private_switch(MODULE_NAME)
-            switch_status = "开启" if switch_status else "关闭"
-            reply_message = generate_reply_message(self.message_id)
-            text_message = generate_text_message(
-                f"[{MODULE_NAME}]私聊开关已切换为【{switch_status}】"
-            )
-            await send_private_msg(
-                self.websocket,
-                self.user_id,
-                [reply_message, text_message],
-                note="del_msg=10",
-            )
-        except Exception as e:
-            logger.error(f"[{MODULE_NAME}]处理模块开关命令失败: {e}")
-
-    async def handle_menu(self):
-        """
-        处理菜单命令
-        """
-        try:
-            reply_message = generate_reply_message(self.message_id)
-            menu_text = f"[{MODULE_NAME}]可用命令列表：\n"
-            for cmd, desc in COMMANDS.items():
-                menu_text += f"- {cmd}: {desc}\n"
-            text_message = generate_text_message(menu_text)
-            await send_private_msg(
-                self.websocket,
-                self.user_id,
-                [reply_message, text_message],
-                note="del_msg=30",
-            )
-        except Exception as e:
-            logger.error(f"[{MODULE_NAME}]处理菜单命令失败: {e}")
-
     async def handle(self):
         """
         处理私聊消息
         """
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
-                await self.handle_module_switch()
+                await handle_module_private_switch(
+                    MODULE_NAME,
+                    self.websocket,
+                    self.user_id,
+                    self.message_id,
+                )
                 return
 
             # 处理菜单命令（无视开关状态）
             if self.raw_message.lower() == (SWITCH_NAME + MENU_COMMAND).lower():
-                await self.handle_menu()
+                menu_text = MenuManager.get_module_commands_text(MODULE_NAME)
+                await send_private_msg(
+                    self.websocket,
+                    self.user_id,
+                    [menu_text],
+                    note="del_msg=30",
+                )
                 return
             # 如果没开启私聊开关，则不处理
             if not is_private_switch_on(MODULE_NAME):
