@@ -139,25 +139,67 @@ class GroupMessageHandler:
                     regex = self.raw_message[len(CMD_SET_REGEX) :].strip()
                     regex = decode_unicode_escape(regex)
                     dm.set_group_regex(self.group_id, regex)
-                    await self.send_text(f"群正则已设置为: {regex}")
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(f"群正则已设置为: {regex}"),
+                        ],
+                        note="del_msg=10",
+                    )
                     return
                 elif self.raw_message.startswith(CMD_GET_REGEX):
                     regex = dm.get_group_regex(self.group_id)
-                    await self.send_text(f"当前群正则: {regex if regex else '未设置'}")
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(
+                                f"当前群正则: {regex if regex else '未设置'}"
+                            ),
+                        ],
+                        note="del_msg=10",
+                    )
                     return
                 elif self.raw_message.startswith(CMD_DEL_REGEX):
                     dm.del_group_regex(self.group_id)
-                    await self.send_text("群正则已删除")
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message("群正则已删除"),
+                        ],
+                        note="del_msg=10",
+                    )
                     return
                 elif self.raw_message.startswith(CMD_SET_DEFAULT):
                     default_name = self.raw_message[len(CMD_SET_DEFAULT) :].strip()
                     dm.set_group_default_name(self.group_id, default_name)
-                    await self.send_text(f"群默认名已设置为: {default_name}")
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(f"群默认名已设置为: {default_name}"),
+                        ],
+                        note="del_msg=10",
+                    )
                     return
                 elif self.raw_message.startswith(CMD_GET_DEFAULT):
                     default_name = dm.get_group_default_name(self.group_id)
-                    await self.send_text(
-                        f"当前群默认名: {default_name if default_name else '未设置'}"
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(
+                                f"当前群默认名: {default_name if default_name else '未设置'}"
+                            ),
+                        ],
+                        note="del_msg=10",
                     )
                     return
                 elif self.raw_message.startswith(CMD_SET_LOCK):
@@ -166,9 +208,29 @@ class GroupMessageHandler:
                     if len(args) >= 2:
                         user_id, lock_name = args[0], " ".join(args[1:])
                         dm.set_user_lock_name(self.group_id, user_id, lock_name)
-                        await self.send_text(f"已锁定{user_id}昵称为: {lock_name}")
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(
+                                    f"已锁定{user_id}昵称为: {lock_name}"
+                                ),
+                            ],
+                            note="del_msg=10",
+                        )
                     else:
-                        await self.send_text("格式错误，应为: 锁定昵称 QQ号 昵称")
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(
+                                    "格式错误，应为: 锁定昵称 QQ号 昵称"
+                                ),
+                            ],
+                            note="del_msg=10",
+                        )
                     return
                 elif self.raw_message.startswith(CMD_GET_LOCK):
                     locks = dm.get_all_user_locks(self.group_id)
@@ -178,7 +240,15 @@ class GroupMessageHandler:
                         )
                     else:
                         msg = "无锁定昵称"
-                    await self.send_text(msg)
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(msg),
+                        ],
+                        note="del_msg=10",
+                    )
                     return
                 elif self.raw_message.startswith(CMD_DEL_LOCK):
                     # 格式: 删除锁定 QQ号
@@ -186,9 +256,25 @@ class GroupMessageHandler:
                     if len(args) >= 1:
                         user_id = args[0]
                         dm.del_user_lock_name(self.group_id, user_id)
-                        await self.send_text(f"已删除{user_id}的锁定昵称")
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(f"已删除{user_id}的锁定昵称"),
+                            ],
+                            note="del_msg=10",
+                        )
                     else:
-                        await self.send_text("格式错误，应为: 删除锁定 QQ号")
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message("格式错误，应为: 删除锁定 QQ号"),
+                            ],
+                            note="del_msg=10",
+                        )
                     return
 
                 # --- 核心昵称检测逻辑 ---
@@ -207,6 +293,35 @@ class GroupMessageHandler:
                 if regex:
                     try:
                         if not re.fullmatch(regex, self.card):
+                            # 检查提醒时间间隔
+                            from . import NICKNAME_REMINDER_INTERVAL_SECONDS
+                            import time
+
+                            last_remind = dm.get_last_nickname_reminder_at(
+                                self.group_id, self.user_id
+                            )
+                            now = time.time()
+                            if (
+                                last_remind is None
+                                or now - last_remind
+                                > NICKNAME_REMINDER_INTERVAL_SECONDS
+                            ):
+                                # 发送提醒
+                                await send_group_msg(
+                                    self.websocket,
+                                    self.group_id,
+                                    [
+                                        generate_reply_message(self.message_id),
+                                        generate_text_message(
+                                            f"{self.user_id}您的群昵称不符合群规定，请及时修改为群公告的指定格式！"
+                                        ),
+                                    ],
+                                    note="del_msg=10",
+                                )
+                                # 更新提醒时间
+                                dm.set_last_nickname_reminder_at(
+                                    self.group_id, self.user_id, now
+                                )
                             default_name = dm.get_group_default_name(self.group_id)
                             if default_name:
                                 await set_group_card(
@@ -224,13 +339,3 @@ class GroupMessageHandler:
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
-
-    async def send_text(self, text):
-        reply_message = generate_reply_message(self.message_id)
-        text_message = generate_text_message(text)
-        await send_group_msg(
-            self.websocket,
-            self.group_id,
-            [reply_message, text_message],
-            note="del_msg=10",
-        )

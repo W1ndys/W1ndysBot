@@ -39,3 +39,6 @@ COMMANDS = {
     CMD_GET_LOCK: "查询群昵称锁定",
     CMD_DEL_LOCK: "删除群昵称锁定",
 }
+
+# 昵称提醒时间间隔（秒）
+NICKNAME_REMINDER_INTERVAL_SECONDS = 300

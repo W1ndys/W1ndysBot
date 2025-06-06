@@ -36,10 +36,18 @@ class DataManager:
                 group_id TEXT,
                 user_id TEXT,
                 lock_name TEXT,
+                last_nickname_reminder_at REAL,
                 PRIMARY KEY (group_id, user_id)
             )
             """
         )
+        # 升级已有表结构（兼容旧表）
+        try:
+            self.cursor.execute(
+                "ALTER TABLE group_user_lock ADD COLUMN last_nickname_reminder_at REAL"
+            )
+        except Exception:
+            pass
         self.conn.commit()
 
     def __enter__(self):
@@ -51,7 +59,8 @@ class DataManager:
     # 群正则相关
     def set_group_regex(self, group_id, regex):
         self.cursor.execute(
-            "REPLACE INTO group_regex (group_id, regex) VALUES (?, ?)", (group_id, regex)
+            "REPLACE INTO group_regex (group_id, regex) VALUES (?, ?)",
+            (group_id, regex),
         )
         self.conn.commit()
 
@@ -63,21 +72,21 @@ class DataManager:
         return row[0] if row else None
 
     def del_group_regex(self, group_id):
-        self.cursor.execute(
-            "DELETE FROM group_regex WHERE group_id = ?", (group_id,)
-        )
+        self.cursor.execute("DELETE FROM group_regex WHERE group_id = ?", (group_id,))
         self.conn.commit()
 
     # 群默认名相关
     def set_group_default_name(self, group_id, default_name):
         self.cursor.execute(
-            "REPLACE INTO group_default_name (group_id, default_name) VALUES (?, ?)", (group_id, default_name)
+            "REPLACE INTO group_default_name (group_id, default_name) VALUES (?, ?)",
+            (group_id, default_name),
         )
         self.conn.commit()
 
     def get_group_default_name(self, group_id):
         self.cursor.execute(
-            "SELECT default_name FROM group_default_name WHERE group_id = ?", (group_id,)
+            "SELECT default_name FROM group_default_name WHERE group_id = ?",
+            (group_id,),
         )
         row = self.cursor.fetchone()
         return row[0] if row else None
@@ -85,25 +94,44 @@ class DataManager:
     # 用户锁定昵称相关
     def set_user_lock_name(self, group_id, user_id, lock_name):
         self.cursor.execute(
-            "REPLACE INTO group_user_lock (group_id, user_id, lock_name) VALUES (?, ?, ?)", (group_id, user_id, lock_name)
+            "REPLACE INTO group_user_lock (group_id, user_id, lock_name) VALUES (?, ?, ?)",
+            (group_id, user_id, lock_name),
         )
         self.conn.commit()
 
     def get_user_lock_name(self, group_id, user_id):
         self.cursor.execute(
-            "SELECT lock_name FROM group_user_lock WHERE group_id = ? AND user_id = ?", (group_id, user_id)
+            "SELECT lock_name FROM group_user_lock WHERE group_id = ? AND user_id = ?",
+            (group_id, user_id),
         )
         row = self.cursor.fetchone()
         return row[0] if row else None
 
     def del_user_lock_name(self, group_id, user_id):
         self.cursor.execute(
-            "DELETE FROM group_user_lock WHERE group_id = ? AND user_id = ?", (group_id, user_id)
+            "DELETE FROM group_user_lock WHERE group_id = ? AND user_id = ?",
+            (group_id, user_id),
         )
         self.conn.commit()
 
     def get_all_user_locks(self, group_id):
         self.cursor.execute(
-            "SELECT user_id, lock_name FROM group_user_lock WHERE group_id = ?", (group_id,)
+            "SELECT user_id, lock_name FROM group_user_lock WHERE group_id = ?",
+            (group_id,),
         )
         return self.cursor.fetchall()
+
+    def set_last_nickname_reminder_at(self, group_id, user_id, ts):
+        self.cursor.execute(
+            "UPDATE group_user_lock SET last_nickname_reminder_at = ? WHERE group_id = ? AND user_id = ?",
+            (ts, group_id, user_id),
+        )
+        self.conn.commit()
+
+    def get_last_nickname_reminder_at(self, group_id, user_id):
+        self.cursor.execute(
+            "SELECT last_nickname_reminder_at FROM group_user_lock WHERE group_id = ? AND user_id = ?",
+            (group_id, user_id),
+        )
+        row = self.cursor.fetchone()
+        return row[0] if row else None
