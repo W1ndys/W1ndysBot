@@ -2,6 +2,7 @@ from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND, COMMANDS
 import logger
 from core.switchs import is_private_switch_on, handle_module_private_switch
 from api.message import send_private_msg
+from api.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from core.menu_manager import MenuManager
 from core.auth import is_system_owner
@@ -44,11 +45,14 @@ class PrivateMessageHandler:
 
             # 处理菜单命令（无视开关状态）
             if self.raw_message.lower() == (SWITCH_NAME + MENU_COMMAND).lower():
-                menu_text = MenuManager.get_module_commands_text(SWITCH_NAME)
+                menu_text = MenuManager.get_module_commands_text(MODULE_NAME)
                 await send_private_msg(
                     self.websocket,
                     self.user_id,
-                    [menu_text],
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(menu_text),
+                    ],
                     note="del_msg=30",
                 )
                 return

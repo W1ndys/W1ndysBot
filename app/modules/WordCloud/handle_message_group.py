@@ -5,6 +5,7 @@ from api.message import send_group_msg
 from api.generate import (
     generate_text_message,
     generate_image_message,
+    generate_reply_message,
 )
 from datetime import datetime
 from .WordCloud import QQMessageAnalyzer
@@ -52,11 +53,14 @@ class GroupMessageHandler:
 
             # 处理菜单命令（无视开关状态）
             if self.raw_message.lower() == (SWITCH_NAME + MENU_COMMAND).lower():
-                menu_text = MenuManager.get_module_commands_text(SWITCH_NAME)
+                menu_text = MenuManager.get_module_commands_text(MODULE_NAME)
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
-                    [menu_text],
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(menu_text),
+                    ],
                     note="del_msg=30",
                 )
                 return
