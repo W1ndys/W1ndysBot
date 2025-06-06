@@ -166,7 +166,7 @@ class GroupHumanVerificationHandler:
                             self.websocket,
                             group_id,
                             message,
-                            note="del_msg=60",
+                            note="del_msg=30",
                         )
                     for user_id in kick_users:
                         await set_group_kick(self.websocket, group_id, user_id)
@@ -183,7 +183,7 @@ class GroupHumanVerificationHandler:
                                 f"({self.user_id})当前群无未验证用户"
                             ),
                         ],
-                        note="del_msg=30",
+                        note="del_msg=10",
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]群内扫描入群验证失败: {e}")
