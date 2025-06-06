@@ -8,7 +8,7 @@ MODULE_NAME = "KeywordsReply"
 SWITCH_NAME = "kr"
 
 # 模块描述
-MODULE_DESCRIPTION = "关键词回复模块，完全匹配，只回复内容，不会回复其他多余文字，是 FAQ 系统的补充"
+MODULE_DESCRIPTION = "关键词回复模块，完全匹配，只回复内容，不会回复其他多余文字，是 FAQ 系统的补充，不设置权限，任何人都可以添加关键词回复，但只有管理员可以删除关键词回复"
 
 # 数据目录
 DATA_DIR = os.path.join("data", MODULE_NAME)
