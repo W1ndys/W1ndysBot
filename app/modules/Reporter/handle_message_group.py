@@ -1,4 +1,4 @@
-from . import MODULE_NAME, SWITCH_NAME, TEST_COMMAND
+from . import MODULE_NAME, SWITCH_NAME, TEST_COMMAND, MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg, send_forward_msg
@@ -9,6 +9,7 @@ from api.generate import (
 )
 from datetime import datetime
 from core.auth import is_system_owner
+from core.menu_manager import MenuManager
 
 
 class GroupMessageHandler:
@@ -46,6 +47,17 @@ class GroupMessageHandler:
                     self.websocket,
                     self.group_id,
                     self.message_id,
+                )
+                return
+
+            # 处理菜单命令（无视开关状态）
+            if self.raw_message.lower() == (SWITCH_NAME + MENU_COMMAND).lower():
+                menu_text = MenuManager.get_module_commands_text(MODULE_NAME)
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [menu_text],
+                    note="del_msg=30",
                 )
                 return
 
