@@ -43,8 +43,6 @@ class GroupMessageHandler:
                     MODULE_NAME,
                     self.websocket,
                     self.group_id,
-                    self.user_id,
-                    self.role,
                     self.message_id,
                 )
                 return

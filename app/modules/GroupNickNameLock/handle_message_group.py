@@ -17,14 +17,14 @@ from api.group import set_group_card
 from datetime import datetime
 from .data_manager import DataManager
 import re
-from core.auth import is_group_admin
+from core.auth import is_group_admin, is_system_owner
 from core.menu_manager import MenuManager
 
 
 def decode_unicode_escape(s):
     """
     解码字符串中的unicode编码（如\\uXXXX、&#NNN;等）为原字符
-    """ 
+    """
     # 先处理HTML实体（如&#91; -> [）
     import html
 
@@ -64,12 +64,13 @@ class GroupMessageHandler:
         """
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
+                # 鉴权
+                if not is_system_owner(self.user_id):
+                    return
                 await handle_module_group_switch(
                     MODULE_NAME,
                     self.websocket,
                     self.group_id,
-                    self.user_id,
-                    self.role,
                     self.message_id,
                 )
                 return

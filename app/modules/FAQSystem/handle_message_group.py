@@ -5,6 +5,7 @@ from api.message import send_group_msg
 from datetime import datetime
 from .handle_qa import QaHandler
 from core.menu_manager import MenuManager
+from core.auth import is_system_owner
 
 
 class GroupMessageHandler:
@@ -34,12 +35,13 @@ class GroupMessageHandler:
         """
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
+                # 鉴权
+                if not is_system_owner(self.user_id):
+                    return
                 await handle_module_group_switch(
                     MODULE_NAME,
                     self.websocket,
                     self.group_id,
-                    self.user_id,
-                    self.role,
                     self.message_id,
                 )
                 return
