@@ -1,9 +1,12 @@
-from . import MODULE_NAME, SWITCH_NAME
+from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND
 import logger
 from core.switchs import is_private_switch_on, handle_module_private_switch
+from api.message import send_private_msg
+from api.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager import DataManager
 from core.auth import is_system_owner
+from core.menu_manager import MenuManager
 
 
 class PrivateMessageHandler:
@@ -32,6 +35,7 @@ class PrivateMessageHandler:
             if self.raw_message.lower() == SWITCH_NAME.lower():
                 # 鉴权
                 if not is_system_owner(self.user_id):
+                    logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换私聊开关")
                     return
                 await handle_module_private_switch(
                     MODULE_NAME,
@@ -41,14 +45,40 @@ class PrivateMessageHandler:
                 )
                 return
 
+            # 处理菜单命令（无视开关状态）
+            if self.raw_message.lower() == (SWITCH_NAME + MENU_COMMAND).lower():
+                menu_text = MenuManager.get_module_commands_text(MODULE_NAME)
+                await send_private_msg(
+                    self.websocket,
+                    self.user_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(menu_text),
+                    ],
+                    note="del_msg=30",
+                )
+                return
+
             # 如果没开启私聊开关，则不处理
             if not is_private_switch_on(MODULE_NAME):
                 return
 
-            # 示例：使用DataManager进行数据库操作
-            with DataManager(self.user_id) as dm:
-                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                pass
+            # 新增：根据sub_type判断消息类型
+            if self.sub_type == "friend":
+                # 处理好友私聊消息
+                with DataManager() as dm:
+                    # 这里可以进行数据库操作，如：dm.cursor.execute(...)
+                    pass
+            elif self.sub_type == "group":
+                # 处理临时会话消息（如群临时会话）
+                with DataManager() as dm:
+                    # 这里可以进行数据库操作，如：dm.cursor.execute(...)
+                    pass
+            else:
+                # 其他类型的私聊消息
+                logger.info(
+                    f"[{MODULE_NAME}]收到未知sub_type的私聊消息: {self.sub_type}"
+                )
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊消息失败: {e}")

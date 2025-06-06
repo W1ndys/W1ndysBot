@@ -14,7 +14,7 @@ class RequestHandler:
             "%Y-%m-%d %H:%M:%S"
         )  # 格式化时间
         self.request_type = msg.get("request_type", "")
-        self.user_id = self.msg.get("user_id", "")
+        self.user_id = str(self.msg.get("user_id", ""))
         self.comment = self.msg.get("comment", "")
         self.flag = self.msg.get("flag", "")
 
