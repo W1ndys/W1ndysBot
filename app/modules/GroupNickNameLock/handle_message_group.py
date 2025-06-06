@@ -12,7 +12,11 @@ from . import (
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg
-from api.generate import generate_reply_message, generate_text_message
+from api.generate import (
+    generate_reply_message,
+    generate_text_message,
+    generate_at_message,
+)
 from api.group import set_group_card
 from datetime import datetime
 from .data_manager import DataManager
@@ -290,7 +294,7 @@ class GroupMessageHandler:
                                     self.websocket,
                                     self.group_id,
                                     [
-                                        generate_reply_message(self.message_id),
+                                        generate_at_message(self.user_id),
                                         generate_text_message(
                                             f"{self.user_id}您的群昵称不符合群规定，请及时修改为群公告的指定格式！"
                                         ),
