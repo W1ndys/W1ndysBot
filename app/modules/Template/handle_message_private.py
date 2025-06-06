@@ -1,10 +1,11 @@
 from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND, COMMANDS
 import logger
-from core.switchs import is_private_switch_on, toggle_private_switch
+from core.switchs import is_private_switch_on, handle_module_private_switch
 from api.message import send_private_msg
 from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
 from .data_manager import DataManager
+from core.auth import is_system_owner
 
 
 class PrivateMessageHandler:
@@ -24,26 +25,6 @@ class PrivateMessageHandler:
         self.raw_message = msg.get("raw_message", "")  # 原始消息
         self.sender = msg.get("sender", {})  # 发送者信息
         self.nickname = self.sender.get("nickname", "")  # 昵称
-
-    async def handle_module_switch(self):
-        """
-        处理模块开关命令
-        """
-        try:
-            switch_status = toggle_private_switch(MODULE_NAME)
-            switch_status = "开启" if switch_status else "关闭"
-            reply_message = generate_reply_message(self.message_id)
-            text_message = generate_text_message(
-                f"[{MODULE_NAME}]私聊开关已切换为【{switch_status}】"
-            )
-            await send_private_msg(
-                self.websocket,
-                self.user_id,
-                [reply_message, text_message],
-                note="del_msg=10",
-            )
-        except Exception as e:
-            logger.error(f"[{MODULE_NAME}]处理模块开关命令失败: {e}")
 
     async def handle_menu(self):
         """
@@ -70,7 +51,13 @@ class PrivateMessageHandler:
         """
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
-                await self.handle_module_switch()
+                # 鉴权
+                if not is_system_owner(self.user_id):
+                    logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换私聊开关")
+                    return
+                await handle_module_private_switch(
+                    MODULE_NAME, self.websocket, self.user_id, self.message_id
+                )
                 return
 
             # 处理菜单命令（无视开关状态）

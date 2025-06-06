@@ -1,6 +1,7 @@
 from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND, COMMANDS
 import logger
-from core.switchs import is_group_switch_on, toggle_group_switch
+from core.switchs import is_group_switch_on, handle_module_group_switch
+from core.auth import is_system_owner
 from api.message import send_group_msg
 from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
@@ -28,26 +29,6 @@ class GroupMessageHandler:
         self.card = self.sender.get("card", "")  # 群名片
         self.role = self.sender.get("role", "")  # 群身份
 
-    async def handle_module_switch(self):
-        """
-        处理模块开关命令
-        """
-        try:
-            switch_status = toggle_group_switch(self.group_id, MODULE_NAME)
-            switch_status = "开启" if switch_status else "关闭"
-            reply_message = generate_reply_message(self.message_id)
-            text_message = generate_text_message(
-                f"[{MODULE_NAME}]群聊开关已切换为【{switch_status}】"
-            )
-            await send_group_msg(
-                self.websocket,
-                self.group_id,
-                [reply_message, text_message],
-                note="del_msg=10",
-            )
-        except Exception as e:
-            logger.error(f"[{MODULE_NAME}]处理模块开关命令失败: {e}")
-
     async def handle_menu(self):
         """
         处理菜单命令
@@ -73,7 +54,13 @@ class GroupMessageHandler:
         """
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
-                await self.handle_module_switch()
+                # 鉴权
+                if not is_system_owner(self.user_id):
+                    logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换群聊开关")
+                    return
+                await handle_module_group_switch(
+                    MODULE_NAME, self.websocket, self.group_id, self.message_id
+                )
                 return
 
             # 处理菜单命令（无视开关状态）

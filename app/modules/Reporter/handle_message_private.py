@@ -1,7 +1,7 @@
 from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND, COMMANDS
 import logger
 from core.auth import is_system_owner
-from core.switchs import is_private_switch_on, toggle_private_switch
+from core.switchs import is_private_switch_on, handle_module_private_switch
 from config import OWNER_ID
 from api.message import send_private_msg
 from api.user import set_friend_add_request, set_group_add_request
@@ -28,26 +28,6 @@ class PrivateMessageHandler:
         self.sender = msg.get("sender", {})  # 发送者信息
         self.nickname = self.sender.get("nickname", "")  # 昵称
 
-    async def handle_module_switch(self):
-        """
-        处理模块开关命令
-        """
-        try:
-            switch_status = toggle_private_switch(MODULE_NAME)
-            switch_status = "开启" if switch_status else "关闭"
-            reply_message = generate_reply_message(self.message_id)
-            text_message = generate_text_message(
-                f"[{MODULE_NAME}]私聊开关已切换为【{switch_status}】"
-            )
-            await send_private_msg(
-                self.websocket,
-                self.user_id,
-                [reply_message, text_message],
-                note="del_msg=10",
-            )
-        except Exception as e:
-            logger.error(f"[{MODULE_NAME}]处理模块开关命令失败: {e}")
-
     async def handle_menu(self):
         """
         处理菜单命令
@@ -73,7 +53,9 @@ class PrivateMessageHandler:
         """
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
-                await self.handle_module_switch()
+                await handle_module_private_switch(
+                    MODULE_NAME, self.websocket, self.user_id, self.message_id
+                )
                 return
 
             # 处理菜单命令（无视开关状态）

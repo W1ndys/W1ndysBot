@@ -15,6 +15,9 @@
 import os
 import json
 import logger
+from core.auth import is_system_owner
+from api.generate import generate_reply_message, generate_text_message
+from api.message import send_private_msg, send_group_msg
 
 # 数据根目录
 DATA_ROOT_DIR = "data"
@@ -65,8 +68,12 @@ def toggle_group_switch(group_id, MODULE_NAME):
 
 
 # 切换私聊开关
-def toggle_private_switch(MODULE_NAME):
+def toggle_private_switch(MODULE_NAME, user_id):
     try:
+        # 鉴权
+        if not is_system_owner(user_id):
+            logger.error(f"[{MODULE_NAME}]{user_id}无权限切换私聊开关")
+            return False
         switch_status = toggle_switch(switch_type="private", MODULE_NAME=MODULE_NAME)
         logger.info(f"[{MODULE_NAME}]私聊开关已切换为【{switch_status}】")
         return switch_status
@@ -170,3 +177,45 @@ def get_all_enabled_groups(MODULE_NAME):
     """
     switch = load_switch(MODULE_NAME)
     return [group_id for group_id, status in switch.get("group", {}).items() if status]
+
+
+async def handle_module_private_switch(MODULE_NAME, websocket, user_id, message_id):
+    """
+    处理模块私聊开关命令
+    """
+    try:
+        switch_status = toggle_private_switch(MODULE_NAME, user_id)
+        switch_status = "开启" if switch_status else "关闭"
+        reply_message = generate_reply_message(message_id)
+        text_message = generate_text_message(
+            f"[{MODULE_NAME}]私聊开关已切换为【{switch_status}】"
+        )
+        await send_private_msg(
+            websocket,
+            user_id,
+            [reply_message, text_message],
+            note="del_msg=10",
+        )
+    except Exception as e:
+        logger.error(f"[{MODULE_NAME}]处理模块私聊开关命令失败: {e}")
+
+
+async def handle_module_group_switch(MODULE_NAME, websocket, group_id, message_id):
+    """
+    处理模块群聊开关命令
+    """
+    try:
+        switch_status = toggle_group_switch(group_id, MODULE_NAME)
+        switch_status = "开启" if switch_status else "关闭"
+        reply_message = generate_reply_message(message_id)
+        text_message = generate_text_message(
+            f"[{MODULE_NAME}]群聊开关已切换为【{switch_status}】"
+        )
+        await send_group_msg(
+            websocket,
+            group_id,
+            [reply_message, text_message],
+            note="del_msg=10",
+        )
+    except Exception as e:
+        logger.error(f"[{MODULE_NAME}]处理模块群聊开关命令失败: {e}")
