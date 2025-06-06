@@ -1,10 +1,12 @@
-from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND
+from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND, SCAN_VERIFICATION
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg
 from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
+from core.auth import is_group_admin, is_system_owner
+from .handle_GroupHumanVerification import GroupHumanVerificationHandler
 
 
 class GroupMessageHandler:
@@ -54,6 +56,16 @@ class GroupMessageHandler:
                     note="del_msg=30",
                 )
                 return
+
+            # 新增：群管理员扫描入群验证
+            if self.raw_message.strip() == SCAN_VERIFICATION:
+                if is_group_admin(self.role) or is_system_owner(self.user_id):
+                    # 只扫描当前群
+                    handler = GroupHumanVerificationHandler(self.websocket, self.msg)
+                    # 强制只处理本群
+                    handler.group_id = self.group_id
+                    await handler.handle_scan_verification_group_only()
+                    return
 
             # 如果没开启群聊开关，则不处理
             if not is_group_switch_on(self.group_id, MODULE_NAME):

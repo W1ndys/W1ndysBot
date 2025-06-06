@@ -116,6 +116,78 @@ class GroupHumanVerificationHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理扫描入群验证失败: {e}")
 
+    async def handle_scan_verification_group_only(self):
+        """
+        仅扫描当前群聊未验证成员并在群内警告，无需私聊通知。
+        """
+        try:
+            with DataManager() as dm:
+                unverified_users = dm.get_all_unverified_users_with_code_and_warning()
+                result_msgs = []
+                group_id = self.group_id
+                if group_id and group_id in unverified_users:
+                    user_list = unverified_users[group_id]
+                    kick_users = []
+                    warning_msg_list = []
+                    for user_id, warning_count, code in user_list:
+                        if warning_count > 1:
+                            dm.update_warning_count(
+                                group_id, user_id, warning_count - 1
+                            )
+                            warning_msg_list.append(generate_at_message(user_id))
+                            warning_msg_list.append(
+                                generate_text_message(
+                                    f"({user_id})请尽快私聊我验证码【{code}】（剩余警告{warning_count - 1}/{WARNING_COUNT}）\n\n"
+                                )
+                            )
+                            result_msgs.append(
+                                f"用户{user_id} 警告-1，剩余{warning_count-1}"
+                            )
+                        else:
+                            kick_users.append(user_id)
+                            result_msgs.append(f"用户{user_id} 已被踢出（警告用尽）")
+                    if warning_msg_list:
+                        await send_group_msg(self.websocket, group_id, warning_msg_list)
+                    if kick_users:
+                        message = []
+                        for user_id in kick_users:
+                            message.extend(
+                                [
+                                    generate_at_message(user_id),
+                                    generate_text_message(f"({user_id})"),
+                                ]
+                            )
+                        message.append(
+                            generate_text_message(
+                                "以上用户已超过警告次数，即将被踢出群聊"
+                            )
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            group_id,
+                            message,
+                            note="del_msg=60",
+                        )
+                    for user_id in kick_users:
+                        await set_group_kick(self.websocket, group_id, user_id)
+                        dm.update_status(group_id, user_id, STATUS_KICKED)
+                        await asyncio.sleep(1)
+                    await asyncio.sleep(1)
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        group_id,
+                        [
+                            generate_at_message(self.user_id),
+                            generate_text_message(
+                                f"({self.user_id})当前群无未验证用户"
+                            ),
+                        ],
+                        note="del_msg=30",
+                    )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]群内扫描入群验证失败: {e}")
+
     async def handle_admin_command(self):
         """
         处理管理员命令
