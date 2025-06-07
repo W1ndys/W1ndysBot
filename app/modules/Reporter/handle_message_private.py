@@ -117,10 +117,10 @@ class PrivateMessageHandler:
                     return
             # 普通消息转发给owner
             else:
-                message = f"[{MODULE_NAME}]收到私聊消息\n"
-                message += f"用户ID: {self.user_id}\n"
-                message += f"消息内容: {self.raw_message}\n"
-                message += f"发送时间: {self.formatted_time}"
+                message = f"用户ID🆔：{self.user_id}\n"
+                message += f"发送时间：{self.formatted_time}\n"
+                message += "————————————————————\n"
+                message += f"{self.raw_message}"
                 message = generate_text_message(message)
                 await send_private_msg(
                     self.websocket,
