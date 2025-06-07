@@ -25,22 +25,6 @@ from core.auth import is_group_admin, is_system_owner
 from core.menu_manager import MenuManager
 
 
-def decode_unicode_escape(s):
-    """
-    解码字符串中的unicode编码（如\\uXXXX、&#NNN;等）为原字符
-    """
-    # 先处理HTML实体（如&#91; -> [）
-    import html
-
-    s = html.unescape(s)
-    # 再处理\\uXXXX
-    try:
-        s = s.encode("utf-8").decode("unicode_escape")
-    except Exception:
-        pass
-    return s
-
-
 class GroupMessageHandler:
     """群消息处理器"""
 
@@ -120,7 +104,8 @@ class GroupMessageHandler:
 
                 if self.raw_message.startswith(CMD_SET_REGEX):
                     regex = self.raw_message[len(CMD_SET_REGEX) :].strip()
-                    regex = decode_unicode_escape(regex)
+                    # 只处理英文中括号的Unicode
+                    regex = regex.replace(r"&#91;", "[").replace(r"&#93;", "]")
                     dm.set_group_regex(self.group_id, regex)
                     await send_group_msg(
                         self.websocket,
