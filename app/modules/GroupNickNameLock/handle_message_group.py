@@ -172,9 +172,12 @@ class GroupMessageHandler:
                     return
                 elif self.raw_message.startswith(CMD_SET_LOCK):
                     # 格式: 锁定昵称 QQ号 昵称
-                    args = self.raw_message[len(CMD_SET_LOCK) :].strip().split()
-                    if len(args) >= 2:
-                        user_id, lock_name = args[0], " ".join(args[1:])
+                    content = self.raw_message[len(CMD_SET_LOCK) :].strip()
+                    # 用正则提取第一个连续数字作为QQ号
+                    match = re.match(r"(\d+)\s+(.+)", content)
+                    if match:
+                        user_id = match.group(1)
+                        lock_name = match.group(2).strip()
                         dm.set_user_lock_name(self.group_id, user_id, lock_name)
                         await send_group_msg(
                             self.websocket,
@@ -183,18 +186,6 @@ class GroupMessageHandler:
                                 generate_reply_message(self.message_id),
                                 generate_text_message(
                                     f"已锁定{user_id}昵称为: {lock_name}"
-                                ),
-                            ],
-                            note="del_msg=10",
-                        )
-                    else:
-                        await send_group_msg(
-                            self.websocket,
-                            self.group_id,
-                            [
-                                generate_reply_message(self.message_id),
-                                generate_text_message(
-                                    "格式错误，应为: 锁定昵称 QQ号 昵称"
                                 ),
                             ],
                             note="del_msg=10",
