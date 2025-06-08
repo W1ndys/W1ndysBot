@@ -4,6 +4,7 @@ import logger
 from api.group import set_group_ban
 from api.message import send_group_msg
 from api.generate import generate_text_message, generate_at_message
+import re
 
 
 class GroupSpamDetectionHandle:
@@ -41,8 +42,12 @@ class GroupSpamDetectionHandle:
                 self.user_id
             ]
             now = float(self.time)
+            # 判断是否为图片CQ码，是则统一标记
+            if re.match(r"\\[CQ:image,[^\\]]+\\]", self.raw_message):
+                contents.append("[IMAGE_MSG]")
+            else:
+                contents.append(self.raw_message)
             timestamps.append(now)
-            contents.append(self.raw_message)
 
             # 获取当前分钟
             current_minute = int(now // 60)
