@@ -7,23 +7,23 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-08
 
-- **GroupSpamDetection**：禁言时间改为 3 分钟，优化图片处理，所有图片视为相同消息
-- **GroupNickNameLock**：修复个人群昵称锁与数据库一致时，会来回修改群昵称的问题
-- **KeywordsReply**：完成关键词回复模块的开发，新增菜单命令处理功能，优化关键词回复逻辑，支持完全匹配，只回复内容，不会回复其他多余文字，是 FAQ 系统的补充，不设置权限，任何人都可以添加关键词回复，但只有管理员可以删除关键词回复
+- **GroupSpamDetection**：禁言时间改为 3 分钟，优化图片处理，所有图片视为相同消息 ([f9f2da7](https://github.com/W1ndys/W1ndysBot-dev/commit/f9f2da7))
+- **GroupNickNameLock**：修复个人群昵称锁与数据库一致时，会来回修改群昵称的问题 ([d80ea77](https://github.com/W1ndys/W1ndysBot-dev/commit/d80ea77))
+- **KeywordsReply**：完成关键词回复模块的开发，新增菜单命令处理功能，优化关键词回复逻辑，支持完全匹配，只回复内容，不会回复其他多余文字，是 FAQ 系统的补充，不设置权限，任何人都可以添加关键词回复，但只有管理员可以删除关键词回复 ([b4acfea](https://github.com/W1ndys/W1ndysBot-dev/commit/b4acfea) [d19f357](https://github.com/W1ndys/W1ndysBot-dev/commit/d19f357))
 
 ## 2025-06-07
 
-- **GroupNickNameLock**：优化群昵称锁定命令的处理逻辑，更新命令描述以提升可读性和用户体验
-- **KeywordsReply**：新增关键词回复模块，完全匹配，只回复内容，不会回复其他多余文字，是 FAQ 系统的补充，不设置权限，任何人都可以添加关键词回复，但只有管理员可以删除关键词回复
-- **GroupNickNameLock**：优化群消息处理逻辑，仅处理英文中括号的 Unicode，提升消息解析准确性
-- **Reporter**：优化私聊消息格式，增强用户信息展示，提升用户体验
+- **GroupNickNameLock**：优化群昵称锁定命令的处理逻辑，更新命令描述以提升可读性和用户体验 ([dcdce17](https://github.com/W1ndys/W1ndysBot-dev/commit/dcdce17))
+- **KeywordsReply**：新增关键词回复模块，完全匹配，只回复内容，不会回复其他多余文字，是 FAQ 系统的补充，不设置权限，任何人都可以添加关键词回复，但只有管理员可以删除关键词回复 ([e31fee1](https://github.com/W1ndys/W1ndysBot-dev/commit/e31fee1) [d8d32ca](https://github.com/W1ndys/W1ndysBot-dev/commit/d8d32ca))
+- **GroupNickNameLock**：优化群消息处理逻辑，仅处理英文中括号的 Unicode，提升消息解析准确性 ([c7ff845](https://github.com/W1ndys/W1ndysBot-dev/commit/c7ff845))
+- **Reporter**：优化私聊消息格式，增强用户信息展示，提升用户体验 ([055ef03](https://github.com/W1ndys/W1ndysBot-dev/commit/055ef03))
 
 ## 2025-06-06
 
-- **GroupNickNameLock**：在群昵称锁定模块中新增昵称提醒时间间隔功能，优化数据库表结构以支持提醒时间记录，新增群昵称提醒功能，当群昵称不符合正则时，会提醒用户修改，并且当群设置了默认名时，用户群名片不符正则时，才自动设置默认名
-- **Core**：**核心模块新增动态加载菜单，模块功能、描述等信息，实现模块的动态加载**
-- **Switch/Command**：重构开关功能和命令输出功能，全部整合到 Core 核心模块内，并且修复开关命令的权限控制未鉴权的问题
-- **GroupHumanVerification**：在群人机验证模块中新增仅扫描当前群聊未验证成员的功能，优化警告和踢出逻辑，提升群管理体验。
+- **GroupNickNameLock**：在群昵称锁定模块中新增昵称提醒时间间隔功能，优化数据库表结构以支持提醒时间记录，新增群昵称提醒功能，当群昵称不符合正则时，会提醒用户修改，并且当群设置了默认名时，用户群名片不符正则时，才自动设置默认名 ([7dbee83](https://github.com/W1ndys/W1ndysBot-dev/commit/7dbee83))
+- **Core**：**核心模块新增动态加载菜单，模块功能、描述等信息，实现模块的动态加载** ([2eb8d74](https://github.com/W1ndys/W1ndysBot-dev/commit/2eb8d74))
+- **Switch/Command**：重构开关功能和命令输出功能，全部整合到 Core 核心模块内，并且修复开关命令的权限控制未鉴权的问题 ([c32b4a6](https://github.com/W1ndys/W1ndysBot-dev/commit/c32b4a6))
+- **GroupHumanVerification**：在群人机验证模块中新增仅扫描当前群聊未验证成员的功能，优化警告和踢出逻辑，提升群管理体验。([4fae9dc](https://github.com/W1ndys/W1ndysBot-dev/commit/4fae9dc))
 
 ## 2025-06-05
 
