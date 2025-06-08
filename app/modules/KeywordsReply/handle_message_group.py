@@ -1,12 +1,21 @@
-from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND
+from . import (
+    MODULE_NAME,
+    SWITCH_NAME,
+    MENU_COMMAND,
+    ADD_COMMAND,
+    DELETE_COMMAND,
+    LIST_COMMAND,
+    CLEAR_COMMAND,
+)
+
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from core.auth import is_system_owner
 from api.message import send_group_msg
 from api.generate import generate_text_message, generate_reply_message
 from datetime import datetime
-from .data_manager import DataManager
 from core.menu_manager import MenuManager
+from .handle_KeywordsReply import HandleKeywordsReply
 
 
 class GroupMessageHandler:
@@ -66,10 +75,24 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            # 示例：使用with语句块进行数据库操作
-            with DataManager() as dm:
-                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                pass
+            handle_keywords_reply = HandleKeywordsReply(self.websocket, self.msg)
+
+            # 数据管理命令
+            if self.raw_message.lower().startswith(ADD_COMMAND.lower()):
+                await handle_keywords_reply.handle_add_keyword()
+                return
+            if self.raw_message.lower().startswith(DELETE_COMMAND.lower()):
+                await handle_keywords_reply.handle_delete_keyword()
+                return
+            if self.raw_message.lower() == LIST_COMMAND.lower():
+                await handle_keywords_reply.handle_list_keyword()
+                return
+            if self.raw_message.lower() == CLEAR_COMMAND.lower():
+                await handle_keywords_reply.handle_clear_keyword()
+                return
+
+            # 关键词回复
+            await handle_keywords_reply.handle_keywords_reply()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
