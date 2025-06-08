@@ -26,7 +26,7 @@ class GroupSpamDetectionHandle:
         self.spam_threshold = 5  # 消息数量阈值
         self.spam_time_window = 1.0  # 时间窗口(秒)
         self.identical_message_threshold = 3  # 相同消息数量阈值
-        self.ban_minutes = 1  # 禁言分钟数
+        self.ban_minutes = 3  # 禁言分钟数
 
     async def handle_message(self):
         """

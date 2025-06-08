@@ -5,6 +5,10 @@ icon: fa-solid fa-clipboard-list
 
 # 更新日志
 
+## 2025-06-08
+
+- **GroupSpamDetection**：禁言时间改为 3 分钟
+
 ## 2025-06-07
 
 - **GroupNickNameLock**：优化群昵称锁定命令的处理逻辑，更新命令描述以提升可读性和用户体验
