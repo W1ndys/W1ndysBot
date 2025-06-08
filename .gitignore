@@ -201,3 +201,4 @@ cython_debug/
 .pypirc
 .cursorrules
 
+git-push-update-docs.sh
