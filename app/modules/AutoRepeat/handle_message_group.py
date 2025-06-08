@@ -29,7 +29,7 @@ class GroupMessageHandler:
         self.card = self.sender.get("card", "")  # 群名片
         self.role = self.sender.get("role", "")  # 群身份
 
-        self.repeat_probability = 0.5  # 随机概率
+        self.repeat_probability = 0.3  # 随机概率
 
     async def handle(self):
         """
