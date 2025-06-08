@@ -64,6 +64,7 @@ class HandleKeywordsReply:
                         f"💬 回复内容：{reply}"
                     ),
                 ],
+                note="del_msg=15",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}] 添加关键词失败: {e}")
@@ -90,6 +91,7 @@ class HandleKeywordsReply:
                                 f"⚠️ 关键词「{keyword}」不存在，无法删除。"
                             ),
                         ],
+                        note="del_msg=15",
                     )
                     return
                 dm.delete_keyword(self.group_id, keyword)
@@ -100,6 +102,7 @@ class HandleKeywordsReply:
                     generate_reply_message(self.message_id),
                     generate_text_message(f"✅ 删除关键词「{keyword}」成功！"),
                 ],
+                note="del_msg=15",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}] 删除关键词失败: {e}")
@@ -120,6 +123,7 @@ class HandleKeywordsReply:
                             generate_reply_message(self.message_id),
                             generate_text_message("当前群没有设置关键词回复。"),
                         ],
+                        note="del_msg=15",
                     )
                 else:
                     await send_group_msg(
@@ -132,6 +136,7 @@ class HandleKeywordsReply:
                                 + "\n".join(f"🔑 {keyword}" for keyword in keywords)
                             ),
                         ],
+                        note="del_msg=15",
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}] 查看关键词失败: {e}")
@@ -151,6 +156,7 @@ class HandleKeywordsReply:
                     generate_reply_message(self.message_id),
                     generate_text_message("✅ 已清空当前群的所有关键词回复。"),
                 ],
+                note="del_msg=15",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}] 清空关键词失败: {e}")
