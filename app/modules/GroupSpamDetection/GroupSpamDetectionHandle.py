@@ -43,7 +43,8 @@ class GroupSpamDetectionHandle:
             ]
             now = float(self.time)
             # 判断是否为图片CQ码，是则统一标记
-            if re.match(r"\\[CQ:image,[^\\]]+\\]", self.raw_message):
+            # 图片消息格式为：[CQ:image,summary=&#91;动画表情&#93;,file=xxx.jpg,sub_type=1,url=xxx]
+            if re.match(r"\[CQ:image,[^\]]+\]", self.raw_message):
                 contents.append("[IMAGE_MSG]")
             else:
                 contents.append(self.raw_message)
