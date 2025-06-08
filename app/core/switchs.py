@@ -212,5 +212,6 @@ async def handle_module_group_switch(MODULE_NAME, websocket, group_id, message_i
             [reply_message, text_message],
             note="del_msg=10",
         )
+        return switch_status
     except Exception as e:
         logger.error(f"[{MODULE_NAME}]处理模块群聊开关命令失败: {e}")
