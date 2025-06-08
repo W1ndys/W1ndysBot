@@ -7,7 +7,7 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-08
 
-- **GroupSpamDetection**：禁言时间改为 3 分钟
+- **GroupSpamDetection**：禁言时间改为 3 分钟，优化图片处理，所有图片视为相同消息
 - **GroupNickNameLock**：修复个人群昵称锁与数据库一致时，会来回修改群昵称的问题
 
 ## 2025-06-07
