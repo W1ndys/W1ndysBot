@@ -239,7 +239,10 @@ class GroupMessageHandler:
                 # --- 核心昵称检测逻辑 ---
                 # 1. 检查用户锁定昵称（优先级高）
                 lock_name = dm.get_user_lock_name(self.group_id, self.user_id)
-                if lock_name and self.card != lock_name:
+                if lock_name:
+                    if self.card == lock_name:
+                        # 如果名字已经符合锁定名，直接返回，不进行后续检查
+                        return
                     await set_group_card(
                         self.websocket, self.group_id, self.user_id, lock_name
                     )
@@ -247,6 +250,7 @@ class GroupMessageHandler:
                         f"[{MODULE_NAME}]用户{self.user_id}群名片不符锁定，已自动改为: {lock_name}"
                     )
                     return
+
                 # 2. 检查群正则
                 regex = dm.get_group_regex(self.group_id)
                 if regex:
