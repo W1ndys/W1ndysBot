@@ -8,7 +8,7 @@ MODULE_NAME = "AutoRepeat"
 SWITCH_NAME = "ar"
 
 # 模块描述
-MODULE_DESCRIPTION = "一个随机复读上一条消息的模块"
+MODULE_DESCRIPTION = "一个随机复读上一条消息的模块，随机戳一戳上一个说话的人"
 
 # 数据目录
 DATA_DIR = os.path.join("data", MODULE_NAME)

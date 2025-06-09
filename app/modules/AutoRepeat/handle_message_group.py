@@ -2,7 +2,7 @@ from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from core.auth import is_system_owner
-from api.message import send_group_msg_with_cq
+from api.message import send_group_msg_with_cq, group_poke
 from datetime import datetime
 from core.menu_manager import MenuManager
 import random
@@ -30,6 +30,7 @@ class GroupMessageHandler:
         self.role = self.sender.get("role", "")  # 群身份
 
         self.repeat_probability = 0.1  # 随机概率，百分之10
+        self.poke_probability = 0.3  # 随机概率，百分之30
 
     async def handle(self):
         """
@@ -62,6 +63,13 @@ class GroupMessageHandler:
             # 如果没开启群聊开关，则不处理
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
+
+            # 随机戳一戳上一个说话的人
+            if random.random() < self.poke_probability:
+                await group_poke(self.websocket, self.group_id, self.user_id)
+                logger.info(
+                    f"[{MODULE_NAME}]群聊戳一戳: {self.group_id} {self.nickname}({self.user_id})"
+                )
 
             # 忽略的字符数组单独摘出来
             ignore_words = [

@@ -428,14 +428,14 @@ async def send_forward_msg(
         logger.error(f"[API]执行发送合并转发消息失败: {e}")
 
 
-async def send_poke(websocket, user_id, group_id=None):
+async def group_poke(websocket, group_id, user_id):
     """
     发送戳一戳
 
     Args:
         websocket: WebSocket连接实例
-        user_id (Union[int, str]): 好友的QQ号 (必填)
-        group_id (Union[int, str], optional): 群号 (选填)
+        group_id (Union[int, str]): 群号 (必填)
+        user_id (Union[int, str]): 群友的QQ号 (必填)
 
     Returns:
         bool: 发送是否成功
@@ -444,12 +444,11 @@ async def send_poke(websocket, user_id, group_id=None):
         if not user_id:
             logger.error("[API]执行发送戳一戳失败: user_id不能为空")
 
-        # 构建参数
-        params = {"user_id": user_id}
-        if group_id:
-            params["group_id"] = group_id
-
-        payload = {"action": "send_poke", "params": params, "echo": "send_poke"}
+        payload = {
+            "action": "group_poke",
+            "params": {"group_id": group_id, "user_id": user_id},
+            "echo": "group_poke",
+        }
         await websocket.send(json.dumps(payload))
         logger.info(f"[API]已执行发送戳一戳")
     except Exception as e:
