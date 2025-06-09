@@ -7,6 +7,7 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-09
 
+- **Logger**：修改日志文件命名方式，去掉前缀"app\_"，仅保留时间戳，修改 namer 函数，轮转时以当前时间命名新日志文件，格式为 YYYY-MM-DD_HH-MM-SS.log，简化日志文件命名，提高日志管理的清晰度 ([6bf19ce](https://github.com/W1ndys/W1ndysBot-dev/commit/6bf19ce961b09a138e10b173024c3d29818ac061))
 - **GroupSpamDetection**：优化重复消息检测逻辑，仅检查最近一分钟内的消息，以提高检测准确性，更新日志信息，明确指出用户在一分钟内连续发送相同消息的情况 ([da74eac](https://github.com/W1ndys/W1ndysBot-dev/commit/da74eac964ff07780c8cac82b93d221e24254105))
 - **EventHandler**：添加群 ID 信息到消息格式化，在事件处理程序中，新增对群 ID 的提取和格式化，增强消息的可读性 ([92673f9](https://github.com/W1ndys/W1ndysBot-dev/commit/92673f9cb5fc96e75115ce7ff5d569afab72920c))
 - **MenuManager**：统一菜单命令管理，将菜单命令定义移至`menu_manager.py`，以提高代码复用性，更新多个模块以引用新的`MENU_COMMAND`，简化代码结构 ([adfcbd2](https://github.com/W1ndys/W1ndysBot-dev/commit/adfcbd2))
