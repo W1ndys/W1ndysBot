@@ -89,12 +89,20 @@ class GroupSpamDetectionHandle:
                 ] = current_minute
 
             # 重复消息检测
-            if len(contents) >= self.identical_message_threshold and should_warn():
-                # 检查最后N条是否完全相同
-                last_msgs = contents[-self.identical_message_threshold :]
+            # 只检测最近一分钟内的消息
+            one_minute_ago = now - 60
+            recent_contents = [
+                msg for t, msg in zip(timestamps, contents) if t >= one_minute_ago
+            ]
+            if (
+                len(recent_contents) >= self.identical_message_threshold
+                and should_warn()
+            ):
+                # 检查最近一分钟内最后N条是否完全相同
+                last_msgs = recent_contents[-self.identical_message_threshold :]
                 if all(msg == last_msgs[0] for msg in last_msgs):
                     logger.info(
-                        f"[{MODULE_NAME}] 用户{self.user_id}在群{self.group_id} 连续发送{self.identical_message_threshold}条相同消息，疑似刷屏。"
+                        f"[{MODULE_NAME}] 用户{self.user_id}在群{self.group_id} 一分钟内连续发送{self.identical_message_threshold}条相同消息，疑似刷屏。"
                     )
                     # 禁言加警告
                     await set_group_ban(
