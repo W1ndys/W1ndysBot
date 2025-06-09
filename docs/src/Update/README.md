@@ -7,6 +7,7 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-09
 
+- **EventHandler**：添加群 ID 信息到消息格式化，在事件处理程序中，新增对群 ID 的提取和格式化，增强消息的可读性 ([92673f9](https://github.com/W1ndys/W1ndysBot-dev/commit/92673f9cb5fc96e75115ce7ff5d569afab72920c))
 - **MenuManager**：统一菜单命令管理，将菜单命令定义移至`menu_manager.py`，以提高代码复用性，更新多个模块以引用新的`MENU_COMMAND`，简化代码结构 ([adfcbd2](https://github.com/W1ndys/W1ndysBot-dev/commit/adfcbd2))
 - **AutoRepeat**：新增随机戳一戳功能，随机概率 30%，模块描述 ([aaa6f44](https://github.com/W1ndys/W1ndysBot-dev/commit/aaa6f44))
 - **GroupMessageHandler**：优化群聊复读消息发送 ([e551fb2](https://github.com/W1ndys/W1ndysBot-dev/commit/e551fb2))
