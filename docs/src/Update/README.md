@@ -7,6 +7,7 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-09
 
+- **AutoRepeat**：新增随机戳一戳功能，随机概率 30%，模块描述 ([aaa6f44](https://github.com/W1ndys/W1ndysBot-dev/commit/aaa6f44))
 - **GroupMessageHandler**：优化群聊复读消息发送 ([e551fb2](https://github.com/W1ndys/W1ndysBot-dev/commit/e551fb2))
 
 ## 2025-06-08
