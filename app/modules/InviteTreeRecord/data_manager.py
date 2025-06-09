@@ -218,3 +218,20 @@ class InviteLinkRecordDataManager:
                 f"删除群{self.group_id}，被邀请者：{invited_id} 的邀请记录失败: {e}"
             )
             return False
+
+    def get_invite_count(self, operator_id=None):
+        """
+        获取某个邀请者在本群邀请了多少人
+        """
+        if operator_id is None:
+            operator_id = self.operator_id
+        try:
+            self.cursor.execute(
+                """SELECT COUNT(*) FROM invite_link_record WHERE group_id = ? AND operator_id = ?""",
+                (self.group_id, operator_id),
+            )
+            row = self.cursor.fetchone()
+            return row[0] if row else 0
+        except Exception as e:
+            logger.error(f"统计邀请次数失败: {e}")
+            return 0

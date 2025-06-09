@@ -198,6 +198,8 @@ class GroupNoticeHandler:
             # 添加邀请树接记录
             invite_link_record = InviteLinkRecordDataManager(self.websocket, self.msg)
             if invite_link_record.add_invite_link_record():
+                # 统计邀请次数
+                invite_count = invite_link_record.get_invite_count(self.operator_id)
                 # 通知管理员
                 await send_private_msg(
                     self.websocket,
@@ -209,6 +211,7 @@ class GroupNoticeHandler:
                             f"被邀请者：{self.user_id}\n"
                             f"群号：{self.group_id}\n"
                             f"邀请时间：{self.formatted_time}\n"
+                            f"这是该邀请者邀请的第{invite_count}个成员。\n"
                         )
                     ],
                 )
