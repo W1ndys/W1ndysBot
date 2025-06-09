@@ -7,6 +7,7 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-10
 
+- **GroupBanWords**：增强违禁词管理功能，新增添加和删除违禁词命令处理，更新数据管理类支持用户状态管理，实现消息权重计算，自动封禁违规用户，提升群聊内容管理，确保群组环境安全性与合规性 ([62672a6](https://github.com/W1ndys/W1ndysBot-dev/commit/62672a67d444b0b004ba36c2461fd7b034de7dda))
 - **InviteTreeRecord**：添加邀请次数统计功能，在 InviteLinkRecordDataManager 中新增 get_invite_count 方法，用于统计某个邀请者在群中的邀请人数，在 GroupNoticeHandler 中调用该方法，通知管理员被邀请者的邀请次数，增强邀请管理功能，提供更清晰的邀请统计信息 ([b304dcf](https://github.com/W1ndys/W1ndysBot-dev/commit/b304dcf5d31e2944e67ca29f8c8d1c4e7522a5c3))
 
 ## 2025-06-09
