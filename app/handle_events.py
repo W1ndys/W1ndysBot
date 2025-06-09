@@ -134,6 +134,9 @@ class EventHandler:
             sub_type = msg.get("sub_type")
             if sub_type is not None:
                 format_msg += f" | 子消息类型: {sub_type}"
+            group_id = msg.get("group_id")
+            if group_id is not None:
+                format_msg += f" | 群ID: {group_id}"
             sender = msg.get("sender", {})
             sender_id = sender.get("user_id")
             if sender_id is not None:
