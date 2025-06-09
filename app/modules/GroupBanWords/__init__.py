@@ -2,13 +2,13 @@ import os
 
 
 # 模块名称
-MODULE_NAME = "GroupMessageMonitor"
+MODULE_NAME = "GroupBanWords"
 
 # 模块开关名称
-SWITCH_NAME = "GMM"
+SWITCH_NAME = "GBW"
 
 # 模块描述
-MODULE_DESCRIPTION = "群消息监控模块,用于监控敏感消息，常用于引流广告监控"
+MODULE_DESCRIPTION = "基于权重的违禁词监控模块，支持自定义违禁词"
 
 # 数据目录
 DATA_DIR = os.path.join("data", MODULE_NAME)
