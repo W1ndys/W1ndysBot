@@ -17,7 +17,6 @@ CORE_MODULES = [
     ("core.del_self_msg", "handle_events"),  # 自动撤回自己发送的消息
     ("core.nc_get_rkey", "handle_events"),  # 自动刷新rkey
     ("core.menu_manager", "handle_events"),  # 全局菜单命令
-    ("core.reload_modules", "handle_events"),  # 模块热更新
     # 在这里添加其他必须加载的核心模块
 ]
 

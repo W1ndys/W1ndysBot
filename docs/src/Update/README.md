@@ -11,7 +11,6 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-08
 
-- **Core：添加模块热更新功能 ([4c7e058](https://github.com/W1ndys/W1ndysBot-dev/commit/4c7e058))**
 - **GroupSpamDetection**：禁言时间改为 3 分钟，优化图片处理，所有图片视为相同消息 ([f9f2da7](https://github.com/W1ndys/W1ndysBot-dev/commit/f9f2da7))
 - **GroupNickNameLock**：修复个人群昵称锁与数据库一致时，会来回修改群昵称的问题 ([d80ea77](https://github.com/W1ndys/W1ndysBot-dev/commit/d80ea77))
 - **KeywordsReply**：完成关键词回复模块的开发，新增菜单命令处理功能，优化关键词回复逻辑，支持完全匹配，只回复内容，不会回复其他多余文字，是 FAQ 系统的补充，不设置权限，任何人都可以添加关键词回复，但只有管理员可以删除关键词回复 ([b4acfea](https://github.com/W1ndys/W1ndysBot-dev/commit/b4acfea) [d19f357](https://github.com/W1ndys/W1ndysBot-dev/commit/d19f357))
