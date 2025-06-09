@@ -1,4 +1,5 @@
-from . import MODULE_NAME, SWITCH_NAME, MENU_COMMAND
+from . import MODULE_NAME, SWITCH_NAME
+from core.menu_manager import MENU_COMMAND
 from . import (
     CMD_SET_REGEX,
     CMD_GET_REGEX,

@@ -6,6 +6,9 @@ from api.generate import generate_reply_message, generate_text_message
 from api.message import send_group_msg, send_private_msg
 from core.auth import is_system_owner
 
+# 菜单命令
+MENU_COMMAND = "menu"
+
 
 class MenuManager:
     """菜单管理器 - 用于收集和展示所有模块的菜单信息"""
@@ -83,7 +86,7 @@ async def handle_events(websocket, message):
         if message.get("post_type") != "message":
             return
         raw_message = message.get("raw_message", "").lower()
-        if raw_message != "menu":
+        if raw_message != MENU_COMMAND:
             return
         # 判断消息类型
         message_type = message.get("message_type", "")

@@ -20,8 +20,6 @@ os.makedirs(DATA_DIR, exist_ok=True)
 GENERATE_WORD_CLOUD = "生成词云"
 """生成词云的命令"""
 
-MENU_COMMAND = "menu"
-"""菜单命令"""
 
 COMMANDS = {
     GENERATE_WORD_CLOUD: "生成词云",

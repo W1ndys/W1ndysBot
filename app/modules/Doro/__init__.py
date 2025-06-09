@@ -20,10 +20,6 @@ os.makedirs(DATA_DIR, exist_ok=True)
 DORO_COMMANDS = "来个doro"
 # ------------------------------------------------------------
 
-MENU_COMMAND = "menu"
-
 COMMANDS = {
     DORO_COMMANDS: "随机返回一个Doro表情包",
 }
-
-

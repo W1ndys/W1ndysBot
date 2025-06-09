@@ -3,8 +3,8 @@ from . import (
     SWITCH_NAME,
     VIEW_INVITE_RECORD,
     KICK_INVITE_RECORD,
-    MENU_COMMAND,
 )
+from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg

@@ -52,7 +52,6 @@ NOTE_CONDITION = "GHV_VERIFICATION_CODE"
 
 # ------------------------------------------------------------
 
-MENU_COMMAND = "menu"
 
 COMMANDS = {
     SCAN_VERIFICATION: "扫描入群验证",

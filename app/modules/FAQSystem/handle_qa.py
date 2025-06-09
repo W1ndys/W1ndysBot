@@ -49,7 +49,7 @@ class QaHandler:
 
             # 否则，调用匹配问答对函数
             await self.handle_match_qa()  # type: ignore
-
+            return
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
 

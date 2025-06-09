@@ -28,8 +28,6 @@ CMD_GET_LOCK = "查询群昵称锁定"
 CMD_DEL_LOCK = "删除群昵称锁定"
 
 
-MENU_COMMAND = "menu"
-
 COMMANDS = {
     CMD_SET_REGEX: "设置群昵称正则",
     CMD_GET_REGEX: "查询群昵称正则",

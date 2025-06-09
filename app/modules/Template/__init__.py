@@ -17,7 +17,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 
 # 模块的一些命令可以在这里定义，方便在其他地方调用，提高代码的复用率
 # ------------------------------------------------------------
-MENU_COMMAND = "menu"  # 菜单命令
+
 EXAMPLE_COMMAND = "示例命令"  # 示例命令
 
 COMMANDS = {

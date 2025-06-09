@@ -5,9 +5,9 @@ from . import (
     BLACKLIST_LIST_COMMAND,
     BLACKLIST_CLEAR_COMMAND,
     SWITCH_NAME,
-    MENU_COMMAND,
 )
 import logger
+from core.menu_manager import MENU_COMMAND
 from core.auth import is_system_owner, is_group_admin
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg, delete_msg

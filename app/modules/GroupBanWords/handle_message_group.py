@@ -1,9 +1,13 @@
 from . import MODULE_NAME, SWITCH_NAME
+from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
+from core.auth import is_system_owner
+from api.message import send_group_msg
+from api.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager_words import DataManager
-from core.auth import is_system_owner
+from core.menu_manager import MenuManager
 
 
 class GroupMessageHandler:
@@ -35,6 +39,7 @@ class GroupMessageHandler:
             if self.raw_message.lower() == SWITCH_NAME.lower():
                 # 鉴权
                 if not is_system_owner(self.user_id):
+                    logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换群聊开关")
                     return
                 await handle_module_group_switch(
                     MODULE_NAME,
@@ -44,14 +49,28 @@ class GroupMessageHandler:
                 )
                 return
 
+            # 处理菜单命令（无视开关状态）
+            if self.raw_message.lower() == (SWITCH_NAME + MENU_COMMAND).lower():
+                menu_text = MenuManager.get_module_commands_text(MODULE_NAME)
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(menu_text),
+                    ],
+                    note="del_msg=30",
+                )
+                return
+
             # 如果没开启群聊开关，则不处理
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            # 示例：使用DataManager进行数据库操作
-            dm = DataManager(self.group_id)
-            # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-            pass
+            # 示例：使用with语句块进行数据库操作
+            with DataManager() as dm:
+                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
+                pass
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")

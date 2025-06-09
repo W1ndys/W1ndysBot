@@ -1,13 +1,12 @@
 from . import (
     MODULE_NAME,
     SWITCH_NAME,
-    MENU_COMMAND,
     ADD_COMMAND,
     DELETE_COMMAND,
     LIST_COMMAND,
     CLEAR_COMMAND,
 )
-
+from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from core.auth import is_system_owner

@@ -18,7 +18,7 @@ class FriendNoticeHandler:
         )  # 格式化时间
         self.notice_type = msg.get("notice_type")
         self.sub_type = msg.get("sub_type")
-        self.user_id = msg.get("user_id")
+        self.user_id = str(msg.get("user_id"))
 
     async def handle_friend_notice(self):
         """
