@@ -5,6 +5,10 @@ icon: fa-solid fa-clipboard-list
 
 # 更新日志
 
+## 2025-06-09
+
+- **GroupMessageHandler**：优化群聊复读消息发送 ([e551fb2](https://github.com/W1ndys/W1ndysBot-dev/commit/e551fb2))
+
 ## 2025-06-08
 
 - **Core：添加模块热更新功能 ([4c7e058](https://github.com/W1ndys/W1ndysBot-dev/commit/4c7e058))**
