@@ -8,7 +8,7 @@ import logger
 from config import FEISHU_BOT_URL, FEISHU_BOT_SECRET
 
 
-def feishu(title: str, content: str) -> dict:
+def send_feishu_msg(title: str, content: str) -> dict:
     """
     发送飞书机器人消息
 

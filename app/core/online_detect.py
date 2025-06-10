@@ -1,7 +1,7 @@
 import logger
 from config import OWNER_ID
 from api.message import send_private_msg
-from utils.feishu import feishu
+from utils.feishu import send_feishu_msg
 import time
 
 # 全局变量
@@ -70,7 +70,7 @@ async def handle_events(websocket, message):
             logger.success(f"机器人状态变更: {status_text}")
             try:
                 # 发送飞书通知
-                feishu_result = feishu(title, content)
+                feishu_result = send_feishu_msg(title, content)
                 if "error" in feishu_result:
                     logger.error(f"发送飞书通知失败: {feishu_result.get('error')}")
 
