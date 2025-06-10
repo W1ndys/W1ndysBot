@@ -204,5 +204,4 @@ cython_debug/
 git-push-update-docs.sh
 clean_pycache.sh
 copy_db.sh
-ssh_remote_down.py
-ssh_remote_upload.py
+ssh_remote_*.py
