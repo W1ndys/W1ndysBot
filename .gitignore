@@ -205,3 +205,4 @@ git-push-update-docs.sh
 clean_pycache.sh
 copy_db.sh
 ssh_remote_*.py
+app/modules/GroupBanWords/run_test_ban_words.sh
