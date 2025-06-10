@@ -5,10 +5,10 @@ from . import MODULE_NAME
 
 class DataManager:
     def __init__(self, group_id):
-        data_dir = os.path.join("data", MODULE_NAME, group_id)
-        os.makedirs(data_dir, exist_ok=True)
-        db_path = os.path.join(data_dir, "data.db")
-        self.conn = sqlite3.connect(db_path)
+        self.data_dir = os.path.join("data", MODULE_NAME, group_id)
+        os.makedirs(self.data_dir, exist_ok=True)
+        self.db_path = os.path.join(self.data_dir, "data.db")
+        self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
         self._create_table()
 
@@ -104,14 +104,9 @@ class DataManager:
 
 
 if __name__ == "__main__":
-    with DataManager("1234567890") as dm:
-        print("添加敏感词 'test'，权值 10")
-        dm.add_word("test", 10)
-        print("当前敏感词列表：", dm.get_words())
-        print("将敏感词 'test' 的权值更新为 20")
-        dm.update_word("test", 20)
-        print("更新后敏感词列表：", dm.get_words())
-        print("删除敏感词 'test'")
-        dm.delete_word("test")
-        print("删除后敏感词列表：", dm.get_words())
-        print("计算消息 'test' 的违禁程度：", dm.calc_message_weight("test"))
+    group_id = "1046961227"
+    with DataManager(group_id) as dm:
+        while True:
+            msg = input("请输入消息: ")
+            weight = dm.calc_message_weight(msg)
+            print(f"消息权重: {weight}")
