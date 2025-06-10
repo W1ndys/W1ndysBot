@@ -5,19 +5,22 @@ icon: fa-solid fa-clipboard-list
 
 # 更新日志
 
+<!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息 -->
+
 ## 2025-06-10
 
-- **GroupBanWords**：增强违禁词管理功能，新增添加和删除违禁词命令处理，更新数据管理类支持用户状态管理，实现消息权重计算，自动封禁违规用户，提升群聊内容管理，确保群组环境安全性与合规性 ([62672a6](https://github.com/W1ndys/W1ndysBot-dev/commit/62672a67d444b0b004ba36c2461fd7b034de7dda))
-- **InviteTreeRecord**：添加邀请次数统计功能，在 InviteLinkRecordDataManager 中新增 get_invite_count 方法，用于统计某个邀请者在群中的邀请人数，在 GroupNoticeHandler 中调用该方法，通知管理员被邀请者的邀请次数，增强邀请管理功能，提供更清晰的邀请统计信息 ([b304dcf](https://github.com/W1ndys/W1ndysBot-dev/commit/b304dcf5d31e2944e67ca29f8c8d1c4e7522a5c3))
+- **GroupBanWords**：新增管理员解封和踢出用户命令处理功能，支持管理员通过私聊命令解除被封禁用户状态或将违规用户踢出群聊，优化违禁词检测与用户状态管理 ([6f93fa1](https://github.com/W1ndys/W1ndysBot-dev/commit/6f93fa10933c959ac44ebbbc037e00020019bae9))
+- **GroupBanWords**：新增添加和删除违禁词命令处理，更新数据管理类支持用户状态管理，实现消息权重计算和自动封禁违规用户 ([62672a6](https://github.com/W1ndys/W1ndysBot-dev/commit/62672a67d444b0b004ba36c2461fd7b034de7dda))
+- **InviteTreeRecord**：新增邀请次数统计功能，在 InviteLinkRecordDataManager 中添加 get_invite_count 方法，用于统计邀请者在群中的邀请人数，在 GroupNoticeHandler 中通知管理员被邀请者的邀请次数 ([b304dcf](https://github.com/W1ndys/W1ndysBot-dev/commit/b304dcf5d31e2944e67ca29f8c8d1c4e7522a5c3))
 
 ## 2025-06-09
 
-- **Logger**：修改日志文件命名方式，去掉前缀"app\_"，仅保留时间戳，修改 namer 函数，轮转时以当前时间命名新日志文件，格式为 YYYY-MM-DD_HH-MM-SS.log，简化日志文件命名，提高日志管理的清晰度 ([6bf19ce](https://github.com/W1ndys/W1ndysBot-dev/commit/6bf19ce961b09a138e10b173024c3d29818ac061))
-- **GroupSpamDetection**：优化重复消息检测逻辑，仅检查最近一分钟内的消息，以提高检测准确性，更新日志信息，明确指出用户在一分钟内连续发送相同消息的情况 ([da74eac](https://github.com/W1ndys/W1ndysBot-dev/commit/da74eac964ff07780c8cac82b93d221e24254105))
-- **EventHandler**：添加群 ID 信息到消息格式化，在事件处理程序中，新增对群 ID 的提取和格式化，增强消息的可读性 ([92673f9](https://github.com/W1ndys/W1ndysBot-dev/commit/92673f9cb5fc96e75115ce7ff5d569afab72920c))
-- **MenuManager**：统一菜单命令管理，将菜单命令定义移至`menu_manager.py`，以提高代码复用性，更新多个模块以引用新的`MENU_COMMAND`，简化代码结构 ([adfcbd2](https://github.com/W1ndys/W1ndysBot-dev/commit/adfcbd2))
-- **AutoRepeat**：新增随机戳一戳功能，随机概率 30%，模块描述 ([aaa6f44](https://github.com/W1ndys/W1ndysBot-dev/commit/aaa6f44))
-- **GroupMessageHandler**：优化群聊复读消息发送 ([e551fb2](https://github.com/W1ndys/W1ndysBot-dev/commit/e551fb2))
+- **Logger**：修改日志文件命名方式，去掉前缀"app\_"，仅保留时间戳，修改 namer 函数，轮转时以当前时间命名新日志文件，格式为 YYYY-MM-DD_HH-MM-SS.log ([6bf19ce](https://github.com/W1ndys/W1ndysBot-dev/commit/6bf19ce961b09a138e10b173024c3d29818ac061))
+- **GroupSpamDetection**：修改重复消息检测逻辑，仅检查最近一分钟内的消息，更新日志信息 ([da74eac](https://github.com/W1ndys/W1ndysBot-dev/commit/da74eac964ff07780c8cac82b93d221e24254105))
+- **EventHandler**：在事件处理程序中添加群 ID 信息到消息格式化 ([92673f9](https://github.com/W1ndys/W1ndysBot-dev/commit/92673f9cb5fc96e75115ce7ff5d569afab72920c))
+- **MenuManager**：将菜单命令定义移至`menu_manager.py`，更新多个模块以引用新的`MENU_COMMAND` ([adfcbd2](https://github.com/W1ndys/W1ndysBot-dev/commit/adfcbd2))
+- **AutoRepeat**：新增随机戳一戳功能，概率 30% ([aaa6f44](https://github.com/W1ndys/W1ndysBot-dev/commit/aaa6f44))
+- **GroupMessageHandler**：修改群聊复读消息发送逻辑 ([e551fb2](https://github.com/W1ndys/W1ndysBot-dev/commit/e551fb2))
 
 ## 2025-06-08
 
