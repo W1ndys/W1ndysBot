@@ -178,6 +178,7 @@ class GroupNoticeHandler:
         处理群聊成员增加 - 管理员已同意入群通知
         """
         try:
+            return
             with DataManager() as dm:
                 default_name = dm.get_group_default_name(self.group_id)
             if default_name:
@@ -197,6 +198,7 @@ class GroupNoticeHandler:
         处理群聊成员增加 - 管理员邀请入群通知
         """
         try:
+            return
             with DataManager() as dm:
                 default_name = dm.get_group_default_name(self.group_id)
             if default_name:
