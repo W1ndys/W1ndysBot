@@ -2,7 +2,9 @@ from modules.GroupBanWords.data_manager_words import DataManager
 
 
 if __name__ == "__main__":
-    group_id = "1046961227"
+    group_id = input("请输入群组ID (默认为'1046961227'): ").strip()
+    if not group_id:
+        group_id = "1046961227"
     with DataManager(group_id) as dm:
         while True:
             print("\n0. 退出 🚪")
