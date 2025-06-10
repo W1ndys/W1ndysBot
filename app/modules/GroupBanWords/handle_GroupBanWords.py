@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from . import (
     MODULE_NAME,
@@ -5,17 +6,21 @@ from . import (
     DELETE_BAN_WORD_COMMAND,
     BAN_WORD_WEIGHT_MAX,
     BAN_WORD_DURATION,
+    UNBAN_WORD_COMMAND,
+    KICK_BAN_WORD_COMMAND,
 )
 from .data_manager_words import DataManager
 from logger import logger
-from core.auth import is_group_admin
-from api.message import send_group_msg, delete_msg
+from core.auth import is_group_admin, is_system_owner
+from api.message import send_group_msg, delete_msg, send_private_msg
 from api.generate import (
     generate_text_message,
     generate_reply_message,
     generate_at_message,
 )
-from api.group import set_group_ban
+from api.group import set_group_ban, set_group_kick
+from config import OWNER_ID
+from utils.feishu import send_feishu_msg
 
 
 class GroupBanWordsHandler:
@@ -36,6 +41,95 @@ class GroupBanWordsHandler:
         self.card = self.sender.get("card", "")  # 群名片
         self.role = self.sender.get("role", "")  # 群身份
         self.data_manager = DataManager(self.group_id)
+
+    async def handle_unban_word(self):
+        try:
+            # 检测是否为管理员
+            if not is_system_owner(self.user_id):
+                return
+            # 过滤命令
+            self.raw_message = self.raw_message.lstrip(UNBAN_WORD_COMMAND).strip()
+            # 获取群号
+            banned_group_id = self.raw_message.split(" ")[0]
+            # 获取被封禁用户ID
+            banned_user_id = self.raw_message.split(" ")[1]
+            # 解封用户
+            await set_group_ban(
+                self.websocket,
+                banned_group_id,
+                banned_user_id,
+                0,
+            )
+            # 更新用户状态为已解封
+            self.data_manager.set_user_status(banned_user_id, "unban")
+            # 发送成功消息
+            await send_group_msg(
+                self.websocket,
+                banned_group_id,
+                [
+                    generate_at_message(banned_user_id),
+                    generate_text_message(f"({banned_user_id})你被管理员解除禁言"),
+                ],
+                note="del_msg=10",
+            )
+            # 发送管理员私聊消息
+            await send_private_msg(
+                self.websocket,
+                OWNER_ID,
+                [
+                    generate_text_message(
+                        f"群{banned_group_id}用户({banned_user_id})因发送违禁词被封禁，已被管理员解除禁言"
+                    ),
+                ],
+            )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]解封用户失败: {e}")
+
+    async def handle_kick_ban_word(self):
+        try:
+            # 检测是否为管理员
+            if not is_system_owner(self.user_id):
+                return
+            # 过滤命令
+            ban_word = self.raw_message.lstrip(KICK_BAN_WORD_COMMAND).strip()
+            # 获取被封禁用户ID
+            banned_user_id = ban_word.split(" ")[1]
+            # 获取群号
+            banned_group_id = ban_word.split(" ")[0]
+            # 更新用户状态为已踢出
+            self.data_manager.set_user_status(banned_user_id, "kick")
+            # 发送成功消息
+            await send_group_msg(
+                self.websocket,
+                banned_group_id,
+                [
+                    generate_at_message(banned_user_id),
+                    generate_text_message(
+                        f"({banned_user_id})你将因发送违禁消息被管理员踢出群"
+                    ),
+                ],
+                note="del_msg=10",
+            )
+            # 踢出用户
+            await asyncio.sleep(0.3)
+            await set_group_kick(
+                self.websocket,
+                banned_group_id,
+                banned_user_id,
+            )
+            # 发送管理员私聊消息
+            await asyncio.sleep(0.3)
+            await send_private_msg(
+                self.websocket,
+                OWNER_ID,
+                [
+                    generate_text_message(
+                        f"群{banned_group_id}用户({banned_user_id})发送违禁词，已被管理员踢出群"
+                    ),
+                ],
+            )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]踢出用户失败: {e}")
 
     async def add_ban_word(self):
         try:
@@ -88,18 +182,125 @@ class GroupBanWordsHandler:
             logger.error(f"[{MODULE_NAME}]删除违禁词失败: {e}")
 
     async def calc_message_weight(self):
+        """
+        计算消息违禁词权重并返回是否违禁和涉及的违禁词
+        Returns:
+            tuple: (是否违禁, 违禁词列表)
+        """
         try:
-            weight = self.data_manager.calc_message_weight(self.raw_message)
-            if weight > BAN_WORD_WEIGHT_MAX:
-                return True
-            return False
+            # 获取所有违禁词及权重
+            ban_words = self.data_manager.get_words()
+            total_weight = 0
+            matched_words = []
+
+            # 遍历检查每个违禁词
+            for word, weight in ban_words:
+                if word in self.raw_message:
+                    total_weight += weight
+                    matched_words.append(word)
+
+            # 判断是否超过最大权重
+            is_banned = total_weight > BAN_WORD_WEIGHT_MAX
+            return is_banned, matched_words
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]计算违禁词权重失败: {e}")
-            return 0
+            return False, []
+
+    async def check_and_handle_ban_words(self):
+        """检测违禁词并处理相关逻辑"""
+        is_banned, matched_words = await self.calc_message_weight()
+        if is_banned:
+            # 返回True，表示违规
+            await set_group_ban(
+                self.websocket,
+                self.group_id,
+                self.user_id,
+                BAN_WORD_DURATION,
+            )
+            # 撤回消息
+            await delete_msg(self.websocket, self.message_id)
+            # 设置用户状态
+            self.data_manager.set_user_status(self.user_id, "ban")
+            # 发送警告消息
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_at_message(self.user_id),
+                    generate_text_message("请勿发送违禁消息，如误封请联系管理员"),
+                ],
+                note="del_msg=20",
+            )
+            # 发送管理员消息
+            await send_private_msg(
+                self.websocket,
+                OWNER_ID,
+                [
+                    generate_text_message(
+                        f"[{self.formatted_time}]\n"
+                        f"群{self.group_id}用户{self.user_id}发送违禁词\n"
+                        f"已封禁{BAN_WORD_DURATION}秒\n"
+                        f"涉及违禁词: {', '.join(matched_words)}\n"
+                        f"相关消息已通过飞书上报\n"
+                        f"发送{UNBAN_WORD_COMMAND} {self.group_id} {self.user_id}解封用户\n"
+                        f"发送{KICK_BAN_WORD_COMMAND} {self.group_id} {self.user_id}踢出用户"
+                    )
+                ],
+            )
+
+            # 异步延迟0.3秒
+            await asyncio.sleep(0.3)
+
+            # 发送快速命令便于复制
+            await send_private_msg(
+                self.websocket,
+                OWNER_ID,
+                [
+                    generate_text_message(
+                        f"{UNBAN_WORD_COMMAND} {self.group_id} {self.user_id}"
+                    )
+                ],
+            )
+            await asyncio.sleep(0.3)
+            await send_private_msg(
+                self.websocket,
+                OWNER_ID,
+                [
+                    generate_text_message(
+                        f"{KICK_BAN_WORD_COMMAND} {self.group_id} {self.user_id}"
+                    )
+                ],
+            )
+
+            # 发送飞书消息
+            send_feishu_msg(
+                title=f"触发违禁词",
+                content=f"时间: {self.formatted_time}\n"
+                f"群{self.group_id}用户{self.user_id}发送违禁词\n"
+                f"已封禁{BAN_WORD_DURATION}秒\n"
+                f"涉及违禁词: {', '.join(matched_words)}\n"
+                f"原始消息: {self.raw_message}",
+            )
+            return True
+        else:
+            # 检测用户状态
+            user_status = self.data_manager.get_user_status(self.user_id)
+            if user_status == "ban":
+                # 撤回消息
+                await delete_msg(self.websocket, self.message_id)
+                # 禁言
+                await set_group_ban(
+                    self.websocket,
+                    self.group_id,
+                    self.user_id,
+                    BAN_WORD_DURATION,
+                )
+                return True
+        return False
 
     async def handle(self):
         try:
-
             # 添加违禁词
             if self.raw_message.startswith(ADD_BAN_WORD_COMMAND):
                 await self.add_ban_word()
@@ -110,35 +311,7 @@ class GroupBanWordsHandler:
                 return
 
             # 检测违禁词
-            if await self.calc_message_weight():
-                # 返回True，表示违规
-                await set_group_ban(
-                    self.websocket,
-                    self.group_id,
-                    self.user_id,
-                    BAN_WORD_DURATION,
-                )
-                # 设置用户状态
-                self.data_manager.set_user_status(self.user_id, "ban")
-                # 撤回消息
-                await delete_msg(self.websocket, self.message_id)
-                # 发送消息
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_at_message(self.user_id),
-                        generate_text_message("请勿发送违禁消息，如误封请联系管理员"),
-                    ],
-                    note="del_msg=20",
-                )
+            if await self.check_and_handle_ban_words():
                 return
-            else:
-                # 检测用户状态
-                user_status = self.data_manager.get_user_status(self.user_id)
-                if user_status == "ban":
-                    # 撤回消息
-                    await delete_msg(self.websocket, self.message_id)
-                    return
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理违禁词失败: {e}")

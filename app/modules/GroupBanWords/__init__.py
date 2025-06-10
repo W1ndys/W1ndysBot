@@ -22,6 +22,9 @@ BAN_WORD_DURATION = 30 * 24 * 60 * 60  # 违禁词封禁时长，单位：秒
 
 ADD_BAN_WORD_COMMAND = "添加违禁词"  # 添加违禁词命令
 DELETE_BAN_WORD_COMMAND = "删除违禁词"  # 删除违禁词命令
+UNBAN_WORD_COMMAND = "解封违禁词"  # 解封被封禁用户命令
+KICK_BAN_WORD_COMMAND = "踢出违禁词"  # 踢出被封禁用户命令
+
 
 COMMANDS = {
     ADD_BAN_WORD_COMMAND: "添加违禁词，用法：添加违禁词 违禁词 权重(0-100，默认10)，例如：添加违禁词 sb 10，权重越大，违禁词风险越高",

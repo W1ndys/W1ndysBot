@@ -1,4 +1,4 @@
-from . import MODULE_NAME, SWITCH_NAME
+from . import MODULE_NAME, SWITCH_NAME, UNBAN_WORD_COMMAND, KICK_BAN_WORD_COMMAND
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_private_switch_on, handle_module_private_switch
@@ -8,6 +8,7 @@ from datetime import datetime
 from .data_manager_words import DataManager
 from core.auth import is_system_owner
 from core.menu_manager import MenuManager
+from .handle_GroupBanWords import GroupBanWordsHandler
 
 
 class PrivateMessageHandler:
@@ -64,17 +65,14 @@ class PrivateMessageHandler:
             if not is_private_switch_on(MODULE_NAME):
                 return
 
-            # 新增：根据sub_type判断消息类型
-            if self.sub_type == "friend":
-                # 处理好友私聊消息
-                with DataManager() as dm:
-                    # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                    pass
-            elif self.sub_type == "group":
-                # 处理临时会话消息（如群临时会话）
-                with DataManager() as dm:
-                    # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                    pass
+            # 实例化GroupBanWords
+            group_ban_words = GroupBanWordsHandler(self.websocket, self.msg)
+            # 处理管理员解封 踢出
+            if self.raw_message.lower().startswith(UNBAN_WORD_COMMAND.lower()):
+                await group_ban_words.handle_unban_word()
+            elif self.raw_message.lower().startswith(KICK_BAN_WORD_COMMAND.lower()):
+                await group_ban_words.handle_kick_ban_word()
+
             else:
                 # 其他类型的私聊消息
                 logger.info(
