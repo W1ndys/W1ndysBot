@@ -204,3 +204,4 @@ cython_debug/
 git-push-update-docs.sh
 clean_pycache.sh
 copy_db.sh
+download_data.py
