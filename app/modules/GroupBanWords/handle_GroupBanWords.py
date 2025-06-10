@@ -133,51 +133,127 @@ class GroupBanWordsHandler:
 
     async def add_ban_word(self):
         try:
-            # 检测是否为管理员
             if not is_group_admin(self.role):
                 return
             # 过滤命令
-            ban_word = self.raw_message.lstrip(ADD_BAN_WORD_COMMAND).strip()
-            # 获取违禁词和权重
-            ban_word, weight = ban_word.split(" ")
-            # 添加违禁词
-            is_success = self.data_manager.add_word(ban_word, weight)
-            if not is_success:
-                return
-            # 发送成功消息
-            await send_group_msg(
-                self.websocket,
-                self.group_id,
-                [
-                    generate_reply_message(self.message_id),
-                    generate_text_message(f"添加违禁词成功: {ban_word} 权重: {weight}"),
-                ],
-                note="del_msg=10",
-            )
+            content = self.raw_message.lstrip(ADD_BAN_WORD_COMMAND).strip()
+            lines = [line.strip() for line in content.split("\n") if line.strip()]
+            results = []
+            # 判断是否批量
+            if len(lines) > 1:
+                for line in lines:
+                    if not line:
+                        continue
+                    parts = line.split()
+                    if len(parts) == 2:
+                        word, weight = parts
+                    elif len(parts) == 1:
+                        word, weight = parts[0], 10
+                    else:
+                        results.append(f"格式错误: {line}")
+                        continue
+                    is_success = self.data_manager.add_word(word, weight)
+                    if is_success:
+                        results.append(f"添加成功: {word} 权重: {weight}")
+                    else:
+                        results.append(f"添加失败: {word}")
+                reply = "\n".join(results)
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(reply),
+                    ],
+                    note="del_msg=10",
+                )
+            else:
+                # 单条兼容原有逻辑
+                ban_word = content
+                if not ban_word:
+                    return
+                parts = ban_word.split()
+                if len(parts) == 2:
+                    word, weight = parts
+                elif len(parts) == 1:
+                    word, weight = parts[0], 10
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(f"格式错误: {ban_word}"),
+                        ],
+                        note="del_msg=10",
+                    )
+                    return
+                is_success = self.data_manager.add_word(word, weight)
+                if not is_success:
+                    return
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(f"添加违禁词成功: {word} 权重: {weight}"),
+                    ],
+                    note="del_msg=10",
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]添加违禁词失败: {e}")
 
     async def delete_ban_word(self):
         try:
-            # 检测是否为管理员
             if not is_group_admin(self.role):
                 return
             # 过滤命令
-            ban_word = self.raw_message.lstrip(DELETE_BAN_WORD_COMMAND).strip()
-            # 删除违禁词
-            is_success = self.data_manager.delete_word(ban_word)
-            if not is_success:
-                return
-            # 发送成功消息
-            await send_group_msg(
-                self.websocket,
-                self.group_id,
-                [
-                    generate_reply_message(self.message_id),
-                    generate_text_message(f"删除违禁词成功: {ban_word}"),
-                ],
-                note="del_msg=10",
-            )
+            content = self.raw_message.lstrip(DELETE_BAN_WORD_COMMAND).strip()
+            words = [w for w in content.split() if w]
+            results = []
+            if len(words) > 1:
+                for word in words:
+                    is_success = self.data_manager.delete_word(word)
+                    if is_success:
+                        results.append(f"删除成功: {word}")
+                    else:
+                        results.append(f"未找到: {word}")
+                reply = "\n".join(results)
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(reply),
+                    ],
+                    note="del_msg=10",
+                )
+            else:
+                # 单条兼容原有逻辑
+                ban_word = content
+                if not ban_word:
+                    return
+                is_success = self.data_manager.delete_word(ban_word)
+                if not is_success:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(f"未找到: {ban_word}"),
+                        ],
+                        note="del_msg=10",
+                    )
+                    return
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(f"删除违禁词成功: {ban_word}"),
+                    ],
+                    note="del_msg=10",
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]删除违禁词失败: {e}")
 
