@@ -228,7 +228,9 @@ class GroupBanWordsHandler:
                 self.group_id,
                 [
                     generate_at_message(self.user_id),
-                    generate_text_message("请勿发送违禁消息，如误封请联系管理员"),
+                    generate_text_message(
+                        f"({self.user_id})请勿发送违禁消息，如误封请联系管理员"
+                    ),
                 ],
                 note="del_msg=20",
             )
