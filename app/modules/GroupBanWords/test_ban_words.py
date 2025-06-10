@@ -6,5 +6,7 @@ if __name__ == "__main__":
     with DataManager(group_id) as dm:
         while True:
             message = input("请输入要检验的文本: ")
-            weight = dm.calc_message_weight(message)
-            print(f"文本总权值: {weight}")
+            weight, matched_words = dm.calc_message_weight(message)
+            print(f"文本总权值: {weight}\n")
+            print(f"命中的违禁词列表: {matched_words}\n")
+            print("=" * 50)

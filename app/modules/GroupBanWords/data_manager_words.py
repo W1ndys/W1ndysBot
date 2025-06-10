@@ -82,9 +82,20 @@ class DataManager:
         return True
 
     def calc_message_weight(self, message):
-        """计算消息的违禁程度（所有命中违禁词的权值求和）"""
+        """计算消息的违禁程度（所有命中违禁词的权值求和）
+        Args:
+            message: 需要检查的消息文本
+        Returns:
+            tuple: (总权值, 命中的违禁词列表)
+        """
         self.cursor.execute("SELECT word, weight FROM ban_words")
-        return sum(weight for word, weight in self.cursor.fetchall() if word in message)
+        matched_words = []
+        total_weight = 0
+        for word, weight in self.cursor.fetchall():
+            if word in message:
+                total_weight += weight
+                matched_words.append(word)
+        return total_weight, matched_words
 
     # 用户状态相关操作
     def set_user_status(self, user_id, status):
@@ -114,33 +125,3 @@ class DataManager:
         """获取所有用户状态"""
         self.cursor.execute("SELECT user_id, status, update_time FROM user_status")
         return self.cursor.fetchall()
-
-
-if __name__ == "__main__":
-    group_id = "1046961227"
-    with DataManager(group_id) as dm:
-        while True:
-            case = input(
-                "请输入操作: \n1. 添加敏感词\n2. 获取所有敏感词\n3. 更新敏感词权值\n4. 删除敏感词\n5. 检验文本总权值\n6. 退出\n"
-            )
-            if case == "1":
-                word = input("请输入敏感词: ")
-                weight = input("请输入权值: ")
-                dm.add_word(word, int(weight))
-            elif case == "2":
-                words = dm.get_words()
-                for word, weight in words:
-                    print(f"{word}: {weight}")
-            elif case == "3":
-                word = input("请输入敏感词: ")
-                weight = input("请输入权值: ")
-                dm.update_word(word, int(weight))
-            elif case == "4":
-                word = input("请输入敏感词: ")
-                dm.delete_word(word)
-            elif case == "5":
-                text = input("请输入要检验的文本: ")
-                total_weight = dm.calc_message_weight(text)
-                print(f"文本总权值为: {total_weight}")
-            elif case == "6":
-                break

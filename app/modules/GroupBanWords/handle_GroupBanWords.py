@@ -257,35 +257,12 @@ class GroupBanWordsHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]删除违禁词失败: {e}")
 
-    async def calc_message_weight(self):
-        """
-        计算消息违禁词权重并返回是否违禁和涉及的违禁词
-        Returns:
-            tuple: (是否违禁, 违禁词列表)
-        """
-        try:
-            # 获取所有违禁词及权重
-            ban_words = self.data_manager.get_words()
-            total_weight = 0
-            matched_words = []
-
-            # 遍历检查每个违禁词
-            for word, weight in ban_words:
-                if word in self.raw_message:
-                    total_weight += weight
-                    matched_words.append(word)
-
-            # 判断是否超过最大权重
-            is_banned = total_weight > BAN_WORD_WEIGHT_MAX
-            return is_banned, matched_words
-
-        except Exception as e:
-            logger.error(f"[{MODULE_NAME}]计算违禁词权重失败: {e}")
-            return False, []
-
     async def check_and_handle_ban_words(self):
         """检测违禁词并处理相关逻辑"""
-        is_banned, matched_words = await self.calc_message_weight()
+        total_weight, matched_words = self.data_manager.calc_message_weight(
+            self.raw_message
+        )
+        is_banned = total_weight > BAN_WORD_WEIGHT_MAX
         if is_banned:
             # 返回True，表示违规
             await set_group_ban(
