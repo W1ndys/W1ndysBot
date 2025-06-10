@@ -5,10 +5,11 @@ icon: fa-solid fa-clipboard-list
 
 # 更新日志
 
-<!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息 -->
+<!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息，时间越往前，越靠前 -->
 
 ## 2025-06-10
 
+- **GroupBanWords**：新增敏感词管理功能，在 DataManager 类中添加更新时间字段，优化敏感词添加和更新逻辑，支持记录敏感词更新时间 ([3e56c36](https://github.com/W1ndys/W1ndysBot-dev/commit/3e56c362b5d3ec1a09e0354f2163aaccaf73ce0b))
 - **GroupBanWords**：新增管理员解封和踢出用户命令处理功能，支持管理员通过私聊命令解除被封禁用户状态或将违规用户踢出群聊，优化违禁词检测与用户状态管理 ([6f93fa1](https://github.com/W1ndys/W1ndysBot-dev/commit/6f93fa10933c959ac44ebbbc037e00020019bae9))
 - **GroupBanWords**：新增添加和删除违禁词命令处理，更新数据管理类支持用户状态管理，实现消息权重计算和自动封禁违规用户 ([62672a6](https://github.com/W1ndys/W1ndysBot-dev/commit/62672a67d444b0b004ba36c2461fd7b034de7dda))
 - **InviteTreeRecord**：新增邀请次数统计功能，在 InviteLinkRecordDataManager 中添加 get_invite_count 方法，用于统计邀请者在群中的邀请人数，在 GroupNoticeHandler 中通知管理员被邀请者的邀请次数 ([b304dcf](https://github.com/W1ndys/W1ndysBot-dev/commit/b304dcf5d31e2944e67ca29f8c8d1c4e7522a5c3))
