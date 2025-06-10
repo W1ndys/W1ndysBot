@@ -202,3 +202,4 @@ cython_debug/
 .cursorrules
 
 git-push-update-docs.sh
+clean_pycache.sh
