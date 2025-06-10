@@ -9,6 +9,7 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-10
 
+- **GroupNickNameLock**：移除入群修改默认名的设定 ([0a0dc8d](https://github.com/W1ndys/W1ndysBot-dev/commit/0a0dc8d9832d0c9ba060c97ce421a412679d6cc4))
 - **GroupBanWords**：新增敏感词管理功能，在 DataManager 类中添加更新时间字段，优化敏感词添加和更新逻辑，支持记录敏感词更新时间 ([3e56c36](https://github.com/W1ndys/W1ndysBot-dev/commit/3e56c362b5d3ec1a09e0354f2163aaccaf73ce0b))
 - **GroupBanWords**：新增管理员解封和踢出用户命令处理功能，支持管理员通过私聊命令解除被封禁用户状态或将违规用户踢出群聊，优化违禁词检测与用户状态管理 ([6f93fa1](https://github.com/W1ndys/W1ndysBot-dev/commit/6f93fa10933c959ac44ebbbc037e00020019bae9))
 - **GroupBanWords**：新增添加和删除违禁词命令处理，更新数据管理类支持用户状态管理，实现消息权重计算和自动封禁违规用户 ([62672a6](https://github.com/W1ndys/W1ndysBot-dev/commit/62672a67d444b0b004ba36c2461fd7b034de7dda))
