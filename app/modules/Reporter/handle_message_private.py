@@ -118,6 +118,18 @@ class PrivateMessageHandler:
                     return
             # 普通消息转发给owner
             else:
+                # 定义需要忽略的消息正则表达式
+                ignore_patterns = [
+                    r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"  # UUID格式
+                ]
+
+                # 检查消息是否包含任何忽略模式
+                if any(
+                    re.search(pattern, self.raw_message.lower())
+                    for pattern in ignore_patterns
+                ):
+                    return
+
                 message = f"用户ID🆔：{self.user_id}\n"
                 message += f"发送时间：{self.formatted_time}\n"
                 message += "————————————————————\n"
