@@ -1,12 +1,14 @@
 from . import (
     MODULE_NAME,
-    GROUP_MUTE_COMMAND,
-    GROUP_UNMUTE_COMMAND,
+    GROUP_BAN_COMMAND,
+    GROUP_UNBAN_COMMAND,
     GROUP_KICK_COMMAND,
-    GROUP_ALL_MUTE_COMMAND,
-    GROUP_ALL_UNMUTE_COMMAND,
+    GROUP_ALL_BAN_COMMAND,
+    GROUP_ALL_UNBAN_COMMAND,
     GROUP_RECALL_COMMAND,
     SWITCH_NAME,
+    GROUP_BAN_ME_COMMAND,
+    GROUP_BAN_RANK_COMMAND,
 )
 import logger
 from core.menu_manager import MENU_COMMAND
@@ -75,24 +77,31 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
+            # 初始化群组管理器
+            group_manager_handle = GroupManagerHandle(self.websocket, self.msg)
+
+            # 处理禁言排行榜命令 - 所有用户都可使用
+            if self.raw_message.startswith(GROUP_BAN_RANK_COMMAND):
+                await group_manager_handle.handle_mute_rank()
+                return
+
             # 如果不是群管理或系统管理，则不处理
             if not is_group_admin(self.role) and not is_system_admin(self.user_id):
                 return
 
-            # 初始化群组管理器
-            group_manager_handle = GroupManagerHandle(self.websocket, self.msg)
-
             # 处理群消息
-            if self.raw_message.startswith(GROUP_ALL_MUTE_COMMAND):
+            if self.raw_message.startswith(GROUP_ALL_BAN_COMMAND):
                 await group_manager_handle.handle_all_mute()
-            elif self.raw_message.startswith(GROUP_ALL_UNMUTE_COMMAND):
+            elif self.raw_message.startswith(GROUP_ALL_UNBAN_COMMAND):
                 await group_manager_handle.handle_all_unmute()
-            elif self.raw_message.startswith(GROUP_MUTE_COMMAND):
+            elif self.raw_message.startswith(GROUP_BAN_COMMAND):
                 await group_manager_handle.handle_mute()
-            elif self.raw_message.startswith(GROUP_UNMUTE_COMMAND):
+            elif self.raw_message.startswith(GROUP_UNBAN_COMMAND):
                 await group_manager_handle.handle_unmute()
             elif self.raw_message.startswith(GROUP_KICK_COMMAND):
                 await group_manager_handle.handle_kick()
+            elif self.raw_message.startswith(GROUP_BAN_ME_COMMAND):
+                await group_manager_handle.handle_ban_me()
             elif GROUP_RECALL_COMMAND in self.raw_message:
                 await group_manager_handle.handle_recall()
 
