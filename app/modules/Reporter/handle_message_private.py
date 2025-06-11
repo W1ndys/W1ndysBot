@@ -30,6 +30,7 @@ class PrivateMessageHandler:
         self.raw_message = msg.get("raw_message", "")  # 原始消息
         self.sender = msg.get("sender", {})  # 发送者信息
         self.nickname = self.sender.get("nickname", "")  # 昵称
+        self.group_id = str(msg.get("group_id", ""))  # 群号
 
     async def handle(self):
         """
@@ -138,6 +139,7 @@ class PrivateMessageHandler:
                             f"用户ID🆔：{self.user_id}\n"
                             f"发送时间：{self.formatted_time}\n"
                             f"昵称：{self.nickname}\n"
+                            f"来源群号：{self.group_id if self.group_id else '无'}\n"
                             f"消息内容见下条消息"
                         )
                     ],
