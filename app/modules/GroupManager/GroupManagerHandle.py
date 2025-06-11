@@ -82,39 +82,39 @@ class GroupManagerHandle:
                     old_duration,
                 ) = result
 
-                # 如果打破记录，发送通报消息
+                # 构建消息内容
+                message_parts = []
+
+                # 如果打破个人记录
                 if break_personal_record:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_at_message(user_id),
-                            generate_text_message(
-                                f"恭喜 {user_id} 打破个人禁言记录！\n"
-                                f"旧记录：{old_duration} 秒\n"
-                                f"新记录：{duration} 秒"
-                            ),
-                        ],
-                        note="del_msg=60",
+                    message_parts.append(
+                        f"恭喜 {user_id} 打破个人禁言记录！\n旧记录：{old_duration} 秒\n新记录：{duration} 秒"
                     )
-
-                if break_group_record:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_at_message(user_id),
-                            generate_text_message(
-                                f"恭喜用户 {user_id} 打破本群今日禁言最高记录！\n"
-                                f"时长：{duration} 秒"
-                            ),
-                        ],
-                        note="del_msg=60",
+                # 如果打破群记录
+                elif break_group_record:
+                    message_parts.append(
+                        f"恭喜用户 {user_id} 打破本群今日禁言最高记录！\n时长：{duration} 秒"
                     )
+                # 如果没有打破任何记录，只显示当前禁言时长
+                else:
+                    message_parts.append(f"禁言时长：{duration} 秒")
 
-                # 获取并显示群内今日禁言排行榜
+                # 发送包含禁言信息的消息
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_at_message(user_id),
+                        generate_text_message("\n".join(message_parts)),
+                    ],
+                    note="del_msg=60",
+                )
+
+                # 如果当前用户成为了禁言之王，单独显示禁言之王信息
                 top_user = dm.get_group_today_top_mute_user(self.group_id)
-                if top_user:
+                if top_user and str(top_user[0]) != str(
+                    user_id
+                ):  # 如果禁言之王不是当前用户，才单独显示
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
@@ -124,18 +124,6 @@ class GroupManagerHandle:
                                 f"本群今日禁言之王：{top_user[0]}\n"
                                 f"禁言时长：{top_user[1]} 秒"
                             ),
-                        ],
-                        note="del_msg=60",
-                    )
-
-                # 如果没有打破任何记录，显示当前禁言时长
-                if not (break_personal_record or break_group_record):
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_at_message(user_id),
-                            generate_text_message(f"禁言时长：{duration} 秒"),
                         ],
                         note="del_msg=60",
                     )
