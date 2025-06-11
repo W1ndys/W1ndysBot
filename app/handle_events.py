@@ -4,6 +4,10 @@ import logger
 import os
 import importlib
 import inspect
+from config import OWNER_ID
+from api.message import send_private_msg
+from api.generate import generate_text_message
+
 
 # 核心模块列表 - 这些模块将始终被加载
 # 格式: ("模块路径", "模块中的函数名")
@@ -21,8 +25,13 @@ CORE_MODULES = [
 
 
 class EventHandler:
-    def __init__(self):
+    def __init__(self, websocket):
+        self.websocket = websocket
         self.handlers = []
+        # 用于记录成功加载的模块
+        self.loaded_modules = []
+        # 用于记录加载失败的模块及原因
+        self.failed_modules = []
 
         # 加载核心模块（固定加载）
         self._load_core_modules()
@@ -33,6 +42,34 @@ class EventHandler:
         # 记录已加载的模块数量
         logger.success(f"总共加载了 {len(self.handlers)} 个事件处理器")
 
+        # 向管理员上报模块加载状况
+        asyncio.create_task(self._report_loading_status())
+
+    async def _report_loading_status(self):
+        """向管理员上报模块加载状况"""
+        # 生成成功加载的模块报告
+        success_msg = "模块加载成功：" + "，".join(self.loaded_modules)
+
+        # 生成失败加载的模块报告
+        failed_msg = "模块加载失败：\n"
+        if self.failed_modules:
+            for module_name, error in self.failed_modules:
+                failed_msg += f"{module_name}：{error}\n"
+        else:
+            failed_msg += "无"
+
+        # 组合报告信息
+        report_msg = f"{success_msg}\n\n{failed_msg}"
+
+        # 发送给管理员
+        try:
+            await send_private_msg(
+                self.websocket, OWNER_ID, [generate_text_message(report_msg)]
+            )
+            logger.info("已向管理员上报模块加载状况")
+        except Exception as e:
+            logger.error(f"向管理员上报模块加载状况失败：{e}")
+
     def _load_core_modules(self):
         """加载核心模块"""
         for module_path, handler_name in CORE_MODULES:
@@ -40,8 +77,12 @@ class EventHandler:
                 module = importlib.import_module(module_path)
                 handler = getattr(module, handler_name)
                 self.handlers.append(handler)
+                # 记录成功加载的模块
+                self.loaded_modules.append(f"{module_path}.{handler_name}")
                 logger.success(f"已加载核心模块: {module_path}.{handler_name}")
             except Exception as e:
+                # 记录加载失败的模块及原因
+                self.failed_modules.append((f"{module_path}.{handler_name}", str(e)))
                 logger.error(
                     f"加载核心模块失败: {module_path}.{handler_name}, 错误: {e}"
                 )
@@ -64,6 +105,7 @@ class EventHandler:
             # 检查模块是否有main.py文件
             main_file = os.path.join(module_path, "main.py")
             if not os.path.exists(main_file):
+                self.failed_modules.append((module_name, "缺少main.py文件"))
                 logger.warning(f"模块 {module_name} 缺少main.py文件，已跳过")
                 continue
 
@@ -77,12 +119,20 @@ class EventHandler:
                     module.handle_events
                 ):
                     self.handlers.append(module.handle_events)
+                    # 记录成功加载的模块
+                    self.loaded_modules.append(module_name)
                     logger.success(f"已加载模块: {module_name}")
                 else:
+                    # 记录加载失败的模块及原因
+                    self.failed_modules.append(
+                        (module_name, "缺少异步handle_events函数")
+                    )
                     logger.warning(
                         f"模块 {module_name} 缺少异步handle_events函数，已跳过"
                     )
             except Exception as e:
+                # 记录加载失败的模块及原因
+                self.failed_modules.append((module_name, str(e)))
                 logger.error(f"加载模块失败: {module_name}, 错误: {e}")
 
     async def _safe_handle(self, handler, websocket, msg):

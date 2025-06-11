@@ -6,7 +6,6 @@ from handle_events import EventHandler
 
 async def connect_to_bot():
     """连接到机器人并开始接收消息"""
-    handler = EventHandler()  # 为每个连接创建一个独立实例
 
     if WS_URL is None:
         logger.error("WS_URL未设置，请在环境变量中设置")
@@ -23,6 +22,7 @@ async def connect_to_bot():
         # 连接到 WebSocket
         async with websockets.connect(connection_url) as websocket:
             try:
+                handler = EventHandler(websocket)  # 为每个连接创建一个独立实例
                 async for message in websocket:
                     try:
                         # 处理消息
