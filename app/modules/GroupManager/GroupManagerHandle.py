@@ -278,8 +278,8 @@ class GroupManagerHandle:
 
                 if global_top:
                     message += f"全服务器禁言记录保持者：\n"
-                    message += f"群号：{global_top[0]}\n"
-                    message += f"用户：{global_top[1]}\n"
+                    message += f"群号：{global_top[0][:3]}***{global_top[0][-3:]}\n"
+                    message += f"用户：{global_top[1][:3]}***{global_top[1][-3:]}\n"
                     message += f"日期：{global_top[2]}\n"
                     message += f"时长：{global_top[3] // 60} 分钟"
                 else:
