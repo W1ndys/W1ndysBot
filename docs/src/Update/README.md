@@ -9,6 +9,7 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-11
 
+- **GroupManager**：新增禁言排行榜功能，支持查询群内今日禁言之王、个人禁言时长和全服务器禁言记录，新增自我封禁功能，随机禁言 1-10 分钟 ([c99565a](https://github.com/W1ndys/W1ndysBot-dev/commit/c99565a))
 - **GroupBanWords**：新增忽略群管理的消息，避免群管理被误封禁 ([e79588b](https://github.com/W1ndys/W1ndysBot-dev/commit/e79588badc4cebafb71df7ae2f42af54f4687454))
 - **GroupHumanVerification**：优化踢人操作与状态更新顺序，先更新成员状态为"已踢出"再执行踢人操作，避免状态与实际操作不同步，修正通知中非待验证成员的描述 ([42a337a](https://github.com/W1ndys/W1ndysBot-dev/commit/42a337a))
 - **Reporter**：修改私聊消息处理逻辑，新增格式化文本通知和 CQ 码消息发送，分离原始消息和信息，优化消息忽略匹配 ([c919f86](https://github.com/W1ndys/W1ndysBot-dev/commit/c919f86))
