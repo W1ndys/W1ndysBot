@@ -7,6 +7,10 @@ icon: fa-solid fa-clipboard-list
 
 <!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息，时间越往前，越靠前 -->
 
+## 2025-06-11
+
+- **Reporter**：新增消息忽略功能，忽略 UUID 格式消息，避免重复上报 ([0a0dc8d](https://github.com/W1ndys/W1ndysBot-dev/commit/9157ee86615279feb478c1d4467794f11920c6b8))
+
 ## 2025-06-10
 
 - **GroupNickNameLock**：移除入群修改默认名的设定 ([0a0dc8d](https://github.com/W1ndys/W1ndysBot-dev/commit/0a0dc8d9832d0c9ba060c97ce421a412679d6cc4))
