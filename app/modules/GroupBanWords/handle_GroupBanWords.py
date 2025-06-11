@@ -11,7 +11,7 @@ from . import (
 )
 from .data_manager_words import DataManager
 from logger import logger
-from core.auth import is_group_admin, is_system_owner
+from core.auth import is_group_admin, is_system_admin
 from api.message import send_group_msg, delete_msg, send_private_msg
 from api.generate import (
     generate_text_message,
@@ -45,7 +45,7 @@ class GroupBanWordsHandler:
     async def handle_unban_word(self):
         try:
             # 检测是否为管理员
-            if not is_system_owner(self.user_id):
+            if not is_system_admin(self.user_id):
                 return
             # 过滤命令
             self.raw_message = self.raw_message.lstrip(UNBAN_WORD_COMMAND).strip()
@@ -88,7 +88,7 @@ class GroupBanWordsHandler:
     async def handle_kick_ban_word(self):
         try:
             # 检测是否为管理员
-            if not is_system_owner(self.user_id):
+            if not is_system_admin(self.user_id):
                 return
             # 过滤命令
             ban_word = self.raw_message.lstrip(KICK_BAN_WORD_COMMAND).strip()

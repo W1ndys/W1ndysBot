@@ -2,7 +2,7 @@ from . import MODULE_NAME, SWITCH_NAME
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
-from core.auth import is_system_owner
+from core.auth import is_system_admin
 from api.message import send_group_msg
 from api.generate import generate_text_message, generate_reply_message
 from datetime import datetime
@@ -38,7 +38,7 @@ class GroupMessageHandler:
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
                 # 鉴权
-                if not is_system_owner(self.user_id):
+                if not is_system_admin(self.user_id):
                     logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换群聊开关")
                     return
                 await handle_module_group_switch(

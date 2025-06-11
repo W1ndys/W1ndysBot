@@ -1,7 +1,7 @@
 from . import MODULE_NAME, SWITCH_NAME
 from core.menu_manager import MENU_COMMAND
 import logger
-from core.auth import is_system_owner
+from core.auth import is_system_admin
 from core.switchs import is_private_switch_on, handle_module_private_switch
 from config import OWNER_ID
 from api.message import send_private_msg
@@ -37,7 +37,7 @@ class PrivateMessageHandler:
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
                 # 鉴权
-                if not is_system_owner(self.user_id):
+                if not is_system_admin(self.user_id):
                     return
                 await handle_module_private_switch(
                     MODULE_NAME,
@@ -66,7 +66,7 @@ class PrivateMessageHandler:
                 return
 
             # 鉴权
-            if is_system_owner(self.user_id):
+            if is_system_admin(self.user_id):
 
                 # 处理测试消息
                 if self.raw_message.lower() in ["测试", "test"]:

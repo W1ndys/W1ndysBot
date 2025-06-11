@@ -1,7 +1,7 @@
 import os
 import logger
 from . import MODULE_NAME, ADD_FAQ, DELETE_FAQ
-from core.auth import is_group_admin, is_system_owner
+from core.auth import is_group_admin, is_system_admin
 from .handle_match_qa import AdvancedFAQMatcher
 from api.message import send_group_msg, send_group_msg_with_cq
 from api.generate import generate_reply_message, generate_text_message
@@ -68,7 +68,7 @@ class QaHandler:
         """
         matcher = None
         try:
-            if not is_group_admin(self.role) and not is_system_owner(self.user_id):
+            if not is_group_admin(self.role) and not is_system_admin(self.user_id):
                 return
 
             # 判断是否为批量添加（多行）
@@ -234,7 +234,7 @@ class QaHandler:
         格式：删除命令 id1 id2 ...，空格分隔多个ID
         """
         try:
-            if not is_group_admin(self.role) and not is_system_owner(self.user_id):
+            if not is_group_admin(self.role) and not is_system_admin(self.user_id):
                 return
 
             # 去除命令前缀

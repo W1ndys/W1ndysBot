@@ -4,7 +4,7 @@ import logger
 from typing import Dict, List, Optional
 from api.generate import generate_reply_message, generate_text_message
 from api.message import send_group_msg, send_private_msg
-from core.auth import is_system_owner
+from core.auth import is_system_admin
 
 # 菜单命令
 MENU_COMMAND = "menu"
@@ -80,7 +80,7 @@ async def handle_events(websocket, message):
     """
     try:
         # 只允许系统管理员使用 menu 命令
-        if not is_system_owner(str(message.get("user_id", ""))):
+        if not is_system_admin(str(message.get("user_id", ""))):
             return
         # 只处理文本消息
         if message.get("post_type") != "message":

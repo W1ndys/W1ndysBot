@@ -5,7 +5,7 @@
 from config import OWNER_ID
 
 
-def is_system_owner(user_id: str) -> bool:
+def is_system_admin(user_id: str) -> bool:
     """
     判断是否为系统管理员
     参数:

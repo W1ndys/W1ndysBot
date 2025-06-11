@@ -7,7 +7,7 @@ from api.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
-from core.auth import is_group_admin, is_system_owner
+from core.auth import is_group_admin, is_system_admin
 from .handle_GroupHumanVerification import GroupHumanVerificationHandler
 
 
@@ -39,7 +39,7 @@ class GroupMessageHandler:
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
                 # 鉴权
-                if not is_system_owner(self.user_id):
+                if not is_system_admin(self.user_id):
                     return
                 await handle_module_group_switch(
                     MODULE_NAME,
@@ -65,7 +65,7 @@ class GroupMessageHandler:
 
             # 新增：群管理员扫描入群验证
             if self.raw_message.strip() == SCAN_VERIFICATION:
-                if is_group_admin(self.role) or is_system_owner(self.user_id):
+                if is_group_admin(self.role) or is_system_admin(self.user_id):
                     # 只扫描当前群
                     handler = GroupHumanVerificationHandler(self.websocket, self.msg)
                     # 强制只处理本群

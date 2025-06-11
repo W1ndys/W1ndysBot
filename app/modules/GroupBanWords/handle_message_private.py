@@ -6,7 +6,7 @@ from api.message import send_private_msg
 from api.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager_words import DataManager
-from core.auth import is_system_owner
+from core.auth import is_system_admin
 from core.menu_manager import MenuManager
 from .handle_GroupBanWords import GroupBanWordsHandler
 
@@ -36,7 +36,7 @@ class PrivateMessageHandler:
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
                 # 鉴权
-                if not is_system_owner(self.user_id):
+                if not is_system_admin(self.user_id):
                     logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换私聊开关")
                     return
                 await handle_module_private_switch(

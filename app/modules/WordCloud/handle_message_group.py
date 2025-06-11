@@ -11,7 +11,7 @@ from api.generate import (
 from datetime import datetime
 from .WordCloud import QQMessageAnalyzer
 from core.menu_manager import MenuManager
-from core.auth import is_system_owner
+from core.auth import is_system_admin
 
 
 class GroupMessageHandler:
@@ -42,7 +42,7 @@ class GroupMessageHandler:
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
                 # 鉴权
-                if not is_system_owner(self.user_id):
+                if not is_system_admin(self.user_id):
                     return
                 await handle_module_group_switch(
                     MODULE_NAME,
