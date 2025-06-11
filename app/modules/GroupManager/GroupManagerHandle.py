@@ -91,8 +91,8 @@ class GroupManagerHandle:
                             generate_at_message(user_id),
                             generate_text_message(
                                 f"恭喜 {user_id} 打破个人禁言记录！\n"
-                                f"旧记录：{old_duration // 60} 分钟\n"
-                                f"新记录：{duration // 60} 分钟"
+                                f"旧记录：{old_duration} 秒\n"
+                                f"新记录：{duration} 秒"
                             ),
                         ],
                         note="del_msg=60",
@@ -106,7 +106,7 @@ class GroupManagerHandle:
                             generate_at_message(user_id),
                             generate_text_message(
                                 f"恭喜用户 {user_id} 打破本群今日禁言最高记录！\n"
-                                f"时长：{duration // 60} 分钟"
+                                f"时长：{duration} 秒"
                             ),
                         ],
                         note="del_msg=60",
@@ -122,7 +122,7 @@ class GroupManagerHandle:
                             generate_at_message(top_user[0]),
                             generate_text_message(
                                 f"本群今日禁言之王：{top_user[0]}\n"
-                                f"禁言时长：{top_user[1] // 60} 分钟"
+                                f"禁言时长：{top_user[1]} 秒"
                             ),
                         ],
                         note="del_msg=60",
