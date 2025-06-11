@@ -127,6 +127,18 @@ class GroupManagerHandle:
                         ],
                         note="del_msg=60",
                     )
+
+                # 如果没有打破任何记录，显示当前禁言时长
+                if not (break_personal_record or break_group_record):
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_at_message(user_id),
+                            generate_text_message(f"禁言时长：{duration} 秒"),
+                        ],
+                        note="del_msg=60",
+                    )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]更新禁言记录失败: {e}")
 
@@ -267,12 +279,12 @@ class GroupManagerHandle:
 
                 if top_user:
                     message += f"本群今日禁言之王：{top_user[0]}\n"
-                    message += f"禁言时长：{top_user[1] // 60} 分钟\n\n"
+                    message += f"禁言时长：{top_user[1]} 秒\n\n"
                 else:
                     message += "本群今日暂无禁言记录\n\n"
 
                 if user_duration > 0:
-                    message += f"您今日的禁言时长：{user_duration // 60} 分钟\n\n"
+                    message += f"您今日的禁言时长：{user_duration} 秒\n\n"
                 else:
                     message += "您今日尚未被禁言\n\n"
 
@@ -281,7 +293,7 @@ class GroupManagerHandle:
                     message += f"群号：{global_top[0][:3]}***{global_top[0][-3:]}\n"
                     message += f"用户：{global_top[1][:3]}***{global_top[1][-3:]}\n"
                     message += f"日期：{global_top[2]}\n"
-                    message += f"时长：{global_top[3] // 60} 分钟"
+                    message += f"时长：{global_top[3]} 秒"
                 else:
                     message += "全服务器暂无禁言记录"
 
