@@ -169,8 +169,8 @@ class GroupHumanVerificationHandler:
                             note="del_msg=30",
                         )
                     for user_id in kick_users:
-                        await set_group_kick(self.websocket, group_id, user_id)
                         dm.update_status(group_id, user_id, STATUS_KICKED)
+                        await set_group_kick(self.websocket, group_id, user_id)
                         await asyncio.sleep(1)
                     await asyncio.sleep(1)
                 else:

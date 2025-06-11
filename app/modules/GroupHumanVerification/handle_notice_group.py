@@ -5,6 +5,7 @@ from . import (
     STATUS_REJECTED,
     STATUS_LEFT,
     STATUS_UNMUTED,
+    STATUS_KICKED,
     NOTE_CONDITION,
 )
 import uuid
@@ -202,28 +203,32 @@ class GroupNoticeHandler:
         处理群聊成员减少 - 成员被踢通知
         """
         try:
-            # 只有操作者不是机器人（即为其他管理员）时，才处理
-            if self.operator_id != self.self_id:
-                with DataManager() as dm:
-                    data = dm.get_data(self.group_id, self.user_id)
-                    msg_at = generate_at_message(self.user_id)
-                    if data and data["status"] == STATUS_UNVERIFIED:
+            # 无论是被机器人还是其他管理员踢出，都进行处理
+            with DataManager() as dm:
+                data = dm.get_data(self.group_id, self.user_id)
+                msg_at = generate_at_message(self.user_id)
+                if data:
+                    if data["status"] == STATUS_UNVERIFIED:
                         dm.update_status(self.group_id, self.user_id, STATUS_REJECTED)
                         msg_text = generate_text_message(
-                            f"({self.user_id})被管理员踢了（待验证状态，已标记为拒绝）"
+                            f"({self.user_id})被管理员踢了(待验证状态，已标记为已拒绝)"
                         )
                         if data["message_id"]:
                             await delete_msg(self.websocket, data["message_id"])
                     else:
+                        dm.update_status(self.group_id, self.user_id, STATUS_KICKED)
                         msg_text = generate_text_message(
-                            f"({self.user_id})被管理员踢了"
+                            f"({self.user_id})被管理员踢了(非待验证状态，已标记为已踢出)"
                         )
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [msg_at, msg_text],
-                        note="del_msg=120",
-                    )
+                else:
+                    msg_text = generate_text_message(f"({self.user_id})被管理员踢了")
+
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [msg_at, msg_text],
+                    note="del_msg=120",
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 成员被踢通知失败: {e}")
 
