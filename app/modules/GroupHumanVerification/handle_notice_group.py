@@ -227,7 +227,7 @@ class GroupNoticeHandler:
                     self.websocket,
                     self.group_id,
                     [msg_at, msg_text],
-                    note="del_msg=120",
+                    note="del_msg=30",
                 )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 成员被踢通知失败: {e}")
