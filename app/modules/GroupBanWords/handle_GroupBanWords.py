@@ -259,6 +259,11 @@ class GroupBanWordsHandler:
 
     async def check_and_handle_ban_words(self):
         """检测违禁词并处理相关逻辑"""
+
+        # 如果是群管理，则不处理
+        if is_group_admin(self.role):
+            return
+
         total_weight, matched_words = self.data_manager.calc_message_weight(
             self.raw_message
         )
