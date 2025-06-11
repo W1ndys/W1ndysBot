@@ -372,8 +372,29 @@ class GroupBanWordsHandler:
                 return
             # 过滤命令
             content = self.raw_message.lstrip(COPY_BAN_WORD_COMMAND).strip()
+            # 检查参数是否完整
+            parts = content.split()
+            if len(parts) < 1:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_text_message(
+                            f"格式错误，正确用法：{COPY_BAN_WORD_COMMAND} 来源群号"
+                        ),
+                    ],
+                )
+                return
             # 获取来源群号（群号1）
-            group_id_source = content.split(" ")[1]
+            group_id_source = parts[0]
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_text_message(f"正在从群 {group_id_source} 复制违禁词"),
+                ],
+                note="del_msg=10",
+            )
             # 实例化来源群数据管理器
             data_manager_source = DataManager(group_id_source)
             # 获取来源群违禁词
@@ -386,8 +407,11 @@ class GroupBanWordsHandler:
                 self.websocket,
                 self.group_id,
                 [
-                    generate_text_message(f"复制违禁词成功"),
+                    generate_text_message(
+                        f"已成功从群 {group_id_source} 复制 {len(ban_words)} 个违禁词"
+                    ),
                 ],
+                note="del_msg=10",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]复制违禁词失败: {e}")
