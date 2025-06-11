@@ -24,11 +24,12 @@ ADD_BAN_WORD_COMMAND = "添加违禁词"  # 添加违禁词命令
 DELETE_BAN_WORD_COMMAND = "删除违禁词"  # 删除违禁词命令
 UNBAN_WORD_COMMAND = "解封违禁词"  # 解封被封禁用户命令
 KICK_BAN_WORD_COMMAND = "踢出违禁词"  # 踢出被封禁用户命令
-
+COPY_BAN_WORD_COMMAND = "复制违禁词"  # 复制违禁词命令
 
 COMMANDS = {
-    ADD_BAN_WORD_COMMAND: "添加违禁词，用法：添加违禁词 违禁词 权重(0-100，默认10)，例如：添加违禁词 sb 10，权重越大，违禁词风险越高",
-    DELETE_BAN_WORD_COMMAND: "删除违禁词，用法：删除违禁词 违禁词，例如：删除违禁词 sb",
+    ADD_BAN_WORD_COMMAND: f"添加违禁词，用法：{ADD_BAN_WORD_COMMAND} 违禁词 权重(0-100，默认10)，例如：{ADD_BAN_WORD_COMMAND} sb 10，权重越大，违禁词风险越高",
+    DELETE_BAN_WORD_COMMAND: f"删除违禁词，用法：{DELETE_BAN_WORD_COMMAND} 违禁词，例如：{DELETE_BAN_WORD_COMMAND} sb",
+    COPY_BAN_WORD_COMMAND: f"把一个群的违禁词复制到另一个群，用法：私聊：{COPY_BAN_WORD_COMMAND} 群号1+空格+群号2(把群号1的违禁词复制到群号2)，群聊：{COPY_BAN_WORD_COMMAND} 群号1(把群号1的违禁词复制到当前群)",
     # 可以继续添加其他命令
 }
 # ------------------------------------------------------------

@@ -8,6 +8,7 @@ from . import (
     BAN_WORD_DURATION,
     UNBAN_WORD_COMMAND,
     KICK_BAN_WORD_COMMAND,
+    COPY_BAN_WORD_COMMAND,
 )
 from .data_manager_words import DataManager
 from logger import logger
@@ -359,6 +360,38 @@ class GroupBanWordsHandler:
                 return True
         return False
 
+    async def copy_ban_word(self):
+        """
+        复制违禁词到当前群
+        用法：私聊：复制违禁词 群号1(把群号1的违禁词复制到当前群)
+        群聊：复制违禁词 群号1(把群号1的违禁词复制到当前群)
+        """
+        try:
+            # 鉴权
+            if not is_system_admin(self.user_id):
+                return
+            # 过滤命令
+            content = self.raw_message.lstrip(COPY_BAN_WORD_COMMAND).strip()
+            # 获取来源群号（群号1）
+            group_id_source = content.split(" ")[1]
+            # 实例化来源群数据管理器
+            data_manager_source = DataManager(group_id_source)
+            # 获取来源群违禁词
+            ban_words = data_manager_source.get_all_words_and_weight()
+            # 添加违禁词到本群
+            for word, weight in ban_words:
+                self.data_manager.add_word(word, weight)
+            # 发送成功消息
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_text_message(f"复制违禁词成功"),
+                ],
+            )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]复制违禁词失败: {e}")
+
     async def handle(self):
         try:
             # 添加违禁词
@@ -368,6 +401,11 @@ class GroupBanWordsHandler:
             # 删除违禁词
             if self.raw_message.startswith(DELETE_BAN_WORD_COMMAND):
                 await self.delete_ban_word()
+                return
+
+            # 复制违禁词
+            if self.raw_message.startswith(COPY_BAN_WORD_COMMAND):
+                await self.copy_ban_word()
                 return
 
             # 检测违禁词
