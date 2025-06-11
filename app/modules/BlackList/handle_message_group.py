@@ -8,7 +8,7 @@ from . import (
 )
 import logger
 from core.menu_manager import MENU_COMMAND
-from core.auth import is_system_admin, is_group_admin
+from core.auth import is_group_admin, is_system_admin
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg, delete_msg
 from api.generate import generate_text_message, generate_reply_message
@@ -47,7 +47,7 @@ class GroupMessageHandler:
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
                 # 鉴权
-                if not is_system_admin(self.user_id):
+                if not is_group_admin(self.role) and not is_system_admin(self.user_id):
                     return
                 await handle_module_group_switch(
                     MODULE_NAME,
@@ -58,7 +58,7 @@ class GroupMessageHandler:
                 return
 
             # 处理菜单命令（无视开关状态）
-            if self.raw_message.lower() == (SWITCH_NAME + MENU_COMMAND).lower():
+            if self.raw_message.lower() == f"{SWITCH_NAME}{MENU_COMMAND}".lower():
                 menu_text = MenuManager.get_module_commands_text(MODULE_NAME)
                 await send_group_msg(
                     self.websocket,

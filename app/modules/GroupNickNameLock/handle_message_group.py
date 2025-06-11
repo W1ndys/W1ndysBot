@@ -54,7 +54,7 @@ class GroupMessageHandler:
         try:
             if self.raw_message.lower() == SWITCH_NAME.lower():
                 # 鉴权
-                if not is_system_admin(self.user_id):
+                if not is_group_admin(self.role) and not is_system_admin(self.user_id):
                     return
                 await handle_module_group_switch(
                     MODULE_NAME,
@@ -65,7 +65,7 @@ class GroupMessageHandler:
                 return
 
             # 处理菜单命令（无视开关状态）
-            if self.raw_message.lower() == (SWITCH_NAME + MENU_COMMAND).lower():
+            if self.raw_message.lower() == f"{SWITCH_NAME}{MENU_COMMAND}".lower():
                 menu_text = MenuManager.get_module_commands_text(MODULE_NAME)
                 await send_group_msg(
                     self.websocket,
