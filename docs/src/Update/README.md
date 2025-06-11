@@ -9,6 +9,7 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-11
 
+- **AutoRepeat**：调整随机概率，戳一戳概率 10% ([eed78f5](https://github.com/W1ndys/W1ndysBot-dev/commit/eed78f5a3d55b200d0eb23b4a5c0ecddac65eae9))
 - **EventHandler**：修改 EventHandler 类以支持 WebSocket 连接，增加模块加载状态上报功能，并记录加载成功和失败的模块信息 ([24271f8](https://github.com/W1ndys/W1ndysBot-dev/commit/24271f8fd36f69cb13c4901b03a2187497d5737c))
 - **Core**：修改了群开关，相关功能全部更为群主管理可以自助开关，菜单命令拼接改成 f-string 拼接 ([f23d4dc](https://github.com/W1ndys/W1ndysBot-dev/commit/f23d4dcc867aee03ab391e6e38aa7dbe6bb25ccb))
 - **Reporter**：新增消息忽略功能，忽略 UUID 格式消息，避免重复上报 ([0a0dc8d](https://github.com/W1ndys/W1ndysBot-dev/commit/9157ee86615279feb478c1d4467794f11920c6b8))
