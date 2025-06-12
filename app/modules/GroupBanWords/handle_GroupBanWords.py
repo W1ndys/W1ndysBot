@@ -13,7 +13,7 @@ from . import (
 from .data_manager_words import DataManager
 from logger import logger
 from core.auth import is_group_admin, is_system_admin
-from api.message import send_group_msg, delete_msg, send_private_msg
+from api.message import send_group_msg, delete_msg, send_private_msg, get_forward_msg
 from api.generate import (
     generate_text_message,
     generate_reply_message,
@@ -263,6 +263,18 @@ class GroupBanWordsHandler:
 
         # 如果是群管理，则不处理
         if is_group_admin(self.role):
+            return
+
+        # 如果消息是转发消息，发送获取转发消息内容的请求
+        if self.raw_message.startswith("[CQ:forward,id="):
+            await get_forward_msg(
+                self.websocket,
+                self.message_id,
+                note=f"{MODULE_NAME}-group_id={self.group_id}-user_id={self.user_id}-message_id={self.message_id}",
+            )
+            logger.info(
+                f"[{MODULE_NAME}]已发送获取转发消息内容的请求, 群号: {self.group_id}, 发送者QQ号: {self.user_id}, 消息ID: {self.message_id}"
+            )
             return
 
         total_weight, matched_words = self.data_manager.calc_message_weight(
