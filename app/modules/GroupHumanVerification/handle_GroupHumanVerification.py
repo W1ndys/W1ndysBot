@@ -260,7 +260,7 @@ class GroupHumanVerificationHandler:
                             await delete_msg(self.websocket, message_id)
 
                         verified = True
-                # 如果没有群号，或者上面未通过，则遍历所有UUID，查找该用户在所有群的未验证状态
+                # 如果没有群号，或者上面未通过，则遍历提取到的所有UUID，查找该用户在所有群的未验证状态
                 if not verified:
                     for uuid_code in uuids:
                         group_id = dm.get_group_with_code_and_user(
