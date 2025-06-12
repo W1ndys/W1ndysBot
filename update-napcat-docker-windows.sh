@@ -59,12 +59,13 @@ current_dir=$(pwd -W 2>/dev/null || pwd)
 # Step 3: 使用新镜像运行容器
 log "以新版镜像运行同名容器 $container_name"
 docker run -d --name $container_name --restart=always \
-  --network host \
   --mac-address="02:42:ac:11:00:02" \
   --hostname="napcat-host" \
   -e NAPCAT_UID=$NAPCAT_UID \
   -e NAPCAT_GID=$NAPCAT_GID \
-  -e ACCOUNT=3649056059 \
+  -p 3000:3000 \
+  -p 3001:3001 \
+  -p 6099:6099 \
   -v "${current_dir}/napcat/app/.config/QQ:/app/.config/QQ" \
   -v "${current_dir}/napcat/app/napcat/config:/app/napcat/config" \
   $image_name || { log "容器启动失败"; exit 1; }
