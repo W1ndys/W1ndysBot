@@ -15,7 +15,8 @@ icon: fa-solid fa-clipboard-list
 - **OnlineDetect**: 更新在线状态日志信息 ([e672d6d](https://github.com/W1ndys/W1ndysBot-dev/commit/e672d6d86c1d923f043d6c49d4da74d36b0bdfac))
 - **Docker**: 更新 Windows 版 napcat Docker 容器启动脚本 ([eb0de10](https://github.com/W1ndys/W1ndysBot-dev/commit/eb0de100f40e3843d2e8b6275fb2b3765d9e9b9d))
 - **Docker**: 新增 Windows 更新 napcat Docker 容器的脚本 ([87489dd](https://github.com/W1ndys/W1ndysBot-dev/commit/87489ddf6ae9efb83fefec12dd9ff461eb5937bf))
-- **GroupVerification**: 增加扫描提示消息与延时 ([92341b4](https://github.com/W1ndys/W1ndysBot-dev/commit/92341b4ce95aec1865f666ec58e7fec4aaaf6dc6))- **文档**：更新了配置说明文档，将配置文件路径修改为 `app/.env`。（[3cc93f1](https://github.com/W1ndys/W1ndysBot-dev/commit/3cc93f1684d2b4418f24ab697fcd2a232e27eb7b)）
+- **GroupVerification**: 增加扫描提示消息与延时 ([92341b4](https://github.com/W1ndys/W1ndysBot-dev/commit/92341b4ce95aec1865f666ec58e7fec4aaaf6dc6))
+- **文档**：更新了配置说明文档，将配置文件路径修改为 `app/.env`。（[3cc93f1](https://github.com/W1ndys/W1ndysBot-dev/commit/3cc93f1684d2b4418f24ab697fcd2a232e27eb7b)）
 
 ## 2025-06-11
 
