@@ -2,6 +2,7 @@ import websockets
 from config import WS_URL, TOKEN
 from logger import logger
 from handle_events import EventHandler
+import asyncio
 
 
 async def connect_to_bot():
@@ -25,8 +26,9 @@ async def connect_to_bot():
                 handler = EventHandler(websocket)  # 为每个连接创建一个独立实例
                 async for message in websocket:
                     try:
-                        # 处理消息
-                        await handler.handle_message(websocket, message)
+                        # 异步处理消息，不阻塞当前循环
+                        # 使用create_task确保即使处理消息耗时，也不会阻塞后续消息接收
+                        asyncio.create_task(handler.handle_message(websocket, message))
                     except Exception as e:
                         logger.error(f"处理消息时出错: {e}")
                         logger.error(f"消息内容: {message}")
