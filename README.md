@@ -19,7 +19,7 @@ W1ndysBot，一款基于 NapCat 和 Python 开发的机器人程序，基于[W1n
 
 ## ⚙️ 配置说明
 
-在 `app/config.py` 中配置:
+在 `app/.env` 中配置:
 
 - `OWNER_ID`: 机器人管理员 QQ 号
 - `WS_URL`: WebSocket 连接地址
