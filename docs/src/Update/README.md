@@ -9,8 +9,13 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-12
 
-- **GroupHumanVerification**：增加了扫描提示消息与 0.5 秒异步延时，优化用户在群内人机验证时的交互体验。新增逻辑包括：在扫描未验证用户前发送提示消息、在扫描操作前后插入异步延时，并同步优化了按需扫描功能的提示及延时处理。（[92341b4](https://github.com/W1ndys/W1ndysBot-dev/commit/92341b4ce95aec1865f666ec58e7fec4aaaf6dc6)）
-- **文档**：更新了配置说明文档，将配置文件路径修改为 `app/.env`。（[3cc93f1](https://github.com/W1ndys/W1ndysBot-dev/commit/3cc93f1684d2b4418f24ab697fcd2a232e27eb7b)）
+- **GroupBanWords**: 抽离并复用违禁词检测处理逻辑 ([e83787c](https://github.com/W1ndys/W1ndysBot-dev/commit/e83787cbe7f2461f35bfe913317958a91645564a))
+- **GroupBanWords**: 新增解析合并转发消息功能 ([db45369](https://github.com/W1ndys/W1ndysBot-dev/commit/db453696fb15e7ee5437a52d2f7702506a0d349b))
+- **Main**: 增加.env 文件存在性检查 ([d000e82](https://github.com/W1ndys/W1ndysBot-dev/commit/d000e82ab857d27669d654d3f4bec244f3c0d4a0))
+- **OnlineDetect**: 更新在线状态日志信息 ([e672d6d](https://github.com/W1ndys/W1ndysBot-dev/commit/e672d6d86c1d923f043d6c49d4da74d36b0bdfac))
+- **Docker**: 更新 Windows 版 napcat Docker 容器启动脚本 ([eb0de10](https://github.com/W1ndys/W1ndysBot-dev/commit/eb0de100f40e3843d2e8b6275fb2b3765d9e9b9d))
+- **Docker**: 新增 Windows 更新 napcat Docker 容器的脚本 ([87489dd](https://github.com/W1ndys/W1ndysBot-dev/commit/87489ddf6ae9efb83fefec12dd9ff461eb5937bf))
+- **GroupVerification**: 增加扫描提示消息与延时 ([92341b4](https://github.com/W1ndys/W1ndysBot-dev/commit/92341b4ce95aec1865f666ec58e7fec4aaaf6dc6))- **文档**：更新了配置说明文档，将配置文件路径修改为 `app/.env`。（[3cc93f1](https://github.com/W1ndys/W1ndysBot-dev/commit/3cc93f1684d2b4418f24ab697fcd2a232e27eb7b)）
 
 ## 2025-06-11
 
