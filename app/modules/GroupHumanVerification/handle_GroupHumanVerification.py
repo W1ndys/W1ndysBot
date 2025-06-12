@@ -43,6 +43,14 @@ class GroupHumanVerificationHandler:
                 result_msgs = []  # 新增：用于统计结果
                 if unverified_users:
                     for group_id, user_list in unverified_users.items():
+                        # 发出提示
+                        await send_private_msg(
+                            self.websocket,
+                            self.user_id,
+                            generate_text_message(f"正在扫描群{group_id}未验证用户"),
+                            note="del_msg=10",
+                        )
+                        await asyncio.sleep(0.5)
                         # 记录需要踢出的用户
                         kick_users = []
                         # 记录需要提醒的用户消息（每行@和文本分开生成，合成列表）
@@ -121,6 +129,16 @@ class GroupHumanVerificationHandler:
         仅扫描当前群聊未验证成员并在群内警告，无需私聊通知。
         """
         try:
+            # 发出提示
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_text_message(f"正在扫描当前群未验证用户"),
+                ],
+                note="del_msg=10",
+            )
+            await asyncio.sleep(0.5)
             with DataManager() as dm:
                 unverified_users = dm.get_all_unverified_users_with_code_and_warning()
                 result_msgs = []
