@@ -4,8 +4,6 @@ from . import (
     MODULE_NAME,
     ADD_BAN_WORD_COMMAND,
     DELETE_BAN_WORD_COMMAND,
-    BAN_WORD_WEIGHT_MAX,
-    BAN_WORD_DURATION,
     UNBAN_WORD_COMMAND,
     KICK_BAN_WORD_COMMAND,
     COPY_BAN_WORD_COMMAND,
@@ -316,32 +314,51 @@ class GroupBanWordsHandler:
                 return
             # 获取来源群号（群号1）
             group_id_source = parts[0]
-            await send_group_msg(
-                self.websocket,
-                self.group_id,
-                [
-                    generate_text_message(f"正在从群 {group_id_source} 复制违禁词"),
-                ],
-                note="del_msg=10",
-            )
+
             # 实例化来源群数据管理器
             data_manager_source = DataManager(group_id_source)
             # 获取来源群违禁词
             ban_words = data_manager_source.get_all_words_and_weight()
-            # 添加违禁词到本群
-            for word, weight in ban_words:
-                self.data_manager.add_word(word, weight)
-            # 发送成功消息
+
+            # 发送开始处理的提示
             await send_group_msg(
                 self.websocket,
                 self.group_id,
-                [
-                    generate_text_message(
-                        f"已成功从群 {group_id_source} 复制 {len(ban_words)} 个违禁词"
-                    ),
-                ],
+                generate_text_message(
+                    f"开始从群 {group_id_source} 复制{len(ban_words)}个违禁词到当前群，请稍候..."
+                ),
                 note="del_msg=10",
             )
+
+            # 创建一个新的异步任务来处理违禁词添加
+            async def process_ban_words():
+                try:
+                    # 分批处理，每批处理一部分然后让出控制权
+                    batch_size = 20
+                    for i in range(0, len(ban_words), batch_size):
+                        batch = ban_words[i : i + batch_size]
+                        for word, weight in batch:
+                            self.data_manager.add_word(word, weight)
+                        # 每处理一批后让出控制权
+                        await asyncio.sleep(0.1)
+
+                    # 发送成功消息
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_text_message(
+                                f"已成功从群 {group_id_source} 复制 {len(ban_words)} 个违禁词"
+                            )
+                        ],
+                        note="del_msg=10",
+                    )
+                except Exception as e:
+                    logger.error(f"[{MODULE_NAME}]处理违禁词批次时出错: {e}")
+
+            # 创建任务但不等待它完成
+            asyncio.create_task(process_ban_words())
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]复制违禁词失败: {e}")
 
