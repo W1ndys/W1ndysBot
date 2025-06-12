@@ -7,6 +7,11 @@ from config import OWNER_ID, WS_URL, TOKEN, FEISHU_BOT_URL, FEISHU_BOT_SECRET
 
 
 def verify_config():
+    # 如果.env文件不存在，则提示用户
+    if not os.path.exists(".env"):
+        logger.error("请在完成 .env 文件配置后，删除.example后缀")
+        exit()
+
     """验证配置是否正确"""
     if not OWNER_ID:
         logger.error("OWNER_ID未设置，请在环境变量中设置")
