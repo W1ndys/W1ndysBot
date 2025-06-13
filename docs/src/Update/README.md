@@ -7,6 +7,18 @@ icon: fa-solid fa-clipboard-list
 
 <!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息，时间越往前，越靠前 -->
 
+## 2025-06-13
+
+- **GroupHumanVerification**：优化群用户验证处理逻辑，增加异步任务处理以提升效率（[7f657d0](https://github.com/W1ndys/W1ndysBot-dev/commit/7f657d01294de5a1f37d77e10087076dce7ee6a9)）
+- **GroupHumanVerification**：调整用户踢出和消息发送的暂停时间以释放控制权（[be1bf86](https://github.com/W1ndys/W1ndysBot-dev/commit/be1bf8660a289cbea4e9b33af8c53a526235bfb1)）
+- **GroupHumanVerification**：在用户被踢出时增加短暂停顿以交出控制权（[fab32ea](https://github.com/W1ndys/W1ndysBot-dev/commit/fab32eaa5b5ea8a41bf1ea38f5a1ff1d784d054d)）
+- **GroupBanWords**：更新违禁词检测返回格式，包含权重信息（[996204e](https://github.com/W1ndys/W1ndysBot-dev/commit/996204ec1c065caca0c34da5a314b10ac0cae9b2)）
+- **EventHandler**：更新模块加载成功消息格式，调整换行符位置以提升可读性（[23dd3cb](https://github.com/W1ndys/W1ndysBot-dev/commit/23dd3cbb0f4dd7bd022d5eda1383623bd0c3010c)）
+- **GroupBanWords**：更新违禁词报告格式，包含权重信息（[ba38056](https://github.com/W1ndys/W1ndysBot-dev/commit/ba38056b466981d0839c4aab3d2dfde765dd350c)）
+- **GroupBanWords**：移除不必要的 data_manager 参数传递，并优化代码结构（[8fb7caf](https://github.com/W1ndys/W1ndysBot-dev/commit/8fb7caf2a43c506f3eaead3ce851595506db5193)）
+- **GroupBanWords**：修复违禁词检测逻辑，调整权重判断条件，简化参数传递和优化 ForwardMessageHandler（[75ac199](https://github.com/W1ndys/W1ndysBot-dev/commit/75ac199e6b2d1f85e9e446d3eb894a49c8beb0bc)）
+- **GroupNoticeHandler**：更新欢迎消息内容，简化用户验证流程说明（[fb62860](https://github.com/W1ndys/W1ndysBot-dev/commit/fb6286057aac3bf3c01445b19f31fbd2af1353b7)）
+
 ## 2025-06-12
 
 - **GroupBanWords**：优化群违禁词复制为异步批处理，采用`asyncio.create_task`后台每批 20 条处理，提升大规模数据操作性能与主循环响应性，复制过程提供进度提示并移除未用常量导入（[add71bd1](https://github.com/W1ndys/W1ndysBot-dev/commit/add71bd1e2203eb8da1eb085b66b4ea42c0d3ee6)）
