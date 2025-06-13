@@ -279,7 +279,6 @@ class GroupBanWordsHandler:
         # 使用提取的通用函数检测和处理违禁词
         return await check_and_handle_ban_words(
             self.websocket,
-            self.data_manager,
             self.group_id,
             self.user_id,
             self.message_id,

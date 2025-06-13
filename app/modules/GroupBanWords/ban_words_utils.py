@@ -28,7 +28,6 @@ async def check_and_handle_ban_words(
 
     Args:
         websocket: WebSocket连接对象
-        data_manager: 数据管理器实例
         group_id: 群号
         user_id: 用户ID
         message_id: 消息ID
