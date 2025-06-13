@@ -40,90 +40,104 @@ class GroupHumanVerificationHandler:
         try:
             with DataManager() as dm:
                 unverified_users = dm.get_all_unverified_users_with_code_and_warning()
-                result_msgs = []  # 新增：用于统计结果
+                result_msgs = []
                 if unverified_users:
+                    # 创建任务列表
+                    tasks = []
                     for group_id, user_list in unverified_users.items():
-                        # 发出提示
+                        # 为每个群创建单独的任务
+                        task = asyncio.create_task(
+                            self._process_single_group(
+                                group_id, user_list, dm, result_msgs
+                            )
+                        )
+                        tasks.append(task)
+
+                    # 等待所有任务完成
+                    await asyncio.gather(*tasks)
+
+                    # 发送最终结果
+                    if result_msgs:
+                        msg = "\n".join(result_msgs)
+                        await send_private_msg(
+                            self.websocket, self.user_id, f"[扫描验证结果]\n{msg}"
+                        )
+                    else:
                         await send_private_msg(
                             self.websocket,
                             self.user_id,
-                            generate_text_message(f"正在扫描群{group_id}未验证用户"),
-                            note="del_msg=10",
+                            "[扫描验证结果] 当前无未验证用户",
                         )
-                        await asyncio.sleep(0.05)
-                        # 记录需要踢出的用户
-                        kick_users = []
-                        # 记录需要提醒的用户消息（每行@和文本分开生成，合成列表）
-                        warning_msg_list = []
-                        for user_id, warning_count, code in user_list:
-                            if warning_count > 1:
-                                dm.update_warning_count(
-                                    group_id, user_id, warning_count - 1
-                                )
-                                # 每行用generate_at_message和generate_text_message生成
-                                warning_msg_list.append(generate_at_message(user_id))
-                                warning_msg_list.append(
-                                    generate_text_message(
-                                        f"({user_id})请尽快私聊我验证码【{code}】（剩余警告{warning_count - 1}/{WARNING_COUNT}）\n\n"
-                                    )
-                                )
-                                # 统计
-                                result_msgs.append(
-                                    f"群{group_id} 用户{user_id} 警告-1，剩余{warning_count-1}"
-                                )
-                            else:
-                                # 警告次数为0，踢群并标记为超时
-                                kick_users.append(user_id)
-                                result_msgs.append(
-                                    f"群{group_id} 用户{user_id} 已被踢出（警告用尽）"
-                                )
-                            await asyncio.sleep(0.05)  # 释放控制权
-                        # 合并提醒消息，一次性发到群里（每行@和文本分开生成，合成列表）
-                        if warning_msg_list:
-                            await send_group_msg(
-                                self.websocket, group_id, warning_msg_list
-                            )
-                        # 依次踢出需要踢出的用户前，群内合并通知
-                        if kick_users:
-                            message = []
-                            for user_id in kick_users:
-                                message.extend(
-                                    [
-                                        generate_at_message(user_id),
-                                        generate_text_message(f"({user_id})"),
-                                    ]
-                                )
-                            message.append(
-                                generate_text_message(
-                                    "以上用户已超过警告次数，即将被踢出群聊"
-                                )
-                            )
-                            await send_group_msg(
-                                self.websocket,
-                                group_id,
-                                message,
-                                note="del_msg=60",
-                            )
-                        for user_id in kick_users:
-                            await set_group_kick(self.websocket, group_id, user_id)
-                            dm.update_status(group_id, user_id, STATUS_KICKED)
-                            # 踢人操作间隔1秒，防止风控
-                            await asyncio.sleep(1)
-
-                        # 释放控制权
-                        await asyncio.sleep(0.05)
-                # 新增：扫描结果私聊通知管理员
-                if result_msgs:
-                    msg = "\n".join(result_msgs)
-                    await send_private_msg(
-                        self.websocket, self.user_id, f"[扫描验证结果]\n{msg}"
-                    )
-                else:
-                    await send_private_msg(
-                        self.websocket, self.user_id, "[扫描验证结果] 当前无未验证用户"
-                    )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理扫描入群验证失败: {e}")
+
+    async def _process_single_group(self, group_id, user_list, dm, result_msgs):
+        """处理单个群的验证扫描"""
+        try:
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                generate_text_message(f"正在扫描群{group_id}未验证用户"),
+                note="del_msg=10",
+            )
+            await asyncio.sleep(0.05)
+            # 记录需要踢出的用户
+            kick_users = []
+            # 记录需要提醒的用户消息（每行@和文本分开生成，合成列表）
+            warning_msg_list = []
+            for user_id, warning_count, code in user_list:
+                if warning_count > 1:
+                    dm.update_warning_count(group_id, user_id, warning_count - 1)
+                    # 每行用generate_at_message和generate_text_message生成
+                    warning_msg_list.append(generate_at_message(user_id))
+                    warning_msg_list.append(
+                        generate_text_message(
+                            f"({user_id})请尽快私聊我验证码【{code}】（剩余警告{warning_count - 1}/{WARNING_COUNT}）\n\n"
+                        )
+                    )
+                    # 统计
+                    result_msgs.append(
+                        f"群{group_id} 用户{user_id} 警告-1，剩余{warning_count-1}"
+                    )
+                else:
+                    # 警告次数为0，踢群并标记为超时
+                    kick_users.append(user_id)
+                    result_msgs.append(
+                        f"群{group_id} 用户{user_id} 已被踢出（警告用尽）"
+                    )
+                await asyncio.sleep(0.05)  # 释放控制权
+            # 合并提醒消息，一次性发到群里（每行@和文本分开生成，合成列表）
+            if warning_msg_list:
+                await send_group_msg(self.websocket, group_id, warning_msg_list)
+            # 依次踢出需要踢出的用户前，群内合并通知
+            if kick_users:
+                message = []
+                for user_id in kick_users:
+                    message.extend(
+                        [
+                            generate_at_message(user_id),
+                            generate_text_message(f"({user_id})"),
+                        ]
+                    )
+                message.append(
+                    generate_text_message("以上用户已超过警告次数，即将被踢出群聊")
+                )
+                await send_group_msg(
+                    self.websocket,
+                    group_id,
+                    message,
+                    note="del_msg=60",
+                )
+            for user_id in kick_users:
+                await set_group_kick(self.websocket, group_id, user_id)
+                dm.update_status(group_id, user_id, STATUS_KICKED)
+                # 踢人操作间隔1秒，防止风控
+                await asyncio.sleep(1)
+
+            # 释放控制权
+            await asyncio.sleep(0.05)
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理群{group_id}扫描失败: {e}")
 
     async def handle_scan_verification_group_only(self):
         """
