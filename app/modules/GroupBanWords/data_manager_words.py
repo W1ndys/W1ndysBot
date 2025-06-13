@@ -124,6 +124,8 @@ class DataManager:
             message (str): 需要检查的消息文本
         Returns:
             tuple: (总权值, 命中的违禁词列表)
+            total_weight: 总权值
+            matched_words: 命中的违禁词列表和权值的元组列表
         """
         self.cursor.execute("SELECT word, weight FROM ban_words")
         matched_words = []
@@ -131,7 +133,7 @@ class DataManager:
         for word, weight in self.cursor.fetchall():
             if word in message:
                 total_weight += weight
-                matched_words.append(word)
+                matched_words.append((word, weight))
         return total_weight, matched_words
 
     def set_user_status(self, user_id, status):
