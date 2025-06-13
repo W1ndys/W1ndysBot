@@ -77,6 +77,7 @@ class GroupHumanVerificationHandler:
                                 result_msgs.append(
                                     f"群{group_id} 用户{user_id} 已被踢出（警告用尽）"
                                 )
+                            await asyncio.sleep(0.05) # 短暂停顿，交出控制权
                         # 合并提醒消息，一次性发到群里（每行@和文本分开生成，合成列表）
                         if warning_msg_list:
                             await send_group_msg(
