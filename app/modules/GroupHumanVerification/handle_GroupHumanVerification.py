@@ -50,7 +50,7 @@ class GroupHumanVerificationHandler:
                             generate_text_message(f"正在扫描群{group_id}未验证用户"),
                             note="del_msg=10",
                         )
-                        await asyncio.sleep(0.5)
+                        await asyncio.sleep(0.05)
                         # 记录需要踢出的用户
                         kick_users = []
                         # 记录需要提醒的用户消息（每行@和文本分开生成，合成列表）
@@ -77,7 +77,7 @@ class GroupHumanVerificationHandler:
                                 result_msgs.append(
                                     f"群{group_id} 用户{user_id} 已被踢出（警告用尽）"
                                 )
-                            await asyncio.sleep(0.05) # 短暂停顿，交出控制权
+                            await asyncio.sleep(0.05)  # 释放控制权
                         # 合并提醒消息，一次性发到群里（每行@和文本分开生成，合成列表）
                         if warning_msg_list:
                             await send_group_msg(
@@ -110,8 +110,8 @@ class GroupHumanVerificationHandler:
                             # 踢人操作间隔1秒，防止风控
                             await asyncio.sleep(1)
 
-                        # 发消息间隔1秒，防止风控
-                        await asyncio.sleep(1)
+                        # 释放控制权
+                        await asyncio.sleep(0.05)
                 # 新增：扫描结果私聊通知管理员
                 if result_msgs:
                     msg = "\n".join(result_msgs)
