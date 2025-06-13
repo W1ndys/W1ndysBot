@@ -60,12 +60,12 @@ class GroupHumanVerificationHandler:
                     if result_msgs:
                         msg = "\n".join(result_msgs)
                         await send_private_msg(
-                            self.websocket, self.user_id, f"[扫描验证结果]\n{msg}"
+                            self.websocket, OWNER_ID, f"[扫描验证结果]\n{msg}"
                         )
                     else:
                         await send_private_msg(
                             self.websocket,
-                            self.user_id,
+                            OWNER_ID,
                             "[扫描验证结果] 当前无未验证用户",
                         )
         except Exception as e:
@@ -76,7 +76,7 @@ class GroupHumanVerificationHandler:
         try:
             await send_private_msg(
                 self.websocket,
-                self.user_id,
+                OWNER_ID,
                 generate_text_message(f"正在扫描群{group_id}未验证用户"),
                 note="del_msg=10",
             )
@@ -116,7 +116,7 @@ class GroupHumanVerificationHandler:
                     message.extend(
                         [
                             generate_at_message(user_id),
-                            generate_text_message(f"({user_id})"),
+                            generate_text_message(f"({user_id})，"),
                         ]
                     )
                 message.append(

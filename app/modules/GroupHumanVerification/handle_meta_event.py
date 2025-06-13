@@ -1,6 +1,7 @@
 from . import MODULE_NAME
 import logger
 from datetime import datetime
+from .handle_GroupHumanVerification import GroupHumanVerificationHandler
 
 
 class MetaEventHandler:
@@ -50,6 +51,19 @@ class MetaEventHandler:
         处理心跳
         """
         try:
-            pass
+            # 获取当前小时和分钟
+            now = datetime.now()
+            hour = now.hour
+            minute = now.minute
+            # 设定的扫描小时
+            scan_hours = [0, 8, 12, 16, 20]
+            # 只在整点的前2分钟内触发，且只触发一次（通过类变量记录上次触发小时）
+            if not hasattr(self, "_last_scan_hour"):
+                self._last_scan_hour = None
+            if hour in scan_hours and minute < 2 and self._last_scan_hour != hour:
+                self._last_scan_hour = hour
+                # 调用自动扫描
+                handler = GroupHumanVerificationHandler(self.websocket, self.msg)
+                await handler.handle_scan_verification()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")
