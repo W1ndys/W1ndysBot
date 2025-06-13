@@ -78,7 +78,7 @@ async def check_and_handle_ban_words(
                     f"[{formatted_time}]\n"
                     f"群{group_id}用户{user_id}发送违禁词\n"
                     f"已封禁{BAN_WORD_DURATION}秒\n"
-                    f"涉及违禁词: {', '.join(matched_words)}\n"
+                    f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}\n"
                     f"相关消息已通过飞书上报\n"
                     f"发送{UNBAN_WORD_COMMAND} {group_id} {user_id}解封用户\n"
                     f"发送{KICK_BAN_WORD_COMMAND} {group_id} {user_id}踢出用户"
@@ -108,7 +108,7 @@ async def check_and_handle_ban_words(
             content=f"时间: {formatted_time}\n"
             f"群{group_id}用户{user_id}发送违禁词\n"
             f"已封禁{BAN_WORD_DURATION}秒\n"
-            f"涉及违禁词: {', '.join(matched_words)}\n"
+            f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}\n"
             f"原始消息: {raw_message}",
         )
         return True
