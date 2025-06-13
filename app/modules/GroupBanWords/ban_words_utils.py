@@ -12,11 +12,11 @@ from api.generate import generate_text_message, generate_at_message
 from api.group import set_group_ban
 from config import OWNER_ID
 from utils.feishu import send_feishu_msg
+from .data_manager_words import DataManager
 
 
 async def check_and_handle_ban_words(
     websocket,
-    data_manager,
     group_id,
     user_id,
     message_id,
@@ -41,9 +41,10 @@ async def check_and_handle_ban_words(
     if not formatted_time:
         formatted_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    data_manager = DataManager(group_id)
     # 计算违禁词权重
     total_weight, matched_words = data_manager.calc_message_weight(raw_message)
-    is_banned = total_weight > BAN_WORD_WEIGHT_MAX
+    is_banned = total_weight >= BAN_WORD_WEIGHT_MAX
 
     if is_banned:
         # 返回True，表示违规

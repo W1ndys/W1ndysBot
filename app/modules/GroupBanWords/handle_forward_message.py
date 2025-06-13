@@ -1,20 +1,10 @@
-import asyncio
 from datetime import datetime
 from . import (
     MODULE_NAME,
-    BAN_WORD_WEIGHT_MAX,
-    BAN_WORD_DURATION,
-    UNBAN_WORD_COMMAND,
-    KICK_BAN_WORD_COMMAND,
 )
 from .data_manager_words import DataManager
 from .ban_words_utils import check_and_handle_ban_words
 from logger import logger
-from api.message import send_group_msg, delete_msg, send_private_msg
-from api.generate import generate_text_message, generate_at_message
-from api.group import set_group_ban
-from config import OWNER_ID
-from utils.feishu import send_feishu_msg
 
 
 class ForwardMessageHandler:
@@ -64,7 +54,6 @@ class ForwardMessageHandler:
             if self.group_id and self.user_id and self.message_id and self.data_manager:
                 return await check_and_handle_ban_words(
                     self.websocket,
-                    self.data_manager,
                     self.group_id,
                     self.user_id,
                     self.message_id,
