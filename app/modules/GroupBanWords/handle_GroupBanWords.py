@@ -133,7 +133,8 @@ class GroupBanWordsHandler:
 
     async def add_ban_word(self):
         try:
-            if not is_group_admin(self.role):
+            # 鉴权，群管理员和系统管理员可以添加违禁词
+            if not is_group_admin(self.role) and not is_system_admin(self.user_id):
                 return
             # 过滤命令
             content = self.raw_message.lstrip(ADD_BAN_WORD_COMMAND).strip()
@@ -205,7 +206,8 @@ class GroupBanWordsHandler:
 
     async def delete_ban_word(self):
         try:
-            if not is_group_admin(self.role):
+            # 鉴权，群管理员和系统管理员可以删除违禁词
+            if not is_group_admin(self.role) and not is_system_admin(self.user_id):
                 return
             # 过滤命令
             content = self.raw_message.lstrip(DELETE_BAN_WORD_COMMAND).strip()
@@ -260,8 +262,8 @@ class GroupBanWordsHandler:
     async def check_and_handle_ban_words(self):
         """检测违禁词并处理相关逻辑"""
 
-        # 如果是群管理，则不处理
-        if is_group_admin(self.role):
+        # 如果是群管理或系统管理员，则不处理
+        if is_group_admin(self.role) or is_system_admin(self.user_id):
             return
 
         # 如果消息是转发消息，发送获取转发消息内容的请求
