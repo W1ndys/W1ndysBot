@@ -66,11 +66,10 @@ class MenuManager:
         for module_name in MenuManager.get_all_modules():
             menu_info = MenuManager.get_module_menu_info(module_name)
             if menu_info:
-                menu_text += f"【{menu_info['name']}】\n"
+                menu_text += f"【{menu_info['name']}】：{menu_info['description']}\n"
                 menu_text += f"开关: {menu_info['switch_name']}\n"
-                menu_text += f"描述: {menu_info['description']}\n"
                 menu_text += "\n"
-            menu_text += "发送开关命令+menu，可以查看该模块的所有子命令"
+        menu_text += "发送开关命令+menu，可以查看该模块的所有子命令"
         return menu_text
 
 
