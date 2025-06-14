@@ -56,7 +56,7 @@ async def check_and_handle_ban_words(
         await get_group_msg_history(
             websocket,
             group_id,
-            count=20,
+            count=15,
             message_seq=0,
             note=f"GroupBanWords-group_id={group_id}-is_banned_user_id={user_id}",
         )

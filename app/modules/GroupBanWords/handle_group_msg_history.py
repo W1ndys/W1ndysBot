@@ -1,4 +1,3 @@
-import asyncio
 from api.message import delete_msg
 from logger import logger
 from . import MODULE_NAME
@@ -22,18 +21,19 @@ class GetGroupMsgHistoryHandler:
         for part in self.echo.split("-"):
             if "group_id=" in part:
                 self.group_id = part.split("=")[1]
+                logger.info(f"[{MODULE_NAME}]获取到违规的群号: {self.group_id}")
             elif "is_banned_user_id=" in part:
                 self.is_banned_user_id = part.split("=")[1]
+                logger.info(
+                    f"[{MODULE_NAME}]获取到被封禁的QQ号: {self.is_banned_user_id}"
+                )
 
-        # 创建携程任务列表
-        tasks = []
         # 遍历messages，撤回所有被封禁的QQ号发送的消息
         for message in self.messages:
-            if message.get("sender", {}).get("user_id") == self.is_banned_user_id:
-                tasks.append(delete_msg(self.websocket, message.get("message_id")))
-
-        # 并发执行所有撤回任务
-        await asyncio.gather(*tasks)
+            if str(message.get("sender", {}).get("user_id")) == str(
+                self.is_banned_user_id
+            ):
+                await delete_msg(self.websocket, message.get("message_id"))
         logger.info(
             f"[{MODULE_NAME}]撤回群({self.group_id})中被封禁的QQ号({self.is_banned_user_id})发送的历史消息"
         )
