@@ -9,10 +9,12 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-14
 
-- **GroupBanWords** : 修复历史消息处理及参数调整，优化撤回消息逻辑 [b4cb9e0](https://github.com/W1ndys/W1ndysBot-dev/commit/b4cb9e0dbdba408819e5effa9e62c3c8aa1610ac)
-- **GroupBanWords** : 增强群消息管理功能，支持历史消息请求处理 [82d2c64](https://github.com/W1ndys/W1ndysBot-dev/commit/82d2c64281c911d1338a28bf8b606f70e1f39a84)
-- **GroupHumanVerification** : 修复类变量初始化问题，优化定时自动扫描逻辑 [f47c240](https://github.com/W1ndys/W1ndysBot-dev/commit/f47c240df555cea50f773a5711264339919d49db)
-- **GroupHumanVerification** : 更新群用户验证处理逻辑，增加定时自动扫描功能 [01fbbce](https://github.com/W1ndys/W1ndysBot-dev/commit/01fbbce2c42981988c414678c24168ca6cea7e50)
+- **InviteTreeRecord**：优化群成员被移除时的邀请者踢出逻辑为异步并发，提高批量处理效率，去除主动确认消息步骤，处理逻辑更精简（[ac3afa6](https://github.com/W1ndys/W1ndysBot-dev/commit/ac3afa6)）
+- **GroupBanWords**：增加消息文本预处理环节，自动去除标点、空白及换行，提高违禁词检测准确性（[988b96d](https://github.com/W1ndys/W1ndysBot-dev/commit/988b96d)）
+- **GroupBanWords**：修复历史消息处理 bug，将检测历史消息数量调整为 15，优化撤回逻辑，增强日志记录（[b4cb9e0](https://github.com/W1ndys/W1ndysBot-dev/commit/b4cb9e0)）
+- **GroupBanWords 模块**：增强群消息管理功能，支持历史消息请求及违规时自动获取历史消息，提升违规溯源能力（[82d2c64](https://github.com/W1ndys/W1ndysBot-dev/commit/82d2c64)）
+- **message**：优化获取群历史消息函数的参数说明和默认值，完善返回值说明（[5f22d57](https://github.com/W1ndys/W1ndysBot-dev/commit/5f22d57)）
+- **GroupHumanVerification**：修复自动扫描逻辑，确保类变量初始化，提升群用户验证效率，增加定时自动扫描功能（[f47c240](https://github.com/W1ndys/W1ndysBot-dev/commit/f47c240), [4250f10](https://github.com/W1ndys/W1ndysBot-dev/commit/4250f10), [01fbbce](https://github.com/W1ndys/W1ndysBot-dev/commit/01fbbce)）
 
 ## 2025-06-13
 
