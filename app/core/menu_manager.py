@@ -34,6 +34,7 @@ class MenuManager:
                 "name": getattr(module, "MODULE_NAME", module_name),
                 "commands": getattr(module, "COMMANDS", {}),
                 "description": getattr(module, "MODULE_DESCRIPTION", "暂无描述"),
+                "switch_name": getattr(module, "SWITCH_NAME", ""),
             }
             return menu_info
         except Exception as e:
@@ -66,11 +67,10 @@ class MenuManager:
             menu_info = MenuManager.get_module_menu_info(module_name)
             if menu_info:
                 menu_text += f"【{menu_info['name']}】\n"
+                menu_text += f"开关: {menu_info['switch_name']}\n"
                 menu_text += f"描述: {menu_info['description']}\n"
-                # menu_text += "可用命令:\n"
-                # for cmd, desc in menu_info["commands"].items():
-                #     menu_text += f"- {cmd}: {desc}\n"
                 menu_text += "\n"
+            menu_text += "发送开关命令+menu，可以查看该模块的所有子命令"
         return menu_text
 
 
