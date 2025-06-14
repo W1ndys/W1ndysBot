@@ -140,22 +140,20 @@ class GroupMessageHandler:
                     related_users = invite_link_record.get_related_invite_users(
                         operator_id
                     )
-
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(
-                                f"已查询群{self.group_id}，{operator_id} 的上下级相关邀请者，正在执行踢出邀请树，若数量较大则可能需要较长时间，请耐心等待。"
-                            ),
-                        ],
-                        note="del_msg=10",
-                    )
+                    # 创建异步任务列表
+                    tasks = []
                     for user_id in related_users:
-                        await set_group_kick(self.websocket, self.group_id, user_id)
+                        # 创建踢出用户和删除记录的协程任务
+                        tasks.append(
+                            asyncio.create_task(
+                                set_group_kick(self.websocket, self.group_id, user_id)
+                            )
+                        )
                         invite_link_record.delete_invite_record_by_invited_id(user_id)
-                        await asyncio.sleep(0.5)
+                        await asyncio.sleep(0.05)  # 等待0.05秒，交出控制权
+
+                    # 等待所有任务完成
+                    await asyncio.gather(*tasks)
 
                     await send_group_msg(
                         self.websocket,
