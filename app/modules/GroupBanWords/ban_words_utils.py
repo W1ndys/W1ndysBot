@@ -46,6 +46,18 @@ async def check_and_handle_ban_words(
         formatted_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     data_manager = DataManager(group_id)
+
+    # 文本预处理
+    # 删除所有空格，中英文标点符号，换行符
+    raw_message = raw_message.replace(" ", "").replace("\n", "").replace("\r", "")
+    # 中文标点符号
+    chinese_punctuation = "，。！？；：" "''【】「」『』（）《》〈〉…—～·、"
+    # 英文标点符号
+    english_punctuation = r""",.!?;:'"[](){}<>...--~`"""
+    # 删除标点符号
+    for char in chinese_punctuation + english_punctuation:
+        raw_message = raw_message.replace(char, "")
+
     # 计算违禁词权重
     total_weight, matched_words = data_manager.calc_message_weight(raw_message)
     is_banned = total_weight >= BAN_WORD_WEIGHT_MAX
