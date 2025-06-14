@@ -7,7 +7,12 @@ from . import (
     KICK_BAN_WORD_COMMAND,
 )
 
-from api.message import send_group_msg, delete_msg, send_private_msg
+from api.message import (
+    send_group_msg,
+    delete_msg,
+    send_private_msg,
+    get_group_msg_history,
+)
 from api.generate import generate_text_message, generate_at_message
 from api.group import set_group_ban
 from config import OWNER_ID
@@ -47,6 +52,14 @@ async def check_and_handle_ban_words(
 
     if is_banned:
         # 返回True，表示违规
+        # 发送请求获取本群历史消息记录，以便于在回应处理函数中处理
+        await get_group_msg_history(
+            websocket,
+            group_id,
+            count=20,
+            message_seq=0,
+            note=f"GroupBanWords-group_id={group_id}-is_banned_user_id={user_id}",
+        )
         await set_group_ban(
             websocket,
             group_id,
