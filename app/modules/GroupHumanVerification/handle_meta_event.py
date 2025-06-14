@@ -10,6 +10,8 @@ class MetaEventHandler:
     元事件可利用心跳来实现定时任务
     """
 
+    _last_scan_hour = None  # 类变量，所有实例共享
+
     def __init__(self, websocket, msg):
         self.websocket = websocket
         self.msg = msg
@@ -19,7 +21,6 @@ class MetaEventHandler:
         )  # 格式化时间
         self.post_type = msg.get("post_type", "")
         self.meta_event_type = msg.get("meta_event_type", "")
-        self._last_scan_hour = None  # 新增：初始化扫描小时记录
 
     async def handle(self):
         try:
@@ -59,8 +60,12 @@ class MetaEventHandler:
             # 设定的扫描小时
             scan_hours = [0, 8, 12, 16, 20]
             # 只在整点的前2分钟内触发，且只触发一次（通过类变量记录上次触发小时）
-            if hour in scan_hours and minute < 2 and self._last_scan_hour != hour:
-                self._last_scan_hour = hour
+            if (
+                hour in scan_hours
+                and minute < 2
+                and MetaEventHandler._last_scan_hour != hour
+            ):
+                MetaEventHandler._last_scan_hour = hour
                 # 调用自动扫描
                 handler = GroupHumanVerificationHandler(self.websocket, self.msg)
                 await handler.handle_scan_verification()
