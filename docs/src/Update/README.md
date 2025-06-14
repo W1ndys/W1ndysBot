@@ -7,6 +7,13 @@ icon: fa-solid fa-clipboard-list
 
 <!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息，时间越往前，越靠前 -->
 
+## 2025-06-14
+
+- **GroupBanWords** : 修复历史消息处理及参数调整，优化撤回消息逻辑 [b4cb9e0](https://github.com/W1ndys/W1ndysBot-dev/commit/b4cb9e0dbdba408819e5effa9e62c3c8aa1610ac)
+- **GroupBanWords** : 增强群消息管理功能，支持历史消息请求处理 [82d2c64](https://github.com/W1ndys/W1ndysBot-dev/commit/82d2c64281c911d1338a28bf8b606f70e1f39a84)
+- **GroupHumanVerification** : 修复类变量初始化问题，优化定时自动扫描逻辑 [f47c240](https://github.com/W1ndys/W1ndysBot-dev/commit/f47c240df555cea50f773a5711264339919d49db)
+- **GroupHumanVerification** : 更新群用户验证处理逻辑，增加定时自动扫描功能 [01fbbce](https://github.com/W1ndys/W1ndysBot-dev/commit/01fbbce2c42981988c414678c24168ca6cea7e50)
+
 ## 2025-06-13
 
 - **GroupHumanVerification**：优化群用户验证处理逻辑，增加异步任务处理以提升效率（[7f657d0](https://github.com/W1ndys/W1ndysBot-dev/commit/7f657d01294de5a1f37d77e10087076dce7ee6a9)）
