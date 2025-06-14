@@ -238,11 +238,20 @@ async def get_file(websocket, file_id):
         logger.error(f"[API]执行获取文件消息失败: {e}")
 
 
-async def get_group_msg_history(
-    websocket, group_id, user_id, count, message_seq=0, note=""
-):
+async def get_group_msg_history(websocket, group_id, count=20, message_seq=0, note=""):
     """
     获取群历史消息
+    https://napcat.apifox.cn/226657401e0
+
+    Args:
+        websocket: WebSocket连接对象
+        group_id: 群号
+        count: 获取消息数量，默认20，在payload中可以不填
+        message_seq: 起始消息序号，默认为0
+        note: 备注信息，默认为空字符串
+
+    Returns:
+        None: 该函数通过websocket发送请求，不直接返回结果
     """
     try:
         payload = {
@@ -251,9 +260,9 @@ async def get_group_msg_history(
                 "group_id": group_id,
                 "message_seq": message_seq,
                 "count": count,
-                "reverseOrder": True,
+                "reverseOrder": True,  # 是否倒序
             },
-            "echo": f"get_group_msg_history-{group_id}-{user_id}-{note}",
+            "echo": f"get_group_msg_history-{group_id}-{note}",
         }
         await websocket.send(json.dumps(payload))
         logger.info(f"[API]已执行获取群历史消息")
