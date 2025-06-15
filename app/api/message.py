@@ -174,15 +174,27 @@ async def delete_msg(websocket, message_id):
         logger.error(f"[API]执行撤回消息失败: {e}")
 
 
-async def get_msg(websocket, message_id):
+async def get_msg(websocket, message_id, note=""):
     """
     获取消息详情
+
+    参数:
+        websocket: WebSocket连接对象，用于发送消息
+        message_id: str 消息ID
+        note: str 备注，可选，用于在响应中标识请求的字段，默认空字符串
+
+    返回:
+        无返回值，通过websocket发送请求
+
+    说明:
+        由于websocket的特殊性，无法一对一获取响应信息
+        需要在echo字段中添加标识信息，以便在处理响应时进行匹配
     """
     try:
         payload = {
             "action": "get_msg",
             "params": {"message_id": message_id},
-            "echo": "get_msg",
+            "echo": f"get_msg-{note}",
         }
         await websocket.send(json.dumps(payload))
         logger.info(f"[API]已执行获取消息详情")
