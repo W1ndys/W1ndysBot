@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+import re
 from . import (
     BAN_WORD_WEIGHT_MAX,
     BAN_WORD_DURATION,
@@ -47,16 +48,27 @@ async def check_and_handle_ban_words(
 
     data_manager = DataManager(group_id)
 
+    # 过滤图片CQ码和视频CQ码
+    raw_message = re.sub(r"\[CQ:image,.*?\]", "", raw_message)
+    raw_message = re.sub(r"\[CQ:video,.*?\]", "", raw_message)
+
     # 文本预处理
-    # 删除所有空格，中英文标点符号，换行符
-    raw_message = raw_message.replace(" ", "").replace("\n", "").replace("\r", "")
-    # 中文标点符号
-    chinese_punctuation = "，。！？；：" "''【】「」『』（）《》〈〉…—～·、"
-    # 英文标点符号
-    english_punctuation = r""",.!?;:'"[](){}<>...--~`"""
-    # 删除标点符号
-    for char in chinese_punctuation + english_punctuation:
-        raw_message = raw_message.replace(char, "")
+    # 删除所有空格，换行符，制表符
+    raw_message = (
+        raw_message.replace(" ", "")
+        .replace("\n", "")
+        .replace("\r", "")
+        .replace("\t", "")
+    )
+    # 删除所有中文标点符号
+    raw_message = re.sub(
+        r"[，。！？；：\'‘’“”【】「」『』（）《》〈〉…—～·、]", "", raw_message
+    )
+    # 删除所有英文标点符号
+    raw_message = re.sub(r'[,.:;!?\'"()\[\]{}<>—~`]', "", raw_message)
+
+    # 过滤后的消息
+    print(f"过滤后的消息: {raw_message}")
 
     # 计算违禁词权重
     total_weight, matched_words = data_manager.calc_message_weight(raw_message)
