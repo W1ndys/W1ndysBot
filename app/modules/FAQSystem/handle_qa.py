@@ -3,7 +3,7 @@ import logger
 from . import MODULE_NAME, ADD_FAQ, DELETE_FAQ
 from core.auth import is_group_admin, is_system_admin
 from .handle_match_qa import AdvancedFAQMatcher
-from api.message import send_group_msg, send_group_msg_with_cq
+from api.message import send_group_msg, send_group_msg_with_cq, get_msg
 from api.generate import generate_reply_message, generate_text_message
 import re
 import json
@@ -47,11 +47,76 @@ class QaHandler:
                 await self.handle_delete_qa()
                 return
 
+            # 如果是回复引用类型的添加问答，则调用API获取被回复的消息内容
+            if (
+                self.raw_message.startswith("[CQ:reply,id=")
+                and ADD_FAQ in self.raw_message
+            ):
+                await self.handle_add_qa_by_reply()
+                return
+
             # 否则，调用匹配问答对函数
             await self.handle_match_qa()  # type: ignore
             return
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
+
+    async def handle_add_qa_by_reply(self):
+        """
+        处理回复引用类型的添加问答命令。
+        格式：[CQ:reply,id=xxxx][CQ:at,qq=xxxx] 命令前缀 问题
+        示例： [CQ:reply,id=28070871][CQ:at,qq=3578392074] 添加问答 问答测试
+        """
+        try:
+            # 删除所有[CQ:at,qq=xxxx]格式的艾特标记
+            self.raw_message = re.sub(r"\[CQ:at,qq=\d+\]", "", self.raw_message)
+            # 删除命令前缀，并去除空格
+            self.raw_message = self.raw_message.replace(ADD_FAQ, "", 1).strip()
+            # 正则提取要获取的回复消息的ID
+            reply_message_id = re.search(r"\[CQ:reply,id=(\d+)\]", self.raw_message)
+            if reply_message_id:
+                reply_message_id = reply_message_id.group(1)
+                logger.info(
+                    f"[{MODULE_NAME}]回复引用类型的添加问答命令，获取到的回复消息ID：{reply_message_id}"
+                )
+            else:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(
+                            "❌ 添加失败，请检查问题格式。\n"
+                            f"例如：\n引用一条消息，在消息后添加：{ADD_FAQ} 问题\n"
+                        ),
+                    ],
+                    note="del_msg=10",
+                )
+            # 提取问题
+            question = self.raw_message.split(" ", 1)[1].strip()
+
+            if question:
+                # 发送获取消息内容的API请求，把相关信息添加到echo字段
+                await get_msg(
+                    self.websocket,
+                    reply_message_id,  # 被回复的消息ID
+                    note=f"{MODULE_NAME}-group_id={self.group_id}-question={question}-reply_message_id={self.message_id}",  # 群号，问题，本条消息的消息ID(用于后续回复这条命令消息)
+                )
+            else:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(
+                            "❌ 添加失败，请检查问题格式。\n"
+                            f"例如：\n引用一条消息，在消息后添加：{ADD_FAQ} 问题\n"
+                        ),
+                    ],
+                    note="del_msg=10",
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理回复引用类型的添加问答命令失败: {e}")
 
     async def handle_add_qa(self):
         """
