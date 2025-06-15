@@ -122,7 +122,7 @@ class PrivateMessageHandler:
             else:
                 # 定义需要忽略的消息正则表达式
                 ignore_patterns = [
-                    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"  # UUID格式
+                    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"  # UUID
                 ]
 
                 # 检查消息是否包含任何忽略模式
