@@ -7,6 +7,7 @@ from . import (
     STATUS_UNMUTED,
     STATUS_KICKED,
     NOTE_CONDITION,
+    WARNING_COUNT,
 )
 import uuid
 import logger
@@ -264,7 +265,7 @@ class GroupNoticeHandler:
             # 群内通知
             msg_at = generate_at_message(self.user_id)
             msg_text = generate_text_message(
-                f"({self.user_id}) 欢迎加入群聊！请先私聊我验证码完成人机验证以确保您是真人。\n\n"
+                f"({self.user_id}) 欢迎加入群聊！请先私聊我验证码完成人机验证以确保您是真人，你的验证码是下方的UUID字符串，{WARNING_COUNT}不验证将踢出群聊。\n\n"
                 f"你可以直接复制此消息全部内容发送给机器人进行验证，无需单独复制验证码，直接临时会话私聊我即可，无需加好友。\n\n"
                 f"{code}"
             )
