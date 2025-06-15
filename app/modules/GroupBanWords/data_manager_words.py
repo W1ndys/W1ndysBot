@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import re
 from . import MODULE_NAME
 
 
@@ -112,11 +113,12 @@ class DataManager:
         Args:
             word (str): 敏感词
         Returns:
-            bool: 操作是否成功
+            bool: 操作是否成功，如果词不存在则返回False
         """
         self.cursor.execute("DELETE FROM ban_words WHERE word=?", (word,))
+        rows_affected = self.cursor.rowcount
         self.conn.commit()
-        return True
+        return rows_affected > 0
 
     def calc_message_weight(self, message):
         """计算消息的违禁程度（所有命中违禁词的权值求和）
@@ -131,9 +133,15 @@ class DataManager:
         matched_words = []
         total_weight = 0
         for word, weight in self.cursor.fetchall():
-            if word in message:
-                total_weight += weight
-                matched_words.append((word, weight))
+            try:
+                if re.search(word, message):
+                    total_weight += weight
+                    matched_words.append((word, weight))
+            except re.error:
+                # 如果正则表达式无效，则退回到普通字符串匹配
+                if word in message:
+                    total_weight += weight
+                    matched_words.append((word, weight))
         return total_weight, matched_words
 
     def set_user_status(self, user_id, status):
