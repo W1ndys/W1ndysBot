@@ -22,7 +22,6 @@ class GroupNoticeHandler:
         self.user_id = str(msg.get("user_id"))
         self.group_id = str(msg.get("group_id"))
         self.operator_id = str(msg.get("operator_id"))
-        self.data_manager = DataManager(self.group_id)
 
     async def handle_group_notice(self):
         """
@@ -107,11 +106,12 @@ class GroupNoticeHandler:
         处理群聊禁言 - 取消禁言通知
         """
         try:
+            data_manager = DataManager(self.group_id)
             # 检测用户状态
-            user_status = self.data_manager.get_user_status(self.user_id)
+            user_status = data_manager.get_user_status(self.user_id)
             if user_status == "ban":
-                # 删除用户状态
-                self.data_manager.delete_user_status(self.user_id)
+                # 更新用户状态
+                data_manager.set_user_status(self.user_id, "unban")
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊禁言 - 取消禁言通知失败: {e}")
 
