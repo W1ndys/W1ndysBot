@@ -10,3 +10,5 @@ scipy
 matplotlib
 wordcloud
 python-dotenv
+ddddocr # 验证码识别，曲阜师范大学教务系统登录需要
+beautifulsoup4 # 解析HTML，处理曲阜师范大学教务系统教室信息
