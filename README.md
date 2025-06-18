@@ -8,6 +8,8 @@
 
 W1ndysBot，一款基于 NapCat 和 Python 开发的机器人程序，基于[W1ndysBotFrame](https://github.com/W1ndysBot/W1ndysBotFrame) 开发。
 
+🐧 卷卷的交流小窝：[489237389](https://qm.qq.com/q/rbV2dAvBRK)
+
 ## ✨ 功能说明
 
 - 🧩 含[W1ndysBotFrame](https://github.com/W1ndysBot/W1ndysBotFrame) 所有系统功能
