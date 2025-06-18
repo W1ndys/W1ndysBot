@@ -1,18 +1,20 @@
 import sqlite3
 import os
 from typing import List, Tuple, Optional
-from . import DATA_DIR
+from modules.FAQSystem import DATA_DIR
 
 
 class FAQDatabaseManager:
     def __init__(self, group_id: str):
         """
-        初始化 QADatabaseManager 实例，为指定群组创建/连接数据库。
+        初始化 FAQDatabaseManager 实例，为指定群组创建/连接数据库。
         参数:
             group_id: str 群组ID
         """
-        self.db_path = os.path.join(DATA_DIR, group_id, "FAQ_data.db")
-        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+        self.group_id = group_id
+        self.table_name = f"FAQ_group_{group_id}"
+        self.db_path = os.path.join(DATA_DIR, "FAQ_data.db")
+        os.makedirs(DATA_DIR, exist_ok=True)
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
         self._create_table()
@@ -35,8 +37,8 @@ class FAQDatabaseManager:
         创建存储问答对的表（如不存在则新建）。
         """
         self.cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS FAQ_pairs (
+            f"""
+            CREATE TABLE IF NOT EXISTS {self.table_name} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 question TEXT NOT NULL,
                 answer TEXT NOT NULL
@@ -55,20 +57,22 @@ class FAQDatabaseManager:
             int 问答对的ID（主键），失败时返回None
         """
         # 检查问题是否已存在
-        self.cursor.execute("SELECT id FROM FAQ_pairs WHERE question = ?", (question,))
+        self.cursor.execute(
+            f"SELECT id FROM {self.table_name} WHERE question = ?", (question,)
+        )
         row = self.cursor.fetchone()
         if row:
             # 已存在，更新答案
             qa_id = row[0]
             self.cursor.execute(
-                "UPDATE FAQ_pairs SET answer = ? WHERE id = ?", (answer, qa_id)
+                f"UPDATE {self.table_name} SET answer = ? WHERE id = ?", (answer, qa_id)
             )
             self.conn.commit()
             return qa_id
         else:
             # 不存在，插入新问答对
             self.cursor.execute(
-                "INSERT INTO FAQ_pairs (question, answer) VALUES (?, ?)",
+                f"INSERT INTO {self.table_name} (question, answer) VALUES (?, ?)",
                 (question, answer),
             )
             self.conn.commit()
@@ -84,7 +88,7 @@ class FAQDatabaseManager:
             (id, question, answer) 元组，未找到时返回None
         """
         self.cursor.execute(
-            "SELECT id, question, answer FROM FAQ_pairs WHERE id = ?", (qa_id,)
+            f"SELECT id, question, answer FROM {self.table_name} WHERE id = ?", (qa_id,)
         )
         result = self.cursor.fetchone()
         return result
@@ -95,7 +99,7 @@ class FAQDatabaseManager:
         返回:
             包含所有 (id, question, answer) 元组的列表
         """
-        self.cursor.execute("SELECT id, question, answer FROM FAQ_pairs")
+        self.cursor.execute(f"SELECT id, question, answer FROM {self.table_name}")
         result = self.cursor.fetchall()
         return result
 
@@ -110,7 +114,7 @@ class FAQDatabaseManager:
             bool 是否更新成功
         """
         self.cursor.execute(
-            "UPDATE FAQ_pairs SET question = ?, answer = ? WHERE id = ?",
+            f"UPDATE {self.table_name} SET question = ?, answer = ? WHERE id = ?",
             (question, answer, qa_id),
         )
         self.conn.commit()
@@ -125,7 +129,48 @@ class FAQDatabaseManager:
         返回:
             bool 是否删除成功
         """
-        self.cursor.execute("DELETE FROM FAQ_pairs WHERE id = ?", (qa_id,))
+        self.cursor.execute(f"DELETE FROM {self.table_name} WHERE id = ?", (qa_id,))
         self.conn.commit()
         deleted = self.cursor.rowcount > 0
         return deleted
+
+    @classmethod
+    def get_all_groups(cls) -> List[str]:
+        """
+        获取所有存在FAQ数据的群组ID列表。
+        返回:
+            群组ID列表
+        """
+        db_path = os.path.join(DATA_DIR, "FAQ_data.db")
+        if not os.path.exists(db_path):
+            return []
+
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+
+        # 获取所有以FAQ_group_开头的表名
+        cursor.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'FAQ_group_%'"
+        )
+        tables = cursor.fetchall()
+
+        conn.close()
+
+        # 提取群组ID
+        group_ids = []
+        for table in tables:
+            table_name = table[0]
+            group_id = table_name.replace("FAQ_group_", "")
+            group_ids.append(group_id)
+
+        return group_ids
+
+    def drop_group_data(self) -> bool:
+        """
+        删除当前群组的所有FAQ数据（删除表）。
+        返回:
+            bool 是否删除成功
+        """
+        self.cursor.execute(f"DROP TABLE IF EXISTS {self.table_name}")
+        self.conn.commit()
+        return True
