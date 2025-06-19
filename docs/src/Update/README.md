@@ -9,11 +9,13 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-19
 
-- **API**：增强`set_group_add_request`函数的参数和返回值文档，明确 websocket 连接、请求 id、同意标志及拒绝理由的用途，提升代码可读性和可维护性（[a5c0f4a](https://github.com/W1ndys/W1ndysBot-dev/commit/a5c0f4a3d5e99c0f5ea714b2ae3b579696f1eb86)）
-- **Logger**：重构日志记录器，增强可配置性。将日志级别参数重命名为`console_level`，设置根日志为 DEBUG，调整控制台和文件处理器级别设置逻辑，新增`set_console_level`方法支持动态调整（[30d7ae6](https://github.com/W1ndys/W1ndysBot-dev/commit/30d7ae68daea037e2be09b4d49356971c512e14f)）
-- **GroupHumanVerification**：增强加群请求处理逻辑。新增群 ID 属性，支持群内及私聊通知管理员，自动同意请求，记录请求时间、群 ID、用户 ID 和请求内容，提升群管理效率与体验（[74c3458](https://github.com/W1ndys/W1ndysBot-dev/commit/74c345888e5e5702ab1073d14fd77e33e10b82af)）
-- **InviteTreeRecord**：重构用户邀请者查询逻辑，提取获取相关用户与根节点方法，简化`get_full_invite_chain_str`结构，保持功能不变（[b17fbba](https://github.com/W1ndys/W1ndysBot-dev/commit/b17fbba4fcc7253d75ca91733bf3853dea2d5e57)）
-- **InviteTreeRecord**：增加批量删除用户相关邀请记录功能，支持管理员批量删除用户在群内的所有邀请记录，完善踢出邀请树命令的权限校验与移除逻辑（[911bcdf](https://github.com/W1ndys/W1ndysBot-dev/commit/911bcdf9effb4bb87ba8d34205e60aca5024bb0a)）
+- **FAQSystem**：增强问答匹配功能，新增 `find_multiple_matches` 方法支持多匹配与相似度排序，QaHandler 基于相似度阈值处理回复逻辑，定义高低阈值常量，全面提升问答系统智能匹配能力和交互体验（[2affd80](https://github.com/W1ndys/W1ndysBot-dev/commit/2affd807d84308fea41c39fad545b5e4f3a0f708)）
+- **FAQSystem**：更新获取所有问答对的文档说明，明确返回值为当前群的问答对列表（[3c543ad](https://github.com/W1ndys/W1ndysBot-dev/commit/3c543ad947251f366aa74cff4e7c3215f54f730d)）
+- **API**：为 `set_group_add_request` 函数添加详细参数和返回值说明，明确各参数用途，提升代码可读性与可维护性（[a5c0f4a](https://github.com/W1ndys/W1ndysBot-dev/commit/a5c0f4a3d5e99c0f5ea714b2ae3b579696f1eb86)）
+- **Logger**：重构日志记录器，级别参数更名为 `console_level`，根日志级别设为 DEBUG，完善控制台和文件处理器级别设置，新增动态调整接口，提升灵活性与日志完整性（[30d7ae6](https://github.com/W1ndys/W1ndysBot-dev/commit/30d7ae68daea037e2be09b4d49356971c512e14f)）
+- **GroupHumanVerification**：增强加群请求处理逻辑，新增群 ID 属性，支持自动同意加群请求，并通知管理员，详细记录请求信息，提升管理效率与用户体验（[74c3458](https://github.com/W1ndys/W1ndysBot-dev/commit/74c345888e5e5702ab1073d14fd77e33e10b82af)）
+- **InviteTreeRecord**：重构用户相关邀请者查询逻辑，将获取用户及根节点的逻辑抽取到新方法，优化代码结构，功能保持不变（[b17fbba](https://github.com/W1ndys/W1ndysBot-dev/commit/b17fbba4fcc7253d75ca91733bf3853dea2d5e57)）
+- **InviteTreeRecord**：增加根据群号和用户 ID 批量删除该用户邀请记录能力；群消息处理命令增加权限校验，确保邀请树移除彻底并仅限管理员操作（[911bcdf](https://github.com/W1ndys/W1ndysBot-dev/commit/911bcdf9effb4bb8
 
 ## 2025-06-18
 
