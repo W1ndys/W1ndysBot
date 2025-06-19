@@ -95,9 +95,9 @@ class FAQDatabaseManager:
 
     def get_all_FAQ_pairs(self) -> List[Tuple[int, str, str]]:
         """
-        获取所有问答对。
+        获取当前群（表）下的所有问答对。
         返回:
-            包含所有 (id, question, answer) 元组的列表
+            包含该群所有 (id, question, answer) 元组的列表
         """
         self.cursor.execute(f"SELECT id, question, answer FROM {self.table_name}")
         result = self.cursor.fetchall()
