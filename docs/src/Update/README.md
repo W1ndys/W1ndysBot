@@ -9,7 +9,11 @@ icon: fa-solid fa-clipboard-list
 
 ## 2025-06-19
 
-- **InviteTreeRecord**：增加用户相关邀请记录批量删除功能，包括新增 delete_all_invite_records_by_user_id 方法（支持根据群号和用户 ID 批量删除其作为邀请者与被邀请者的所有记录）、群消息处理增加查看与踢出邀请树命令的管理员权限校验、踢出邀请树逻辑改为调用批量删除方法，确保所踢用户相关记录彻底移除（[911bcdf](https://github.com/W1ndys/W1ndysBot-dev/commit/911bcdf9effb4bb87ba8d34205e60aca5024bb0a)）
+- **API**：增强`set_group_add_request`函数的参数和返回值文档，明确 websocket 连接、请求 id、同意标志及拒绝理由的用途，提升代码可读性和可维护性（[a5c0f4a](https://github.com/W1ndys/W1ndysBot-dev/commit/a5c0f4a3d5e99c0f5ea714b2ae3b579696f1eb86)）
+- **Logger**：重构日志记录器，增强可配置性。将日志级别参数重命名为`console_level`，设置根日志为 DEBUG，调整控制台和文件处理器级别设置逻辑，新增`set_console_level`方法支持动态调整（[30d7ae6](https://github.com/W1ndys/W1ndysBot-dev/commit/30d7ae68daea037e2be09b4d49356971c512e14f)）
+- **GroupHumanVerification**：增强加群请求处理逻辑。新增群 ID 属性，支持群内及私聊通知管理员，自动同意请求，记录请求时间、群 ID、用户 ID 和请求内容，提升群管理效率与体验（[74c3458](https://github.com/W1ndys/W1ndysBot-dev/commit/74c345888e5e5702ab1073d14fd77e33e10b82af)）
+- **InviteTreeRecord**：重构用户邀请者查询逻辑，提取获取相关用户与根节点方法，简化`get_full_invite_chain_str`结构，保持功能不变（[b17fbba](https://github.com/W1ndys/W1ndysBot-dev/commit/b17fbba4fcc7253d75ca91733bf3853dea2d5e57)）
+- **InviteTreeRecord**：增加批量删除用户相关邀请记录功能，支持管理员批量删除用户在群内的所有邀请记录，完善踢出邀请树命令的权限校验与移除逻辑（[911bcdf](https://github.com/W1ndys/W1ndysBot-dev/commit/911bcdf9effb4bb87ba8d34205e60aca5024bb0a)）
 
 ## 2025-06-18
 
