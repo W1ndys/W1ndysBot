@@ -119,11 +119,15 @@ class InviteLinkRecordDataManager:
             logger.error(f"生成邀请树结构失败: {e}")
             return ""
 
-    def get_full_invite_chain_str(self, user_id):
+    def _get_all_related_users_and_root(self, user_id):
         """
-        生成完整邀请树：先递归向上查找所有邀请者，找到最顶层root，再以root为起点递归向下生成树状结构。
+        获取用户相关的所有用户和根节点
+        返回: (related_users_set, root_id, chain_list)
         """
-        # 1. 向上查找所有邀请者，找到最顶层root
+        related_users = set()
+        related_users.add(user_id)  # 包含自身
+
+        # 向上查找所有邀请者，构建链路
         chain = []
         current_id = user_id
         visited_up = set()
@@ -138,48 +142,14 @@ class InviteLinkRecordDataManager:
             )
             row = self.cursor.fetchone()
             if row and row[0]:
-                current_id = row[0]
-            else:
-                break
-        chain = chain[::-1]  # 反转，root在前
-        root_id = chain[0]
-        # 2. 以root为起点，递归向下生成树状结构
-        tree_str = self.get_invite_tree_str(root_id)
-        # 3. 标记目标user_id
-        if user_id != root_id:
-            # 用*标记目标节点
-            tree_str = tree_str.replace(f"{user_id}\n", f"{user_id}  <--- 查询对象\n")
-        # 4. 展示链路
-        chain_str = " -> ".join(chain)
-        logger.info(f"已查询群{self.group_id}，{user_id} 的完整邀请树：{chain_str}")
-        return f"邀请树路：{chain_str}\n\n{tree_str}"
-
-    def get_related_invite_users(self, user_id):
-        """
-        返回被查询者的上级和下级所有相关邀请者，结果为去重后的id列表（包含自身）。
-        上级：递归向上查找所有邀请者
-        下级：递归向下查找所有被邀请者
-        """
-        related_users = set()
-        related_users.add(user_id)  # 包含自身
-        # 向上查找所有邀请者
-        current_id = user_id
-        visited_up = set()
-        while True:
-            if current_id in visited_up:
-                break  # 防止环
-            visited_up.add(current_id)
-            self.cursor.execute(
-                """SELECT operator_id FROM invite_link_record WHERE invited_id = ? AND group_id = ?""",
-                (current_id, self.group_id),
-            )
-            row = self.cursor.fetchone()
-            if row and row[0]:
                 operator_id = row[0]
                 related_users.add(operator_id)
                 current_id = operator_id
             else:
                 break
+
+        chain = chain[::-1]  # 反转，root在前
+        root_id = chain[0]
 
         # 向下查找所有被邀请者
         def find_down(inviter_id, visited_down):
@@ -196,6 +166,34 @@ class InviteLinkRecordDataManager:
                     find_down(invited_id, visited_down)
 
         find_down(user_id, set())
+
+        return related_users, root_id, chain
+
+    def get_full_invite_chain_str(self, user_id):
+        """
+        生成完整邀请树：先递归向上查找所有邀请者，找到最顶层root，再以root为起点递归向下生成树状结构。
+        """
+        related_users, root_id, chain = self._get_all_related_users_and_root(user_id)
+
+        # 以root为起点，递归向下生成树状结构
+        tree_str = self.get_invite_tree_str(root_id)
+
+        # 标记目标user_id
+        if user_id != root_id:
+            tree_str = tree_str.replace(f"{user_id}\n", f"{user_id}  <--- 查询对象\n")
+
+        # 展示链路
+        chain_str = " -> ".join(chain)
+        logger.info(f"已查询群{self.group_id}，{user_id} 的完整邀请树：{chain_str}")
+        return f"邀请树路：{chain_str}\n\n{tree_str}"
+
+    def get_related_invite_users(self, user_id):
+        """
+        返回被查询者的上级和下级所有相关邀请者，结果为去重后的id列表（包含自身）。
+        上级：递归向上查找所有邀请者
+        下级：递归向下查找所有被邀请者
+        """
+        related_users, _, _ = self._get_all_related_users_and_root(user_id)
         logger.info(
             f"已查询群{self.group_id}，{user_id} 的上下级相关邀请者：{related_users}"
         )
