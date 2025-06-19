@@ -7,6 +7,15 @@ icon: fa-solid fa-clipboard-list
 
 <!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息，时间越往前，越靠前 -->
 
+## 2025-06-19
+
+- **InviteTreeRecord**：增加用户相关邀请记录批量删除功能，包括新增 delete_all_invite_records_by_user_id 方法（支持根据群号和用户 ID 批量删除其作为邀请者与被邀请者的所有记录）、群消息处理增加查看与踢出邀请树命令的管理员权限校验、踢出邀请树逻辑改为调用批量删除方法，确保所踢用户相关记录彻底移除（[911bcdf](https://github.com/W1ndys/W1ndysBot-dev/commit/911bcdf9effb4bb87ba8d34205e60aca5024bb0a)）
+
+## 2025-06-18
+
+- **FAQSystem**：优化 FAQ 数据库管理功能，支持为每个群组创建独立 FAQ 表，实现获取所有群组 ID 和删除群组数据的新方法，并更新数据库操作逻辑以适应新的结构，提升灵活性与可维护性（[54e4bca](https://github.com/W1ndys/W1ndysBot-dev/commit/54e4bca866b38448d7767eeef1d29da30f450825)）
+- **README**：更新 README 文件，添加卷卷的交流小窝链接和框架作者信息（[7b4057d](https://github.com/W1ndys/W1ndysBot-dev/commit/7b4057d75f59f79f4bbbdfc31b24288804a14e8d)）
+
 ## 2025-06-14
 
 - **InviteTreeRecord**：优化群成员被移除时的邀请者踢出逻辑为异步并发，提高批量处理效率，去除主动确认消息步骤，处理逻辑更精简（[ac3afa6](https://github.com/W1ndys/W1ndysBot-dev/commit/ac3afa6)）
