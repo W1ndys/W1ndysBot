@@ -1,6 +1,10 @@
 from . import MODULE_NAME
 import logger
 from datetime import datetime
+from api.group import set_group_add_request
+from api.generate import generate_text_message
+from api.message import send_group_msg, send_private_msg
+from config import OWNER_ID
 
 
 class RequestHandler:
@@ -17,6 +21,7 @@ class RequestHandler:
         self.user_id = self.msg.get("user_id", "")
         self.comment = self.msg.get("comment", "")
         self.flag = self.msg.get("flag", "")
+        self.group_id = self.msg.get("group_id", "")
 
     async def handle_friend(self):
         """
@@ -56,7 +61,22 @@ class RequestHandler:
         处理加群请求
         """
         try:
-            pass
+            # 群内+私聊上报管理员通知有新人入群
+            msg_text = generate_text_message(
+                f"有人申请加入群聊\n"
+                f"即将自动同意\n"
+                f"请求时间: {self.formatted_time}\n"
+                f"群ID: {self.group_id}\n"
+                f"用户ID: {self.user_id}\n"
+                f"请求ID: {self.flag}\n"
+                f"请求内容: {self.comment}"
+            )
+            await send_group_msg(
+                self.websocket, self.group_id, [msg_text], note=f"del_msg=20"
+            )
+            await send_private_msg(self.websocket, OWNER_ID, [msg_text])
+            # 自动同意加群请求
+            await set_group_add_request(self.websocket, self.flag, True, "")
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理加群请求失败: {e}")
 
