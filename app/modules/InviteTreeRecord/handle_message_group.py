@@ -80,6 +80,12 @@ class GroupMessageHandler:
             ) as invite_link_record:
                 # 查看邀请记录命令
                 if self.raw_message.startswith(VIEW_INVITE_RECORD):
+                    # 鉴权
+                    if not is_group_admin(self.role) and not is_system_admin(
+                        self.user_id
+                    ):
+                        return
+
                     operator_id = None
                     cq_match = re.search(r"\[CQ:at,qq=(\d+)\]", self.raw_message)
                     if cq_match:
@@ -118,6 +124,12 @@ class GroupMessageHandler:
 
                 # 踢出邀请树命令
                 if self.raw_message.startswith(KICK_INVITE_RECORD):
+                    # 鉴权
+                    if not is_group_admin(self.role) and not is_system_admin(
+                        self.user_id
+                    ):
+                        return
+
                     operator_id = None
                     cq_match = re.search(r"\[CQ:at,qq=(\d+)\]", self.raw_message)
                     if cq_match:
@@ -143,13 +155,14 @@ class GroupMessageHandler:
                     # 创建异步任务列表
                     tasks = []
                     for user_id in related_users:
-                        # 创建踢出用户和删除记录的协程任务
+                        # 创建踢出用户的协程任务
                         tasks.append(
                             asyncio.create_task(
                                 set_group_kick(self.websocket, self.group_id, user_id)
                             )
                         )
-                        invite_link_record.delete_invite_record_by_invited_id(user_id)
+                        # 删除该用户的所有相关邀请记录（包括作为邀请者和被邀请者的记录）
+                        invite_link_record.delete_all_invite_records_by_user_id(user_id)
                         await asyncio.sleep(0.05)  # 等待0.05秒，交出控制权
 
                     # 等待所有任务完成

@@ -219,6 +219,30 @@ class InviteLinkRecordDataManager:
             )
             return False
 
+    def delete_all_invite_records_by_user_id(self, user_id):
+        """
+        根据群号和用户id删除该用户相关的所有邀请记录（包括作为邀请者和被邀请者的记录）。
+        """
+        try:
+            # 删除该用户作为被邀请者的记录
+            self.cursor.execute(
+                """DELETE FROM invite_link_record WHERE group_id = ? AND invited_id = ?""",
+                (self.group_id, user_id),
+            )
+            # 删除该用户作为邀请者的记录
+            self.cursor.execute(
+                """DELETE FROM invite_link_record WHERE group_id = ? AND operator_id = ?""",
+                (self.group_id, user_id),
+            )
+            self.conn.commit()
+            logger.info(f"已删除群{self.group_id}，用户：{user_id} 的所有相关邀请记录")
+            return True
+        except Exception as e:
+            logger.error(
+                f"删除群{self.group_id}，用户：{user_id} 的所有相关邀请记录失败: {e}"
+            )
+            return False
+
     def get_invite_count(self, operator_id=None):
         """
         获取某个邀请者在本群邀请了多少人
