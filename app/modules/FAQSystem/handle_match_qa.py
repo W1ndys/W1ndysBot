@@ -155,6 +155,49 @@ class AdvancedFAQMatcher:
                 return FAQ_id
         return -1
 
+    def find_multiple_matches(self, query, min_score=0.5, max_results=10):
+        """
+        查找多个匹配的问答对
+
+        参数:
+            query: str，查询文本
+            min_score: float，最小相似度阈值
+            max_results: int，最大返回结果数量
+
+        返回:
+            list，包含 (question, answer, score, qa_id) 的元组列表，按相似度降序排列
+        """
+        if not self.FAQ_pairs or self.tfidf_matrix is None:
+            return []
+
+        # 获取候选问题索引
+        candidate_indices = self._get_candidate_indices(query)
+
+        # 计算TF-IDF相似度
+        query_vec = self.vectorizer.transform([query])
+        results = []
+
+        for idx in candidate_indices:
+            FAQ_id, question, answer = self.FAQ_pairs[idx]
+
+            # 计算TF-IDF相似度
+            tfidf_sim = cosine_similarity(query_vec, self.tfidf_matrix[idx : idx + 1])[
+                0, 0
+            ]
+
+            # 计算编辑距离相似度
+            seq_sim = difflib.SequenceMatcher(None, query, question).ratio()
+
+            # 组合相似度 (与find_best_match保持一致)
+            combined_score = 0.3 * tfidf_sim + 0.7 * seq_sim
+
+            if combined_score >= min_score:
+                results.append((question, answer, combined_score, FAQ_id))
+
+        # 按相似度降序排列并限制数量
+        results.sort(key=lambda x: x[2], reverse=True)
+        return results[:max_results]
+
 
 if __name__ == "__main__":
     matcher = AdvancedFAQMatcher("1234567890")

@@ -1,16 +1,21 @@
 import os
 import logger
-from . import MODULE_NAME, ADD_FAQ, DELETE_FAQ
+from . import (
+    MODULE_NAME,
+    ADD_FAQ,
+    DELETE_FAQ,
+    HIGH_THRESHOLD,
+    LOW_THRESHOLD,
+    MAX_SUGGESTIONS,
+    RKEY_DIR,
+    DELETE_TIME,
+)
 from core.auth import is_group_admin, is_system_admin
 from .handle_match_qa import AdvancedFAQMatcher
 from api.message import send_group_msg, send_group_msg_with_cq, get_msg
 from api.generate import generate_reply_message, generate_text_message
 import re
 import json
-
-
-RKEY_DIR = os.path.join("data", "Core", "nc_get_rkey.json")
-DELETE_TIME = 300
 
 
 class QaHandler:
@@ -389,7 +394,10 @@ class QaHandler:
         """
         处理匹配问答对命令。
 
-        根据收到的消息内容，在问答库中查找最相似的问题，并返回对应的答案及相似度。
+        根据收到的消息内容，在问答库中查找最相似的问题：
+        - 相似度 >= HIGH_THRESHOLD：直接回复对应答案
+        - LOW_THRESHOLD <= 相似度 < HIGH_THRESHOLD：显示相关问题引导
+        - 相似度 < LOW_THRESHOLD：不回复
         """
         try:
             # 检查输入消息是否为空或只包含停用词
@@ -407,67 +415,92 @@ class QaHandler:
                 logger.warning(f"[{MODULE_NAME}]文本分析失败: {ve}")
                 return
 
-            if answer is not None:
-
-                # 如果答案中有被转义的换行，则替换为实际的换行
-                answer = re.sub(r"\\n", "\n", answer)
-
-                # 如果答案中有图片（包含rkey），则替换为本地缓存的rkey
-                # 示例图片格式：
-                # [CQ:image,file=92C3698A5D8CEB42EDE70B316514F211.jpg,sub_type=0,url=https://multimedia.nt.qq.com.cn/download?appid=1407&amp;fileid=xxx&amp;rkey=xxx,file_size=45934]
-                def replace_rkey(match):
-                    cq_img = match.group(0)
-                    # 查找rkey参数
-                    rkey_pattern = r"rkey=([^,^\]]+)"
-                    rkey_search = re.search(rkey_pattern, cq_img)
-                    if rkey_search:
-                        # 读取本地rkey
-                        try:
-                            with open(RKEY_DIR, "r", encoding="utf-8") as f:
-                                rkey_json = json.load(f)
-                            new_rkey = rkey_json.get("rkey")
-                            if new_rkey:
-                                # 替换rkey参数
-                                new_cq_img = re.sub(
-                                    rkey_pattern, f"rkey={new_rkey}", cq_img
-                                )
-                                return new_cq_img
-                        except Exception as e:
-                            logger.error(f"[{MODULE_NAME}]本地rkey替换失败: {e}")
-                    return cq_img  # 未找到rkey或替换失败则返回原内容
-
-                answer = re.sub(r"\[CQ:image,[^\]]+\]", replace_rkey, answer)
-
-            if orig_question and answer:
-                msg = (
-                    f"[CQ:reply,id={self.message_id}]"
-                    "🌟 你可能想问：\n"
-                    "━━━━━━━━━━━━━━\n"
-                    f"❓ 问题：{orig_question}\n"
-                    "━━━━━━━━━━━━━━\n"
-                    f"💡 回复：\n{answer}\n"
-                    "━━━━━━━━━━━━━━\n"
-                    f"🔎 相似度：{score:.2f}   🆔 ID：{qa_id}\n"
-                    f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存"
-                )
-
-                # 由于部分结果发送时间可能长达1秒，所以先发送成功的通知
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message("✅ 为你找到可能匹配的问答，即将发出\n"),
-                    ],
-                    note="del_msg=3",
-                )
-
-                await send_group_msg_with_cq(
-                    self.websocket,
-                    self.group_id,
-                    msg,
-                    note=f"del_msg={DELETE_TIME}",
-                )
+            # 根据相似度阈值进行不同处理
+            if score >= HIGH_THRESHOLD:
+                # 高相似度：直接回复答案
+                await self._send_direct_answer(orig_question, answer, score, qa_id)
+            elif score >= LOW_THRESHOLD:
+                # 中等相似度：显示相关问题引导
+                await self._send_question_suggestions(matcher)
+            else:
                 return
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理匹配问答对命令失败: {e}")
+
+    async def _send_direct_answer(self, orig_question, answer, score, qa_id):
+        """发送直接答案回复"""
+        if answer is not None:
+            # 如果答案中有被转义的换行，则替换为实际的换行
+            answer = re.sub(r"\\n", "\n", answer)
+
+            # 如果答案中有图片（包含rkey），则替换为本地缓存的rkey
+            def replace_rkey(match):
+                cq_img = match.group(0)
+                # 查找rkey参数
+                rkey_pattern = r"rkey=([^,^\]]+)"
+                rkey_search = re.search(rkey_pattern, cq_img)
+                if rkey_search:
+                    # 读取本地rkey
+                    try:
+                        with open(RKEY_DIR, "r", encoding="utf-8") as f:
+                            rkey_json = json.load(f)
+                        new_rkey = rkey_json.get("rkey")
+                        if new_rkey:
+                            # 替换rkey参数
+                            new_cq_img = re.sub(
+                                rkey_pattern, f"rkey={new_rkey}", cq_img
+                            )
+                            return new_cq_img
+                    except Exception as e:
+                        logger.error(f"[{MODULE_NAME}]本地rkey替换失败: {e}")
+                return cq_img  # 未找到rkey或替换失败则返回原内容
+
+            answer = re.sub(r"\[CQ:image,[^\]]+\]", replace_rkey, answer)
+
+            # 直接回复答案（不显示原问题和相似度）
+            await send_group_msg_with_cq(
+                self.websocket,
+                self.group_id,
+                f"[CQ:reply,id={self.message_id}]"
+                f"━━━━━━━━━━━━━━\n"
+                f"🌟 问题：{orig_question}\n"
+                f"💡 答案：{answer}\n"
+                f"━━━━━━━━━━━━━━\n"
+                f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存",
+                note=f"del_msg={DELETE_TIME}",
+            )
+
+    async def _send_question_suggestions(self, matcher):
+        """发送相关问题引导"""
+        try:
+            # 获取所有高于低阈值的相关问题
+            suggestions = matcher.find_multiple_matches(
+                self.raw_message, min_score=LOW_THRESHOLD, max_results=MAX_SUGGESTIONS
+            )
+
+            if not suggestions:
+                return
+
+            # 构建引导消息
+            msg_parts = [
+                f"[CQ:reply,id={self.message_id}]",
+                "🤔 匹配到你可能想问如下问题，请发送具体的问题进行咨询：\n",
+                "━━━━━━━━━━━━━━\n",
+            ]
+
+            for question, _, score, qa_id in suggestions:
+                msg_parts.append(f"ID:{qa_id}，{question} (相似度: {score:.2f})\n")
+
+            msg_parts.append("━━━━━━━━━━━━━━\n")
+            msg_parts.append(f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存")
+
+            await send_group_msg_with_cq(
+                self.websocket,
+                self.group_id,
+                "".join(msg_parts),
+                note=f"del_msg={DELETE_TIME}",
+            )
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]发送问题建议失败: {e}")
