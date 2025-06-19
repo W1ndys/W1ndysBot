@@ -463,10 +463,11 @@ class QaHandler:
                 self.websocket,
                 self.group_id,
                 f"[CQ:reply,id={self.message_id}]"
-                f"━━━━━━━━━━━━━━\n"
                 f"🌟 问题：{orig_question}\n"
+                f"━━━━━━━━━━━━━━\n"
                 f"💡 答案：{answer}\n"
                 f"━━━━━━━━━━━━━━\n"
+                f"📊 相似度：{score:.2f} 🆔ID:{qa_id}\n"
                 f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存",
                 note=f"del_msg={DELETE_TIME}",
             )
