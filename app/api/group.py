@@ -310,6 +310,15 @@ async def upload_group_file(websocket, group_id, file, name, folder_id):
 async def set_group_add_request(websocket, flag, approve, reason):
     """
     处理加群请求
+
+    参数:
+        websocket: WebSocket连接
+        flag (str): 请求id,必需
+        approve (bool): 是否同意,必需
+        reason (str): 拒绝理由,当approve为False时生效
+
+    返回:
+        bool: 操作是否成功
     """
     try:
         payload = {
