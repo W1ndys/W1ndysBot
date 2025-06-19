@@ -20,7 +20,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 ADD_FAQ = "添加问答"
 DELETE_FAQ = "删除问答"
 # ------------------------------------------------------------
-HIGH_THRESHOLD = 0.85  # 高阈值：直接回复答案
+HIGH_THRESHOLD = 0.8  # 高阈值：直接回复答案
 LOW_THRESHOLD = 0.6  # 低阈值：显示相关问题引导
 MAX_SUGGESTIONS = 10  # 最大建议问题数量
 RKEY_DIR = os.path.join("data", "Core", "nc_get_rkey.json")  # 获取rkey的文件路径
