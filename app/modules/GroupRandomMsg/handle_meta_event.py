@@ -12,6 +12,9 @@ class MetaEventHandler:
     元事件可利用心跳来实现定时任务
     """
 
+    # 类变量：记录最近一次执行时间
+    last_execution_time = None
+
     def __init__(self, websocket, msg):
         self.websocket = websocket
         self.msg = msg
@@ -53,8 +56,23 @@ class MetaEventHandler:
         处理心跳
         """
         try:
-            for group_id in get_all_enabled_groups(MODULE_NAME):
-                await send_group_random_msg(self.websocket, group_id)
-                await asyncio.sleep(1)
+            current_time = datetime.now()
+
+            # 检查是否需要执行（每分钟执行一次）
+            if (
+                MetaEventHandler.last_execution_time is None
+                or (current_time - MetaEventHandler.last_execution_time).total_seconds()
+                >= 60
+            ):
+
+                logger.info(f"[{MODULE_NAME}]开始执行群随机消息发送任务")
+                MetaEventHandler.last_execution_time = current_time
+
+                for group_id in get_all_enabled_groups(MODULE_NAME):
+                    await send_group_random_msg(self.websocket, group_id)
+                    await asyncio.sleep(1)
+
+                logger.info(f"[{MODULE_NAME}]群随机消息发送任务执行完成")
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")

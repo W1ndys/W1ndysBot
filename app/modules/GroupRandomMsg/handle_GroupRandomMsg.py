@@ -10,8 +10,8 @@ from datetime import datetime
 async def send_group_random_msg(websocket, group_id):
     """处理群随机消息相关命令"""
     try:
-        # 检查当前分钟是否是10的倍数
-        if datetime.now().minute % 10 == 0:
+        # 检查当前分钟是否是30的倍数
+        if datetime.now().minute % 30 == 0:
             # 获取随机消息
             random_msg = DataManager(group_id).get_random_data()
             if random_msg:
