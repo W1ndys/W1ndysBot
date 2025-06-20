@@ -619,13 +619,13 @@ class QaHandler:
                 )
 
             msg_parts.append("━━━━━━━━━━━━━━\n")
-            msg_parts.append(f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存")
+            msg_parts.append(f"⏳ 本消息将在30秒后撤回，请及时保存")
 
             await send_group_msg_with_cq(
                 self.websocket,
                 self.group_id,
                 "".join(msg_parts),
-                note=f"del_msg={DELETE_TIME}",
+                note=f"del_msg=30",
             )
 
         except Exception as e:
