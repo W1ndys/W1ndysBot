@@ -48,6 +48,10 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
+            # 若是群管理员或系统管理员，则不处理
+            if is_group_admin(self.role) or is_system_admin(self.user_id):
+                return
+
             # 检测是否为垃圾消息
             spam_detection = GroupSpamDetectionHandle(self.websocket, self.msg)
             await spam_detection.handle_message()
