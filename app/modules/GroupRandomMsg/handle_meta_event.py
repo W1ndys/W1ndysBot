@@ -1,6 +1,9 @@
+import asyncio
 from . import MODULE_NAME
-import logger
+from logger import logger
 from datetime import datetime
+from .handle_GroupRandomMsg import send_group_random_msg
+from core.switchs import get_all_enabled_groups
 
 
 class MetaEventHandler:
@@ -50,6 +53,8 @@ class MetaEventHandler:
         处理心跳
         """
         try:
-            pass
+            for group_id in get_all_enabled_groups(MODULE_NAME):
+                await send_group_random_msg(self.websocket, group_id)
+                await asyncio.sleep(1)
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")

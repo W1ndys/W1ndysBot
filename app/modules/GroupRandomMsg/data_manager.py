@@ -21,7 +21,7 @@ class DataManager:
 
     def _create_table(self):
         """建表函数，如果表不存在则创建"""
-        table_name = f"{self.group_id}_data"
+        table_name = f"`{self.group_id}_data`"
         # 添加shuffle_index字段用于洗牌算法
         self.cursor.execute(
             f"""CREATE TABLE IF NOT EXISTS {table_name} (
@@ -35,7 +35,7 @@ class DataManager:
         )
 
         # 创建洗牌状态表，记录当前洗牌轮次和位置
-        shuffle_table = f"{self.group_id}_shuffle_state"
+        shuffle_table = f"`{self.group_id}_shuffle_state`"
         self.cursor.execute(
             f"""CREATE TABLE IF NOT EXISTS {shuffle_table} (
             id INTEGER PRIMARY KEY,
@@ -65,23 +65,26 @@ class DataManager:
         添加一条数据
         :param message: 消息内容
         :param added_by: 添加者（用户ID）
+        :return: 新插入数据的ID
         """
-        table_name = f"{self.group_id}_data"
+        table_name = f"`{self.group_id}_data`"
         add_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.cursor.execute(
             f"""INSERT INTO {table_name} (message, random_count, added_by, add_time, shuffle_index) 
                               VALUES (?, 0, ?, ?, 0)""",
             (message, added_by, add_time),
         )
+        new_id = self.cursor.lastrowid
         self.conn.commit()
 
         # 重新初始化洗牌
         self._reset_shuffle()
+        return new_id
 
     def _reset_shuffle(self):
         """重置洗牌状态，当有新数据添加或删除时调用"""
-        table_name = f"{self.group_id}_data"
-        shuffle_table = f"{self.group_id}_shuffle_state"
+        table_name = f"`{self.group_id}_data`"
+        shuffle_table = f"`{self.group_id}_shuffle_state`"
 
         # 获取当前数据总数
         self.cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
@@ -117,8 +120,8 @@ class DataManager:
         获取该群随机一条数据，使用洗牌算法确保平均分布
         :return: 随机数据的完整信息 (id, message, random_count, added_by, add_time)
         """
-        table_name = f"{self.group_id}_data"
-        shuffle_table = f"{self.group_id}_shuffle_state"
+        table_name = f"`{self.group_id}_data`"
+        shuffle_table = f"`{self.group_id}_shuffle_state`"
 
         # 获取当前洗牌状态
         self.cursor.execute(
@@ -196,7 +199,7 @@ class DataManager:
         :param data_id: 数据ID
         :return: 是否删除成功
         """
-        table_name = f"{self.group_id}_data"
+        table_name = f"`{self.group_id}_data`"
         self.cursor.execute(f"DELETE FROM {table_name} WHERE id = ?", (data_id,))
         deleted = self.cursor.rowcount > 0
 
@@ -211,7 +214,7 @@ class DataManager:
         获取该群所有数据（用于管理）
         :return: 所有数据列表
         """
-        table_name = f"{self.group_id}_data"
+        table_name = f"`{self.group_id}_data`"
         self.cursor.execute(
             f"SELECT id, message, random_count, added_by, add_time FROM {table_name} ORDER BY id"
         )
@@ -222,7 +225,7 @@ class DataManager:
         获取该群数据总数
         :return: 数据总数
         """
-        table_name = f"{self.group_id}_data"
+        table_name = f"`{self.group_id}_data`"
         self.cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
         return self.cursor.fetchone()[0]
 
@@ -231,8 +234,20 @@ class DataManager:
         获取当前洗牌状态（用于调试）
         :return: (当前轮次, 当前位置, 总数据量)
         """
-        shuffle_table = f"{self.group_id}_shuffle_state"
+        shuffle_table = f"`{self.group_id}_shuffle_state`"
         self.cursor.execute(
             f"SELECT current_round, current_position, total_count FROM {shuffle_table} WHERE id = 1"
         )
         return self.cursor.fetchone()
+
+    def data_exists(self, data_id):
+        """
+        检查数据是否存在
+        :param data_id: 数据ID
+        :return: 是否存在
+        """
+        table_name = f"`{self.group_id}_data`"
+        self.cursor.execute(
+            f"SELECT COUNT(*) FROM {table_name} WHERE id = ?", (data_id,)
+        )
+        return self.cursor.fetchone()[0] > 0
