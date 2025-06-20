@@ -174,3 +174,42 @@ class FAQDatabaseManager:
         self.cursor.execute(f"DROP TABLE IF EXISTS {self.table_name}")
         self.conn.commit()
         return True
+
+    def get_FAQ_id_by_question(self, question: str) -> int:
+        """
+        根据问题内容获取问答对ID。
+        参数:
+            question: str 问题内容
+        返回:
+            int 问答对ID，未找到时返回-1
+        """
+        self.cursor.execute(
+            f"SELECT id FROM {self.table_name} WHERE question = ?", (question,)
+        )
+        result = self.cursor.fetchone()
+        return result[0] if result else -1
+
+    def search_FAQ_by_keyword(self, keyword: str) -> List[Tuple[int, str, str]]:
+        """
+        根据关键词搜索问答对（支持模糊匹配）。
+        参数:
+            keyword: str 搜索关键词
+        返回:
+            包含匹配的 (id, question, answer) 元组的列表
+        """
+        self.cursor.execute(
+            f"SELECT id, question, answer FROM {self.table_name} WHERE question LIKE ? OR answer LIKE ?",
+            (f"%{keyword}%", f"%{keyword}%"),
+        )
+        result = self.cursor.fetchall()
+        return result
+
+    def get_FAQ_count(self) -> int:
+        """
+        获取当前群组的问答对总数。
+        返回:
+            int 问答对总数
+        """
+        self.cursor.execute(f"SELECT COUNT(*) FROM {self.table_name}")
+        result = self.cursor.fetchone()
+        return result[0] if result else 0

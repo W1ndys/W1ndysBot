@@ -4,6 +4,7 @@ from . import (
     MODULE_NAME,
     ADD_FAQ,
     DELETE_FAQ,
+    GET_FAQ,
     HIGH_THRESHOLD,
     LOW_THRESHOLD,
     MAX_SUGGESTIONS,
@@ -11,6 +12,7 @@ from . import (
     DELETE_TIME,
 )
 from core.auth import is_group_admin, is_system_admin
+from .db_manager import FAQDatabaseManager
 from .handle_match_qa import AdvancedFAQMatcher
 from api.message import send_group_msg, send_group_msg_with_cq, get_msg
 from api.generate import generate_reply_message, generate_text_message
@@ -51,7 +53,10 @@ class QaHandler:
             if self.raw_message.startswith(DELETE_FAQ):
                 await self.handle_delete_qa()
                 return
-
+            # 如果消息是获取问答命令，则调用获取问答函数
+            if self.raw_message.startswith(GET_FAQ):
+                await self.handle_get_qa()
+                return
             # 如果是回复引用类型的添加问答，则调用API获取被回复的消息内容
             if (
                 self.raw_message.startswith("[CQ:reply,id=")
@@ -390,6 +395,124 @@ class QaHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理删除问答对命令失败: {e}")
 
+    async def handle_get_qa(self):
+        """
+        处理获取问答命令。
+        支持格式：获取问答 ID - 获取指定ID的问答对
+        """
+        try:
+            # 去除命令前缀
+            content = self.raw_message.replace(GET_FAQ, "", 1).strip()
+            db_manager = FAQDatabaseManager(self.group_id)
+
+            if not content:
+                # 显示帮助信息和统计
+                total_count = db_manager.get_FAQ_count()
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(
+                            f" 当前群组共有 {total_count} 个问答对\n"
+                            f"🔍 使用方法：\n"
+                            f"{GET_FAQ} ID - 获取指定ID的问答对\n"
+                            f"直接发送相关问题"
+                        ),
+                    ],
+                    note="del_msg=20",
+                )
+                return
+
+            # 尝试解析为ID
+            try:
+                qa_id = int(content)
+                # 获取指定ID的问答对
+                result = db_manager.get_FAQ_pair(qa_id)
+                if result:
+                    qa_id, question, answer = result
+                    # 处理答案中的转义换行符
+                    answer = re.sub(r"\\n", "\n", answer)
+
+                    # 处理答案中的图片rkey替换
+                    def replace_rkey(match):
+                        cq_img = match.group(0)
+                        rkey_pattern = r"rkey=([^,^\]]+)"
+                        rkey_search = re.search(rkey_pattern, cq_img)
+                        if rkey_search:
+                            try:
+                                with open(RKEY_DIR, "r", encoding="utf-8") as f:
+                                    rkey_json = json.load(f)
+                                new_rkey = rkey_json.get("rkey")
+                                if new_rkey:
+                                    new_cq_img = re.sub(
+                                        rkey_pattern, f"rkey={new_rkey}", cq_img
+                                    )
+                                    return new_cq_img
+                            except Exception as e:
+                                logger.error(f"[{MODULE_NAME}]本地rkey替换失败: {e}")
+                        return cq_img
+
+                    answer = re.sub(r"\[CQ:image,[^\]]+\]", replace_rkey, answer)
+
+                    await send_group_msg_with_cq(
+                        self.websocket,
+                        self.group_id,
+                        f"[CQ:reply,id={self.message_id}]"
+                        f"📖 问答详情\n"
+                        f"━━━━━━━━━━━━━━\n"
+                        f"🌟 问题：{question}\n"
+                        f"━━━━━━━━━━━━━━\n"
+                        f"💡 答案：{answer}\n"
+                        f"━━━━━━━━━━━━━━\n"
+                        f"🆔 ID：{qa_id}\n"
+                        f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存",
+                        note=f"del_msg={DELETE_TIME}",
+                    )
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(
+                                f"❌ 未找到ID为 {qa_id} 的问答对\n"
+                                f"⏳ 消息将在10秒后撤回，请及时保存"
+                            ),
+                        ],
+                        note="del_msg=10",
+                    )
+            except ValueError:
+                # 不是数字，提示格式错误
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(
+                            f"❌ 格式错误，请输入正确的问答ID\n"
+                            f"例如：{GET_FAQ} 123\n"
+                            f"⏳ 消息将在10秒后撤回，请及时保存"
+                        ),
+                    ],
+                    note="del_msg=10",
+                )
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理获取问答命令失败: {e}")
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_reply_message(self.message_id),
+                    generate_text_message(
+                        "❌ 获取问答失败，请稍后重试\n"
+                        "⏳ 消息将在10秒后撤回，请及时保存"
+                    ),
+                ],
+                note="del_msg=10",
+            )
+
     async def handle_match_qa(self):
         """
         处理匹配问答对命令。
@@ -486,12 +609,14 @@ class QaHandler:
             # 构建引导消息
             msg_parts = [
                 f"[CQ:reply,id={self.message_id}]",
-                "🤔 匹配到你可能想问如下问题，请发送具体的问题进行咨询：\n",
+                f"🤔 匹配到你可能想问如下问题，请发送具体的问题或使用命令“{GET_FAQ}+空格+ID”进行咨询：\n",
                 "━━━━━━━━━━━━━━\n",
             ]
 
             for question, _, score, qa_id in suggestions:
-                msg_parts.append(f"ID:{qa_id}，{question} (相似度: {score:.2f})\n")
+                msg_parts.append(
+                    f"ID:{qa_id}，问题：{question} (相似度: {score:.2f})\n"
+                )
 
             msg_parts.append("━━━━━━━━━━━━━━\n")
             msg_parts.append(f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存")

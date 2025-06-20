@@ -19,14 +19,16 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # ------------------------------------------------------------
 ADD_FAQ = "添加问答"
 DELETE_FAQ = "删除问答"
+GET_FAQ = "获取问答"
 # ------------------------------------------------------------
 HIGH_THRESHOLD = 0.8  # 高阈值：直接回复答案
-LOW_THRESHOLD = 0.6  # 低阈值：显示相关问题引导
+LOW_THRESHOLD = 0.3  # 低阈值：显示相关问题引导
 MAX_SUGGESTIONS = 10  # 最大建议问题数量
 RKEY_DIR = os.path.join("data", "Core", "nc_get_rkey.json")  # 获取rkey的文件路径
-DELETE_TIME = 300  # 删除时间
+DELETE_TIME = 300  # 消息撤回延迟时间
 
 COMMANDS = {
-    ADD_FAQ: "添加问答",
-    DELETE_FAQ: "删除问答",
+    ADD_FAQ: "添加问答，格式: 添加问答 问题 答案，支持引用消息添加，例如，引用回复某条消息+添加问答+问题，会自动提取被引用的消息作为答案，同时支持批量添加，一行一个问答对，例如：\n添加问答\n问题1 答案1\n问题2 答案2\n问题3 答案3",
+    DELETE_FAQ: "删除问答，格式: 删除问答 问题ID",
+    GET_FAQ: "获取问答，格式: 获取问答 问题ID",
 }
