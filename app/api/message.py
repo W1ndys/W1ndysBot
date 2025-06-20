@@ -7,12 +7,16 @@ import logger
 async def send_group_msg_with_cq(websocket, group_id, content, note=""):
     """
     发送群消息，使用旧的消息格式（cq码）
-    如需自动撤回，请在note参数中添加“del_msg=秒数”
+    如需自动撤回，请在note参数中添加"del_msg=秒数"
     如：del_msg=10
     则note参数为：del_msg=10
     https://napcat.apifox.cn/226799128e0
     """
     try:
+        # 删除消息最后的换行符
+        if isinstance(content, str):
+            content = content.rstrip("\n\r")
+
         payload = {
             "action": "send_group_msg",
             "params": {"group_id": group_id, "message": content},
@@ -28,12 +32,16 @@ async def send_group_msg_with_cq(websocket, group_id, content, note=""):
 async def send_private_msg_with_cq(websocket, user_id, content, note=""):
     """
     发送私聊消息，使用旧的消息格式（cq码）
-    如需自动撤回，请在note参数中添加“del_msg=秒数”
+    如需自动撤回，请在note参数中添加"del_msg=秒数"
     如：del_msg=10
     则note参数为：del_msg=10
     https://napcat.apifox.cn/226799128e0
     """
     try:
+        # 删除消息最后的换行符
+        if isinstance(content, str):
+            content = content.rstrip("\n\r")
+
         payload = {
             "action": "send_private_msg",
             "params": {"user_id": user_id, "message": content},
@@ -53,7 +61,7 @@ async def send_group_msg(websocket, group_id, message, note=""):
         "data": {"text": "消息内容"}
     }
     消息段可使用generate模块的函数生成
-    如需自动撤回，请在note参数中添加“del_msg=秒数”
+    如需自动撤回，请在note参数中添加"del_msg=秒数"
     如：del_msg=10
     则note参数为：del_msg=10
     https://napcat.apifox.cn/226799128e0
@@ -66,6 +74,22 @@ async def send_group_msg(websocket, group_id, message, note=""):
             message = [message]
         elif not isinstance(message, list):
             message = [{"type": "text", "data": {"text": str(message)}}]
+
+        # 处理最后一条消息的换行符
+        if message and len(message) > 0:
+            last_msg = message[-1]
+            if (
+                last_msg.get("type") == "text"
+                and "data" in last_msg
+                and "text" in last_msg["data"]
+            ):
+                text_content = last_msg["data"]["text"]
+                # 如果最后一条消息的文本内容纯换行，则删掉整条消息
+                if text_content.strip() == "":
+                    message.pop()
+                else:
+                    # 如果不是纯换行，则删掉末尾的换行符
+                    last_msg["data"]["text"] = text_content.rstrip("\n\r")
 
         message_data = {
             "action": "send_group_msg",
@@ -89,7 +113,7 @@ async def send_private_msg(websocket, user_id, message, note=""):
         "data": {"text": "消息内容"}
     }
     消息段可使用generate模块的函数生成
-    如需自动撤回，请在note参数中添加“del_msg=秒数”
+    如需自动撤回，请在note参数中添加"del_msg=秒数"
     如：del_msg=10
     则note参数为：del_msg=10
     https://napcat.apifox.cn/226799128e0
@@ -102,6 +126,22 @@ async def send_private_msg(websocket, user_id, message, note=""):
             message = [message]
         elif not isinstance(message, list):
             message = [{"type": "text", "data": {"text": str(message)}}]
+
+        # 处理最后一条消息的换行符
+        if message and len(message) > 0:
+            last_msg = message[-1]
+            if (
+                last_msg.get("type") == "text"
+                and "data" in last_msg
+                and "text" in last_msg["data"]
+            ):
+                text_content = last_msg["data"]["text"]
+                # 如果最后一条消息的文本内容纯换行，则删掉整条消息
+                if text_content.strip() == "":
+                    message.pop()
+                else:
+                    # 如果不是纯换行，则删掉末尾的换行符
+                    last_msg["data"]["text"] = text_content.rstrip("\n\r")
 
         message_data = {
             "action": "send_private_msg",
