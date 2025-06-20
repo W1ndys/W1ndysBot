@@ -80,6 +80,7 @@ class GroupRandomMsg:
                     generate_reply_message(self.message_id),
                     generate_text_message(f"添加随机消息成功，ID：{new_id}"),
                 ],
+                note="del_msg=10",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]添加随机消息时发生异常: {e}")
@@ -123,6 +124,7 @@ class GroupRandomMsg:
                     generate_reply_message(self.message_id),
                     generate_text_message(f"删除随机消息成功，ID：{delete_message_id}"),
                 ],
+                note="del_msg=10",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]删除随机消息时发生异常: {e}")
