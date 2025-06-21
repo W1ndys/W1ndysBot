@@ -18,10 +18,9 @@ async def send_group_random_msg(websocket, group_id):
                 # random_msg 格式: (id, message, random_count, added_by, add_time)
                 message_id = random_msg[0]
                 message_content = random_msg[1]
-                added_by = random_msg[3]
 
                 # 格式化消息
-                formatted_message = f"✨ {message_content}\n本条消息由 {added_by} 添加\nID：{message_id}"
+                formatted_message = f"✨ {message_content}（ID：{message_id}）"
 
                 await send_group_msg(
                     websocket, group_id, [generate_text_message(formatted_message)]
