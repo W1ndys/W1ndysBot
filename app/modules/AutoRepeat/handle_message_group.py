@@ -76,6 +76,7 @@ class GroupMessageHandler:
             ignore_words = [
                 "[CQ:video,file=",
                 "[CQ:json,data=",
+                "[CQ:file,file=",
             ]
 
             # 如果消息中包含下面这些字符，则不处理
