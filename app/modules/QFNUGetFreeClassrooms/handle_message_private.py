@@ -93,7 +93,7 @@ class PrivateMessageHandler:
                             [
                                 generate_reply_message(self.message_id),
                                 generate_text_message(
-                                    f"存储教务账号密码成功: {params[1]} {params[2]}"
+                                    f"[{MODULE_NAME}]存储教务账号密码成功: {params[1]} {params[2]}"
                                 ),
                             ],
                             note="del_msg=30",
