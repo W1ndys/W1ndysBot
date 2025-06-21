@@ -10,6 +10,11 @@ from datetime import datetime
 async def send_group_random_msg(websocket, group_id):
     """处理群随机消息相关命令"""
     try:
+        # 检查当前时间是否在凌晨1点到6点之间
+        current_hour = datetime.now().hour
+        if 1 <= current_hour <= 6:
+            return  # 凌晨1点到6点不发送消息
+
         # 检查当前分钟是否是30的倍数
         if datetime.now().minute % 30 == 0:
             # 获取随机消息
