@@ -73,11 +73,5 @@ class PrivateMessageHandler:
             elif self.raw_message.lower().startswith(KICK_BAN_WORD_COMMAND.lower()):
                 await group_ban_words.handle_kick_ban_word()
 
-            else:
-                # 其他类型的私聊消息
-                logger.info(
-                    f"[{MODULE_NAME}]收到未知sub_type的私聊消息: {self.sub_type}"
-                )
-
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊消息失败: {e}")
