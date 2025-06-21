@@ -7,6 +7,30 @@ icon: fa-solid fa-clipboard-list
 
 <!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息，时间越往前，越靠前 -->
 
+## 2025-06-21
+
+- **GroupRandomMsg, PrivateMessageHandler**：增加群聊和私聊批量添加随机消息功能，包括管理员权限验证、消息格式解析，以及优化异常处理和用户反馈机制（[7374b1e](https://github.com/W1ndysBot/W1ndysBot-dev/commit/7374b1e4d8226aa0d4276c62736fb91c083221b5)）
+- **PrivateMessageHandler**：移除未知私聊消息类型的日志记录，简化消息处理逻辑，并优化异常处理（[949a5d5](https://github.com/W1ndysBot/W1ndysBot-dev/commit/949a5d50f6523a629ee09eb5c9f3704405eb41ed)）
+- **GroupRandomMsg**：增加群活跃度管理与静默时间控制，引入活跃度记录表和静默期不发消息机制，支持配置静默时长（[acac9dd](https://github.com/W1ndysBot/W1ndysBot-dev/commit/acac9ddd2ff45507f314d074b1fecb75505bada3)）
+- **GroupRandomMsg**：增加时间检查，限制群随机消息在凌晨 1 点到 6 点不发送（[e3c8b11](https://github.com/W1ndysBot/W1ndysBot-dev/commit/e3c8b118152fcc35b3e0fc4b00158620180c3270)）
+- **GroupRandomMsg**：优化群随机消息格式，移除添加者信息，仅保留消息内容和 ID，提升可读性（[92bed32](https://github.com/W1ndysBot/W1ndysBot-dev/commit/92bed32ff4ad7293423341eac227505a17f62aa5)）
+- **GroupMessageHandler**：新增对 `[CQ:file,file=` 格式的文件消息类型的支持，增强消息处理灵活性（[064a789](https://github.com/W1ndysBot/W1ndysBot-dev/commit/064a789146682a8c9ed2fa6ff44d5fb185dd39c8)）
+- **GroupRandomMsg**：调整群随机消息发送逻辑为每 30 分钟执行一次，并记录最近的执行时间，优化心跳与触发机制（[ff9415f](https://github.com/W1ndysBot/W1ndysBot-dev/commit/ff9415ff238034a36efdc0779bde7e30b01c69bb)）
+
+## 2025-06-20
+
+- **GroupRandomMsg**：在添加和删除随机消息功能中增加 10 秒撤回（[0b3af6c](https://github.com/W1ndys/W1ndysBot-dev/commit/0b3af6c7d0a75fe3918ffd85729d686d5af6384e)）
+- **GroupRandomMsg**：增加删除群随机消息功能、增加随机发送消息函数、修复数据库表名数字开头报错，完善数据管理和消息逻辑（[ad74310](https://github.com/W1ndys/W1ndysBot-dev/commit/ad7431026a5f1b52968e619e1fd985273649820e)）
+- **GroupRandomMsg**：增强群随机消息功能，重构命令与数据结构，实现群特定数据管理和洗牌分布（[2bba637](https://github.com/W1ndys/W1ndysBot-dev/commit/2bba6370ad1574713f64540b0e918d74fd071993)）
+- **GroupRandomMsg**：模块初始化（[d607bb5](https://github.com/W1ndys/W1ndysBot-dev/commit/d607bb56503a056de967cb584684b1d3b42b32b7)）
+- **FAQSystem**：调整低阈值为 0.4、消息撤回时间为 30 秒，优化匹配精度（[7b8e7fe](https://github.com/W1ndys/W1ndysBot-dev/commit/7b8e7fe16304bcbaf65a53bac1ec30ce6424d9b9)）
+- **群消息处理**：增加群管理员和系统管理员消息处理逻辑，管理员消息不判垃圾，完善权限控制（[5f55316](https://github.com/W1ndys/W1ndysBot-dev/commit/5f553163c587a92c278cba77968358b192641005)）
+- **FAQ 系统**：增加获取问答功能和优化指令提示，提升相关问答建议和交互引导（[d9acf5a](https://github.com/W1ndys/W1ndysBot-dev/commit/d9acf5a63a635277871815e092a2955cd2ddf0c1)）
+- **消息发送**：修复消息末尾换行符处理，优化群消息和私聊内容格式（[e007347](https://github.com/W1ndys/W1ndysBot-dev/commit/e0073476c26394134de6846fbe2279543bb70c19)）
+- **FAQSystem**：更新问答回复格式，增加相似度和 ID 信息，提升可读性（[1e092f7](https://github.com/W1ndys/W1ndysBot-dev/commit/1e092f782c5f8b90fba3c32f0bb4601d1f37cf7a)）
+- **FAQSystem**：调整高阈值常量为 0.8，优化问答匹配准确性（[8a5fdb3](https://github.com/W1ndys/W1ndysBot-dev/commit/8a5fdb33c8652f6b9e2c088da4ea14caae2d4380)）
+- **FAQSystem**：调整低阈值常量为 0.6，提升问答相关性（[3ed5d10](https://github.com/W1ndys/W1ndysBot-dev/commit/3ed5d105d935153201428ef04d6b168e2f9ca221)）
+
 ## 2025-06-19
 
 - **FAQSystem**：增强问答匹配功能，新增 `find_multiple_matches` 方法支持多匹配与相似度排序，QaHandler 基于相似度阈值处理回复逻辑，定义高低阈值常量，全面提升问答系统智能匹配能力和交互体验（[2affd80](https://github.com/W1ndys/W1ndysBot-dev/commit/2affd807d84308fea41c39fad545b5e4f3a0f708)）
