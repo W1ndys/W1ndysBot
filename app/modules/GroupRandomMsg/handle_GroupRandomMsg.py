@@ -34,7 +34,7 @@ async def send_group_random_msg(websocket, group_id):
             message_content = random_msg[1]
 
             # 格式化消息
-            formatted_message = f"✨ {message_content}（ID：{message_id}）"
+            formatted_message = f"{message_content}（ID：{message_id}）"
 
             await send_group_msg(
                 websocket, group_id, [generate_text_message(formatted_message)]
