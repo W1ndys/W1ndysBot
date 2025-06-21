@@ -20,32 +20,30 @@ async def send_group_random_msg(websocket, group_id):
         if 1 <= current_hour <= 6:
             return  # 凌晨1点到6点不发送消息
 
-        # 检查当前分钟是否是30的倍数
-        if datetime.now().minute % 30 == 0:
-            # 检查群活跃度，只有在静默时间后才发送
-            data_manager = DataManager(group_id)
-            if not data_manager.should_send_random_message(SILENCE_MINUTES):
-                logger.info(f"[{MODULE_NAME}]{group_id}群聊活跃，跳过随机消息发送")
-                return
+        # 检查群活跃度，只有在静默时间后才发送
+        data_manager = DataManager(group_id)
+        if not data_manager.should_send_random_message(SILENCE_MINUTES):
+            logger.info(f"[{MODULE_NAME}]{group_id}群聊活跃，跳过随机消息发送")
+            return
 
-            # 获取随机消息
-            random_msg = data_manager.get_random_data()
-            if random_msg:
-                # random_msg 格式: (id, message, random_count, added_by, add_time)
-                message_id = random_msg[0]
-                message_content = random_msg[1]
+        # 获取随机消息
+        random_msg = data_manager.get_random_data()
+        if random_msg:
+            # random_msg 格式: (id, message, random_count, added_by, add_time)
+            message_id = random_msg[0]
+            message_content = random_msg[1]
 
-                # 格式化消息
-                formatted_message = f"✨ {message_content}（ID：{message_id}）"
+            # 格式化消息
+            formatted_message = f"✨ {message_content}（ID：{message_id}）"
 
-                await send_group_msg(
-                    websocket, group_id, [generate_text_message(formatted_message)]
-                )
-                logger.info(
-                    f"[{MODULE_NAME}]{group_id}发送随机消息成功: {message_content}"
-                )
-            else:
-                logger.error(f"[{MODULE_NAME}]{group_id}获取随机消息失败")
+            await send_group_msg(
+                websocket, group_id, [generate_text_message(formatted_message)]
+            )
+            logger.info(f"[{MODULE_NAME}]{group_id}发送随机消息成功: {message_content}")
+            # 更新群最近一次发言时间
+            data_manager.update_last_message_time()
+        else:
+            logger.error(f"[{MODULE_NAME}]{group_id}获取随机消息失败")
     except Exception as e:
         logger.error(f"[{MODULE_NAME}]{group_id}处理群随机消息时发生异常: {e}")
 
