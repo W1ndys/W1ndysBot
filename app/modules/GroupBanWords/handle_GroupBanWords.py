@@ -317,9 +317,9 @@ class GroupBanWordsHandler:
             group_id_source = parts[0]
 
             # 实例化来源群数据管理器
-            data_manager_source = DataManager(group_id_source)
-            # 获取来源群违禁词
-            ban_words = data_manager_source.get_all_words_and_weight()
+            with DataManager(group_id_source) as data_manager_source:
+                # 获取来源群违禁词
+                ban_words = data_manager_source.get_all_words_and_weight()
 
             # 发送开始处理的提示
             await send_group_msg(
