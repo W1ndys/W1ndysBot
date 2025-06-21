@@ -103,6 +103,95 @@ class GroupRandomMsg:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]添加随机消息时发生异常: {e}")
 
+    async def _handle_batch_add_message(self):
+        """处理群聊批量添加随机消息"""
+        try:
+            # 鉴权
+            if not is_system_admin(self.user_id) and not is_group_admin(self.role):
+                logger.error(f"[{MODULE_NAME}]{self.user_id}无权限批量添加随机消息")
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message("权限不足，需要管理员权限"),
+                    ],
+                )
+                return
+
+            # 解析批量消息内容
+            content_after_command = self.raw_message.split(ADD_GROUP_RANDOM_MSG)[
+                1
+            ].strip()
+
+            # 按换行分割消息
+            messages = [
+                line.strip()
+                for line in content_after_command.split("\n")
+                if line.strip()
+            ]
+
+            if not messages:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message("没有找到待添加的消息"),
+                    ],
+                )
+                return
+
+            # 实例化数据管理器
+            data_manager = DataManager(self.group_id)
+
+            # 批量添加消息
+            added_ids = []
+            for message_content in messages:
+                try:
+                    new_id = data_manager.add_data(message_content, self.user_id)
+                    added_ids.append((new_id, message_content))
+                    logger.info(
+                        f"[{MODULE_NAME}]群聊批量添加随机消息: ID{new_id} - {message_content}"
+                    )
+                except Exception as e:
+                    logger.error(
+                        f"[{MODULE_NAME}]添加消息失败: {message_content} - {e}"
+                    )
+
+            # 发送结果
+            if added_ids:
+                result_text = (
+                    f"批量添加随机消息成功\n成功添加 {len(added_ids)} 条消息：\n"
+                )
+                for msg_id, content in added_ids[:5]:  # 只显示前5条
+                    result_text += f"ID{msg_id}: {content[:15]}{'...' if len(content) > 15 else ''}\n"
+
+                if len(added_ids) > 5:
+                    result_text += f"... 还有 {len(added_ids) - 5} 条消息"
+
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(result_text.strip()),
+                    ],
+                    note="del_msg=15",
+                )
+            else:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message("批量添加失败，请检查消息格式"),
+                    ],
+                )
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]群聊批量添加随机消息时发生异常: {e}")
+
     async def _handle_delete_message(self):
         """处理删除随机消息"""
         try:
@@ -151,7 +240,14 @@ class GroupRandomMsg:
         """处理群随机消息相关命令"""
         try:
             if self.raw_message.startswith(ADD_GROUP_RANDOM_MSG):
-                await self._handle_add_message()
+                # 判断是单条添加还是批量添加
+                content_after_command = self.raw_message.split(ADD_GROUP_RANDOM_MSG)[
+                    1
+                ].strip()
+                if "\n" in content_after_command:
+                    await self._handle_batch_add_message()
+                else:
+                    await self._handle_add_message()
             elif self.raw_message.startswith(DELETE_GROUP_RANDOM_MSG):
                 await self._handle_delete_message()
         except Exception as e:
