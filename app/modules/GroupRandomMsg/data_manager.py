@@ -1,7 +1,7 @@
 import sqlite3
 import os
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from . import MODULE_NAME
 
 
@@ -45,11 +45,30 @@ class DataManager:
         )"""
         )
 
+        # 创建群活跃度表，记录每个群最近一次发言时间
+        activity_table = f"`{self.group_id}_activity`"
+        self.cursor.execute(
+            f"""CREATE TABLE IF NOT EXISTS {activity_table} (
+            id INTEGER PRIMARY KEY,
+            last_message_time TEXT NOT NULL,
+            update_time TEXT NOT NULL
+        )"""
+        )
+
         # 确保洗牌状态表有初始记录
         self.cursor.execute(f"SELECT COUNT(*) FROM {shuffle_table}")
         if self.cursor.fetchone()[0] == 0:
             self.cursor.execute(
                 f"INSERT INTO {shuffle_table} (id, current_round, current_position, total_count) VALUES (1, 0, 0, 0)"
+            )
+
+        # 确保活跃度表有初始记录
+        self.cursor.execute(f"SELECT COUNT(*) FROM {activity_table}")
+        if self.cursor.fetchone()[0] == 0:
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.cursor.execute(
+                f"INSERT INTO {activity_table} (id, last_message_time, update_time) VALUES (1, ?, ?)",
+                (current_time, current_time),
             )
 
         self.conn.commit()
@@ -251,3 +270,50 @@ class DataManager:
             f"SELECT COUNT(*) FROM {table_name} WHERE id = ?", (data_id,)
         )
         return self.cursor.fetchone()[0] > 0
+
+    def update_last_message_time(self):
+        """
+        更新群最近一次发言时间
+        """
+        activity_table = f"`{self.group_id}_activity`"
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        self.cursor.execute(
+            f"UPDATE {activity_table} SET last_message_time = ?, update_time = ? WHERE id = 1",
+            (current_time, current_time),
+        )
+        self.conn.commit()
+
+    def get_last_message_time(self):
+        """
+        获取群最近一次发言时间
+        :return: 最近发言时间的datetime对象，如果没有记录则返回None
+        """
+        activity_table = f"`{self.group_id}_activity`"
+        self.cursor.execute(
+            f"SELECT last_message_time FROM {activity_table} WHERE id = 1"
+        )
+        result = self.cursor.fetchone()
+
+        if result:
+            try:
+                return datetime.strptime(result[0], "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                return None
+        return None
+
+    def should_send_random_message(self, silence_minutes=30):
+        """
+        判断是否应该发送随机消息（基于群活跃度）
+        :param silence_minutes: 静默时间（分钟），默认30分钟
+        :return: 是否应该发送
+        """
+        last_message_time = self.get_last_message_time()
+        if not last_message_time:
+            return True  # 如果没有记录，允许发送
+
+        current_time = datetime.now()
+        time_diff = current_time - last_message_time
+
+        # 如果距离最后一次发言超过指定分钟数，则可以发送
+        return time_diff >= timedelta(minutes=silence_minutes)

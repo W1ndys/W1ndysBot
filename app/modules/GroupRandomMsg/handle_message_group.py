@@ -8,6 +8,7 @@ from api.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from core.menu_manager import MenuManager
 from .handle_GroupRandomMsg import GroupRandomMsg
+from .data_manager import DataManager
 
 
 class GroupMessageHandler:
@@ -36,6 +37,7 @@ class GroupMessageHandler:
         处理群消息
         """
         try:
+
             if self.raw_message.lower() == SWITCH_NAME.lower():
                 # 鉴权
                 if not is_system_admin(self.user_id):
@@ -66,6 +68,10 @@ class GroupMessageHandler:
             # 如果没开启群聊开关，则不处理
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
+
+            # 更新群最近发言时间（在所有消息处理前）
+            data_manager = DataManager(self.group_id)
+            data_manager.update_last_message_time()
 
             await GroupRandomMsg(self.websocket, self.msg).handle_group_random_msg()
 

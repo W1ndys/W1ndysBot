@@ -1,5 +1,10 @@
 from logger import logger
-from . import MODULE_NAME, ADD_GROUP_RANDOM_MSG, DELETE_GROUP_RANDOM_MSG
+from . import (
+    MODULE_NAME,
+    ADD_GROUP_RANDOM_MSG,
+    DELETE_GROUP_RANDOM_MSG,
+    SILENCE_MINUTES,
+)
 from core.auth import is_system_admin, is_group_admin
 from .data_manager import DataManager
 from api.message import send_group_msg
@@ -17,8 +22,14 @@ async def send_group_random_msg(websocket, group_id):
 
         # 检查当前分钟是否是30的倍数
         if datetime.now().minute % 30 == 0:
+            # 检查群活跃度，只有在静默时间后才发送
+            data_manager = DataManager(group_id)
+            if not data_manager.should_send_random_message(SILENCE_MINUTES):
+                logger.info(f"[{MODULE_NAME}]{group_id}群聊活跃，跳过随机消息发送")
+                return
+
             # 获取随机消息
-            random_msg = DataManager(group_id).get_random_data()
+            random_msg = data_manager.get_random_data()
             if random_msg:
                 # random_msg 格式: (id, message, random_count, added_by, add_time)
                 message_id = random_msg[0]
@@ -29,6 +40,9 @@ async def send_group_random_msg(websocket, group_id):
 
                 await send_group_msg(
                     websocket, group_id, [generate_text_message(formatted_message)]
+                )
+                logger.info(
+                    f"[{MODULE_NAME}]{group_id}发送随机消息成功: {message_content}"
                 )
             else:
                 logger.error(f"[{MODULE_NAME}]{group_id}获取随机消息失败")
