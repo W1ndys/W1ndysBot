@@ -1,0 +1,3 @@
+[submodule "app/modules/QFNUSelectCourseInfo"]
+	path = app/modules/QFNUSelectCourseInfo
+	url = git@github.com:W1ndys/QFNUSelectCourseInfo.git
