@@ -101,10 +101,10 @@ async def check_and_handle_ban_words(
             [
                 generate_at_message(user_id),
                 generate_text_message(
-                    f"({user_id})请勿发送违禁消息，如误封请联系管理员"
+                    f"({user_id})请勿发送违禁消息，如误封请联系管理员，发广告的自觉点退群嘻嘻嘻嘻嘻"
                 ),
             ],
-            note="del_msg=20",
+            note="del_msg=60",
         )
         # 发送管理员消息
         await send_private_msg(
