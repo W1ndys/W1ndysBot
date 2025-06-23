@@ -151,7 +151,7 @@ class InviteLinkRecordDataManager:
         chain = chain[::-1]  # 反转，root在前
         root_id = chain[0]
 
-        # 向下查找所有被邀请者
+        # 向下查找所有被邀请者 - 修改这里
         def find_down(inviter_id, visited_down):
             self.cursor.execute(
                 """SELECT invited_id FROM invite_link_record WHERE operator_id = ? AND group_id = ?""",
@@ -165,7 +165,9 @@ class InviteLinkRecordDataManager:
                     visited_down.add(invited_id)
                     find_down(invited_id, visited_down)
 
-        find_down(user_id, set())
+        # 从根节点开始向下查找所有分支，而不是只从user_id开始
+        visited_down_global = set()
+        find_down(root_id, visited_down_global)
 
         return related_users, root_id, chain
 
