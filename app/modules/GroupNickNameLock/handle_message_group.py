@@ -277,7 +277,7 @@ class GroupMessageHandler:
                                     [
                                         generate_at_message(self.user_id),
                                         generate_text_message(
-                                            f"{self.user_id}您的群昵称不符合群规定，请及时修改为群公告的指定格式！"
+                                            f"({self.user_id})您的群昵称不符合群规定，请及时修改为本群指定格式！"
                                         ),
                                     ],
                                     note="del_msg=10",
