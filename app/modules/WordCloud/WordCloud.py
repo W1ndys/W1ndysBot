@@ -30,11 +30,13 @@ class QQMessageAnalyzer:
     def _init_db(self):
         """初始化数据库和表（按群号分表）"""
         with sqlite3.connect(self.db_path) as conn:
+            # 设置时区为东八区
+            conn.execute("PRAGMA timezone = '+08:00'")
             conn.execute(
                 f"""
                 CREATE TABLE IF NOT EXISTS {self.table_name} (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    message_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    message_time TIMESTAMP NOT NULL DEFAULT (datetime('now', '+08:00')),
                     message_content TEXT NOT NULL,
                     sender_id TEXT
                 )
