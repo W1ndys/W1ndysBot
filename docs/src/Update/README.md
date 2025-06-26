@@ -7,6 +7,27 @@ icon: fa-solid fa-clipboard-list
 
 <!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息，时间越往前，越靠前 -->
 
+## 2025-06-26
+
+- **GroupHumanVerification**: 更新群消息发送逻辑，新增 note 参数以支持 4 小时后自动撤回的功能。（[9dfa9f6](https://github.com/W1ndys/W1ndysBot-dev/commit/9dfa9f6ee8218a3853c90d18816435cadf5020f5)）
+- **GroupNickNameLock**: 修改群昵称提示信息，增加用户 ID 的显示格式，以符合群规定。（[6052247](https://github.com/W1ndys/W1ndysBot-dev/commit/6052247f496f1aa7345b6a9a156bd243681d2d6e)）
+- **GroupHumanVerification**: 更新群消息发送逻辑，新增 note 参数调整到 4 小时后自动撤回。（[05738f7](https://github.com/W1ndys/W1ndysBot-dev/commit/05738f7deb587ac4f22b64978aa427fb68c796df)）
+- **WordCloud**: 新增 ai 生成今日聊天记录总结，新增 Dify API 密钥设置功能，支持从私聊消息中保存密钥并发送请求，优化词云生成和消息处理逻辑。（[b03f344](https://github.com/W1ndys/W1ndysBot-dev/commit/b03f3449d0a101f85b017c1569386b1682749acb)）
+- **WordCloud**: 更新消息存储逻辑，新增时间戳参数以确保消息记录的准确性。（[c248f42](https://github.com/W1ndys/W1ndysBot-dev/commit/c248f42a29dfba4d8bf87a993ea92db3ff76f6f2)）
+- **WordCloud**: 将模块开关名称从"wordcloud"更改为"wc"，以简化配置。（[a8427b1](https://github.com/W1ndys/W1ndysBot-dev/commit/a8427b1ae2e0ac8a3585991c61718c5a9e08dcbb)）
+- **WordCloud**: 更新数据库初始化逻辑，设置时区为东八区，并调整时间戳默认值以确保时间记录的准确性。（[44f3b34](https://github.com/W1ndys/W1ndysBot-dev/commit/44f3b34dd43634ae6861de962e9eca722017c852)）
+
+## 2025-06-23
+
+- **FAQSystem**: 将问答对的低阈值从 0.46 调整为 0.5，以优化相关问题的引导显示。（[f1f613f](https://github.com/W1ndys/W1ndysBot-dev/commit/f1f613f0266de60cd0cbd411ff22c25f3879643c)）
+- **InviteLinkRecordDataManager**: 修改查找被邀请者的逻辑，从根节点开始向下查找所有分支，优化了查找过程的准确性。（[761d6a2](https://github.com/W1ndys/W1ndysBot-dev/commit/761d6a2c52cbefa6f7b807482da6f6f02b39ef21)）
+
+## 2025-06-22
+
+- **FAQsystem**: 调整问答对最低阈值改为 0.46（[106b24e](https://github.com/W1ndys/W1ndysBot-dev/commit/106b24e93d9d89fb74cc203e446ec135310c4d7d)）
+- **GroupBanWords**: 更新违禁消息提示内容，增加广告相关警告，并将静默时间从 20 分钟修改为 60 分钟，以提高管理效果。（[ffcced3](https://github.com/W1ndys/W1ndysBot-dev/commit/ffcced3b0574c5edbe6fa1f4c32270eca0f7f1a0)）
+- **GroupRandomMsg**: 更新群静默时间设置，将静默时间从 20 分钟修改为 60 分钟，以提高随机消息发送的有效性。（[b627bcc](https://github.com/W1ndys/W1ndysBot-dev/commit/b627bcc2b775e94f72dd6c7ec7de6adece884f82)）
+
 ## 2025-06-21
 
 - **GroupRandomMsg, PrivateMessageHandler**：增加群聊和私聊批量添加随机消息功能，包括管理员权限验证、消息格式解析，以及优化异常处理和用户反馈机制（[7374b1e](https://github.com/W1ndysBot/W1ndysBot-dev/commit/7374b1e4d8226aa0d4276c62736fb91c083221b5)）
