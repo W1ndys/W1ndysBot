@@ -104,7 +104,7 @@ class GroupMessageHandler:
                 )
                 return
 
-            analyzer.add_message(self.raw_message, self.user_id)
+            analyzer.add_message(self.raw_message, self.user_id, self.formatted_time)
             logger.info(
                 f"[{MODULE_NAME}]群{self.group_id}的{self.nickname}({self.user_id})有新消息存储"
             )

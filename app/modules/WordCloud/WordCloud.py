@@ -36,7 +36,7 @@ class QQMessageAnalyzer:
                 f"""
                 CREATE TABLE IF NOT EXISTS {self.table_name} (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    message_time TIMESTAMP NOT NULL DEFAULT (datetime('now', '+08:00')),
+                    message_time TIMESTAMP NOT NULL,
                     message_content TEXT NOT NULL,
                     sender_id TEXT
                 )
@@ -54,14 +54,14 @@ class QQMessageAnalyzer:
         """判断消息是否需要被过滤"""
         return any(re.search(pattern, content) for pattern in self.filter_patterns)
 
-    def add_message(self, content, sender_id=None):
+    def add_message(self, content, sender_id=None, message_time=None):
         """存储单条消息，新增正则过滤"""
         if self._is_filtered(content):
             return  # 匹配过滤规则则不存储
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
-                f"INSERT INTO {self.table_name} (message_content, sender_id) VALUES (?, ?)",
-                (content, sender_id),
+                f"INSERT INTO {self.table_name} (message_content, sender_id, message_time) VALUES (?, ?, ?)",
+                (content, sender_id, message_time),
             )
 
     def _get_daily_messages(self, query_date=None):
