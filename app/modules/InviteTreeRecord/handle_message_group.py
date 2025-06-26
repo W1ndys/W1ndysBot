@@ -87,6 +87,12 @@ class GroupMessageHandler:
                         return
 
                     operator_id = None
+                    show_time = False
+
+                    # 检查是否包含时间参数
+                    if "时间" in self.raw_message or "time" in self.raw_message.lower():
+                        show_time = True
+
                     cq_match = re.search(r"\[CQ:at,qq=(\d+)\]", self.raw_message)
                     if cq_match:
                         operator_id = cq_match.group(1)
@@ -104,9 +110,17 @@ class GroupMessageHandler:
                             [generate_text_message("请提供正确的QQ号或@某人。")],
                         )
                         return
+
                     invite_chain_str = invite_tree_record.get_full_invite_chain_str(
-                        operator_id
+                        operator_id, show_time=show_time
                     )
+
+                    time_tip = (
+                        "\n\n提示：使用「查看邀请记录时间 QQ号」可查看带时间的邀请树"
+                        if not show_time
+                        else ""
+                    )
+
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
@@ -115,6 +129,7 @@ class GroupMessageHandler:
                             generate_text_message(
                                 f"{operator_id}邀请树结构\n\n"
                                 + invite_chain_str
+                                + time_tip
                                 + f"\n\n消息将于30秒后撤回，请及时记录"
                             ),
                         ],
