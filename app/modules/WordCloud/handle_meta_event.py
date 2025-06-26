@@ -2,9 +2,10 @@ from . import MODULE_NAME
 import logger
 from datetime import datetime
 from core.switchs import get_all_enabled_groups
-from api.message import send_group_msg
+from api.message import send_group_msg, send_group_msg_with_cq
 from api.generate import generate_image_message, generate_text_message
 from .WordCloud import QQMessageAnalyzer
+from .LLM import DifyClient
 
 
 class MetaEventHandler:
@@ -70,6 +71,9 @@ class MetaEventHandler:
                 # 遍历所有开启的群聊开关，生成群词云和top10词汇
                 for group_id in group_switches:
                     analyzer = QQMessageAnalyzer(group_id)
+                    # 获取今日所有消息
+                    messages = analyzer.get_daily_messages_with_details()
+                    # 生成词云和top10词汇
                     img_base64 = analyzer.generate_wordcloud_image_base64()
                     wordcloud_data, top10_words = analyzer.generate_daily_report()
                     messages = [
@@ -94,6 +98,23 @@ class MetaEventHandler:
                         self.websocket,
                         group_id,
                         messages,
+                    )
+                    # 发送Dify请求
+                    response = await DifyClient().send_request(
+                        f"group_{group_id}", messages
+                    )
+                    answer, tokens, price, currency = DifyClient.parse_response(
+                        response
+                    )
+                    # 拼接消息字符串
+                    answer_message = f"{answer}\n\n"
+                    answer_message += f"Token: {tokens}\n"
+                    answer_message += f"Price: {price} {currency}\n"
+                    # 发送Dify响应
+                    await send_group_msg_with_cq(
+                        self.websocket,
+                        group_id,
+                        answer,
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")

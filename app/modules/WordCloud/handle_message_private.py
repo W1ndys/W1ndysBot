@@ -1,4 +1,4 @@
-from . import MODULE_NAME, SWITCH_NAME
+from . import MODULE_NAME, SWITCH_NAME, SET_DIFY_API_KEY, DIFY_API_KEY_FILE
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_private_switch_on, handle_module_private_switch
@@ -60,6 +60,23 @@ class PrivateMessageHandler:
 
             # 如果没开启私聊开关，则不处理
             if not is_private_switch_on(MODULE_NAME):
+                return
+
+            # 设置Dify密钥
+            if self.raw_message.startswith(SET_DIFY_API_KEY):
+                # 鉴权
+                if not is_system_admin(self.user_id):
+                    return
+                # 分离参数
+                api_key = self.raw_message.split(SET_DIFY_API_KEY)[1].strip()
+                # 保存密钥到数据目录的txt文件
+                with open(DIFY_API_KEY_FILE, "w") as f:
+                    f.write(api_key)
+                await send_private_msg(
+                    self.websocket,
+                    self.user_id,
+                    [generate_text_message("Dify API密钥设置成功")],
+                )
                 return
 
         except Exception as e:

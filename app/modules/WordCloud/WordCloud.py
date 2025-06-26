@@ -75,6 +75,23 @@ class QQMessageAnalyzer:
             )
             return [row[0] for row in cursor.fetchall()]
 
+    def get_daily_messages_with_details(self, query_date=None):
+        """
+        获取某日所有消息的详细信息(默认今天)
+        返回: 包含发送者、发送内容、发送时间的消息列表
+        """
+        target_date = query_date or date.today()
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute(
+                f"SELECT sender_id, message_content, message_time FROM {self.table_name} "
+                "WHERE date(message_time) = ? ORDER BY message_time ASC",
+                (target_date.isoformat(),),
+            )
+            return [
+                {"sender_id": row[0], "message_content": row[1], "message_time": row[2]}
+                for row in cursor.fetchall()
+            ]
+
     def _clean_text(self, text):
         """文本清洗"""
         # 移除URL
