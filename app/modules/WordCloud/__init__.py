@@ -5,7 +5,7 @@ import os
 MODULE_NAME = "WordCloud"
 
 # 模块开关名称
-SWITCH_NAME = "wordcloud"
+SWITCH_NAME = "wc"
 
 # 模块描述
 MODULE_DESCRIPTION = "词云模块"
