@@ -2,7 +2,7 @@ from . import MODULE_NAME
 import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
-from .data_manager import InviteLinkRecordDataManager
+from .data_manager import InviteTreeRecordDataManager
 from config import OWNER_ID
 from api.generate import generate_text_message
 from api.message import send_private_msg
@@ -195,11 +195,11 @@ class GroupNoticeHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            # 添加邀请树接记录
-            invite_link_record = InviteLinkRecordDataManager(self.websocket, self.msg)
-            if invite_link_record.add_invite_link_record():
+            # 添加邀请树记录
+            invite_tree_record = InviteTreeRecordDataManager(self.websocket, self.msg)
+            if invite_tree_record.add_invite_tree_record():
                 # 统计邀请次数
-                invite_count = invite_link_record.get_invite_count(self.operator_id)
+                invite_count = invite_tree_record.get_invite_count(self.operator_id)
                 # 通知管理员
                 await send_private_msg(
                     self.websocket,

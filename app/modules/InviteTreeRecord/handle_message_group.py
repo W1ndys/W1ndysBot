@@ -11,7 +11,7 @@ from api.message import send_group_msg
 from api.generate import generate_reply_message, generate_text_message
 from api.group import set_group_kick
 from datetime import datetime
-from .data_manager import InviteLinkRecordDataManager
+from .data_manager import InviteTreeRecordDataManager
 import re
 import asyncio
 from core.menu_manager import MenuManager
@@ -75,9 +75,9 @@ class GroupMessageHandler:
                 return
 
             # 使用 with 语法管理数据库连接
-            with InviteLinkRecordDataManager(
+            with InviteTreeRecordDataManager(
                 self.websocket, self.msg
-            ) as invite_link_record:
+            ) as invite_tree_record:
                 # 查看邀请记录命令
                 if self.raw_message.startswith(VIEW_INVITE_RECORD):
                     # 鉴权
@@ -104,7 +104,7 @@ class GroupMessageHandler:
                             [generate_text_message("请提供正确的QQ号或@某人。")],
                         )
                         return
-                    invite_chain_str = invite_link_record.get_full_invite_chain_str(
+                    invite_chain_str = invite_tree_record.get_full_invite_chain_str(
                         operator_id
                     )
                     await send_group_msg(
@@ -149,7 +149,7 @@ class GroupMessageHandler:
                         )
                         return
 
-                    related_users = invite_link_record.get_related_invite_users(
+                    related_users = invite_tree_record.get_related_invite_users(
                         operator_id
                     )
                     # 创建异步任务列表
@@ -162,7 +162,7 @@ class GroupMessageHandler:
                             )
                         )
                         # 删除该用户的所有相关邀请记录（包括作为邀请者和被邀请者的记录）
-                        invite_link_record.delete_all_invite_records_by_user_id(user_id)
+                        invite_tree_record.delete_all_invite_records_by_user_id(user_id)
                         await asyncio.sleep(0.05)  # 等待0.05秒，交出控制权
 
                     # 等待所有任务完成
