@@ -7,15 +7,21 @@ icon: fa-solid fa-clipboard-list
 
 <!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息，时间越往前，越靠前 -->
 
+## 2025-06-27
+
+- **WordCloud**：新增总结聊天功能，支持通过 Dify API 生成聊天记录总结，并优化消息处理逻辑（[2d5057c](https://github.com/W1ndys/W1ndysBot-dev/commit/2d5057c0ad084e045f414b66162b5cfc7943fad0)）
+
 ## 2025-06-26
 
-- **GroupHumanVerification**: 更新群消息发送逻辑，新增 note 参数以支持 4 小时后自动撤回的功能。（[9dfa9f6](https://github.com/W1ndys/W1ndysBot-dev/commit/9dfa9f6ee8218a3853c90d18816435cadf5020f5)）
-- **GroupNickNameLock**: 修改群昵称提示信息，增加用户 ID 的显示格式，以符合群规定。（[6052247](https://github.com/W1ndys/W1ndysBot-dev/commit/6052247f496f1aa7345b6a9a156bd243681d2d6e)）
-- **GroupHumanVerification**: 更新群消息发送逻辑，新增 note 参数调整到 4 小时后自动撤回。（[05738f7](https://github.com/W1ndys/W1ndysBot-dev/commit/05738f7deb587ac4f22b64978aa427fb68c796df)）
-- **WordCloud**: 新增 ai 生成今日聊天记录总结，新增 Dify API 密钥设置功能，支持从私聊消息中保存密钥并发送请求，优化词云生成和消息处理逻辑。（[b03f344](https://github.com/W1ndys/W1ndysBot-dev/commit/b03f3449d0a101f85b017c1569386b1682749acb)）
-- **WordCloud**: 更新消息存储逻辑，新增时间戳参数以确保消息记录的准确性。（[c248f42](https://github.com/W1ndys/W1ndysBot-dev/commit/c248f42a29dfba4d8bf87a993ea92db3ff76f6f2)）
-- **WordCloud**: 将模块开关名称从"wordcloud"更改为"wc"，以简化配置。（[a8427b1](https://github.com/W1ndys/W1ndysBot-dev/commit/a8427b1ae2e0ac8a3585991c61718c5a9e08dcbb)）
-- **WordCloud**: 更新数据库初始化逻辑，设置时区为东八区，并调整时间戳默认值以确保时间记录的准确性。（[44f3b34](https://github.com/W1ndys/W1ndysBot-dev/commit/44f3b34dd43634ae6861de962e9eca722017c852)）
+- **InviteTreeRecord**：添加邀请时间格式化功能，升级数据库表结构以支持邀请时间的格式化存储，并在邀请树中显示时间信息（[0a812e2](https://github.com/W1ndys/W1ndysBot-dev/commit/0a812e218b2c0dccace5979f4e5945e8fd7e4897)）
+- **InviteTreeRecord**：重命名数据管理类并实现数据库迁移功能，将旧的邀请记录数据库迁移到新的邀请树记录数据库，更新相关方法以适应新结构（[9217c3e](https://github.com/W1ndys/W1ndysBot-dev/commit/9217c3e553ec970d309b4ed84b6f772a4365185a)）
+- **GroupHumanVerification**：更新群消息发送逻辑，新增 note 参数以支持 4 小时后自动撤回的功能（[9dfa9f6](https://github.com/W1ndys/W1ndysBot-dev/commit/9dfa9f6ee8218a3853c90d18816435cadf5020f5)）
+- **GroupNickNameLock**：修改群昵称提示信息，增加用户 ID 的显示格式，以符合群规定（[6052247](https://github.com/W1ndys/W1ndysBot-dev/commit/6052247f496f1aa7345b6a9a156bd243681d2d6e)）
+- **GroupHumanVerification**：更新群消息发送逻辑，新增 note 参数调整到 4 小时后自动撤回（[05738f7](https://github.com/W1ndys/W1ndysBot-dev/commit/05738f7deb587ac4f22b64978aa427fb68c796df)）
+- **WordCloud**：新增 ai 生成今日聊天记录总结，新增 Dify API 密钥设置功能，支持从私聊消息中保存密钥并发送请求，优化词云生成和消息处理逻辑（[b03f344](https://github.com/W1ndys/W1ndysBot-dev/commit/b03f3449d0a101f85b017c1569386b1682749acb)）
+- **WordCloud**：更新消息存储逻辑，新增时间戳参数以确保消息记录的准确性（[c248f42](https://github.com/W1ndys/W1ndysBot-dev/commit/c248f42a29dfba4d8bf87a993ea92db3ff76f6f2)）
+- **WordCloud**：将模块开关名称从"wordcloud"更改为"wc"，以简化配置（[a8427b1](https://github.com/W1ndys/W1ndysBot-dev/commit/a8427b1ae2e0ac8a3585991c61718c5a9e08dcbb)）
+- **WordCloud**：更新数据库初始化逻辑，设置时区为东八区，并调整时间戳默认值以确保时间记录的准确性（[44f3b34](https://github.com/W1ndys/W1ndysBot-dev/commit/44f3b34dd43634ae6861de962e9eca722017c852)）
 
 ## 2025-06-23
 
