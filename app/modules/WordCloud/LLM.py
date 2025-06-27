@@ -77,25 +77,93 @@ class DifyClient:
             "files": [],
         }
 
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    self.api_url, headers=headers, json=data
-                ) as response:
-                    return await response.text()
-        except Exception as e:
-            return json.dumps(
-                {
-                    "answer": f"请求失败: {str(e)}",
-                    "metadata": {
-                        "usage": {
-                            "total_tokens": 0,
-                            "total_price": 0,
-                            "currency": "USD",
+        # 设置重试次数
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                # 设置超时时间
+                timeout = aiohttp.ClientTimeout(total=60, connect=10)
+
+                async with aiohttp.ClientSession(timeout=timeout) as session:
+                    logger.info(f"[{MODULE_NAME}]尝试第 {attempt + 1} 次请求 Dify API")
+                    async with session.post(
+                        self.api_url, headers=headers, json=data
+                    ) as response:
+                        if response.status == 200:
+                            result = await response.text()
+                            logger.info(f"[{MODULE_NAME}]Dify API 请求成功")
+                            return result
+                        else:
+                            logger.error(
+                                f"[{MODULE_NAME}]API 返回状态码: {response.status}"
+                            )
+
+            except asyncio.TimeoutError:
+                logger.error(
+                    f"[{MODULE_NAME}]请求超时 (尝试 {attempt + 1}/{max_retries})"
+                )
+                if attempt == max_retries - 1:
+                    return json.dumps(
+                        {
+                            "answer": "请求超时，请稍后重试",
+                            "metadata": {
+                                "usage": {
+                                    "total_tokens": 0,
+                                    "total_price": 0,
+                                    "currency": "USD",
+                                }
+                            },
                         }
-                    },
-                }
-            )
+                    )
+
+            except aiohttp.ClientConnectorError as e:
+                logger.error(
+                    f"[{MODULE_NAME}]连接错误 (尝试 {attempt + 1}/{max_retries}): {str(e)}"
+                )
+                if attempt == max_retries - 1:
+                    return json.dumps(
+                        {
+                            "answer": "网络连接失败，请检查网络设置",
+                            "metadata": {
+                                "usage": {
+                                    "total_tokens": 0,
+                                    "total_price": 0,
+                                    "currency": "USD",
+                                }
+                            },
+                        }
+                    )
+
+            except Exception as e:
+                logger.error(
+                    f"[{MODULE_NAME}]请求失败 (尝试 {attempt + 1}/{max_retries}): {str(e)}"
+                )
+                if attempt == max_retries - 1:
+                    return json.dumps(
+                        {
+                            "answer": f"请求失败: {str(e)}",
+                            "metadata": {
+                                "usage": {
+                                    "total_tokens": 0,
+                                    "total_price": 0,
+                                    "currency": "USD",
+                                }
+                            },
+                        }
+                    )
+
+            # 如果不是最后一次尝试，等待一段时间再重试
+            if attempt < max_retries - 1:
+                await asyncio.sleep(2**attempt)  # 指数退避：2, 4, 8 秒
+
+        return json.dumps(
+            {
+                "answer": "所有重试尝试都失败了",
+                "metadata": {
+                    "usage": {"total_tokens": 0, "total_price": 0, "currency": "USD"}
+                },
+            }
+        )
 
     @staticmethod
     def parse_response(response_text):

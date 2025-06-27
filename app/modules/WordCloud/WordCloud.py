@@ -88,7 +88,11 @@ class QQMessageAnalyzer:
                 (target_date.isoformat(),),
             )
             return [
-                {"sender_id": row[0], "message_content": row[1], "message_time": row[2]}
+                {
+                    "sender_id": row[0],
+                    "message_content": row[1],
+                    "message_time": row[2],
+                }
                 for row in cursor.fetchall()
             ]
 
