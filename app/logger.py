@@ -112,17 +112,21 @@ class Logger:
             )
         )
 
-        # 修改namer函数，轮转时以当前时间命名新日志文件，格式为 YYYY-MM-DD_HH-MM-SS.log
+        # 自定义轮转逻辑：新文件以轮转时的时间命名
         def custom_namer(name):
-
-            # 获取东八区当前时间
+            # 不使用默认的 .1, .2 后缀，而是生成新的时间戳文件名
+            # 获取东八区当前时间（轮转时的时间）
             tz = timezone(timedelta(hours=8))
             timestamp = datetime.now(tz).strftime("%Y-%m-%d_%H-%M-%S")
             base_dir = os.path.dirname(name)
             return os.path.join(base_dir, f"{timestamp}.log")
 
+        def custom_rotator(source, dest):
+            # 将当前日志文件重命名为带时间戳的文件名
+            os.rename(source, dest)
+
         file_handler.namer = custom_namer
-        file_handler.rotator = lambda source, dest: os.rename(source, dest)
+        file_handler.rotator = custom_rotator
         file_handler.setLevel(logging.DEBUG)  # 文件始终记录DEBUG及以上级别
 
         return console_handler, file_handler
