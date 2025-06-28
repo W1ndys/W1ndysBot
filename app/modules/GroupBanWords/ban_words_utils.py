@@ -117,8 +117,8 @@ async def check_and_handle_ban_words(
                     f"已封禁{BAN_WORD_DURATION}秒\n"
                     f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}\n"
                     f"相关消息已通过飞书上报\n"
-                    f"回复本消息“解封”可解封用户\n"
-                    f"回复本消息“踢出”可踢出用户"
+                    f"引用回复本消息“{UNBAN_WORD_COMMAND}”可解封用户\n"
+                    f"引用回复本消息“{KICK_BAN_WORD_COMMAND}”可踢出用户"
                 )
             ],
         )

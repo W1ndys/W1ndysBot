@@ -10,7 +10,7 @@ from . import (
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_private_switch_on, handle_module_private_switch
-from api.message import send_private_msg
+from api.message import send_private_msg, get_msg
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager_words import DataManager
@@ -18,6 +18,7 @@ from core.auth import is_system_admin
 from core.menu_manager import MenuManager
 from .handle_GroupBanWords import GroupBanWordsHandler
 import asyncio
+import re
 
 
 class PrivateMessageHandler:
@@ -232,6 +233,32 @@ class PrivateMessageHandler:
             # 处理私聊复制违禁词
             elif self.raw_message.lower().startswith(COPY_BAN_WORD_COMMAND.lower()):
                 await self.copy_ban_word_private()
+
+            # 新的解封踢出功能
+            # 原消息内容: [CQ:reply,id=1734368035]{命令}，通过消息ID获取消息内容，进而解析用户ID，群号
+            if self.raw_message.startswith("[CQ:reply,id=") and (
+                UNBAN_WORD_COMMAND in self.raw_message
+                or KICK_BAN_WORD_COMMAND in self.raw_message
+            ):
+                # 正则提取消息ID
+                pattern = r"\[CQ:reply,id=(\d+)\]"
+                match = re.search(pattern, self.raw_message)
+                if match:
+                    message_id = match.group(1)
+                else:
+                    logger.error(f"[{MODULE_NAME}]提取消息ID失败")
+                    await send_private_msg(
+                        self.websocket,
+                        self.user_id,
+                        [generate_text_message("提取消息ID失败")],
+                    )
+                    return
+                # 发送API获取消息内容，备注：{对应命令}，便于ResponseHandler处理
+                await get_msg(
+                    self.websocket,
+                    message_id,
+                    note=f"{MODULE_NAME}-action={KICK_BAN_WORD_COMMAND if KICK_BAN_WORD_COMMAND in self.raw_message else UNBAN_WORD_COMMAND}",
+                )
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊消息失败: {e}")

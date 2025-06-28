@@ -24,8 +24,8 @@ ADD_BAN_WORD_COMMAND = "添加违禁词"  # 添加违禁词命令
 DELETE_BAN_WORD_COMMAND = "删除违禁词"  # 删除违禁词命令
 ADD_GLOBAL_BAN_WORD_COMMAND = "添加全局违禁词"  # 添加全局违禁词命令
 DELETE_GLOBAL_BAN_WORD_COMMAND = "删除全局违禁词"  # 删除全局违禁词命令
-UNBAN_WORD_COMMAND = "解封违禁词"  # 解封被封禁用户命令
-KICK_BAN_WORD_COMMAND = "踢出违禁词"  # 踢出被封禁用户命令
+UNBAN_WORD_COMMAND = "解禁"  # 解禁被封禁用户命令
+KICK_BAN_WORD_COMMAND = "踢出"  # 踢出被封禁用户命令
 COPY_BAN_WORD_COMMAND = "复制违禁词"  # 复制违禁词命令
 
 COMMANDS = {
