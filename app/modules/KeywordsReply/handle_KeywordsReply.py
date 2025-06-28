@@ -170,8 +170,8 @@ class HandleKeywordsReply:
         try:
             with DataManager() as dm:
                 reply = dm.get_reply(self.group_id, self.raw_message)
-                reply = replace_rkey(reply)
                 if reply:
+                    reply = replace_rkey(reply)
                     await send_group_msg_with_cq(
                         self.websocket,
                         self.group_id,
