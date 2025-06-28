@@ -8,7 +8,6 @@ from . import (
     HIGH_THRESHOLD,
     LOW_THRESHOLD,
     MAX_SUGGESTIONS,
-    RKEY_DIR,
     DELETE_TIME,
 )
 from core.auth import is_group_admin, is_system_admin
@@ -17,7 +16,7 @@ from .handle_match_qa import AdvancedFAQMatcher
 from api.message import send_group_msg, send_group_msg_with_cq, get_msg
 from api.generate import generate_reply_message, generate_text_message
 import re
-import json
+from utils.replace_rkey import replace_rkey
 
 
 class QaHandler:
@@ -435,25 +434,7 @@ class QaHandler:
                     answer = re.sub(r"\\n", "\n", answer)
 
                     # 处理答案中的图片rkey替换
-                    def replace_rkey(match):
-                        cq_img = match.group(0)
-                        rkey_pattern = r"rkey=([^,^\]]+)"
-                        rkey_search = re.search(rkey_pattern, cq_img)
-                        if rkey_search:
-                            try:
-                                with open(RKEY_DIR, "r", encoding="utf-8") as f:
-                                    rkey_json = json.load(f)
-                                new_rkey = rkey_json.get("rkey")
-                                if new_rkey:
-                                    new_cq_img = re.sub(
-                                        rkey_pattern, f"rkey={new_rkey}", cq_img
-                                    )
-                                    return new_cq_img
-                            except Exception as e:
-                                logger.error(f"[{MODULE_NAME}]本地rkey替换失败: {e}")
-                        return cq_img
-
-                    answer = re.sub(r"\[CQ:image,[^\]]+\]", replace_rkey, answer)
+                    answer = replace_rkey(answer)
 
                     await send_group_msg_with_cq(
                         self.websocket,
@@ -558,28 +539,7 @@ class QaHandler:
             answer = re.sub(r"\\n", "\n", answer)
 
             # 如果答案中有图片（包含rkey），则替换为本地缓存的rkey
-            def replace_rkey(match):
-                cq_img = match.group(0)
-                # 查找rkey参数
-                rkey_pattern = r"rkey=([^,^\]]+)"
-                rkey_search = re.search(rkey_pattern, cq_img)
-                if rkey_search:
-                    # 读取本地rkey
-                    try:
-                        with open(RKEY_DIR, "r", encoding="utf-8") as f:
-                            rkey_json = json.load(f)
-                        new_rkey = rkey_json.get("rkey")
-                        if new_rkey:
-                            # 替换rkey参数
-                            new_cq_img = re.sub(
-                                rkey_pattern, f"rkey={new_rkey}", cq_img
-                            )
-                            return new_cq_img
-                    except Exception as e:
-                        logger.error(f"[{MODULE_NAME}]本地rkey替换失败: {e}")
-                return cq_img  # 未找到rkey或替换失败则返回原内容
-
-            answer = re.sub(r"\[CQ:image,[^\]]+\]", replace_rkey, answer)
+            answer = replace_rkey(answer)
 
             # 直接回复答案（不显示原问题和相似度）
             await send_group_msg_with_cq(
