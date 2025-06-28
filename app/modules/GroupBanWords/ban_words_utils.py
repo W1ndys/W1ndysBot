@@ -117,26 +117,10 @@ async def check_and_handle_ban_words(
                     f"已封禁{BAN_WORD_DURATION}秒\n"
                     f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}\n"
                     f"相关消息已通过飞书上报\n"
-                    f"发送{UNBAN_WORD_COMMAND} {group_id} {user_id}解封用户\n"
-                    f"发送{KICK_BAN_WORD_COMMAND} {group_id} {user_id}踢出用户"
+                    f"回复本消息“解封”可解封用户\n"
+                    f"回复本消息“踢出”可踢出用户"
                 )
             ],
-        )
-
-        # 异步延迟0.3秒
-        await asyncio.sleep(0.3)
-
-        # 发送快速命令便于复制
-        await send_private_msg(
-            websocket,
-            OWNER_ID,
-            [generate_text_message(f"{UNBAN_WORD_COMMAND} {group_id} {user_id}")],
-        )
-        await asyncio.sleep(0.3)
-        await send_private_msg(
-            websocket,
-            OWNER_ID,
-            [generate_text_message(f"{KICK_BAN_WORD_COMMAND} {group_id} {user_id}")],
         )
 
         # 发送飞书消息

@@ -357,16 +357,19 @@ class DataManager:
                     matched_words.append((f"{word}({source})", weight))
         return total_weight, matched_words
 
-    def set_user_status(self, user_id, status):
+    def set_user_status(self, user_id, status, group_id=None):
         """设置某用户状态，若已存在则更新
         Args:
             user_id (str): 用户ID
             status (str): 用户状态
+            group_id (str, optional): 群组ID，如果不提供则使用实例的group_id
         Returns:
             bool: 操作是否成功
         """
         assert self._conn is not None  # 添加断言确保连接存在
         cursor = self._conn.cursor()
+        # 如果提供了group_id参数则使用，否则使用实例的group_id
+        target_group_id = group_id if group_id is not None else self.group_id
         cursor.execute(
             """
             INSERT INTO user_status (group_id, user_id, status, update_time) 
@@ -375,23 +378,26 @@ class DataManager:
                 status=excluded.status, 
                 update_time=CURRENT_TIMESTAMP
             """,
-            (self.group_id, user_id, status),
+            (target_group_id, user_id, status),
         )
         self._conn.commit()
         return True
 
-    def get_user_status(self, user_id):
+    def get_user_status(self, user_id, group_id=None):
         """获取某用户状态
         Args:
             user_id (str): 用户ID
+            group_id (str, optional): 群组ID，如果不提供则使用实例的group_id
         Returns:
             str: 用户状态，如果用户不存在则返回None
         """
         assert self._conn is not None  # 添加断言确保连接存在
         cursor = self._conn.cursor()
+        # 如果提供了group_id参数则使用，否则使用实例的group_id
+        target_group_id = group_id if group_id is not None else self.group_id
         cursor.execute(
             "SELECT status FROM user_status WHERE group_id=? AND user_id=?",
-            (self.group_id, user_id),
+            (target_group_id, user_id),
         )
         result = cursor.fetchone()
         return result[0] if result else None

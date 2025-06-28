@@ -102,7 +102,7 @@ class GroupBanWordsHandler:
             # 获取群号
             banned_group_id = ban_word.split(" ")[0]
             # 更新用户状态为已踢出
-            self.data_manager.set_user_status(banned_user_id, "kick")
+            self.data_manager.set_user_status(banned_user_id, "kick", banned_group_id)
             # 发送成功消息
             await send_group_msg(
                 self.websocket,
