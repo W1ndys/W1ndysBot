@@ -5,7 +5,7 @@ from core.switchs import is_group_switch_on
 from .data_manager import BlackListDataManager
 from api.group import set_group_kick
 from api.message import send_group_msg
-from api.generate import generate_text_message
+from api.generate import generate_text_message, generate_at_message
 
 
 class GroupNoticeHandler:
@@ -89,13 +89,14 @@ class GroupNoticeHandler:
                     blacklist_type = "全局黑名单" if is_global else "群黑名单"
 
                     # 发送警告消息
+                    warning_at = generate_at_message(self.user_id)
                     warning_msg = generate_text_message(
-                        f"检测到{blacklist_type}用户 {self.user_id} 进入了群聊，将自动将其踢出"
+                        f"({self.user_id})检测到你是{blacklist_type}用户，将自动将其踢出"
                     )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
-                        [warning_msg],
+                        [warning_at, warning_msg],
                         note="del_msg=30",
                     )
 

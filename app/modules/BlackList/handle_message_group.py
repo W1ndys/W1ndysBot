@@ -15,7 +15,11 @@ from core.menu_manager import MENU_COMMAND
 from core.auth import is_group_admin, is_system_admin
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg, delete_msg
-from api.generate import generate_text_message, generate_reply_message
+from api.generate import (
+    generate_text_message,
+    generate_reply_message,
+    generate_at_message,
+)
 from api.group import set_group_kick
 from datetime import datetime
 from .handle_blacklist import BlackListHandle
@@ -135,13 +139,14 @@ class GroupMessageHandler:
                     blacklist_type = "全局黑名单" if is_global else "群黑名单"
 
                     # 发送警告消息
+                    warning_at = generate_at_message(self.user_id)
                     warning_msg = generate_text_message(
-                        f"检测到{blacklist_type}用户 {self.user_id} 在群内发言，将自动撤回消息并将其踢出"
+                        f"({self.user_id})检测到你是{blacklist_type}用户，将自动撤回消息并将其踢出"
                     )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
-                        [warning_msg],
+                        [warning_at, warning_msg],
                         note="del_msg=30",
                     )
 
