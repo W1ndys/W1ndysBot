@@ -17,6 +17,7 @@ from .data_manager_words import DataManager
 from core.auth import is_system_admin
 from core.menu_manager import MenuManager
 from .handle_GroupBanWords import GroupBanWordsHandler
+import asyncio
 
 
 class PrivateMessageHandler:
@@ -78,45 +79,91 @@ class PrivateMessageHandler:
                 ban_words = source_dm.get_all_words_and_weight()
 
             if not ban_words:
+                source_name = (
+                    "全局词库" if source_group_id == "0" else f"群 {source_group_id}"
+                )
                 await send_private_msg(
                     self.websocket,
                     self.user_id,
                     [
-                        generate_text_message(
-                            f"来源群 {source_group_id} 没有违禁词数据"
-                        ),
+                        generate_text_message(f"来源{source_name}没有违禁词数据"),
                     ],
                 )
                 return
 
             # 发送开始处理的提示
+            source_name = (
+                "全局词库" if source_group_id == "0" else f"群 {source_group_id}"
+            )
+            target_name = (
+                "全局词库" if target_group_id == "0" else f"群 {target_group_id}"
+            )
             await send_private_msg(
                 self.websocket,
                 self.user_id,
                 [
                     generate_text_message(
-                        f"开始从群 {source_group_id} 复制 {len(ban_words)} 个违禁词到群 {target_group_id}，请稍候..."
+                        f"开始从{source_name}复制 {len(ban_words)} 个违禁词到{target_name}，请稍候..."
                     ),
                 ],
             )
 
-            # 实例化目标群数据管理器并复制违禁词
-            with DataManager(target_group_id) as target_dm:
-                success_count = 0
-                for word, weight in ban_words:
-                    if target_dm.add_word(word, weight):
-                        success_count += 1
+            # 创建一个异步任务来处理违禁词添加，避免阻塞主线程
+            async def process_ban_words():
+                try:
+                    with DataManager(target_group_id) as target_dm:
+                        success_count = 0
+                        batch_size = 20  # 每批处理20个违禁词
 
-            # 发送成功消息
-            await send_private_msg(
-                self.websocket,
-                self.user_id,
-                [
-                    generate_text_message(
-                        f"复制完成！已成功从群 {source_group_id} 复制 {success_count}/{len(ban_words)} 个违禁词到群 {target_group_id}"
-                    ),
-                ],
-            )
+                        for i in range(0, len(ban_words), batch_size):
+                            batch = ban_words[i : i + batch_size]
+
+                            # 处理当前批次
+                            for word, weight in batch:
+                                if target_dm.add_word(word, weight):
+                                    success_count += 1
+
+                            # 每处理一批后让出控制权，防止阻塞
+                            await asyncio.sleep(0.1)
+
+                            # 发送进度更新（可选）
+                            if len(ban_words) > 50:  # 只有在词数较多时才发送进度
+                                processed = min(i + batch_size, len(ban_words))
+                                progress = int(processed / len(ban_words) * 100)
+                                if progress % 25 == 0:  # 每25%发送一次进度
+                                    await send_private_msg(
+                                        self.websocket,
+                                        self.user_id,
+                                        [
+                                            generate_text_message(
+                                                f"复制进度: {progress}% ({processed}/{len(ban_words)})"
+                                            ),
+                                        ],
+                                    )
+
+                    # 发送完成消息
+                    await send_private_msg(
+                        self.websocket,
+                        self.user_id,
+                        [
+                            generate_text_message(
+                                f"复制完成！已成功从{source_name}复制 {success_count}/{len(ban_words)} 个违禁词到{target_name}"
+                            ),
+                        ],
+                    )
+
+                except Exception as e:
+                    logger.error(f"[{MODULE_NAME}]处理违禁词批次时出错: {e}")
+                    await send_private_msg(
+                        self.websocket,
+                        self.user_id,
+                        [
+                            generate_text_message(f"复制过程中发生错误：{str(e)}"),
+                        ],
+                    )
+
+            # 创建任务但不等待它完成，让它在后台运行
+            asyncio.create_task(process_ban_words())
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]私聊复制违禁词失败: {e}")
