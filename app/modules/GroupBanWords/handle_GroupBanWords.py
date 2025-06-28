@@ -44,6 +44,9 @@ class GroupBanWordsHandler:
         self.role = self.sender.get("role", "")  # 群身份
         self.data_manager = DataManager(self.group_id)
 
+        # 判断是否在私聊环境（group_id为"0"表示私聊环境）
+        self.is_private = self.group_id == "0"
+
     async def handle_unban_word(self):
         try:
             # 检测是否为管理员
@@ -289,15 +292,24 @@ class GroupBanWordsHandler:
                     else:
                         results.append(f"添加失败: {word}")
                 reply = "\n".join(results)
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(reply),
-                    ],
-                    note="del_msg=10",
-                )
+
+                # 根据环境选择发送方式
+                if self.is_private:
+                    await send_private_msg(
+                        self.websocket,
+                        self.user_id,
+                        [generate_text_message(reply)],
+                    )
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(reply),
+                        ],
+                        note="del_msg=10",
+                    )
             else:
                 # 单条兼容原有逻辑
                 ban_word = content
@@ -309,30 +321,45 @@ class GroupBanWordsHandler:
                 elif len(parts) == 1:
                     word, weight = parts[0], 10
                 else:
+                    error_msg = f"格式错误: {ban_word}"
+                    if self.is_private:
+                        await send_private_msg(
+                            self.websocket,
+                            self.user_id,
+                            [generate_text_message(error_msg)],
+                        )
+                    else:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(error_msg),
+                            ],
+                            note="del_msg=10",
+                        )
+                    return
+                is_success = self.data_manager.add_global_word(word, weight)
+                if not is_success:
+                    return
+
+                success_msg = f"添加全局违禁词成功: {word} 权重: {weight}"
+                if self.is_private:
+                    await send_private_msg(
+                        self.websocket,
+                        self.user_id,
+                        [generate_text_message(success_msg)],
+                    )
+                else:
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message(f"格式错误: {ban_word}"),
+                            generate_text_message(success_msg),
                         ],
                         note="del_msg=10",
                     )
-                    return
-                is_success = self.data_manager.add_global_word(word, weight)
-                if not is_success:
-                    return
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(
-                            f"添加全局违禁词成功: {word} 权重: {weight}"
-                        ),
-                    ],
-                    note="del_msg=10",
-                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]添加全局违禁词失败: {e}")
 
@@ -353,15 +380,24 @@ class GroupBanWordsHandler:
                     else:
                         results.append(f"未找到: {word}")
                 reply = "\n".join(results)
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(reply),
-                    ],
-                    note="del_msg=10",
-                )
+
+                # 根据环境选择发送方式
+                if self.is_private:
+                    await send_private_msg(
+                        self.websocket,
+                        self.user_id,
+                        [generate_text_message(reply)],
+                    )
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(reply),
+                        ],
+                        note="del_msg=10",
+                    )
             else:
                 # 单条兼容原有逻辑
                 ban_word = content
@@ -369,25 +405,42 @@ class GroupBanWordsHandler:
                     return
                 is_success = self.data_manager.delete_global_word(ban_word)
                 if not is_success:
+                    error_msg = f"未找到: {ban_word}"
+                    if self.is_private:
+                        await send_private_msg(
+                            self.websocket,
+                            self.user_id,
+                            [generate_text_message(error_msg)],
+                        )
+                    else:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(error_msg),
+                            ],
+                            note="del_msg=10",
+                        )
+                    return
+
+                success_msg = f"删除全局违禁词成功: {ban_word}"
+                if self.is_private:
+                    await send_private_msg(
+                        self.websocket,
+                        self.user_id,
+                        [generate_text_message(success_msg)],
+                    )
+                else:
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message(f"未找到: {ban_word}"),
+                            generate_text_message(success_msg),
                         ],
                         note="del_msg=10",
                     )
-                    return
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(f"删除全局违禁词成功: {ban_word}"),
-                    ],
-                    note="del_msg=10",
-                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]删除全局违禁词失败: {e}")
 
