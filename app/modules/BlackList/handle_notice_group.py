@@ -79,14 +79,18 @@ class GroupNoticeHandler:
 
     async def check_and_kick_blacklisted_user(self):
         """
-        检查用户是否在黑名单中，如果在则踢出并发送警告
+        检查用户是否在黑名单中（包括全局黑名单），如果在则踢出并发送警告
         """
         try:
             with BlackListDataManager() as data_manager:
-                if data_manager.is_in_blacklist(self.group_id, self.user_id):
+                if data_manager.is_user_blacklisted(self.group_id, self.user_id):
+                    # 判断是全局黑名单还是群黑名单
+                    is_global = data_manager.is_in_global_blacklist(self.user_id)
+                    blacklist_type = "全局黑名单" if is_global else "群黑名单"
+
                     # 发送警告消息
                     warning_msg = generate_text_message(
-                        f"检测到黑名单用户 {self.user_id} 进入了群聊，将自动将其踢出"
+                        f"检测到{blacklist_type}用户 {self.user_id} 进入了群聊，将自动将其踢出"
                     )
                     await send_group_msg(
                         self.websocket,
@@ -100,7 +104,7 @@ class GroupNoticeHandler:
                         self.websocket, self.group_id, self.user_id, True
                     )
                     logger.info(
-                        f"[{MODULE_NAME}]已踢出黑名单用户 {self.user_id} 并拒绝后续加群请求"
+                        f"[{MODULE_NAME}]已踢出{blacklist_type}用户 {self.user_id} 并拒绝后续加群请求"
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]检查并踢出黑名单用户失败: {e}")

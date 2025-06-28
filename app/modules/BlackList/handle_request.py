@@ -65,13 +65,17 @@ class RequestHandler:
         """
         try:
             with BlackListDataManager() as data_manager:
-                if data_manager.is_in_blacklist(self.group_id, self.user_id):
-                    reason = "您在该群的黑名单中，无法加入群聊"
+                if data_manager.is_user_blacklisted(self.group_id, self.user_id):
+                    # 判断是全局黑名单还是群黑名单
+                    is_global = data_manager.is_in_global_blacklist(self.user_id)
+                    blacklist_type = "全局黑名单" if is_global else "群黑名单"
+                    reason = f"您在{blacklist_type}中，无法加入群聊"
+                    
                     await set_group_add_request(
                         self.websocket, self.flag, False, reason
                     )
                     logger.info(
-                        f"[{MODULE_NAME}]拒绝黑名单用户 {self.user_id} 加入群 {self.group_id}"
+                        f"[{MODULE_NAME}]拒绝{blacklist_type}用户 {self.user_id} 加入群 {self.group_id}"
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理加群请求失败: {e}")
