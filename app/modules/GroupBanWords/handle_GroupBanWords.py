@@ -269,6 +269,10 @@ class GroupBanWordsHandler:
             # 鉴权，只有系统管理员可以添加全局违禁词
             if not is_system_admin(self.user_id):
                 return
+
+            # 使用全局词库的DataManager（群号"0"）
+            global_data_manager = DataManager(DataManager.GLOBAL_GROUP_ID)
+
             # 过滤命令
             content = self.raw_message.lstrip(ADD_GLOBAL_BAN_WORD_COMMAND).strip()
             lines = [line.strip() for line in content.split("\n") if line.strip()]
@@ -286,7 +290,7 @@ class GroupBanWordsHandler:
                     else:
                         results.append(f"格式错误: {line}")
                         continue
-                    is_success = self.data_manager.add_global_word(word, weight)
+                    is_success = global_data_manager.add_word(word, weight)
                     if is_success:
                         results.append(f"添加成功: {word} 权重: {weight}")
                     else:
@@ -339,7 +343,7 @@ class GroupBanWordsHandler:
                             note="del_msg=10",
                         )
                     return
-                is_success = self.data_manager.add_global_word(word, weight)
+                is_success = global_data_manager.add_word(word, weight)
                 if not is_success:
                     return
 
@@ -368,13 +372,17 @@ class GroupBanWordsHandler:
             # 鉴权，只有系统管理员可以删除全局违禁词
             if not is_system_admin(self.user_id):
                 return
+
+            # 使用全局词库的DataManager（群号"0"）
+            global_data_manager = DataManager(DataManager.GLOBAL_GROUP_ID)
+
             # 过滤命令
             content = self.raw_message.lstrip(DELETE_GLOBAL_BAN_WORD_COMMAND).strip()
             words = [w for w in content.split() if w]
             results = []
             if len(words) > 1:
                 for word in words:
-                    is_success = self.data_manager.delete_global_word(word)
+                    is_success = global_data_manager.delete_word(word)
                     if is_success:
                         results.append(f"删除成功: {word}")
                     else:
@@ -403,7 +411,7 @@ class GroupBanWordsHandler:
                 ban_word = content
                 if not ban_word:
                     return
-                is_success = self.data_manager.delete_global_word(ban_word)
+                is_success = global_data_manager.delete_word(ban_word)
                 if not is_success:
                     error_msg = f"未找到: {ban_word}"
                     if self.is_private:

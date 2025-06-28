@@ -33,7 +33,7 @@ COMMANDS = {
     DELETE_BAN_WORD_COMMAND: f"删除违禁词，用法：{DELETE_BAN_WORD_COMMAND} 违禁词，例如：{DELETE_BAN_WORD_COMMAND} sb",
     ADD_GLOBAL_BAN_WORD_COMMAND: f"添加全局违禁词，用法：{ADD_GLOBAL_BAN_WORD_COMMAND} 违禁词 权重(0-100，默认10)，例如：{ADD_GLOBAL_BAN_WORD_COMMAND} sb 10",
     DELETE_GLOBAL_BAN_WORD_COMMAND: f"删除全局违禁词，用法：{DELETE_GLOBAL_BAN_WORD_COMMAND} 违禁词，例如：{DELETE_GLOBAL_BAN_WORD_COMMAND} sb",
-    COPY_BAN_WORD_COMMAND: f"复制违禁词，用法：私聊：{COPY_BAN_WORD_COMMAND} 来源群号 目标群号，群聊：{COPY_BAN_WORD_COMMAND} 来源群号(复制到当前群)",
+    COPY_BAN_WORD_COMMAND: f"复制违禁词，用法：私聊：{COPY_BAN_WORD_COMMAND} 来源群号 目标群号，群聊：{COPY_BAN_WORD_COMMAND} 来源群号(复制到当前群)，全局词库群号为0",
     # 可以继续添加其他命令
 }
 # ------------------------------------------------------------

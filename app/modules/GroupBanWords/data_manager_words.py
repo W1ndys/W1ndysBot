@@ -12,10 +12,13 @@ class DataManager:
     _conn: Optional[sqlite3.Connection] = None
     _initialized = False
 
+    # 全局词库群号常量
+    GLOBAL_GROUP_ID = "0"
+
     def __init__(self, group_id):
         """初始化数据管理器
         Args:
-            group_id (str): 群组ID
+            group_id (str): 群组ID，"0"表示全局词库
         """
         self.group_id = str(group_id)
 
@@ -43,7 +46,7 @@ class DataManager:
         assert cls._conn is not None  # 添加断言确保连接存在
         cursor = cls._conn.cursor()
 
-        # 创建违禁词表
+        # 创建违禁词表（群号"0"为全局词库）
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS ban_words (
@@ -52,17 +55,6 @@ class DataManager:
                 weight INTEGER NOT NULL,
                 update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (group_id, word)
-            )
-            """
-        )
-
-        # 创建全局违禁词表
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS global_ban_words (
-                word TEXT NOT NULL PRIMARY KEY,
-                weight INTEGER NOT NULL,
-                update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             """
         )
@@ -317,56 +309,9 @@ class DataManager:
         self._conn.commit()
         return rows_affected > 0
 
-    def add_global_word(self, word, weight=10):
-        """添加全局敏感词及权值，若已存在则更新权值和时间
-        Args:
-            word (str): 敏感词
-            weight (int, optional): 权值，默认为10
-        Returns:
-            bool: 操作是否成功
-        """
-        assert self._conn is not None  # 添加断言确保连接存在
-        cursor = self._conn.cursor()
-        cursor.execute(
-            """
-            INSERT INTO global_ban_words (word, weight, update_time) 
-            VALUES (?, ?, CURRENT_TIMESTAMP) 
-            ON CONFLICT(word) DO UPDATE SET 
-                weight=excluded.weight, 
-                update_time=CURRENT_TIMESTAMP
-            """,
-            (word, weight),
-        )
-        self._conn.commit()
-        return True
-
-    def delete_global_word(self, word):
-        """删除全局敏感词
-        Args:
-            word (str): 敏感词
-        Returns:
-            bool: 操作是否成功，如果词不存在则返回False
-        """
-        assert self._conn is not None  # 添加断言确保连接存在
-        cursor = self._conn.cursor()
-        cursor.execute("DELETE FROM global_ban_words WHERE word=?", (word,))
-        rows_affected = cursor.rowcount
-        self._conn.commit()
-        return rows_affected > 0
-
-    def get_all_global_words_and_weight(self):
-        """获取所有全局敏感词及权值
-        Returns:
-            list: 包含(word, weight)元组的列表
-        """
-        assert self._conn is not None  # 添加断言确保连接存在
-        cursor = self._conn.cursor()
-        cursor.execute("SELECT word, weight FROM global_ban_words")
-        return cursor.fetchall()
-
     def calc_message_weight(self, message):
         """计算消息的违禁程度（所有命中违禁词的权值求和）
-        群专属词库优先级大于全局词库，如果同一个词在两个词库都存在，使用群专属的权重
+        群专属词库优先级大于全局词库（群号"0"），如果同一个词在两个词库都存在，使用群专属的权重
         Args:
             message (str): 需要检查的消息文本
         Returns:
@@ -383,8 +328,11 @@ class DataManager:
         )
         group_words = dict(cursor.fetchall())
 
-        # 获取全局违禁词
-        cursor.execute("SELECT word, weight FROM global_ban_words")
+        # 获取全局违禁词（群号为"0"）
+        cursor.execute(
+            "SELECT word, weight FROM ban_words WHERE group_id=?",
+            (self.GLOBAL_GROUP_ID,),
+        )
         global_words = dict(cursor.fetchall())
 
         # 合并词库，群专属优先
@@ -489,25 +437,27 @@ class DataManager:
         assert cls._conn is not None  # 添加断言确保连接存在
         cursor = cls._conn.cursor()
 
-        # 统计群组数量
-        cursor.execute("SELECT COUNT(DISTINCT group_id) FROM ban_words")
+        # 统计群组数量（排除全局群号"0"）
+        cursor.execute(
+            "SELECT COUNT(DISTINCT group_id) FROM ban_words WHERE group_id != '0'"
+        )
         groups_with_words = cursor.fetchone()[0]
 
-        # 统计总违禁词数量
-        cursor.execute("SELECT COUNT(*) FROM ban_words")
+        # 统计总违禁词数量（排除全局）
+        cursor.execute("SELECT COUNT(*) FROM ban_words WHERE group_id != '0'")
         total_words = cursor.fetchone()[0]
 
-        # 统计全局违禁词数量
-        cursor.execute("SELECT COUNT(*) FROM global_ban_words")
+        # 统计全局违禁词数量（群号为"0"）
+        cursor.execute("SELECT COUNT(*) FROM ban_words WHERE group_id = '0'")
         total_global_words = cursor.fetchone()[0]
 
         # 统计总用户状态数量
         cursor.execute("SELECT COUNT(*) FROM user_status")
         total_user_status = cursor.fetchone()[0]
 
-        # 按群组统计违禁词数量
+        # 按群组统计违禁词数量（排除全局）
         cursor.execute(
-            "SELECT group_id, COUNT(*) FROM ban_words GROUP BY group_id ORDER BY COUNT(*) DESC"
+            "SELECT group_id, COUNT(*) FROM ban_words WHERE group_id != '0' GROUP BY group_id ORDER BY COUNT(*) DESC"
         )
         words_by_group = cursor.fetchall()
 
