@@ -5,6 +5,19 @@ import logger
 async def set_group_kick(websocket, group_id, user_id, reject_add_request=False):
     """
     设置群踢人
+    
+    Args:
+        websocket: WebSocket连接对象，用于与上游通信
+        group_id (str): 群号
+        user_id (str): 要踢出的用户ID
+        reject_add_request (bool, optional): 是否拒绝此人的加群请求，默认为False
+        
+    Returns:
+        bool: 操作是否成功，True表示成功，False表示失败
+        
+    Note:
+        此函数通过WebSocket发送API请求到上游，由于WebSocket的特殊性，
+        无法直接获取响应结果，需要通过echo字段在响应处理中获取结果
     """
     try:
         payload = {
