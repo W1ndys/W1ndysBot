@@ -14,7 +14,7 @@ from core.auth import is_group_admin, is_system_admin
 from .db_manager import FAQDatabaseManager
 from .handle_match_qa import AdvancedFAQMatcher
 from api.message import send_group_msg, send_group_msg_with_cq, get_msg
-from api.generate import generate_reply_message, generate_text_message
+from utils.generate import generate_reply_message, generate_text_message
 import re
 from utils.replace_rkey import replace_rkey
 

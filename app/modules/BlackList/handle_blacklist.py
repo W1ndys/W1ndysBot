@@ -1,6 +1,6 @@
 from .data_manager import BlackListDataManager
 from api.message import send_group_msg
-from api.generate import generate_text_message, generate_reply_message
+from utils.generate import generate_text_message, generate_reply_message
 import logger
 import re
 from . import (

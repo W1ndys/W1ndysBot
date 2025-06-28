@@ -6,7 +6,7 @@ from core.switchs import is_private_switch_on, handle_module_private_switch
 from config import OWNER_ID
 from api.message import send_private_msg, send_private_msg_with_cq
 from api.user import set_friend_add_request, set_group_add_request
-from api.generate import generate_reply_message, generate_text_message
+from utils.generate import generate_reply_message, generate_text_message
 import re
 from datetime import datetime
 from core.menu_manager import MenuManager

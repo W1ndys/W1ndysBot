@@ -4,7 +4,7 @@ from datetime import datetime
 from core.switchs import is_group_switch_on
 from .data_manager import InviteTreeRecordDataManager
 from config import OWNER_ID
-from api.generate import generate_text_message
+from utils.generate import generate_text_message
 from api.message import send_private_msg
 
 

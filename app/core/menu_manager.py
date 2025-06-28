@@ -2,7 +2,7 @@ import importlib
 import os
 import logger
 from typing import Dict, List, Optional
-from api.generate import generate_reply_message, generate_text_message
+from utils.generate import generate_reply_message, generate_text_message
 from api.message import send_group_msg, send_private_msg
 from core.auth import is_system_admin
 

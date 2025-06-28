@@ -2,7 +2,7 @@ from . import MODULE_NAME
 import logger
 from datetime import datetime
 from api.group import set_group_add_request
-from api.generate import generate_text_message
+from utils.generate import generate_text_message
 from api.message import send_group_msg, send_private_msg
 from config import OWNER_ID
 

@@ -6,7 +6,7 @@ import importlib
 import inspect
 from config import OWNER_ID
 from api.message import send_private_msg
-from api.generate import generate_text_message
+from utils.generate import generate_text_message
 
 
 # 核心模块列表 - 这些模块将始终被加载

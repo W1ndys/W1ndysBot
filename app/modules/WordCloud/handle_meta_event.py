@@ -3,7 +3,7 @@ import logger
 from datetime import datetime
 from core.switchs import get_all_enabled_groups
 from api.message import send_group_msg, send_group_msg_with_cq
-from api.generate import generate_image_message, generate_text_message
+from utils.generate import generate_image_message, generate_text_message
 from .WordCloud import QQMessageAnalyzer
 from .LLM import DifyClient
 

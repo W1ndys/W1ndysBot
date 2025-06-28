@@ -5,7 +5,7 @@ from core.switchs import is_group_switch_on
 from .data_manager import BlackListDataManager
 from api.group import set_group_kick
 from api.message import send_group_msg
-from api.generate import generate_text_message, generate_at_message
+from utils.generate import generate_text_message, generate_at_message
 
 
 class GroupNoticeHandler:

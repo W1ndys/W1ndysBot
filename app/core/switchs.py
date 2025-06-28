@@ -15,7 +15,7 @@
 import os
 import json
 import logger
-from api.generate import generate_reply_message, generate_text_message
+from utils.generate import generate_reply_message, generate_text_message
 from api.message import send_private_msg, send_group_msg
 
 # 数据根目录

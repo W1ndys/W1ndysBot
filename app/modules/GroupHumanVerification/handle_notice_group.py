@@ -15,7 +15,7 @@ from datetime import datetime
 from core.switchs import is_group_switch_on
 from api.group import set_group_ban
 from api.message import send_group_msg, delete_msg
-from api.generate import generate_at_message, generate_text_message
+from utils.generate import generate_at_message, generate_text_message
 from .data_manager import DataManager
 
 

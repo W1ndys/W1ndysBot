@@ -6,7 +6,7 @@ import logger
 from . import MODULE_NAME, GROUP_RECALL_COMMAND
 from api.group import set_group_ban, set_group_kick, set_group_whole_ban
 from api.message import send_group_msg, delete_msg
-from api.generate import generate_text_message, generate_at_message
+from utils.generate import generate_text_message, generate_at_message
 import re
 import random
 from .data_manager import DataManager

@@ -14,7 +14,7 @@ from api.message import (
     send_private_msg,
     get_group_msg_history,
 )
-from api.generate import generate_text_message, generate_at_message
+from utils.generate import generate_text_message, generate_at_message
 from api.group import set_group_ban
 from config import OWNER_ID
 from utils.feishu import send_feishu_msg

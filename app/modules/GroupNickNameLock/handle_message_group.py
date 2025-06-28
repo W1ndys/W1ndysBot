@@ -13,7 +13,7 @@ from . import (
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg
-from api.generate import (
+from utils.generate import (
     generate_reply_message,
     generate_text_message,
     generate_at_message,

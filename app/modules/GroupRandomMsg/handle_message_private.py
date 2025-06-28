@@ -3,7 +3,7 @@ from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_private_switch_on, handle_module_private_switch
 from api.message import send_private_msg
-from api.generate import generate_text_message, generate_reply_message
+from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from core.auth import is_system_admin
 from core.menu_manager import MenuManager
