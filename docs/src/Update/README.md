@@ -7,9 +7,27 @@ icon: fa-solid fa-clipboard-list
 
 <!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息，时间越往前，越靠前 -->
 
+## 2025-06-28
+
+- **KeywordsReply**：修复关键词回复逻辑顺序，避免无回复时替换 rkey（[5af96a8](https://github.com/W1ndys/W1ndysBot-dev/commit/5af96a8)）
+- **GroupBanWords**：简化“解禁/踢出”私聊指令并实现消息引用处理（[195d848](https://github.com/W1ndys/W1ndysBot-dev/commit/195d848)）
+- **GroupBanWords**：移除旧数据迁移逻辑，精简数据管理（[7a19eb9](https://github.com/W1ndys/W1ndysBot-dev/commit/7a19eb9)）
+- **GroupBanWords**：优化违禁词提示与数据库操作，修复 group_id 处理错误（[745d6b0](https://github.com/W1ndys/W1ndysBot-dev/commit/745d6b0)）
+- **GroupBanWords**：优化复制功能，新增来源提示、批量处理与进度反馈（[d2c3898](https://github.com/W1ndys/W1ndysBot-dev/commit/d2c3898)）
+- **GroupBanWords**：统一全局与群组词库，支持系统管理员管理全局违禁词（[f1fb7e8](https://github.com/W1ndys/W1ndysBot-dev/commit/f1fb7e8)）
+- **GroupBanWords**：支持在私聊环境管理全局违禁词并优化反馈（[fc8777f](https://github.com/W1ndys/W1ndysBot-dev/commit/fc8777f)）
+- **GroupBanWords**：新增全局违禁词功能，调整检测优先级并支持私聊复制（[fb726f4](https://github.com/W1ndys/W1ndysBot-dev/commit/fb726f4)）
+- **模块重构**：将消息生成函数迁移至 utils.generate 并更新各模块引用（[c09223c](https://github.com/W1ndys/W1ndysBot-dev/commit/c09223c)）
+- **消息撤回**：实现撤回任务持久化与重启恢复，增加失败处理（[e0e4c38](https://github.com/W1ndys/W1ndysBot-dev/commit/e0e4c38)）
+- **KeywordsReply**：修复 rkey 未正确替换的问题（[96a91db](https://github.com/W1ndys/W1ndysBot-dev/commit/96a91db)）
+- **公共工具**：抽取 rkey 替换逻辑至 utils/replace_rkey.py（[82d355e](https://github.com/W1ndys/W1ndysBot-dev/commit/82d355e)）
+- **BlackList**：新增全局黑名单功能及相关拦截/踢人逻辑（[f7fa070](https://github.com/W1ndys/W1ndysBot-dev/commit/f7fa070)）
+- **BlackList**：优化黑名单警告提示，新增 @ 提醒（[cc23c43](https://github.com/W1ndys/W1ndysBot-dev/commit/cc23c43)）
+
 ## 2025-06-27
 
-- **WordCloud**：新增总结聊天功能，支持通过 Dify API 生成聊天记录总结，并优化消息处理逻辑（[2d5057c](https://github.com/W1ndys/W1ndysBot-dev/commit/2d5057c0ad084e045f414b66162b5cfc7943fad0)）
+- **Logger**：修复轮转日志文件命名错误（[2743509](https://github.com/W1ndys/W1ndysBot-dev/commit/2743509)）
+- **WordCloud**：新增聊天记录总结功能，接入 Dify API 并优化消息处理（[2d5057c](https://github.com/W1ndys/W1ndysBot-dev/commit/2d5057c)）
 
 ## 2025-06-26
 
