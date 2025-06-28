@@ -8,6 +8,7 @@ from . import (
 from api.message import send_group_msg_with_cq, send_group_msg
 from api.generate import generate_reply_message, generate_text_message
 from datetime import datetime
+from utils.replace_rkey import replace_rkey
 
 
 class HandleKeywordsReply:
@@ -169,6 +170,7 @@ class HandleKeywordsReply:
         try:
             with DataManager() as dm:
                 reply = dm.get_reply(self.group_id, self.raw_message)
+                reply = replace_rkey(reply)
                 if reply:
                     await send_group_msg_with_cq(
                         self.websocket,
