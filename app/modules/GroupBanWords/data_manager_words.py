@@ -56,6 +56,17 @@ class DataManager:
             """
         )
 
+        # 创建全局违禁词表
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS global_ban_words (
+                word TEXT NOT NULL PRIMARY KEY,
+                weight INTEGER NOT NULL,
+                update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+
         # 创建用户状态表
         cursor.execute(
             """
@@ -306,8 +317,56 @@ class DataManager:
         self._conn.commit()
         return rows_affected > 0
 
+    def add_global_word(self, word, weight=10):
+        """添加全局敏感词及权值，若已存在则更新权值和时间
+        Args:
+            word (str): 敏感词
+            weight (int, optional): 权值，默认为10
+        Returns:
+            bool: 操作是否成功
+        """
+        assert self._conn is not None  # 添加断言确保连接存在
+        cursor = self._conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO global_ban_words (word, weight, update_time) 
+            VALUES (?, ?, CURRENT_TIMESTAMP) 
+            ON CONFLICT(word) DO UPDATE SET 
+                weight=excluded.weight, 
+                update_time=CURRENT_TIMESTAMP
+            """,
+            (word, weight),
+        )
+        self._conn.commit()
+        return True
+
+    def delete_global_word(self, word):
+        """删除全局敏感词
+        Args:
+            word (str): 敏感词
+        Returns:
+            bool: 操作是否成功，如果词不存在则返回False
+        """
+        assert self._conn is not None  # 添加断言确保连接存在
+        cursor = self._conn.cursor()
+        cursor.execute("DELETE FROM global_ban_words WHERE word=?", (word,))
+        rows_affected = cursor.rowcount
+        self._conn.commit()
+        return rows_affected > 0
+
+    def get_all_global_words_and_weight(self):
+        """获取所有全局敏感词及权值
+        Returns:
+            list: 包含(word, weight)元组的列表
+        """
+        assert self._conn is not None  # 添加断言确保连接存在
+        cursor = self._conn.cursor()
+        cursor.execute("SELECT word, weight FROM global_ban_words")
+        return cursor.fetchall()
+
     def calc_message_weight(self, message):
         """计算消息的违禁程度（所有命中违禁词的权值求和）
+        群专属词库优先级大于全局词库，如果同一个词在两个词库都存在，使用群专属的权重
         Args:
             message (str): 需要检查的消息文本
         Returns:
@@ -317,21 +376,37 @@ class DataManager:
         """
         assert self._conn is not None  # 添加断言确保连接存在
         cursor = self._conn.cursor()
+
+        # 获取群专属违禁词
         cursor.execute(
             "SELECT word, weight FROM ban_words WHERE group_id=?", (self.group_id,)
         )
+        group_words = dict(cursor.fetchall())
+
+        # 获取全局违禁词
+        cursor.execute("SELECT word, weight FROM global_ban_words")
+        global_words = dict(cursor.fetchall())
+
+        # 合并词库，群专属优先
+        merged_words = global_words.copy()
+        merged_words.update(group_words)  # 群专属词库覆盖全局词库
+
         matched_words = []
         total_weight = 0
-        for word, weight in cursor.fetchall():
+        for word, weight in merged_words.items():
             try:
                 if re.search(word, message):
                     total_weight += weight
-                    matched_words.append((word, weight))
+                    # 标记来源
+                    source = "群专属" if word in group_words else "全局"
+                    matched_words.append((f"{word}({source})", weight))
             except re.error:
                 # 如果正则表达式无效，则退回到普通字符串匹配
                 if word in message:
                     total_weight += weight
-                    matched_words.append((word, weight))
+                    # 标记来源
+                    source = "群专属" if word in group_words else "全局"
+                    matched_words.append((f"{word}({source})", weight))
         return total_weight, matched_words
 
     def set_user_status(self, user_id, status):
@@ -422,6 +497,10 @@ class DataManager:
         cursor.execute("SELECT COUNT(*) FROM ban_words")
         total_words = cursor.fetchone()[0]
 
+        # 统计全局违禁词数量
+        cursor.execute("SELECT COUNT(*) FROM global_ban_words")
+        total_global_words = cursor.fetchone()[0]
+
         # 统计总用户状态数量
         cursor.execute("SELECT COUNT(*) FROM user_status")
         total_user_status = cursor.fetchone()[0]
@@ -435,6 +514,7 @@ class DataManager:
         return {
             "groups_with_words": groups_with_words,
             "total_words": total_words,
+            "total_global_words": total_global_words,
             "total_user_status": total_user_status,
             "words_by_group": words_by_group,
         }

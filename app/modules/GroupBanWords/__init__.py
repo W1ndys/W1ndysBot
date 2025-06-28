@@ -22,14 +22,18 @@ BAN_WORD_DURATION = 30 * 24 * 60 * 60  # 违禁词封禁时长，单位：秒
 
 ADD_BAN_WORD_COMMAND = "添加违禁词"  # 添加违禁词命令
 DELETE_BAN_WORD_COMMAND = "删除违禁词"  # 删除违禁词命令
+ADD_GLOBAL_BAN_WORD_COMMAND = "添加全局违禁词"  # 添加全局违禁词命令
+DELETE_GLOBAL_BAN_WORD_COMMAND = "删除全局违禁词"  # 删除全局违禁词命令
 UNBAN_WORD_COMMAND = "解封违禁词"  # 解封被封禁用户命令
 KICK_BAN_WORD_COMMAND = "踢出违禁词"  # 踢出被封禁用户命令
 COPY_BAN_WORD_COMMAND = "复制违禁词"  # 复制违禁词命令
 
 COMMANDS = {
-    ADD_BAN_WORD_COMMAND: f"添加违禁词，用法：{ADD_BAN_WORD_COMMAND} 违禁词 权重(0-100，默认10)，例如：{ADD_BAN_WORD_COMMAND} sb 10，权重越大，违禁词风险越高",
+    ADD_BAN_WORD_COMMAND: f"添加违禁词，用法：{ADD_BAN_WORD_COMMAND} 违禁词 权重(0-100，默认10)，例如：{ADD_BAN_WORD_COMMAND} sb 10",
     DELETE_BAN_WORD_COMMAND: f"删除违禁词，用法：{DELETE_BAN_WORD_COMMAND} 违禁词，例如：{DELETE_BAN_WORD_COMMAND} sb",
-    COPY_BAN_WORD_COMMAND: f"把一个群的违禁词复制到另一个群，用法：私聊：{COPY_BAN_WORD_COMMAND} 群号1+空格+群号2(把群号1的违禁词复制到群号2)，群聊：{COPY_BAN_WORD_COMMAND} 群号1(把群号1的违禁词复制到当前群)",
+    ADD_GLOBAL_BAN_WORD_COMMAND: f"添加全局违禁词，用法：{ADD_GLOBAL_BAN_WORD_COMMAND} 违禁词 权重(0-100，默认10)，例如：{ADD_GLOBAL_BAN_WORD_COMMAND} sb 10",
+    DELETE_GLOBAL_BAN_WORD_COMMAND: f"删除全局违禁词，用法：{DELETE_GLOBAL_BAN_WORD_COMMAND} 违禁词，例如：{DELETE_GLOBAL_BAN_WORD_COMMAND} sb",
+    COPY_BAN_WORD_COMMAND: f"复制违禁词，用法：私聊：{COPY_BAN_WORD_COMMAND} 来源群号 目标群号，群聊：{COPY_BAN_WORD_COMMAND} 来源群号(复制到当前群)",
     # 可以继续添加其他命令
 }
 # ------------------------------------------------------------

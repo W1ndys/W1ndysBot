@@ -4,6 +4,8 @@ from . import (
     MODULE_NAME,
     ADD_BAN_WORD_COMMAND,
     DELETE_BAN_WORD_COMMAND,
+    ADD_GLOBAL_BAN_WORD_COMMAND,
+    DELETE_GLOBAL_BAN_WORD_COMMAND,
     UNBAN_WORD_COMMAND,
     KICK_BAN_WORD_COMMAND,
     COPY_BAN_WORD_COMMAND,
@@ -259,6 +261,136 @@ class GroupBanWordsHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]删除违禁词失败: {e}")
 
+    async def add_global_ban_word(self):
+        try:
+            # 鉴权，只有系统管理员可以添加全局违禁词
+            if not is_system_admin(self.user_id):
+                return
+            # 过滤命令
+            content = self.raw_message.lstrip(ADD_GLOBAL_BAN_WORD_COMMAND).strip()
+            lines = [line.strip() for line in content.split("\n") if line.strip()]
+            results = []
+            # 判断是否批量
+            if len(lines) > 1:
+                for line in lines:
+                    if not line:
+                        continue
+                    parts = line.split()
+                    if len(parts) == 2:
+                        word, weight = parts
+                    elif len(parts) == 1:
+                        word, weight = parts[0], 10
+                    else:
+                        results.append(f"格式错误: {line}")
+                        continue
+                    is_success = self.data_manager.add_global_word(word, weight)
+                    if is_success:
+                        results.append(f"添加成功: {word} 权重: {weight}")
+                    else:
+                        results.append(f"添加失败: {word}")
+                reply = "\n".join(results)
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(reply),
+                    ],
+                    note="del_msg=10",
+                )
+            else:
+                # 单条兼容原有逻辑
+                ban_word = content
+                if not ban_word:
+                    return
+                parts = ban_word.split()
+                if len(parts) == 2:
+                    word, weight = parts
+                elif len(parts) == 1:
+                    word, weight = parts[0], 10
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(f"格式错误: {ban_word}"),
+                        ],
+                        note="del_msg=10",
+                    )
+                    return
+                is_success = self.data_manager.add_global_word(word, weight)
+                if not is_success:
+                    return
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(
+                            f"添加全局违禁词成功: {word} 权重: {weight}"
+                        ),
+                    ],
+                    note="del_msg=10",
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]添加全局违禁词失败: {e}")
+
+    async def delete_global_ban_word(self):
+        try:
+            # 鉴权，只有系统管理员可以删除全局违禁词
+            if not is_system_admin(self.user_id):
+                return
+            # 过滤命令
+            content = self.raw_message.lstrip(DELETE_GLOBAL_BAN_WORD_COMMAND).strip()
+            words = [w for w in content.split() if w]
+            results = []
+            if len(words) > 1:
+                for word in words:
+                    is_success = self.data_manager.delete_global_word(word)
+                    if is_success:
+                        results.append(f"删除成功: {word}")
+                    else:
+                        results.append(f"未找到: {word}")
+                reply = "\n".join(results)
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(reply),
+                    ],
+                    note="del_msg=10",
+                )
+            else:
+                # 单条兼容原有逻辑
+                ban_word = content
+                if not ban_word:
+                    return
+                is_success = self.data_manager.delete_global_word(ban_word)
+                if not is_success:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(f"未找到: {ban_word}"),
+                        ],
+                        note="del_msg=10",
+                    )
+                    return
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(f"删除全局违禁词成功: {ban_word}"),
+                    ],
+                    note="del_msg=10",
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]删除全局违禁词失败: {e}")
+
     async def check_and_handle_ban_words(self):
         """检测违禁词并处理相关逻辑"""
 
@@ -372,6 +504,15 @@ class GroupBanWordsHandler:
             # 删除违禁词
             if self.raw_message.startswith(DELETE_BAN_WORD_COMMAND):
                 await self.delete_ban_word()
+                return
+
+            # 添加全局违禁词
+            if self.raw_message.startswith(ADD_GLOBAL_BAN_WORD_COMMAND):
+                await self.add_global_ban_word()
+                return
+            # 删除全局违禁词
+            if self.raw_message.startswith(DELETE_GLOBAL_BAN_WORD_COMMAND):
+                await self.delete_global_ban_word()
                 return
 
             # 复制违禁词

@@ -1,4 +1,12 @@
-from . import MODULE_NAME, SWITCH_NAME, UNBAN_WORD_COMMAND, KICK_BAN_WORD_COMMAND
+from . import (
+    MODULE_NAME,
+    SWITCH_NAME,
+    UNBAN_WORD_COMMAND,
+    KICK_BAN_WORD_COMMAND,
+    ADD_GLOBAL_BAN_WORD_COMMAND,
+    DELETE_GLOBAL_BAN_WORD_COMMAND,
+    COPY_BAN_WORD_COMMAND,
+)
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_private_switch_on, handle_module_private_switch
@@ -28,6 +36,97 @@ class PrivateMessageHandler:
         self.raw_message = msg.get("raw_message", "")  # 原始消息
         self.sender = msg.get("sender", {})  # 发送者信息
         self.nickname = self.sender.get("nickname", "")  # 昵称
+
+    async def copy_ban_word_private(self):
+        """
+        私聊复制违禁词功能
+        用法：复制违禁词 来源群号 目标群号
+        """
+        try:
+            # 鉴权
+            if not is_system_admin(self.user_id):
+                await send_private_msg(
+                    self.websocket,
+                    self.user_id,
+                    [generate_text_message("权限不足，只有系统管理员可以执行此操作")],
+                )
+                return
+
+            # 过滤命令
+            content = self.raw_message.lstrip(COPY_BAN_WORD_COMMAND).strip()
+            # 检查参数是否完整
+            parts = content.split()
+            if len(parts) != 2:
+                await send_private_msg(
+                    self.websocket,
+                    self.user_id,
+                    [
+                        generate_text_message(
+                            f"格式错误，正确用法：{COPY_BAN_WORD_COMMAND} 来源群号 目标群号"
+                        ),
+                    ],
+                )
+                return
+
+            # 获取来源群号和目标群号
+            source_group_id = parts[0]
+            target_group_id = parts[1]
+
+            # 实例化来源群数据管理器
+            with DataManager(source_group_id) as source_dm:
+                # 获取来源群违禁词
+                ban_words = source_dm.get_all_words_and_weight()
+
+            if not ban_words:
+                await send_private_msg(
+                    self.websocket,
+                    self.user_id,
+                    [
+                        generate_text_message(
+                            f"来源群 {source_group_id} 没有违禁词数据"
+                        ),
+                    ],
+                )
+                return
+
+            # 发送开始处理的提示
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                [
+                    generate_text_message(
+                        f"开始从群 {source_group_id} 复制 {len(ban_words)} 个违禁词到群 {target_group_id}，请稍候..."
+                    ),
+                ],
+            )
+
+            # 实例化目标群数据管理器并复制违禁词
+            with DataManager(target_group_id) as target_dm:
+                success_count = 0
+                for word, weight in ban_words:
+                    if target_dm.add_word(word, weight):
+                        success_count += 1
+
+            # 发送成功消息
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                [
+                    generate_text_message(
+                        f"复制完成！已成功从群 {source_group_id} 复制 {success_count}/{len(ban_words)} 个违禁词到群 {target_group_id}"
+                    ),
+                ],
+            )
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]私聊复制违禁词失败: {e}")
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                [
+                    generate_text_message(f"复制违禁词时发生错误：{str(e)}"),
+                ],
+            )
 
     async def handle(self):
         """
@@ -65,13 +164,27 @@ class PrivateMessageHandler:
             if not is_private_switch_on(MODULE_NAME):
                 return
 
-            # 实例化GroupBanWords
-            group_ban_words = GroupBanWordsHandler(self.websocket, self.msg)
+            # 实例化GroupBanWords，使用群号"0"表示私聊环境下的全局操作
+            group_ban_words = GroupBanWordsHandler(
+                self.websocket, {**self.msg, "group_id": "0"}
+            )
             # 处理管理员解封 踢出
             if self.raw_message.lower().startswith(UNBAN_WORD_COMMAND.lower()):
                 await group_ban_words.handle_unban_word()
             elif self.raw_message.lower().startswith(KICK_BAN_WORD_COMMAND.lower()):
                 await group_ban_words.handle_kick_ban_word()
+            # 处理全局违禁词管理
+            elif self.raw_message.lower().startswith(
+                ADD_GLOBAL_BAN_WORD_COMMAND.lower()
+            ):
+                await group_ban_words.add_global_ban_word()
+            elif self.raw_message.lower().startswith(
+                DELETE_GLOBAL_BAN_WORD_COMMAND.lower()
+            ):
+                await group_ban_words.delete_global_ban_word()
+            # 处理私聊复制违禁词
+            elif self.raw_message.lower().startswith(COPY_BAN_WORD_COMMAND.lower()):
+                await self.copy_ban_word_private()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊消息失败: {e}")
