@@ -5,16 +5,16 @@ import logger
 async def set_group_kick(websocket, group_id, user_id, reject_add_request=False):
     """
     设置群踢人
-    
+
     Args:
         websocket: WebSocket连接对象，用于与上游通信
         group_id (str): 群号
         user_id (str): 要踢出的用户ID
         reject_add_request (bool, optional): 是否拒绝此人的加群请求，默认为False
-        
+
     Returns:
         bool: 操作是否成功，True表示成功，False表示失败
-        
+
     Note:
         此函数通过WebSocket发送API请求到上游，由于WebSocket的特殊性，
         无法直接获取响应结果，需要通过echo字段在响应处理中获取结果
@@ -549,14 +549,23 @@ async def get_group_member_info(websocket, group_id, user_id, no_cache):
         return False
 
 
-async def get_group_member_list(websocket, group_id, no_cache):
+async def get_group_member_list(websocket, group_id, no_cache, note=None):
     """
     获取群成员列表
+
+    参数:
+        websocket: WebSocket连接
+        group_id (str): 群号,必需
+        no_cache (bool): 是否不使用缓存,必需
+        note (str): 备注,可选
+    返回:
+        bool: 操作是否成功
     """
     try:
         payload = {
             "action": "get_group_member_list",
             "params": {"group_id": group_id, "no_cache": no_cache},
+            "echo": f"get_group_member_list-{note}",
         }
         await websocket.send(json.dumps(payload))
         logger.info(f"[API]已执行获取群成员列表")
