@@ -348,48 +348,65 @@ class QaHandler:
                 return
 
             matcher = AdvancedFAQMatcher(self.group_id)
-            success_ids = []
-            fail_ids = []
+            success_results = []
+            fail_results = []
+
             for id_str in id_strs:
                 try:
                     qa_id = int(id_str)
                     result = matcher.delete_FAQ_pair(qa_id)
-                    if result:
-                        success_ids.append(str(qa_id))
+                    if result["success"]:
+                        success_results.append(
+                            {
+                                "id": qa_id,
+                                "question": (
+                                    result["data"]["question"] if result["data"] else ""
+                                ),
+                                "message": result["message"],
+                            }
+                        )
                     else:
-                        fail_ids.append(str(qa_id))
-                except Exception:
-                    fail_ids.append(str(id_str))
+                        fail_results.append({"id": qa_id, "message": result["message"]})
+                except ValueError:
+                    fail_results.append(
+                        {"id": id_str, "message": f'ID "{id_str}" 格式错误，必须为数字'}
+                    )
+                except Exception as e:
+                    fail_results.append(
+                        {
+                            "id": id_str,
+                            "message": f'删除ID "{id_str}" 时发生错误: {str(e)}',
+                        }
+                    )
 
             msg_list = [generate_reply_message(self.message_id)]
-            if success_ids:
-                msg_list.append(
-                    generate_text_message(
-                        "✅ 删除成功的ID：\n"
-                        "━━━━━━━━━━━━━━\n"
-                        f"{' '.join(success_ids)}\n"
-                        "━━━━━━━━━━━━━━\n"
-                        "⏳ 消息将在10秒后撤回，请及时保存"
-                    )
-                )
-            if fail_ids:
-                msg_list.append(
-                    generate_text_message(
-                        "❌ 删除失败的ID：\n"
-                        "━━━━━━━━━━━━━━\n"
-                        f"{' '.join(fail_ids)}\n"
-                        "━━━━━━━━━━━━━━\n"
-                        "⏳ 消息将在10秒后撤回，请及时保存"
-                    )
-                )
-            if not success_ids and not fail_ids:
-                msg_list.append(generate_text_message("未能识别要删除的问答对ID"))
+
+            if success_results:
+                success_msg = "✅ 删除成功：\n━━━━━━━━━━━━━━\n"
+                for result in success_results:
+                    success_msg += f"🆔 ID: {result['id']}\n"
+                    success_msg += f"🌟 问题: {result['question']}\n"
+                    success_msg += "━━━━━━━━━━━━━━\n"
+                msg_list.append(generate_text_message(success_msg))
+
+            if fail_results:
+                fail_msg = "❌ 删除失败：\n━━━━━━━━━━━━━━\n"
+                for result in fail_results:
+                    fail_msg += f"🆔 ID: {result['id']}\n"
+                    fail_msg += f"❗ 原因: {result['message']}\n"
+                    fail_msg += "━━━━━━━━━━━━━━\n"
+                msg_list.append(generate_text_message(fail_msg))
+
+            if not success_results and not fail_results:
+                msg_list.append(generate_text_message("未能处理任何问答对ID"))
+
+            msg_list.append(generate_text_message("⏳ 消息将在15秒后撤回，请及时保存"))
 
             await send_group_msg(
                 self.websocket,
                 self.group_id,
                 msg_list,
-                note="del_msg=10",
+                note="del_msg=15",
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理删除问答对命令失败: {e}")
@@ -569,7 +586,7 @@ class QaHandler:
             # 构建引导消息
             msg_parts = [
                 f"[CQ:reply,id={self.message_id}]",
-                f"🤔 匹配到你可能想问如下问题，请发送具体的问题或使用命令“{GET_FAQ}+空格+ID”进行咨询：\n",
+                f"🤔 匹配到你可能想问如下问题，请发送具体的问题或使用命令【{GET_FAQ}+空格+ID】进行咨询：\n",
                 "━━━━━━━━━━━━━━\n",
             ]
 

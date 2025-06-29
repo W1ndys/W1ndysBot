@@ -121,18 +121,53 @@ class FAQDatabaseManager:
         updated = self.cursor.rowcount > 0
         return updated
 
-    def delete_FAQ_pair(self, qa_id: int) -> bool:
+    def delete_FAQ_pair(self, qa_id: int) -> dict:
         """
         删除指定ID的问答对。
         参数:
             qa_id: int 问答对ID
         返回:
-            bool 是否删除成功
+            dict 包含删除结果的字典：
+            {
+                'success': bool,  # 是否删除成功
+                'message': str,   # 提示信息
+                'data': dict or None  # 被删除的问答对信息（如果存在）
+            }
         """
+        # 先检查问答对是否存在
+        self.cursor.execute(
+            f"SELECT id, question, answer FROM {self.table_name} WHERE id = ?", (qa_id,)
+        )
+        existing_pair = self.cursor.fetchone()
+
+        if not existing_pair:
+            return {
+                "success": False,
+                "message": f"问答对ID {qa_id} 不存在",
+                "data": None,
+            }
+
+        # 存在则执行删除
         self.cursor.execute(f"DELETE FROM {self.table_name} WHERE id = ?", (qa_id,))
         self.conn.commit()
+
         deleted = self.cursor.rowcount > 0
-        return deleted
+        if deleted:
+            return {
+                "success": True,
+                "message": f"问答对ID {qa_id} 删除成功",
+                "data": {
+                    "id": existing_pair[0],
+                    "question": existing_pair[1],
+                    "answer": existing_pair[2],
+                },
+            }
+        else:
+            return {
+                "success": False,
+                "message": f"问答对ID {qa_id} 删除失败",
+                "data": None,
+            }
 
     @classmethod
     def get_all_groups(cls) -> List[str]:

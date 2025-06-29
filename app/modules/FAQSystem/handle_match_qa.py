@@ -57,20 +57,16 @@ class AdvancedFAQMatcher:
             return result_id
         return None
 
-    def delete_FAQ_pair(self, FAQ_id: int) -> bool:
+    def delete_FAQ_pair(self, qa_id: int) -> dict:
         """
-        从内存和数据库中删除指定ID的问答对。
+        删除指定ID的问答对。
         参数:
-            FAQ_id: int 问答对ID
+            qa_id: int 问答对ID
         返回:
-            bool 是否删除成功
+            dict 包含删除结果的详细信息
         """
-        # 从内存中删除
-        self.FAQ_pairs = [(id, q, a) for id, q, a in self.FAQ_pairs if id != FAQ_id]
-        # 从数据库中删除
-        with FAQDatabaseManager(self.group_id) as db:
-            db.delete_FAQ_pair(FAQ_id)
-        return True
+        with FAQDatabaseManager(self.group_id) as db_manager:
+            return db_manager.delete_FAQ_pair(qa_id)
 
     def build_index(self):
         """
