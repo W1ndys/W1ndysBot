@@ -176,7 +176,7 @@ class GroupMessageHandler:
             answer, tokens, price, currency = client.parse_response(response)
 
             if answer:
-                summary_text = f"📊 {date_desc}聊天总结：\n\n{answer}\n\n💬 消息数：{len(messages_with_details)}\n🤖 Token消耗：{tokens}"
+                summary_text = f"📊 {date_desc}聊天总结：{answer}\n\n💬 消息数：{len(messages_with_details)}\n🤖 Token消耗：{tokens}"
                 await send_group_msg_with_cq(
                     self.websocket,
                     self.group_id,
