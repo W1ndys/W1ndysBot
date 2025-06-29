@@ -1,9 +1,9 @@
 [submodule "app/modules/QFNUExamRoomQuery"]
-	path = app/modules/QFNUExamRoomQuery
-	url = https://github.com/W1ndysBot/QFNUExamRoomQuery.git
+    path = app/modules/QFNUExamRoomQuery
+    url = git@github.com:W1ndysBot/QFNUExamRoomQuery.git
 [submodule "app/modules/QFNUFreeRoomFinder"]
-	path = app/modules/QFNUFreeRoomFinder
-	url = https://github.com/W1ndysBot/QFNUFreeRoomFinder.git
+    path = app/modules/QFNUFreeRoomFinder
+    url = git@github.com:W1ndysBot/QFNuFreeRoomFinder.git
 [submodule "app/modules/QFNUSelectCourseQuery"]
-	path = app/modules/QFNUSelectCourseQuery
-	url = https://github.com/W1ndysBot/QFNUSelectCourseQuery.git
+    path = app/modules/QFNUSelectCourseQuery
+    url = git@github.com:W1ndysBot/QFNUSelectCourseQuery.git
