@@ -201,10 +201,12 @@ cython_debug/
 .pypirc
 .cursorrules
 
+
+
+napcat/
+git-*.sh
 git-push-update-docs.sh
 clean_pycache.sh
 copy_db.sh
-ssh_remote_*.py
 run_test*.sh
-
-napcat/
+ssh_remote_*.py
