@@ -56,15 +56,37 @@ async def send_private_msg_with_cq(websocket, user_id, content, note=""):
 async def send_group_msg(websocket, group_id, message, note=""):
     """
     发送群聊消息，使用新的消息格式（消息段）
-    {
-        "type": "text",
-        "data": {"text": "消息内容"}
-    }
-    消息段可使用generate模块的函数生成
-    如需自动撤回，请在note参数中添加"del_msg=秒数"
-    如：del_msg=10
-    则note参数为：del_msg=10
-    https://napcat.apifox.cn/226799128e0
+
+    Args:
+        websocket: WebSocket连接对象，用于与onebot通信
+        group_id (int): 目标群号
+        message (str|dict|list): 消息内容，支持以下格式：
+            - str: 纯文本消息，会自动转换为消息段格式
+            - dict: 单个消息段对象，格式如 {"type": "text", "data": {"text": "消息内容"}}
+            - list: 消息段列表，包含多个消息段对象
+        note (str, optional): 附加说明，支持以下功能：
+            - "del_msg=秒数": 自动撤回消息，如 "del_msg=10" 表示10秒后撤回
+
+    Returns:
+        None
+
+    Raises:
+        Exception: 发送消息失败时抛出异常
+
+    Examples:
+        # 发送纯文本消息
+        await send_group_msg(websocket, 123456789, "Hello World")
+
+        # 发送消息段
+        await send_group_msg(websocket, 123456789, [{"type": "text", "data": {"text": "Hello"}}])
+
+        # 发送带撤回的消息
+        await send_group_msg(websocket, 123456789, "Hello", "del_msg=30")
+
+    Note:
+        消息段可使用generate模块的函数生成，如generate_text_message()、generate_at_message()等
+        函数会自动处理消息格式转换和换行符清理
+        参考文档：https://napcat.apifox.cn/226799128e0
     """
     try:
         # 检查message是否为字符串，如果是则转换为列表格式
