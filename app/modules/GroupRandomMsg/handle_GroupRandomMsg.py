@@ -33,6 +33,9 @@ async def send_group_random_msg(websocket, group_id):
             message_id = random_msg[0]
             message_content = random_msg[1]
 
+            # 把转义后的换行符还原
+            message_content = message_content.replace("\\n", "\n")
+
             # 格式化消息
             formatted_message = f"{message_content}（ID：{message_id}）"
 
