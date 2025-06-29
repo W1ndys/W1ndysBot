@@ -72,7 +72,7 @@ class MetaEventHandler:
                 for group_id in group_switches:
                     analyzer = QQMessageAnalyzer(group_id)
                     # 获取今日所有消息
-                    messages = analyzer.get_daily_messages_with_details()
+                    today_messages = analyzer.get_daily_messages_with_details()
                     # 生成词云和top10词汇
                     img_base64 = analyzer.generate_wordcloud_image_base64()
                     wordcloud_data, top10_words = analyzer.generate_daily_report()
@@ -99,9 +99,13 @@ class MetaEventHandler:
                         group_id,
                         messages,
                     )
+
+                    # 将消息转换为简洁的txt格式，减少token占用
+                    messages_txt = self._convert_messages_to_txt(today_messages)
+
                     # 发送Dify请求
                     response = await DifyClient().send_request(
-                        f"group_{group_id}", messages
+                        f"group_{group_id}", messages_txt
                     )
                     answer, tokens, price, currency = DifyClient.parse_response(
                         response
@@ -118,3 +122,32 @@ class MetaEventHandler:
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")
+
+    def _convert_messages_to_txt(self, messages):
+        """
+        将消息列表转换为简洁的txt格式，减少token占用
+        格式：时间 发言者: 内容
+        """
+        if not messages:
+            return "今日无聊天记录"
+
+        txt_lines = []
+        for msg in messages:
+            # 提取时间（只保留时分，去掉秒和日期）
+            time_str = msg["message_time"]
+            if " " in time_str:
+                time_part = time_str.split(" ")[1]  # 获取时间部分
+                time_part = time_part[:5]  # 只保留时:分
+            else:
+                time_part = time_str[:5]
+
+            # 保持发言者ID完整
+            sender = msg["sender_id"]
+
+            # 内容去除多余空白和换行
+            content = msg["message_content"].strip().replace("\n", " ")
+
+            # 组合成简洁格式：时间 发言者: 内容
+            txt_lines.append(f"{time_part} {sender}: {content}")
+
+        return "\n".join(txt_lines)
