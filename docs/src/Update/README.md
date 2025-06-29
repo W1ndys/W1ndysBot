@@ -7,6 +7,14 @@ icon: fa-solid fa-clipboard-list
 
 <!-- 只写改动内容，新增或删减功能之类的，不需要写增强了。。。改善了这种信息，时间越往前，越靠前 -->
 
+## 2025-06-29
+
+- **GroupManager**: 调整未活跃用户警告消息格式，增加额外换行符以提高可读性 ([e0eec02](https://github.com/W1ndys/W1ndysBot-dev/commit/e0eec02e1b7c471ea171c1800995a3569890c89d))
+- **GroupManager**: 新增扫描未活跃用户功能，支持自定义未活跃天数并发送警告消息 ([ca4e648](https://github.com/W1ndys/W1ndysBot-dev/commit/ca4e648809eae94ee52e367460ad4d1e8b16bdca))
+- **WordCloud**: 增加总结昨日聊天的功能，支持指定日期的聊天记录总结 ([db54f48](https://github.com/W1ndys/W1ndysBot-dev/commit/db54f48bb2a2e93dc06a6a039e1d0a60f63f1655))
+- **WordCloud**: 新增消息转换为简洁 txt 格式功能，优化消息处理以减少 token 占用 ([facb28c](https://github.com/W1ndys/W1ndysBot-dev/commit/facb28ceb4ddaa073b9a3dd506df7d57c3d2d375))
+- **FAQSystem**: 优化问答对删除功能，增强用户反馈，改进删除结果展示并调整消息撤回时间 ([538d61f](https://github.com/W1ndys/W1ndysBot-dev/commit/538d61f481379d6f6477ce26f67ce5033da7a447))
+
 ## 2025-06-28
 
 - **KeywordsReply**：修复关键词回复逻辑顺序，避免无回复时替换 rkey（[5af96a8](https://github.com/W1ndys/W1ndysBot-dev/commit/5af96a8)）
