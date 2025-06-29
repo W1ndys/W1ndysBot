@@ -111,7 +111,7 @@ class MetaEventHandler:
                         response
                     )
                     # 拼接消息字符串
-                    answer_message = f"{answer}\n\n"
+                    answer_message = f"{answer.strip()}\n\n"
                     answer_message += f"Token: {tokens}\n"
                     answer_message += f"Price: {price} {currency}\n"
                     # 发送Dify响应
