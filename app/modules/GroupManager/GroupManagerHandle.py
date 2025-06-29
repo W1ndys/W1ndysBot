@@ -3,8 +3,13 @@
 """
 
 import logger
-from . import MODULE_NAME, GROUP_RECALL_COMMAND
-from api.group import set_group_ban, set_group_kick, set_group_whole_ban
+from . import MODULE_NAME, GROUP_RECALL_COMMAND, SCAN_INACTIVE_USER_COMMAND
+from api.group import (
+    set_group_ban,
+    set_group_kick,
+    set_group_whole_ban,
+    get_group_member_list,
+)
 from api.message import send_group_msg, delete_msg
 from utils.generate import generate_text_message, generate_at_message
 import re
@@ -295,3 +300,26 @@ class GroupManagerHandle:
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]查询禁言排行榜失败: {e}")
+
+    async def handle_scan_inactive_user(self):
+        """
+        处理扫描未活跃用户
+        """
+        try:
+            # 解析时长参数
+            pattern = r"警告未活跃用户\s+(\d+)"
+            match = re.search(pattern, self.raw_message)
+            if match:
+                days = int(match.group(1))
+            else:
+                days = 30
+
+            # 发送获取群信息请求
+            await get_group_member_list(
+                self.websocket,
+                self.group_id,
+                False,
+                note=f"{SCAN_INACTIVE_USER_COMMAND}-days={days}",
+            )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]扫描未活跃用户失败: {e}")

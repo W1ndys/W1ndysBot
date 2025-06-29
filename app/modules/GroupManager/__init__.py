@@ -28,6 +28,7 @@ GROUP_ALL_UNBAN_COMMAND = "unbanall"  # 全员解禁命令
 GROUP_RECALL_COMMAND = "recall"  # 撤回消息命令
 GROUP_BAN_ME_COMMAND = "banme"  # 封禁自己命令
 GROUP_BAN_RANK_COMMAND = "banrank"  # 禁言排行榜命令
+SCAN_INACTIVE_USER_COMMAND = "警告未活跃用户"  # 警告未活跃用户
 # ------------------------------------------------------------
 
 COMMANDS = {
@@ -39,4 +40,5 @@ COMMANDS = {
     GROUP_RECALL_COMMAND: "撤回消息，直接回复需要被撤回的消息该命令即可",
     GROUP_BAN_ME_COMMAND: "封禁自己一段随机时间",
     GROUP_BAN_RANK_COMMAND: "查看禁言排行榜，展示个人和群内禁言记录",
+    SCAN_INACTIVE_USER_COMMAND: "警告未活跃用户，扫描未活跃用户并发送警告消息，格式：警告未活跃用户+未发言时间（单位：天），例如：警告未活跃用户 30",
 }

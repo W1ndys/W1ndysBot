@@ -9,6 +9,7 @@ from . import (
     SWITCH_NAME,
     GROUP_BAN_ME_COMMAND,
     GROUP_BAN_RANK_COMMAND,
+    SCAN_INACTIVE_USER_COMMAND,
 )
 import logger
 from core.menu_manager import MENU_COMMAND
@@ -105,6 +106,8 @@ class GroupMessageHandler:
                     await group_manager_handle.handle_kick()
                 elif GROUP_RECALL_COMMAND in self.raw_message:
                     await group_manager_handle.handle_recall()
+                elif self.raw_message.startswith(SCAN_INACTIVE_USER_COMMAND):
+                    await group_manager_handle.handle_scan_inactive_user()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
