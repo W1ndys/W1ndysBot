@@ -16,7 +16,7 @@ from .handle_match_qa import AdvancedFAQMatcher
 from api.message import send_group_msg, send_group_msg_with_cq, get_msg
 from utils.generate import generate_reply_message, generate_text_message
 import re
-from utils.replace_rkey import replace_rkey
+from core.nc_get_rkey import replace_rkey
 
 
 class QaHandler:

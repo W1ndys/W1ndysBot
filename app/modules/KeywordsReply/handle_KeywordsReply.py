@@ -8,7 +8,7 @@ from . import (
 from api.message import send_group_msg_with_cq, send_group_msg
 from utils.generate import generate_reply_message, generate_text_message
 from datetime import datetime
-from utils.replace_rkey import replace_rkey
+from core.nc_get_rkey import replace_rkey
 
 
 class HandleKeywordsReply:
