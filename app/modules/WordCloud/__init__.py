@@ -26,9 +26,13 @@ SET_DIFY_API_KEY = "设置Dify密钥"
 SUMMARIZE_CHAT = "总结聊天"
 """总结聊天的命令"""
 
+SUMMARIZE_YESTERDAY_CHAT = "总结昨日聊天"
+"""总结昨日聊天的命令"""
+
 COMMANDS = {
     GENERATE_WORD_CLOUD: "生成词云",
     SET_DIFY_API_KEY: "设置Dify密钥",
     SUMMARIZE_CHAT: "总结聊天",
+    SUMMARIZE_YESTERDAY_CHAT: "总结昨日聊天",
 }
 # ------------------------------------------------------------

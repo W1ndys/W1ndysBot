@@ -1,5 +1,11 @@
 import re
-from . import MODULE_NAME, SWITCH_NAME, GENERATE_WORD_CLOUD, SUMMARIZE_CHAT
+from . import (
+    MODULE_NAME,
+    SWITCH_NAME,
+    GENERATE_WORD_CLOUD,
+    SUMMARIZE_CHAT,
+    SUMMARIZE_YESTERDAY_CHAT,
+)
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
@@ -9,7 +15,7 @@ from utils.generate import (
     generate_image_message,
     generate_reply_message,
 )
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from .WordCloud import QQMessageAnalyzer
 from .LLM import DifyClient
 from core.menu_manager import MenuManager
@@ -108,48 +114,13 @@ class GroupMessageHandler:
 
             # 如果消息是总结聊天命令，则调用LLM总结
             if self.raw_message.lower() == SUMMARIZE_CHAT.lower():
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [generate_text_message("正在总结今日聊天内容，请稍候...")],
-                )
+                await self._handle_chat_summary(analyzer, query_date=None)
+                return
 
-                # 获取今日聊天消息
-                messages_with_details = analyzer.get_daily_messages_with_details()
-                logger.info(f"[{MODULE_NAME}]今日聊天消息: {messages_with_details}")
-                if not messages_with_details:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [generate_text_message("今日暂无聊天记录，无法生成总结。")],
-                    )
-                    return
-
-                # 构建聊天记录文本
-                chat_text = self._format_chat_for_summary(messages_with_details)
-                logger.info(f"[{MODULE_NAME}]格式化后的聊天记录: {chat_text}")
-                # 调用LLM生成总结
-                client = DifyClient()
-
-                response = await client.send_request(self.user_id, str(chat_text))
-                answer, tokens, price, currency = client.parse_response(response)
-                if answer:
-                    summary_text = f"{answer}\n\n💬 消息数：{len(messages_with_details)}\n🤖 Token消耗：{tokens}"
-                    await send_group_msg_with_cq(
-                        self.websocket,
-                        self.group_id,
-                        summary_text,
-                    )
-                else:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_text_message(
-                                "聊天总结失败，请检查Dify API配置或稍后重试。"
-                            )
-                        ],
-                    )
+            # 如果消息是总结昨日聊天命令，则调用LLM总结昨天的聊天
+            if self.raw_message.lower() == SUMMARIZE_YESTERDAY_CHAT.lower():
+                yesterday = date.today() - timedelta(days=1)
+                await self._handle_chat_summary(analyzer, query_date=yesterday)
                 return
 
             analyzer.add_message(self.raw_message, self.user_id, self.formatted_time)
@@ -159,6 +130,94 @@ class GroupMessageHandler:
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
+
+    async def _handle_chat_summary(self, analyzer, query_date=None):
+        """
+        处理聊天总结请求
+
+        Args:
+            analyzer: QQMessageAnalyzer实例
+            query_date: 查询日期，None表示今天，其他表示指定日期
+        """
+        try:
+            # 确定日期描述
+            if query_date is None:
+                date_desc = "今日"
+                target_date = date.today()
+            else:
+                date_desc = f"{query_date.strftime('%Y年%m月%d日')}"
+                target_date = query_date
+
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [generate_text_message(f"正在总结{date_desc}聊天内容，请稍候...")],
+            )
+
+            # 获取指定日期的聊天消息
+            messages_with_details = analyzer.get_daily_messages_with_details(query_date)
+            logger.info(f"[{MODULE_NAME}]{date_desc}聊天消息: {messages_with_details}")
+
+            if not messages_with_details:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [generate_text_message(f"{date_desc}暂无聊天记录，无法生成总结。")],
+                )
+                return
+
+            # 将消息转换为简洁的txt格式，减少token占用
+            chat_text = self._convert_messages_to_txt(messages_with_details)
+            logger.info(f"[{MODULE_NAME}]格式化后的{date_desc}聊天记录: {chat_text}")
+
+            # 调用LLM生成总结
+            client = DifyClient()
+            response = await client.send_request(self.user_id, chat_text)
+            answer, tokens, price, currency = client.parse_response(response)
+
+            if answer:
+                summary_text = f"📊 {date_desc}聊天总结：\n\n{answer}\n\n💬 消息数：{len(messages_with_details)}\n🤖 Token消耗：{tokens}"
+                await send_group_msg_with_cq(
+                    self.websocket,
+                    self.group_id,
+                    summary_text,
+                )
+            else:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_text_message(
+                            f"{date_desc}聊天总结失败，请检查Dify API配置或稍后重试。"
+                        )
+                    ],
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理聊天总结失败: {e}")
+
+    def _convert_messages_to_txt(self, messages):
+        """
+        将消息列表转换为简洁的txt格式，减少token占用
+        格式：时间 发言者: 内容
+        """
+        if not messages:
+            return "无聊天记录"
+
+        txt_lines = []
+        for msg in messages:
+            # 保持完整时间格式
+            time_str = msg["message_time"]
+
+            # 保持发言者ID完整
+            sender = msg["sender_id"]
+
+            # 内容去除多余空白和换行
+            content = msg["message_content"].strip().replace("\n", " ")
+
+            # 组合成简洁格式：时间 发言者: 内容
+            txt_lines.append(f"{time_str} {sender}: {content}")
+
+        return "\n".join(txt_lines)
 
     def _format_chat_for_summary(self, messages_with_details):
         """
