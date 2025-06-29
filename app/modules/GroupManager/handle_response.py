@@ -72,7 +72,7 @@ class ResponseHandler:
 
                 message.append(
                     generate_text_message(
-                        f"\n以上用户{days}天未发言，请保持活跃，长时间未发言可能会被自动移出群聊，请及时冒泡"
+                        f"\n\n\n以上用户{days}天未发言，请保持活跃，长时间未发言可能会被自动移出群聊，请及时冒泡"
                     )
                 )
 
