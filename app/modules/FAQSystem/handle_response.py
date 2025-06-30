@@ -53,7 +53,7 @@ class ResponseHandler:
                             generate_text_message(
                                 "━━━━━━━━━━━━━━\n"
                                 f"🌟 问题：{question}\n"
-                                f"💡 答案：{answer}\n"
+                                f"💡 {answer}\n"
                                 f"🆔 问答对ID：{str(result_id)}\n"
                                 "━━━━━━━━━━━━━━\n"
                             ),

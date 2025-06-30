@@ -255,7 +255,7 @@ class QaHandler:
                                 generate_text_message(
                                     "━━━━━━━━━━━━━━\n"
                                     f"🌟 问题：{question}\n"
-                                    f"💡 答案：{answer}\n"
+                                    f"💡 {answer}\n"
                                     f"🆔 问答对ID：{str(result_id)}\n"
                                     "━━━━━━━━━━━━━━\n"
                                 ),
@@ -275,7 +275,7 @@ class QaHandler:
                                 generate_text_message(
                                     "━━━━━━━━━━━━━━\n"
                                     f"🌟 问题：{question}\n"
-                                    f"💡 答案：{answer}\n"
+                                    f"💡 {answer}\n"
                                     f"🆔 问答对ID：{str(result_id)}\n"
                                     "━━━━━━━━━━━━━━\n"
                                 ),
@@ -461,7 +461,7 @@ class QaHandler:
                         f"━━━━━━━━━━━━━━\n"
                         f"🌟 问题：{question}\n"
                         f"━━━━━━━━━━━━━━\n"
-                        f"💡 答案：{answer}\n"
+                        f"💡 {answer}\n"
                         f"━━━━━━━━━━━━━━\n"
                         f"🆔 ID：{qa_id}\n"
                         f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存",
@@ -551,26 +551,29 @@ class QaHandler:
 
     async def _send_direct_answer(self, orig_question, answer, score, qa_id):
         """发送直接答案回复"""
-        if answer is not None:
-            # 如果答案中有被转义的换行，则替换为实际的换行
-            answer = re.sub(r"\\n", "\n", answer)
+        try:
+            if answer is not None:
+                # 如果答案中有被转义的换行，则替换为实际的换行
+                answer = re.sub(r"\\n", "\n", answer)
 
-            # 如果答案中有图片（包含rkey），则替换为本地缓存的rkey
-            answer = replace_rkey(answer)
+                # 如果答案中有图片（包含rkey），则替换为本地缓存的rkey
+                answer = replace_rkey(answer)
 
-            # 直接回复答案（不显示原问题和相似度）
-            await send_group_msg_with_cq(
-                self.websocket,
-                self.group_id,
-                f"[CQ:reply,id={self.message_id}]"
-                f"🌟 问题：{orig_question}\n"
-                f"━━━━━━━━━━━━━━\n"
-                f"💡 答案：{answer}\n"
-                f"━━━━━━━━━━━━━━\n"
-                f"📊 相似度：{score:.2f} 🆔ID:{qa_id}\n"
-                f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存",
-                note=f"del_msg={DELETE_TIME}",
-            )
+                # 直接回复答案（不显示原问题和相似度）
+                await send_group_msg_with_cq(
+                    self.websocket,
+                    self.group_id,
+                    f"[CQ:reply,id={self.message_id}]"
+                    f"🌟 问题：{orig_question}\n"
+                    f"━━━━━━━━━━━━━━\n"
+                    f"💡 {answer}\n"
+                    f"━━━━━━━━━━━━━━\n"
+                    f"📊 相似度：{score:.2f} 🆔ID:{qa_id}\n"
+                    f"⏳ 本消息将在{DELETE_TIME}秒后撤回，请及时保存",
+                    note=f"del_msg={DELETE_TIME}",
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]发送直接答案失败: {e}")
 
     async def _send_question_suggestions(self, matcher):
         """发送相关问题引导"""
