@@ -137,10 +137,12 @@ async def handle_events(websocket, msg):
             if res:
                 del_time = int(res.group(1))
                 message_id = msg.get("data", {}).get("message_id")
+
                 if del_time > 120:  # 只对超过120秒的进行存储
                     add_del_msg_task(message_id, del_time)
                     logger.success(f"[Core]待撤回消息已存储到本地: 消息 {message_id}")
-                    # 新开一个线程，定时撤回消息
-                    asyncio.create_task(del_self_msg(websocket, message_id, del_time))
+
+                # 无论是否存储，都创建撤回任务
+                asyncio.create_task(del_self_msg(websocket, message_id, del_time))
     except Exception as e:
         logger.error(f"自动撤回发送的消息失败: {e}")
