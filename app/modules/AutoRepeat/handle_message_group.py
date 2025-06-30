@@ -86,7 +86,7 @@ class GroupMessageHandler:
             # 随机复读消息内容
             if random.random() < self.repeat_probability:
                 await send_group_msg_with_cq(
-                    self.websocket, self.group_id, self.raw_message, note="del_msg=120"
+                    self.websocket, self.group_id, self.raw_message, note="del_msg=7200"
                 )
                 logger.info(
                     f"[{MODULE_NAME}]群聊复读: {self.group_id} {self.nickname}({self.user_id})"
