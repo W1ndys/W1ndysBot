@@ -85,11 +85,31 @@ class GroupMessageHandler:
 
             # 随机复读消息内容
             if random.random() < self.repeat_probability:
-                await send_group_msg_with_cq(
-                    self.websocket, self.group_id, self.raw_message, note="del_msg=7200"
+                # 检查是否为纯文本消息
+                is_pure_text = (
+                    all(segment.get("type") == "text" for segment in self.message)
+                    if isinstance(self.message, list)
+                    else False
                 )
-                logger.info(
-                    f"[{MODULE_NAME}]群聊复读: {self.group_id} {self.nickname}({self.user_id})"
+
+                repeat_message = self.raw_message
+
+                # 如果是纯文本且随机到50%概率，则打乱顺序
+                if is_pure_text and random.random() < 0.5:
+                    # 将文本转换为字符列表并打乱
+                    chars = list(self.raw_message)
+                    random.shuffle(chars)
+                    repeat_message = "".join(chars)
+                    logger.info(
+                        f"[{MODULE_NAME}]群聊打乱复读: {self.group_id} {self.nickname}({self.user_id})"
+                    )
+                else:
+                    logger.info(
+                        f"[{MODULE_NAME}]群聊原样复读: {self.group_id} {self.nickname}({self.user_id})"
+                    )
+
+                await send_group_msg_with_cq(
+                    self.websocket, self.group_id, repeat_message
                 )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
