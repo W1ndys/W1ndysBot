@@ -6,6 +6,7 @@ from api.message import send_group_msg, send_group_msg_with_cq
 from utils.generate import generate_image_message, generate_text_message
 from .WordCloud import QQMessageAnalyzer
 from .LLM import DifyClient
+import asyncio  # 添加这个导入
 
 
 class MetaEventHandler:
@@ -68,11 +69,17 @@ class MetaEventHandler:
                 # 获取所有开启的群聊开关
                 group_switches = get_all_enabled_groups(MODULE_NAME)
                 logger.info(f"[{MODULE_NAME}]所有开启的群聊开关: {group_switches}")
-                # 遍历所有开启的群聊开关，生成群词云和top10词汇
+
+                # 第一步：先遍历所有群，发送词云
+                group_messages_data = {}  # 存储每个群的消息数据，用于后续AI处理
+
                 for group_id in group_switches:
                     analyzer = QQMessageAnalyzer(group_id)
                     # 获取今日所有消息
                     today_messages = analyzer.get_daily_messages_with_details()
+                    # 存储消息数据供后续AI处理使用
+                    group_messages_data[group_id] = today_messages
+
                     # 生成词云和top10词汇
                     img_base64 = analyzer.generate_wordcloud_image_base64()
                     wordcloud_data, top10_words = analyzer.generate_daily_report()
@@ -100,28 +107,40 @@ class MetaEventHandler:
                         messages,
                     )
 
-                    # 将消息转换为简洁的txt格式，减少token占用
-                    messages_txt = self._convert_messages_to_txt(today_messages)
+                # 第二步：并发处理所有群的AI总结
+                ai_tasks = []
+                for group_id, today_messages in group_messages_data.items():
+                    task = self._process_ai_summary(group_id, today_messages)
+                    ai_tasks.append(task)
 
-                    # 发送Dify请求
-                    response = await DifyClient().send_request(
-                        f"group_{group_id}", messages_txt
-                    )
-                    answer, tokens, price, currency = DifyClient.parse_response(
-                        response
-                    )
-                    # 拼接消息字符串
-                    answer_message = f"{answer.strip()}\n\n"
-                    answer_message += f"Token: {tokens}\n"
-                    answer_message += f"Price: {price} {currency}\n"
-                    # 发送Dify响应
-                    await send_group_msg_with_cq(
-                        self.websocket,
-                        group_id,
-                        answer,
-                    )
+                # 并发执行所有AI总结任务
+                if ai_tasks:
+                    await asyncio.gather(*ai_tasks)
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")
+
+    async def _process_ai_summary(self, group_id, today_messages):
+        """
+        处理单个群的AI总结
+        """
+        try:
+            # 将消息转换为简洁的txt格式，减少token占用
+            messages_txt = self._convert_messages_to_txt(today_messages)
+
+            # 发送Dify请求
+            response = await DifyClient().send_request(
+                f"group_{group_id}", messages_txt
+            )
+            answer, tokens, price, currency = DifyClient.parse_response(response)
+            # 发送Dify响应
+            await send_group_msg_with_cq(
+                self.websocket,
+                group_id,
+                answer,
+            )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]群{group_id}的AI总结处理失败: {e}")
 
     def _convert_messages_to_txt(self, messages):
         """
