@@ -1,17 +1,22 @@
 #!/bin/bash
 
+# 检查Python是否安装
+if ! which python3 > /dev/null 2>&1
+then
+    echo "Python3 未安装，请先安装 Python3。"
+    exit 1
+fi
+
 # 检查uv是否安装
 if ! which uv > /dev/null 2>&1
 then
-    echo "uv 未安装，正在安装 uv..."
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    # 重新加载环境变量
-    export PATH="$HOME/.cargo/bin:$PATH"
+    echo "uv 未安装，正在使用 pip 安装 uv..."
+    python3 -m pip install uv
     
     # 再次检查uv是否安装成功
     if ! which uv > /dev/null 2>&1
     then
-        echo "uv 安装失败，请手动安装 uv。"
+        echo "uv 安装失败，请检查 pip 是否正常工作。"
         exit 1
     fi
 fi

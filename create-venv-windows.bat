@@ -1,23 +1,24 @@
 @echo off
 chcp 65001
 
+:: 检查Python是否安装
+where python >nul 2>nul
+if %errorlevel% neq 0 (
+    echo Python 未安装，请先安装 Python。
+    pause
+    exit /b
+)
+
 :: 检查uv是否安装
 where uv >nul 2>nul
 if %errorlevel% neq 0 (
-    echo uv 未安装，正在安装 uv...
-    powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-    
-    :: 刷新环境变量
-    call refreshenv.exe >nul 2>nul || (
-        echo 请重新打开命令提示符以使 uv 生效，或手动将 uv 添加到 PATH。
-        pause
-        exit /b
-    )
+    echo uv 未安装，正在使用 pip 安装 uv...
+    python -m pip install uv
     
     :: 再次检查uv是否安装成功
     where uv >nul 2>nul
     if %errorlevel% neq 0 (
-        echo uv 安装失败，请手动安装 uv 或重新打开命令提示符。
+        echo uv 安装失败，请检查 pip 是否正常工作。
         pause
         exit /b
     )
@@ -28,7 +29,7 @@ echo 正在使用 uv 创建虚拟环境...
 uv venv
 
 :: 激活Python虚拟环境
-call venv\Scripts\activate
+call .venv\Scripts\activate
 
 :: 使用uv安装requirements.txt中的包
 if exist requirements.txt (
