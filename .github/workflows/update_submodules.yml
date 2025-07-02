@@ -1,23 +1,39 @@
 name: Update Submodules
 on:
   schedule:
-    - cron: "0 0 * * *"  # 建议改为每天一次
+    - cron: "0 0 * * *"  # 每天运行一次
   workflow_dispatch:
+
 jobs:
   update_sdk:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          submodules: recursive
+          token: ${{ secrets.PAT_TOKEN }}
+          submodules: false
+
+      - name: Setup Git credentials for submodules
+        run: |
+          git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "git@github.com:"
+          git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
 
       - name: Update submodules
         run: |
+          git submodule update --init --remote --recursive
+
+      - name: Configure git for commit
+        run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git submodule update --init --remote
+
+      - name: Commit and push changes
+        run: |
           git add .
-          git commit -m "Update submodules" || exit 0
-          git push || exit 0
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update submodules [automated]"
+            git push
+          fi
