@@ -509,3 +509,54 @@ class GroupManagerHandle:
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]删除宵禁设置失败: {e}")
+
+    async def handle_cancel_curfew(self):
+        """
+        处理取消宵禁设置
+        """
+        try:
+            with DataManager() as dm:
+                # 先检查是否有宵禁设置
+                settings = dm.get_curfew_settings(self.group_id)
+
+                if settings is None:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [generate_text_message("ℹ️ 该群尚未设置宵禁时间，无需取消")],
+                        note="del_msg=60",
+                    )
+                    return
+
+                # 删除宵禁设置
+                success = dm.delete_curfew_settings(self.group_id)
+
+                if success:
+                    start_time, end_time, is_enabled = settings
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_text_message(
+                                f"✅ 宵禁设置已成功取消！\n"
+                                f"🗑️ 已删除配置：{start_time} - {end_time}\n"
+                                f"📋 宵禁功能已彻底关闭"
+                            )
+                        ],
+                        note="del_msg=60",
+                    )
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [generate_text_message("❌ 取消宵禁设置失败，请稍后重试")],
+                        note="del_msg=60",
+                    )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]取消宵禁设置失败: {e}")
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [generate_text_message(f"❌ 取消宵禁失败：{str(e)}")],
+                note="del_msg=60",
+            )

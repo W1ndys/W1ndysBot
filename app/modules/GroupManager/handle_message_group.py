@@ -11,6 +11,9 @@ from . import (
     GROUP_BAN_RANK_COMMAND,
     SCAN_INACTIVE_USER_COMMAND,
     GROUP_SET_CURFEW_COMMAND,
+    GROUP_CANCEL_CURFEW_COMMAND,
+    GROUP_TOGGLE_CURFEW_COMMAND,
+    GROUP_QUERY_CURFEW_COMMAND,
 )
 import logger
 from core.menu_manager import MENU_COMMAND
@@ -87,6 +90,11 @@ class GroupMessageHandler:
                 await group_manager_handle.handle_mute_rank()
                 return
 
+            # 处理查询宵禁命令 - 所有用户都可使用
+            if self.raw_message.startswith(GROUP_QUERY_CURFEW_COMMAND):
+                await group_manager_handle.handle_query_curfew()
+                return
+
             # 处理群消息
             if self.raw_message.startswith(GROUP_BAN_ME_COMMAND):
                 await group_manager_handle.handle_ban_me()
@@ -111,6 +119,10 @@ class GroupMessageHandler:
                     await group_manager_handle.handle_scan_inactive_user()
                 elif self.raw_message.startswith(GROUP_SET_CURFEW_COMMAND):
                     await group_manager_handle.handle_set_curfew()
+                elif self.raw_message.startswith(GROUP_CANCEL_CURFEW_COMMAND):
+                    await group_manager_handle.handle_cancel_curfew()
+                elif self.raw_message.startswith(GROUP_TOGGLE_CURFEW_COMMAND):
+                    await group_manager_handle.handle_toggle_curfew()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")

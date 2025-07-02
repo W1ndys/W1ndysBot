@@ -30,6 +30,9 @@ GROUP_BAN_ME_COMMAND = "banme"  # 封禁自己命令
 GROUP_BAN_RANK_COMMAND = "banrank"  # 禁言排行榜命令
 SCAN_INACTIVE_USER_COMMAND = "警告未活跃用户"  # 警告未活跃用户
 GROUP_SET_CURFEW_COMMAND = "设置宵禁"  # 设置宵禁命令
+GROUP_CANCEL_CURFEW_COMMAND = "取消宵禁"  # 取消宵禁命令
+GROUP_TOGGLE_CURFEW_COMMAND = "切换宵禁"  # 切换宵禁开关命令
+GROUP_QUERY_CURFEW_COMMAND = "查询宵禁"  # 查询宵禁状态命令
 # ------------------------------------------------------------
 
 COMMANDS = {
@@ -43,4 +46,7 @@ COMMANDS = {
     GROUP_BAN_RANK_COMMAND: "查看禁言排行榜，展示个人和群内禁言记录",
     SCAN_INACTIVE_USER_COMMAND: "警告未活跃用户，格式：警告未活跃用户+天数。例如：警告未活跃用户 30",
     GROUP_SET_CURFEW_COMMAND: f"设置宵禁时间，格式：{GROUP_SET_CURFEW_COMMAND} 开始时间 结束时间（24小时制），如 {GROUP_SET_CURFEW_COMMAND} 23:00 06:00，宵禁期间自动禁言全体成员，结束后自动解除。",
+    GROUP_CANCEL_CURFEW_COMMAND: "取消当前群的宵禁设置，将删除所有宵禁配置",
+    GROUP_TOGGLE_CURFEW_COMMAND: "切换宵禁功能的开启/关闭状态，不删除配置",
+    GROUP_QUERY_CURFEW_COMMAND: "查询当前群的宵禁设置和状态",
 }
