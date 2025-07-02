@@ -21,7 +21,7 @@ echo "正在使用 uv 创建虚拟环境..."
 uv venv
 
 # 激活虚拟环境
-. .venv/bin/activate
+source .venv/bin/activate
 
 # 使用uv安装requirements.txt中的包
 if [ -f "requirements.txt" ]; then
