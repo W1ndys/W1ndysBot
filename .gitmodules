@@ -1,0 +1,3 @@
+[submodule "app/modules/QFNU-All-In-One"]
+	path = app/modules/QFNU-All-In-One
+	url = git@github.com:W1ndysBot/QFNU-All-In-One.git
