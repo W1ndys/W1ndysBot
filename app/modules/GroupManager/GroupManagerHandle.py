@@ -11,7 +11,11 @@ from api.group import (
     get_group_member_list,
 )
 from api.message import send_group_msg, delete_msg
-from utils.generate import generate_text_message, generate_at_message
+from utils.generate import (
+    generate_text_message,
+    generate_at_message,
+    generate_reply_message,
+)
 import re
 import random
 from .data_manager import DataManager
@@ -323,3 +327,185 @@ class GroupManagerHandle:
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]扫描未活跃用户失败: {e}")
+
+    async def handle_set_curfew(self):
+        """
+        处理设置宵禁
+        格式：{command} 开始时间 结束时间（24小时制），如 {command} 23:00 06:00
+        """
+        try:
+            # 修改正则表达式以匹配起始时间和终止时间
+            pattern = r"设置宵禁\s+(\d{1,2}:\d{2})\s+(\d{1,2}:\d{2})"
+            match = re.search(pattern, self.raw_message)
+
+            if not match:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_text_message(
+                            "❌ 格式错误！请使用：设置宵禁 开始时间 结束时间\n示例：设置宵禁 23:00 06:00"
+                        )
+                    ],
+                    note="del_msg=60",
+                )
+                return
+
+            start_time = match.group(1)  # 起始时间，如 "23:00"
+            end_time = match.group(2)  # 终止时间，如 "06:00"
+
+            # 验证时间格式是否正确
+            def validate_time(time_str):
+                try:
+                    hour, minute = map(int, time_str.split(":"))
+                    return 0 <= hour <= 23 and 0 <= minute <= 59
+                except ValueError:
+                    return False
+
+            if not validate_time(start_time) or not validate_time(end_time):
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(
+                            "❌ 时间格式错误！请使用24小时制，如：23:00"
+                        ),
+                    ],
+                    note="del_msg=60",
+                )
+                return
+
+            # 保存宵禁设置到数据库
+            with DataManager() as dm:
+                success = dm.set_curfew_settings(
+                    self.group_id, start_time, end_time, True
+                )
+
+                if success:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_text_message(
+                                f"✅ 宵禁时间设置成功！\n🕐 开始时间：{start_time}\n🕕 结束时间：{end_time}\n📋 状态：已启用"
+                            )
+                        ],
+                        note="del_msg=60",
+                    )
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [generate_text_message("❌ 宵禁设置保存失败，请稍后重试")],
+                        note="del_msg=60",
+                    )
+
+        except Exception as e:
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [generate_text_message(f"❌ 设置宵禁失败：{str(e)}")],
+                note="del_msg=60",
+            )
+
+    async def handle_toggle_curfew(self):
+        """
+        处理切换宵禁开关
+        """
+        try:
+            with DataManager() as dm:
+                new_status = dm.toggle_curfew_status(self.group_id)
+
+                if new_status is None:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_text_message(
+                                "❌ 该群尚未设置宵禁时间，请先使用 '设置宵禁' 命令"
+                            )
+                        ],
+                        note="del_msg=60",
+                    )
+                else:
+                    status_text = "已启用" if new_status else "已禁用"
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_text_message(
+                                f"✅ 宵禁功能切换成功！\n📋 当前状态：{status_text}"
+                            )
+                        ],
+                        note="del_msg=60",
+                    )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]切换宵禁状态失败: {e}")
+
+    async def handle_query_curfew(self):
+        """
+        处理查询宵禁设置
+        """
+        try:
+            with DataManager() as dm:
+                settings = dm.get_curfew_settings(self.group_id)
+
+                if settings is None:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [generate_text_message("ℹ️ 该群尚未设置宵禁时间")],
+                        note="del_msg=60",
+                    )
+                else:
+                    start_time, end_time, is_enabled = settings
+                    status_text = "已启用" if is_enabled else "已禁用"
+                    is_current_curfew = dm.is_curfew_time(self.group_id)
+                    current_status = (
+                        "🌙 当前在宵禁时间内"
+                        if is_current_curfew
+                        else "☀️ 当前不在宵禁时间内"
+                    )
+
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_text_message(
+                                f"📋 当前宵禁设置：\n"
+                                f"🕐 开始时间：{start_time}\n"
+                                f"🕕 结束时间：{end_time}\n"
+                                f"📊 状态：{status_text}\n"
+                                f"{current_status}"
+                            )
+                        ],
+                        note="del_msg=60",
+                    )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]查询宵禁设置失败: {e}")
+
+    async def handle_delete_curfew(self):
+        """
+        处理删除宵禁设置
+        """
+        try:
+            with DataManager() as dm:
+                success = dm.delete_curfew_settings(self.group_id)
+
+                if success:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [generate_text_message("✅ 宵禁设置已删除")],
+                        note="del_msg=60",
+                    )
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [generate_text_message("❌ 删除宵禁设置失败")],
+                        note="del_msg=60",
+                    )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]删除宵禁设置失败: {e}")
