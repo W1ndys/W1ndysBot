@@ -1,5 +1,5 @@
 #!/bin/bash
-dos2unix "$0"
+
 # 进入当前目录的app目录
 cd "$(dirname "$0")/app"
 
