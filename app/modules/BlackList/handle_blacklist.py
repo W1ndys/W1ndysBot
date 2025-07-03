@@ -52,17 +52,38 @@ class BlackListHandle:
 
             if not user_ids:
                 logger.error(f"[{MODULE_NAME}]未找到有效的QQ号")
+                reply_message = "请提供有效的QQ号或@用户"
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(reply_message),
+                        generate_text_message(reply_message),
+                    ],
+                    note="del_msg=10",
+                )
                 return False
 
             # 添加黑名单
-            success_count = []
+            success_users = []
+            already_exists_users = []
+
             with BlackListDataManager() as data_manager:
                 for user_id in user_ids:
                     if data_manager.add_blacklist(self.group_id, user_id):
-                        success_count.append(user_id)
+                        success_users.append(user_id)
+                    else:
+                        already_exists_users.append(user_id)
 
-            # 发送成功消息
-            reply_message = f"已将以下用户添加到黑名单：{', '.join(success_count)}"
+            # 构建反馈消息
+            reply_parts = []
+            if success_users:
+                reply_parts.append(f"成功添加到黑名单：{', '.join(success_users)}")
+            if already_exists_users:
+                reply_parts.append(f"已在黑名单中：{', '.join(already_exists_users)}")
+
+            reply_message = "\n".join(reply_parts) if reply_parts else "操作完成"
+
             await send_group_msg(
                 self.websocket,
                 self.group_id,
@@ -110,17 +131,39 @@ class BlackListHandle:
 
             if not user_ids:
                 logger.error(f"[{MODULE_NAME}]未找到有效的QQ号")
+                reply_message = "请提供有效的QQ号或@用户"
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(reply_message),
+                        generate_text_message(reply_message),
+                    ],
+                    note="del_msg=10",
+                )
                 return False
 
             # 移除黑名单
-            success_count = []
+            success_users = []
+            not_exists_users = []
+
             with BlackListDataManager() as data_manager:
                 for user_id in user_ids:
-                    if data_manager.remove_blacklist(self.group_id, user_id):
-                        success_count.append(user_id)
+                    if data_manager.is_in_blacklist(self.group_id, user_id):
+                        if data_manager.remove_blacklist(self.group_id, user_id):
+                            success_users.append(user_id)
+                    else:
+                        not_exists_users.append(user_id)
 
-            # 发送成功消息
-            reply_message = f"已将以下用户从黑名单中移除：{', '.join(success_count)}"
+            # 构建反馈消息
+            reply_parts = []
+            if success_users:
+                reply_parts.append(f"成功从黑名单中移除：{', '.join(success_users)}")
+            if not_exists_users:
+                reply_parts.append(f"不在黑名单中：{', '.join(not_exists_users)}")
+
+            reply_message = "\n".join(reply_parts) if reply_parts else "操作完成"
+
             await send_group_msg(
                 self.websocket,
                 self.group_id,
@@ -248,17 +291,40 @@ class BlackListHandle:
 
             if not user_ids:
                 logger.error(f"[{MODULE_NAME}]未找到有效的QQ号")
+                reply_message = "请提供有效的QQ号或@用户"
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(reply_message),
+                        generate_text_message(reply_message),
+                    ],
+                    note="del_msg=10",
+                )
                 return False
 
             # 添加全局黑名单
-            success_count = []
+            success_users = []
+            already_exists_users = []
+
             with BlackListDataManager() as data_manager:
                 for user_id in user_ids:
                     if data_manager.add_global_blacklist(user_id):
-                        success_count.append(user_id)
+                        success_users.append(user_id)
+                    else:
+                        already_exists_users.append(user_id)
 
-            # 发送成功消息
-            reply_message = f"已将以下用户添加到全局黑名单：{', '.join(success_count)}"
+            # 构建反馈消息
+            reply_parts = []
+            if success_users:
+                reply_parts.append(f"成功添加到全局黑名单：{', '.join(success_users)}")
+            if already_exists_users:
+                reply_parts.append(
+                    f"已在全局黑名单中：{', '.join(already_exists_users)}"
+                )
+
+            reply_message = "\n".join(reply_parts) if reply_parts else "操作完成"
+
             await send_group_msg(
                 self.websocket,
                 self.group_id,
@@ -306,19 +372,41 @@ class BlackListHandle:
 
             if not user_ids:
                 logger.error(f"[{MODULE_NAME}]未找到有效的QQ号")
+                reply_message = "请提供有效的QQ号或@用户"
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(reply_message),
+                        generate_text_message(reply_message),
+                    ],
+                    note="del_msg=10",
+                )
                 return False
 
             # 移除全局黑名单
-            success_count = []
+            success_users = []
+            not_exists_users = []
+
             with BlackListDataManager() as data_manager:
                 for user_id in user_ids:
-                    if data_manager.remove_global_blacklist(user_id):
-                        success_count.append(user_id)
+                    if data_manager.is_in_global_blacklist(user_id):
+                        if data_manager.remove_global_blacklist(user_id):
+                            success_users.append(user_id)
+                    else:
+                        not_exists_users.append(user_id)
 
-            # 发送成功消息
-            reply_message = (
-                f"已将以下用户从全局黑名单中移除：{', '.join(success_count)}"
-            )
+            # 构建反馈消息
+            reply_parts = []
+            if success_users:
+                reply_parts.append(
+                    f"成功从全局黑名单中移除：{', '.join(success_users)}"
+                )
+            if not_exists_users:
+                reply_parts.append(f"不在全局黑名单中：{', '.join(not_exists_users)}")
+
+            reply_message = "\n".join(reply_parts) if reply_parts else "操作完成"
+
             await send_group_msg(
                 self.websocket,
                 self.group_id,
