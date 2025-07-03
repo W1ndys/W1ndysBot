@@ -13,6 +13,10 @@ from . import (
     GLOBAL_BLACKLIST_REMOVE_COMMAND,
     GLOBAL_BLACKLIST_LIST_COMMAND,
     GLOBAL_BLACKLIST_CLEAR_COMMAND,
+    PRIVATE_BLACKLIST_ADD_COMMAND,
+    PRIVATE_BLACKLIST_REMOVE_COMMAND,
+    PRIVATE_BLACKLIST_LIST_COMMAND,
+    PRIVATE_BLACKLIST_CLEAR_COMMAND,
 )
 
 
@@ -78,6 +82,7 @@ class PrivateMessageHandler:
 
                 blacklist_handler = BlackListHandlePrivate(self.websocket, temp_msg)
 
+                # 处理显式的全局黑名单命令
                 if self.raw_message.startswith(GLOBAL_BLACKLIST_ADD_COMMAND):
                     await blacklist_handler.add_global_blacklist()
                     return
@@ -88,6 +93,20 @@ class PrivateMessageHandler:
                     await blacklist_handler.list_global_blacklist()
                     return
                 elif self.raw_message.startswith(GLOBAL_BLACKLIST_CLEAR_COMMAND):
+                    await blacklist_handler.clear_global_blacklist()
+                    return
+
+                # 处理私聊中的普通拉黑命令（视为全局拉黑）
+                elif self.raw_message.startswith(PRIVATE_BLACKLIST_ADD_COMMAND):
+                    await blacklist_handler.add_global_blacklist_private()
+                    return
+                elif self.raw_message.startswith(PRIVATE_BLACKLIST_REMOVE_COMMAND):
+                    await blacklist_handler.remove_global_blacklist_private()
+                    return
+                elif self.raw_message.startswith(PRIVATE_BLACKLIST_LIST_COMMAND):
+                    await blacklist_handler.list_global_blacklist()
+                    return
+                elif self.raw_message.startswith(PRIVATE_BLACKLIST_CLEAR_COMMAND):
                     await blacklist_handler.clear_global_blacklist()
                     return
 
@@ -294,4 +313,118 @@ class BlackListHandlePrivate(BlackListHandle):
             return True
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]清空全局黑名单失败: {e}")
+            return False
+
+    async def add_global_blacklist_private(self):
+        """
+        私聊中的拉黑命令（视为全局拉黑）
+        """
+        try:
+            # 删除命令
+            self.raw_message = self.raw_message.replace(
+                PRIVATE_BLACKLIST_ADD_COMMAND, ""
+            ).strip()
+
+            # 解析QQ号
+            user_ids = []
+
+            # 处理at消息
+            import re
+
+            at_pattern = r"\[CQ:at,qq=(\d+)\]"
+            at_matches = re.findall(at_pattern, self.raw_message)
+            if at_matches:
+                user_ids.extend(at_matches)
+            else:
+                # 处理纯QQ号
+                qq_numbers = self.raw_message.split()
+                for qq in qq_numbers:
+                    if qq.isdigit():
+                        user_ids.append(qq)
+
+            if not user_ids:
+                logger.error(f"[{MODULE_NAME}]未找到有效的QQ号")
+                return False
+
+            # 添加全局黑名单
+            from .data_manager import BlackListDataManager
+
+            success_count = []
+            with BlackListDataManager() as data_manager:
+                for user_id in user_ids:
+                    if data_manager.add_global_blacklist(user_id):
+                        success_count.append(user_id)
+
+            # 发送成功消息
+            reply_message = f"已将以下用户添加到全局黑名单：{', '.join(success_count)}"
+            await send_private_msg(
+                self.websocket,
+                self.target_id,
+                [
+                    generate_reply_message(reply_message),
+                    generate_text_message(reply_message),
+                ],
+            )
+
+            return True
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]私聊拉黑失败: {e}")
+            return False
+
+    async def remove_global_blacklist_private(self):
+        """
+        私聊中的解黑命令（视为全局解黑）
+        """
+        try:
+            # 删除命令
+            self.raw_message = self.raw_message.replace(
+                PRIVATE_BLACKLIST_REMOVE_COMMAND, ""
+            ).strip()
+
+            # 解析QQ号
+            user_ids = []
+
+            # 处理at消息
+            import re
+
+            at_pattern = r"\[CQ:at,qq=(\d+)\]"
+            at_matches = re.findall(at_pattern, self.raw_message)
+            if at_matches:
+                user_ids.extend(at_matches)
+            else:
+                # 处理纯QQ号
+                qq_numbers = self.raw_message.split()
+                for qq in qq_numbers:
+                    if qq.isdigit():
+                        user_ids.append(qq)
+
+            if not user_ids:
+                logger.error(f"[{MODULE_NAME}]未找到有效的QQ号")
+                return False
+
+            # 移除全局黑名单
+            from .data_manager import BlackListDataManager
+
+            success_count = []
+            with BlackListDataManager() as data_manager:
+                for user_id in user_ids:
+                    if data_manager.remove_global_blacklist(user_id):
+                        success_count.append(user_id)
+
+            # 发送成功消息
+            reply_message = (
+                f"已将以下用户从全局黑名单中移除：{', '.join(success_count)}"
+            )
+            await send_private_msg(
+                self.websocket,
+                self.target_id,
+                [
+                    generate_reply_message(reply_message),
+                    generate_text_message(reply_message),
+                ],
+            )
+
+            return True
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]私聊解黑失败: {e}")
             return False

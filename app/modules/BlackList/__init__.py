@@ -26,6 +26,11 @@ GLOBAL_BLACKLIST_ADD_COMMAND = "全局拉黑"  # 添加全局黑名单命令
 GLOBAL_BLACKLIST_REMOVE_COMMAND = "全局解黑"  # 移除全局黑名单命令
 GLOBAL_BLACKLIST_LIST_COMMAND = "全局看黑"  # 查看全局黑名单命令
 GLOBAL_BLACKLIST_CLEAR_COMMAND = "全局清黑"  # 清空全局黑名单命令
+# 私聊专用命令（等同于全局命令）
+PRIVATE_BLACKLIST_ADD_COMMAND = "拉黑"  # 私聊中的拉黑命令（等同于全局拉黑）
+PRIVATE_BLACKLIST_REMOVE_COMMAND = "解黑"  # 私聊中的解黑命令（等同于全局解黑）
+PRIVATE_BLACKLIST_LIST_COMMAND = "看黑"  # 私聊中的看黑命令（等同于全局看黑）
+PRIVATE_BLACKLIST_CLEAR_COMMAND = "清黑"  # 私聊中的清黑命令（等同于全局清黑）
 # ------------------------------------------------------------
 
 COMMANDS = {
@@ -37,4 +42,8 @@ COMMANDS = {
     GLOBAL_BLACKLIST_REMOVE_COMMAND: "移除全局黑名单",
     GLOBAL_BLACKLIST_LIST_COMMAND: "查看全局黑名单",
     GLOBAL_BLACKLIST_CLEAR_COMMAND: "清空全局黑名单",
+    PRIVATE_BLACKLIST_ADD_COMMAND: "私聊中的拉黑（等同于全局拉黑）",
+    PRIVATE_BLACKLIST_REMOVE_COMMAND: "私聊中的解黑（等同于全局解黑）",
+    PRIVATE_BLACKLIST_LIST_COMMAND: "私聊中的看黑（等同于全局看黑）",
+    PRIVATE_BLACKLIST_CLEAR_COMMAND: "私聊中的清黑（等同于全局清黑）",
 }
