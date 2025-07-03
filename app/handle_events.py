@@ -47,13 +47,15 @@ class EventHandler:
 
     async def _report_loading_status(self):
         """向管理员上报模块加载状况"""
-        # 生成成功加载的模块报告
-        success_msg = "模块加载成功：\n" + "\n".join(self.loaded_modules)
+        # 生成成功加载的模块报告（按字母顺序排序）
+        sorted_loaded_modules = sorted(self.loaded_modules)
+        success_msg = "模块加载成功：\n" + "\n".join(sorted_loaded_modules)
 
-        # 生成失败加载的模块报告
+        # 生成失败加载的模块报告（按字母顺序排序）
         failed_msg = "模块加载失败：\n"
         if self.failed_modules:
-            for module_name, error in self.failed_modules:
+            sorted_failed_modules = sorted(self.failed_modules, key=lambda x: x[0])
+            for module_name, error in sorted_failed_modules:
                 failed_msg += f"{module_name}：{error}\n"
         else:
             failed_msg += "无"
