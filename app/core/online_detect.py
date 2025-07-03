@@ -60,24 +60,27 @@ async def handle_events(websocket, message):
             else:
                 status_text = "重新上线" if current_online else "掉线"
 
-            title = f"机器人状态变更: {status_text}"
-            content = (
-                f"机器人ID: {message.get('self_id')}\n"
-                f"当前状态: {'在线' if current_online else '离线'}\n"
-                f"状态变更时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(current_time))}\n"
-                f"心跳间隔: {message.get('interval', 0)/1000}秒"
-            )
-
-            # 发送通知
+            # 发送通知（只在掉线时发送飞书通知）
             logger.success(f"机器人状态变更: {status_text}")
-            try:
-                # 发送飞书通知
-                feishu_result = send_feishu_msg(title, content)
-                if "error" in feishu_result:
-                    logger.error(f"发送飞书通知失败: {feishu_result.get('error')}")
 
-            except Exception as e:
-                logger.error(f"发送飞书通知失败: {e}")
+            # 只在掉线时发送飞书通知
+            if not current_online:
+                title = f"机器人状态变更: {status_text}"
+                content = (
+                    f"机器人ID: {message.get('self_id')}\n"
+                    f"当前状态: {'在线' if current_online else '离线'}\n"
+                    f"状态变更时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(current_time))}\n"
+                    f"心跳间隔: {message.get('interval', 0)/1000}秒"
+                )
+
+                try:
+                    # 发送飞书通知
+                    feishu_result = send_feishu_msg(title, content)
+                    if "error" in feishu_result:
+                        logger.error(f"发送飞书通知失败: {feishu_result.get('error')}")
+
+                except Exception as e:
+                    logger.error(f"发送飞书通知失败: {e}")
 
             # 更新状态
             is_online = current_online
