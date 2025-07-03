@@ -4,7 +4,6 @@ import logger
 from typing import Dict, List, Optional
 from utils.generate import generate_reply_message, generate_text_message
 from api.message import send_group_msg, send_private_msg
-from core.auth import is_system_admin
 
 # 菜单命令
 MENU_COMMAND = "menu"
@@ -63,7 +62,9 @@ class MenuManager:
     def generate_menu_text() -> str:
         """生成完整的菜单文本"""
         menu_text = "📋 功能菜单\n\n"
-        for module_name in MenuManager.get_all_modules():
+        # 获取所有模块并按字母顺序排序
+        modules = sorted(MenuManager.get_all_modules())
+        for module_name in modules:
             menu_info = MenuManager.get_module_menu_info(module_name)
             if menu_info:
                 menu_text += f"【{menu_info['name']}】：{menu_info['description']}\n"
@@ -80,9 +81,7 @@ async def handle_events(websocket, message):
     统一处理 menu 命令，支持群聊和私聊
     """
     try:
-        # 只允许系统管理员使用 menu 命令
-        if not is_system_admin(str(message.get("user_id", ""))):
-            return
+
         # 只处理文本消息
         if message.get("post_type") != "message":
             return

@@ -94,13 +94,19 @@ class EventHandler:
             logger.warning(f"模块目录不存在: {modules_dir}")
             return
 
-        # 遍历模块目录
-        for module_name in os.listdir(modules_dir):
-            module_path = os.path.join(modules_dir, module_name)
+        # 获取所有模块目录并按字母顺序排序
+        module_names = sorted(
+            [
+                module_name
+                for module_name in os.listdir(modules_dir)
+                if os.path.isdir(os.path.join(modules_dir, module_name))
+                and not module_name.startswith("_")
+            ]
+        )
 
-            # 跳过非目录和以下划线开头的目录
-            if not os.path.isdir(module_path) or module_name.startswith("_"):
-                continue
+        # 遍历排序后的模块目录
+        for module_name in module_names:
+            module_path = os.path.join(modules_dir, module_name)
 
             # 检查模块是否有main.py文件
             main_file = os.path.join(module_path, "main.py")
