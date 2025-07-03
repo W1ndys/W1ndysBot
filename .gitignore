@@ -205,10 +205,9 @@ cython_debug/
 
 napcat/
 git-*.sh
-git-push-update-docs.sh
 clean_pycache.sh
 copy_db.sh
 run_test*.sh
 ssh_remote_*.py
 update-submodules-push.sh
-get_git_diff.bat
+*git*.bat
