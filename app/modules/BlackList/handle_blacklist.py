@@ -31,8 +31,8 @@ class BlackListHandle:
         """
         try:
             # 删除命令
-            self.raw_message = self.raw_message.replace(
-                BLACKLIST_ADD_COMMAND, ""
+            self.raw_message = self.raw_message.removeprefix(
+                BLACKLIST_ADD_COMMAND
             ).strip()
 
             # 解析QQ号
@@ -110,8 +110,8 @@ class BlackListHandle:
         """
         try:
             # 删除命令
-            self.raw_message = self.raw_message.replace(
-                BLACKLIST_REMOVE_COMMAND, ""
+            self.raw_message = self.raw_message.removeprefix(
+                BLACKLIST_REMOVE_COMMAND
             ).strip()
 
             # 解析QQ号
@@ -270,8 +270,8 @@ class BlackListHandle:
         """
         try:
             # 删除命令
-            self.raw_message = self.raw_message.replace(
-                GLOBAL_BLACKLIST_ADD_COMMAND, ""
+            self.raw_message = self.raw_message.removeprefix(
+                GLOBAL_BLACKLIST_ADD_COMMAND
             ).strip()
 
             # 解析QQ号
@@ -351,8 +351,8 @@ class BlackListHandle:
         """
         try:
             # 删除命令
-            self.raw_message = self.raw_message.replace(
-                GLOBAL_BLACKLIST_REMOVE_COMMAND, ""
+            self.raw_message = self.raw_message.removeprefix(
+                GLOBAL_BLACKLIST_REMOVE_COMMAND
             ).strip()
 
             # 解析QQ号
