@@ -106,31 +106,34 @@ async def check_and_handle_ban_words(
             ],
             note="del_msg=60",
         )
-        # 发送管理员消息
+        # 发送管理员消息和飞书消息
+        # 构建共同的消息内容
+        common_content = (
+            f"时间: {formatted_time}\n"
+            f"group_id={group_id}\n"
+            f"user_id={user_id}\n"
+            f"已封禁{BAN_WORD_DURATION}秒\n"
+            f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}"
+        )
+
+        admin_msg_content = (
+            f"检测到违禁消息\n"
+            f"{common_content}\n"
+            f"相关消息已通过飞书上报\n"
+            f"引用回复本消息【{UNBAN_WORD_COMMAND}】或【{KICK_BAN_WORD_COMMAND}】来处理用户"
+        )
+
+        feishu_msg_content = f"{common_content}\n" f"raw_message={raw_message}"
+
         await send_private_msg(
             websocket,
             OWNER_ID,
-            [
-                generate_text_message(
-                    f"[{formatted_time}]\n"
-                    f"群{group_id}用户{user_id}发送违禁词\n"
-                    f"已封禁{BAN_WORD_DURATION}秒\n"
-                    f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}\n"
-                    f"相关消息已通过飞书上报\n"
-                    f"引用回复本消息“{UNBAN_WORD_COMMAND}”可解封用户\n"
-                    f"引用回复本消息“{KICK_BAN_WORD_COMMAND}”可踢出用户"
-                )
-            ],
+            [generate_text_message(admin_msg_content)],
         )
 
-        # 发送飞书消息
         send_feishu_msg(
-            title=f"触发违禁词",
-            content=f"时间: {formatted_time}\n"
-            f"群{group_id}用户{user_id}发送违禁词\n"
-            f"已封禁{BAN_WORD_DURATION}秒\n"
-            f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}\n"
-            f"原始消息: {raw_message}",
+            title=f"检测到违禁词",
+            content=feishu_msg_content,
         )
         return True
     else:
