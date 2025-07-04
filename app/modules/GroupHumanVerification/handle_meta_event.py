@@ -59,10 +59,10 @@ class MetaEventHandler:
             minute = now.minute
             # 设定的扫描小时
             scan_hours = [0, 8, 12, 16, 20]
-            # 只在整点的前2分钟内触发，且只触发一次（通过类变量记录上次触发小时）
+            # 只在整点触发，且只触发一次（通过类变量记录上次触发小时）
             if (
                 hour in scan_hours
-                and minute < 2
+                and minute == 0
                 and MetaEventHandler._last_scan_hour != hour
             ):
                 MetaEventHandler._last_scan_hour = hour
