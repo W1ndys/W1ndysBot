@@ -3,6 +3,7 @@ from . import MODULE_NAME, SCAN_INACTIVE_USER_COMMAND
 import logger
 from utils.generate import generate_text_message, generate_at_message
 from api.message import send_group_msg
+import re
 
 
 class ResponseHandler:
@@ -24,12 +25,13 @@ class ResponseHandler:
                 days = 30  # 默认30天
                 group_id = None
 
-                # 以-分割，遍历参数
-                for param in self.echo.split("-"):
-                    if param.startswith("days="):
-                        days = int(param.split("=")[1])
-                    elif param.startswith("group_id="):
-                        group_id = int(param.split("=")[1])
+                # 使用正则表达式提取days和group_id参数
+                days_match = re.search(r"days=(\d+)", self.echo)
+                group_id_match = re.search(r"group_id=(\d+)", self.echo)
+                if days_match:
+                    days = int(days_match.group(1))
+                if group_id_match:
+                    group_id = int(group_id_match.group(1))
 
                 # 计算时间阈值（当前时间戳 - 指定天数的秒数）
                 current_time = int(time.time())
