@@ -4,7 +4,7 @@ import logger
 from core.auth import is_system_admin
 from core.switchs import is_private_switch_on, handle_module_private_switch
 from config import OWNER_ID
-from api.message import send_private_msg, send_private_msg_with_cq
+from api.message import send_private_msg, send_private_msg_with_cq, get_msg
 from api.user import set_friend_add_request, set_group_add_request
 from utils.generate import generate_reply_message, generate_text_message
 import re
@@ -73,7 +73,7 @@ class PrivateMessageHandler:
                 # 处理测试消息
                 if self.raw_message.lower() in ["测试", "test"]:
                     reply_message = generate_reply_message(self.message_id)
-                    text_message = generate_text_message(f"[{MODULE_NAME}]测试成功")
+                    text_message = generate_text_message(f"测试成功")
                     await send_private_msg(
                         self.websocket,
                         self.user_id,
@@ -82,42 +82,26 @@ class PrivateMessageHandler:
                     )
                     return
 
-                # 处理好友请求
-                # 格式: 同意/拒绝好友请求+请求ID
-                if re.match(r"^(同意|拒绝)好友请求\s*\d+$", self.raw_message):
-                    # 提取行为和请求ID
-                    parts = self.raw_message.split(" ")
-                    action = parts[0]
-                    flag = parts[1]
-                    logger.info(f"[{MODULE_NAME}]处理好友请求: {action} {flag}")
-                    # 处理好友请求
-                    approve = action == "同意好友请求"
-                    await set_friend_add_request(self.websocket, flag, approve)
-                    reply_message = generate_reply_message(self.message_id)
-                    text_message = generate_text_message(f"[{MODULE_NAME}]已{action}")
-                    await send_private_msg(
-                        self.websocket, self.user_id, [reply_message, text_message]
+                # 处理好友请求和群请求
+                # 格式: [CQ:reply,id=消息ID]同意/拒绝
+                if re.match(r"^\[CQ:reply,id=\d+\](同意|拒绝)$", self.raw_message):
+                    # 提取回复消息ID和行为
+                    match = re.match(
+                        r"^\[CQ:reply,id=(\d+)\](同意|拒绝)$", self.raw_message
                     )
-                    return
-                # 处理群请求
-                # 格式: 同意/拒绝邀请登录号入群请求+请求ID
-                if re.match(r"^(同意|拒绝)邀请登录号入群请求\s*\d+$", self.raw_message):
-                    # 提取行为和请求ID
-                    parts = self.raw_message.split(" ")
-                    action = parts[0]
-                    flag = parts[1]
-                    logger.info(f"[{MODULE_NAME}]处理群请求: {action} {flag}")
-                    # 处理群请求
-                    approve = action == "同意邀请登录号入群请求"
-                    await set_group_add_request(
-                        self.websocket, flag, approve, reason=""
-                    )
-                    reply_message = generate_reply_message(self.message_id)
-                    text_message = generate_text_message(f"[{MODULE_NAME}]已{action}")
-                    await send_private_msg(
-                        self.websocket, self.user_id, [reply_message, text_message]
-                    )
-                    return
+                    if match:
+                        reply_msg_id = match.group(1)
+                        action = match.group(2)
+
+                        logger.info(
+                            f"[{MODULE_NAME}]检测到请求处理: {action}, 回复消息ID: {reply_msg_id}"
+                        )
+
+                        # 发送获取消息详情的API请求
+                        note = f"{MODULE_NAME}-request_handler-{action}-user_id={self.user_id}"
+                        await get_msg(self.websocket, reply_msg_id, note)
+                        return
+
             # 普通消息转发给owner
             else:
                 # 定义需要忽略的消息正则表达式
