@@ -4,6 +4,7 @@ from . import (
     BLACKLIST_REMOVE_COMMAND,
     BLACKLIST_LIST_COMMAND,
     BLACKLIST_CLEAR_COMMAND,
+    BLACKLIST_SCAN_COMMAND,
     GLOBAL_BLACKLIST_ADD_COMMAND,
     GLOBAL_BLACKLIST_REMOVE_COMMAND,
     GLOBAL_BLACKLIST_LIST_COMMAND,
@@ -120,6 +121,8 @@ class GroupMessageHandler:
                 await blacklist_handler.list_blacklist()
             elif self.raw_message.startswith(BLACKLIST_CLEAR_COMMAND):
                 await blacklist_handler.clear_blacklist()
+            elif self.raw_message.startswith(BLACKLIST_SCAN_COMMAND):
+                await blacklist_handler.scan_blacklist()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
 

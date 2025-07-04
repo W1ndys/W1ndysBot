@@ -1,6 +1,6 @@
 from .data_manager import BlackListDataManager
 from api.message import send_group_msg
-from api.group import set_group_kick
+from api.group import set_group_kick, get_group_member_list
 from utils.generate import generate_text_message, generate_reply_message
 import logger
 import re
@@ -8,6 +8,7 @@ from . import (
     MODULE_NAME,
     BLACKLIST_ADD_COMMAND,
     BLACKLIST_REMOVE_COMMAND,
+    BLACKLIST_SCAN_COMMAND,
     GLOBAL_BLACKLIST_ADD_COMMAND,
     GLOBAL_BLACKLIST_REMOVE_COMMAND,
 )
@@ -506,4 +507,24 @@ class BlackListHandle:
             return True
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]清空全局黑名单失败: {e}")
+            return False
+
+    async def scan_blacklist(self):
+        """
+        扫描群内黑名单用户并踢出
+        获取群成员列表，检查每个成员是否在黑名单中，如果在则踢出
+        """
+        try:
+
+            # 调用API获取群成员列表
+            await get_group_member_list(
+                self.websocket,
+                self.group_id,
+                True,  # 不使用缓存
+                note=f"{MODULE_NAME}-{BLACKLIST_SCAN_COMMAND}-group_id={self.group_id}",
+            )
+
+            return True
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]扫描黑名单失败: {e}")
             return False
