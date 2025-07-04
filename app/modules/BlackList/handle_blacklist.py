@@ -1,5 +1,6 @@
 from .data_manager import BlackListDataManager
 from api.message import send_group_msg
+from api.group import set_group_kick
 from utils.generate import generate_text_message, generate_reply_message
 import logger
 import re
@@ -72,6 +73,11 @@ class BlackListHandle:
                 for user_id in user_ids:
                     if data_manager.add_blacklist(self.group_id, user_id):
                         success_users.append(user_id)
+                        # 顺便踢出群
+                        await set_group_kick(self.websocket, self.group_id, user_id)
+                        logger.info(
+                            f"[{MODULE_NAME}]踢出群{self.group_id}用户{user_id}"
+                        )
                     else:
                         already_exists_users.append(user_id)
 
