@@ -98,7 +98,7 @@ class PrivateMessageHandler:
                         )
 
                         # 发送获取消息详情的API请求
-                        note = f"{MODULE_NAME}-request_handler-{action}-user_id={self.user_id}"
+                        note = f"{MODULE_NAME}-action={action}-operate_user_id={self.user_id}"
                         await get_msg(self.websocket, reply_msg_id, note)
                         return
 
@@ -106,7 +106,8 @@ class PrivateMessageHandler:
             else:
                 # 定义需要忽略的消息正则表达式
                 ignore_patterns = [
-                    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"  # UUID
+                    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",  # UUID
+                    r".*com\.tencent\.qun\.invite.*",  # 邀请加群的CQ码
                 ]
 
                 # 检查消息是否包含任何忽略模式
