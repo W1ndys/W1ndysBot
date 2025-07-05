@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from . import MODULE_NAME
+from .. import MODULE_NAME
 
 
 class DataManager:

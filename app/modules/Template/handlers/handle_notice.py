@@ -1,4 +1,4 @@
-from . import MODULE_NAME
+from .. import MODULE_NAME
 import logger
 from datetime import datetime
 from .handle_notice_friend import FriendNoticeHandler

@@ -1,4 +1,4 @@
-from . import MODULE_NAME
+from .. import MODULE_NAME
 from .handle_message_group import GroupMessageHandler
 from .handle_message_private import PrivateMessageHandler
 

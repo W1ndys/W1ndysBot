@@ -1,4 +1,4 @@
-from . import MODULE_NAME
+from .. import MODULE_NAME
 import logger
 
 
