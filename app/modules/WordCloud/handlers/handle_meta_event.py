@@ -1,6 +1,6 @@
 from .. import MODULE_NAME
 import logger
-from datetime import datetime
+from datetime import datetime, timedelta
 from core.switchs import get_all_enabled_groups
 from api.message import send_group_msg, send_group_msg_with_cq
 from utils.generate import generate_image_message, generate_text_message
@@ -54,37 +54,47 @@ class MetaEventHandler:
     async def handle_heartbeat(self):
         """
         处理心跳
-        仅在每天23:59执行，并且一分钟内只允许执行一次
+        仅在每天0:00执行，并且一分钟内只允许执行一次，总结昨日内容
         """
         try:
             now = datetime.now()
-            # 只在23:59执行
-            if now.hour == 23 and now.minute == 59:
+            # 只在0:00执行
+            if now.hour == 0 and now.minute == 0:
                 current_minute = now.strftime("%Y-%m-%d %H:%M")
                 if MetaEventHandler._last_execute_minute == current_minute:
                     # 已经执行过，不再重复执行
                     return
                 MetaEventHandler._last_execute_minute = current_minute
 
+                # 获取昨日日期
+                yesterday = now - timedelta(days=1)
+                yesterday_str = yesterday.strftime("%Y-%m-%d")
+
                 # 获取所有开启的群聊开关
                 group_switches = get_all_enabled_groups(MODULE_NAME)
                 logger.info(f"[{MODULE_NAME}]所有开启的群聊开关: {group_switches}")
 
-                # 第一步：先遍历所有群，发送词云
+                # 第一步：先遍历所有群，发送昨日词云
                 group_messages_data = {}  # 存储每个群的消息数据，用于后续AI处理
 
                 for group_id in group_switches:
                     analyzer = QQMessageAnalyzer(group_id)
-                    # 获取今日所有消息
-                    today_messages = analyzer.get_daily_messages_with_details()
+                    # 获取昨日所有消息
+                    yesterday_messages = analyzer.get_daily_messages_with_details(
+                        yesterday_str
+                    )
                     # 存储消息数据供后续AI处理使用
-                    group_messages_data[group_id] = today_messages
+                    group_messages_data[group_id] = yesterday_messages
 
                     # 生成词云和top10词汇
-                    img_base64 = analyzer.generate_wordcloud_image_base64()
-                    wordcloud_data, top10_words = analyzer.generate_daily_report()
+                    img_base64 = analyzer.generate_wordcloud_image_base64(yesterday_str)
+                    wordcloud_data, top10_words = analyzer.generate_daily_report(
+                        yesterday_str
+                    )
                     messages = [
-                        generate_text_message(f"群{group_id}的词云和top10词汇如下：\n"),
+                        generate_text_message(
+                            f"群{group_id}昨日({yesterday_str})的词云和top10词汇如下：\n"
+                        ),
                         generate_text_message(
                             "top10词汇：\n"
                             + "\n".join(
@@ -99,7 +109,7 @@ class MetaEventHandler:
                         messages.append(generate_image_message(img_base64))
                     else:
                         logger.warning(
-                            f"[{MODULE_NAME}]群{group_id}的词云图片生成失败，img_base64为None"
+                            f"[{MODULE_NAME}]群{group_id}昨日({yesterday_str})的词云图片生成失败，img_base64为None"
                         )
                     await send_group_msg(
                         self.websocket,
@@ -109,8 +119,10 @@ class MetaEventHandler:
 
                 # 第二步：并发处理所有群的AI总结
                 ai_tasks = []
-                for group_id, today_messages in group_messages_data.items():
-                    task = self._process_ai_summary(group_id, today_messages)
+                for group_id, yesterday_messages in group_messages_data.items():
+                    task = self._process_ai_summary(
+                        group_id, yesterday_messages, yesterday_str
+                    )
                     ai_tasks.append(task)
 
                 # 并发执行所有AI总结任务
@@ -120,27 +132,30 @@ class MetaEventHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")
 
-    async def _process_ai_summary(self, group_id, today_messages):
+    async def _process_ai_summary(self, group_id, yesterday_messages, yesterday_str):
         """
         处理单个群的AI总结
         """
         try:
             # 将消息转换为简洁的txt格式，减少token占用
-            messages_txt = self._convert_messages_to_txt(today_messages)
+            messages_txt = self._convert_messages_to_txt(yesterday_messages)
 
             # 发送Dify请求
             response = await DifyClient().send_request(
-                f"group_{group_id}", messages_txt
+                f"group_{group_id}",
+                f"以下是群{group_id}在{yesterday_str}的聊天记录：\n{messages_txt}",
             )
             answer, tokens, price, currency = DifyClient.parse_response(response)
             # 发送Dify响应
             await send_group_msg_with_cq(
                 self.websocket,
                 group_id,
-                answer,
+                f"昨日({yesterday_str})聊天总结：\n{answer}",
             )
         except Exception as e:
-            logger.error(f"[{MODULE_NAME}]群{group_id}的AI总结处理失败: {e}")
+            logger.error(
+                f"[{MODULE_NAME}]群{group_id}昨日({yesterday_str})的AI总结处理失败: {e}"
+            )
 
     def _convert_messages_to_txt(self, messages):
         """
@@ -148,7 +163,7 @@ class MetaEventHandler:
         格式：时间 发言者: 内容
         """
         if not messages:
-            return "今日无聊天记录"
+            return "昨日无聊天记录"
 
         txt_lines = []
         for msg in messages:
