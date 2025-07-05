@@ -20,19 +20,19 @@ class GetMsgHandler:
     async def handle_get_msg(self):
         try:
             # 正则提取群号和用户ID，raw_message中有格式为"群1049225772用户1414100329发送违禁词"的消息
-            pattern = r"群(\d+)用户(\d+)发送违禁词"
-            match_group_id_and_user_id = re.search(pattern, self.raw_message)
-            # 正则提取命令里的action，按-分割，遍历，找到action=后面的值
-            action = None
-            for part in self.echo.split("-"):
-                part = part.strip()
-                if part.startswith("action="):
-                    action = part.replace("action=", "", 1)  # 只替换第一个匹配项
-                    break
+            group_pattern = r"group_id=(\d+)"
+            user_pattern = r"user_id=(\d+)"
+            action_pattern = r"action=(\w+)"
 
-            if match_group_id_and_user_id and action:
-                group_id = match_group_id_and_user_id.group(1)
-                user_id = match_group_id_and_user_id.group(2)
+            match_group_id = re.search(group_pattern, self.raw_message)
+            match_user_id = re.search(user_pattern, self.raw_message)
+            match_action = re.search(action_pattern, self.echo)
+
+            group_id = match_group_id.group(1) if match_group_id else ""
+            user_id = match_user_id.group(1) if match_user_id else ""
+            action = match_action.group(1) if match_action else ""
+
+            if group_id and user_id and action:
                 # 解禁
                 if action == UNBAN_WORD_COMMAND:
                     logger.info(f"[{MODULE_NAME}]解禁用户{user_id}，群号{group_id}")
