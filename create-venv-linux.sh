@@ -11,7 +11,7 @@ fi
 if ! which uv > /dev/null 2>&1
 then
     echo "uv 未安装，正在使用 pip 安装 uv..."
-    python3 -m pip install uv
+    python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple uv
     
     # 再次检查uv是否安装成功
     if ! which uv > /dev/null 2>&1
@@ -28,12 +28,12 @@ uv venv
 # 激活虚拟环境
 source .venv/bin/activate
 
-# 使用uv安装requirements.txt中的包
+# 使用uv安装requirements.txt中的包（使用国内镜像源）
 if [ -f "requirements.txt" ]; then
-    echo "正在使用 uv 安装依赖包..."
-    uv pip install -r requirements.txt
+    echo "正在使用 uv 从国内镜像源安装依赖包..."
+    uv pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 else
     echo "requirements.txt 文件不存在，请确保该文件存在于当前目录。"
 fi
 
-echo "虚拟环境已创建并使用 uv 安装了所需的包。" 
+echo "虚拟环境已创建并使用 uv 从国内镜像源安装了所需的包。" 
