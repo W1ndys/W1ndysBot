@@ -35,14 +35,15 @@ else
     echo "未找到虚拟环境，使用系统 Python。"
 fi
 
-# 后台运行Python程序并保存PID
+# 后台运行Python程序并保存PID - 只记录错误输出到日志
 echo "重新启动应用..."
-nohup python3 main.py >app.log 2>&1 &
+nohup python3 main.py >/dev/null 2>app.log &
 
 # 保存PID到文件
 echo $! >app.pid
 
 echo "Python程序已在虚拟环境中重新启动，PID保存在app/app.pid中"
+echo "仅错误输出将记录到app.log文件中"
 
 # 退出虚拟环境
 if [ -n "$VIRTUAL_ENV" ]; then
