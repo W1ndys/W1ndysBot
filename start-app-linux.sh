@@ -15,7 +15,7 @@ else
 fi
 
 # 后台运行Python程序并保存PID
-nohup python main.py >app.log 2>&1 &
+nohup python3 main.py >app.log 2>&1 &
 
 # 保存PID到文件
 echo $! >app.pid
