@@ -1,10 +1,10 @@
 import logger
 from . import MODULE_NAME
-from .handle_meta_event import MetaEventHandler
-from .handle_message import MessageHandler
-from .handle_notice import NoticeHandler
-from .handle_request import RequestHandler
-from .handle_response import ResponseHandler
+from .handlers.handle_meta_event import MetaEventHandler
+from .handlers.handle_message import MessageHandler
+from .handlers.handle_notice import NoticeHandler
+from .handlers.handle_request import RequestHandler
+from .handlers.handle_response import ResponseHandler
 
 
 async def handle_events(websocket, msg):
