@@ -135,6 +135,30 @@ class VideoQRDetector:
                 )
                 processed_images.append(("reduced", reduced))
 
+            # 10. 暗色模式处理：反转图像颜色
+            # 这对于检测暗色主题下的白色背景二维码特别有效
+            inverted = cv2.bitwise_not(gray)
+            processed_images.append(("inverted_for_dark_mode", inverted))
+
+            # 11. 暗色模式 + 对比度增强
+            # 反转后应用CLAHE提高对比度
+            inverted_clahe = clahe.apply(inverted)
+            processed_images.append(("inverted_clahe", inverted_clahe))
+
+            # 12. 暗色模式 + 自适应阈值
+            # 反转后应用自适应阈值
+            inverted_adaptive = cv2.adaptiveThreshold(
+                inverted, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+            )
+            processed_images.append(("inverted_adaptive", inverted_adaptive))
+
+            # 13. 暗色模式 + Otsu阈值
+            # 反转后应用Otsu阈值
+            _, inverted_otsu = cv2.threshold(
+                inverted, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+            )
+            processed_images.append(("inverted_otsu", inverted_otsu))
+
             return processed_images
 
         # 在线程池中执行图像处理
