@@ -8,6 +8,8 @@ from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
+from core.video_qr_detector import VideoQRDetector
+import re
 
 
 class GroupMessageHandler:
@@ -67,10 +69,23 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            # 示例：使用with语句块进行数据库操作
-            with DataManager() as dm:
-                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                pass
+            # 处理视频二维码检测，正则提取视频链接
+            if self.raw_message.startswith("[CQ:video,file="):
+                pattern = r"url=(.*?),file_size="
+                video_url = re.search(pattern, self.raw_message)
+                if video_url:
+                    video_url = video_url.group(1)
+                else:
+                    logger.error(f"[{MODULE_NAME}]未找到视频链接")
+                    return
+                logger.info(f"[{MODULE_NAME}]视频链接: {video_url}")
+                # 处理视频二维码检测
+                video_qr_detector = VideoQRDetector()
+                has_qr = await video_qr_detector.has_qr_code(video_url)
+                if has_qr:
+                    logger.info(f"[{MODULE_NAME}]视频包含二维码")
+                else:
+                    logger.info(f"[{MODULE_NAME}]视频不包含二维码")
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
