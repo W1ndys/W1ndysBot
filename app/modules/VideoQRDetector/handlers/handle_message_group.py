@@ -2,11 +2,15 @@ from .. import MODULE_NAME, SWITCH_NAME
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
-from core.auth import is_system_admin
-from api.message import send_group_msg
-from utils.generate import generate_text_message, generate_reply_message
+from core.auth import is_system_admin, is_group_admin
+from api.message import send_group_msg, delete_msg
+from api.group import set_group_ban
+from utils.generate import (
+    generate_text_message,
+    generate_reply_message,
+    generate_at_message,
+)
 from datetime import datetime
-from .data_manager import DataManager
 from core.menu_manager import MenuManager
 from core.video_qr_detector import VideoQRDetector
 import re
@@ -69,6 +73,10 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
+            # 忽略系统管理员和群主群管理员
+            if is_system_admin(self.user_id) or is_group_admin(self.role):
+                return
+
             # 处理视频二维码检测，正则提取视频链接
             if self.raw_message.startswith("[CQ:video,file="):
                 pattern = r"url=(.*?),file_size="
@@ -83,9 +91,27 @@ class GroupMessageHandler:
                 video_qr_detector = VideoQRDetector()
                 has_qr = await video_qr_detector.has_qr_code(video_url)
                 if has_qr:
-                    logger.info(f"[{MODULE_NAME}]视频包含二维码")
-                else:
-                    logger.info(f"[{MODULE_NAME}]视频不包含二维码")
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_at_message(self.user_id),
+                            generate_text_message(
+                                f"({self.user_id})禁止发送包含二维码的视频"
+                            ),
+                        ],
+                        note="del_msg=30",
+                    )
+                    # 禁言
+                    await set_group_ban(
+                        self.websocket,
+                        self.group_id,
+                        self.user_id,
+                        60 * 60 * 24 * 30,
+                    )
+                    # 撤回消息
+                    await delete_msg(self.websocket, self.message_id)
+                    return
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
