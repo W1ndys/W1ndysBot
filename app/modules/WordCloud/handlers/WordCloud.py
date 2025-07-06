@@ -66,12 +66,20 @@ class QQMessageAnalyzer:
 
     def _get_daily_messages(self, query_date=None):
         """获取某日所有消息(默认今天)"""
-        target_date = query_date or date.today()
+        if query_date is None:
+            target_date = date.today().isoformat()
+        elif isinstance(query_date, str):
+            # 如果传入的是字符串，直接使用
+            target_date = query_date
+        else:
+            # 如果传入的是date对象，转换为字符串
+            target_date = query_date.isoformat()
+
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute(
                 f"SELECT message_content FROM {self.table_name} "
                 "WHERE date(message_time) = ?",
-                (target_date.isoformat(),),
+                (target_date,),
             )
             return [row[0] for row in cursor.fetchall()]
 
@@ -81,7 +89,7 @@ class QQMessageAnalyzer:
         返回: 包含发送者、发送内容、发送时间的消息列表
         """
         if query_date is None:
-            target_date = date.today()
+            target_date = date.today().isoformat()
         elif isinstance(query_date, str):
             # 如果传入的是字符串，直接使用
             target_date = query_date
