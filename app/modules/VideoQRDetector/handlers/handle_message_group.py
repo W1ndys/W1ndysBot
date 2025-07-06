@@ -12,8 +12,10 @@ from utils.generate import (
 )
 from datetime import datetime
 from core.menu_manager import MenuManager
-from core.video_qr_detector import VideoQRDetector
+from ..core.video_qr_detector import VideoQRDetector
 import re
+import html
+import urllib.parse
 
 
 class GroupMessageHandler:
@@ -83,6 +85,9 @@ class GroupMessageHandler:
                 video_url = re.search(pattern, self.raw_message)
                 if video_url:
                     video_url = video_url.group(1)
+                    # URL解码处理
+                    video_url = html.unescape(video_url)  # 处理 &amp; 等HTML实体
+                    video_url = urllib.parse.unquote(video_url)  # 处理URL编码
                 else:
                     logger.error(f"[{MODULE_NAME}]未找到视频链接")
                     return
