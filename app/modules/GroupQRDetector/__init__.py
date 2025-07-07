@@ -2,13 +2,13 @@ import os
 
 
 # 模块名称
-MODULE_NAME = "VideoQRDetector"
+MODULE_NAME = "GroupQRDetector"
 
 # 模块开关名称
-SWITCH_NAME = "vqd"
+SWITCH_NAME = "gqd"
 
 # 模块描述
-MODULE_DESCRIPTION = "视频二维码检测模块"
+MODULE_DESCRIPTION = "群二维码检测模块，支持检测群内图片或视频中有无二维码并进行处理"
 
 # 数据目录
 DATA_DIR = os.path.join("data", MODULE_NAME)
