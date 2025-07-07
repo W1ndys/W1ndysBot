@@ -192,6 +192,7 @@ class GroupMessageHandler:
                     f"user_id={self.user_id}\n"
                     f"nickname={self.nickname}\n"
                     f"时间={self.formatted_time}\n"
+                    f"media_type={media_type}\n"
                     f"url={self.url}"
                 ),
             ],
