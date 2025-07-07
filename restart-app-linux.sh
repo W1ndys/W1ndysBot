@@ -6,20 +6,17 @@ set -e
 # 进入当前目录的app目录
 cd "$(dirname "$0")/app"
 
-# 检查应用是否正在运行
+# 保存旧进程的PID
+OLD_PID=""
 if [ -f "app.pid" ]; then
-    PID=$(cat app.pid)
-    if ps -p $PID > /dev/null; then
-        echo "停止正在运行的应用 (PID: $PID)"
-        kill $PID
-        if ps -p $PID > /dev/null; then
-            echo "应用未能正常停止，强制终止中..."
-            kill -9 $PID
-        fi
+    OLD_PID=$(cat app.pid)
+    if ps -p $OLD_PID > /dev/null; then
+        echo "发现正在运行的应用 (PID: $OLD_PID)，将在新应用启动后停止"
     else
         echo "应用不在运行状态，但pid文件存在，将清理pid文件"
+        rm -f app.pid
+        OLD_PID=""
     fi
-    rm -f app.pid
 else
     echo "没有找到pid文件，应用可能没有在运行"
 fi
@@ -35,14 +32,38 @@ else
     echo "未找到虚拟环境，使用系统 Python。"
 fi
 
-# 后台运行Python程序并保存PID - 只记录错误输出到日志
-echo "重新启动应用..."
+# 后台运行新的Python程序并保存PID - 只记录错误输出到日志
+echo "启动新的应用实例..."
 nohup python3 main.py >/dev/null 2>app.log &
 
-# 保存PID到文件
-echo $! >app.pid
+# 保存新进程的PID到文件
+NEW_PID=$!
+echo $NEW_PID >app.pid
 
-echo "Python程序已在虚拟环境中重新启动，PID保存在app/app.pid中"
+echo "新的Python程序已启动，PID: $NEW_PID"
+
+# 如果有旧进程在运行，等待5秒后停止旧进程
+if [ -n "$OLD_PID" ]; then
+    echo "等待5秒后停止旧应用..."
+    sleep 5
+    
+    if ps -p $OLD_PID > /dev/null; then
+        echo "停止旧应用 (PID: $OLD_PID)"
+        kill $OLD_PID
+        
+        # 等待2秒检查是否正常退出
+        sleep 2
+        if ps -p $OLD_PID > /dev/null; then
+            echo "旧应用未能正常停止，强制终止中..."
+            kill -9 $OLD_PID
+        fi
+        echo "旧应用已停止"
+    else
+        echo "旧应用已经停止"
+    fi
+fi
+
+echo "应用重启完成，新PID保存在app/app.pid中"
 echo "仅错误输出将记录到app.log文件中"
 
 # 退出虚拟环境
