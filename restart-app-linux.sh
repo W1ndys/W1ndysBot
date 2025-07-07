@@ -44,15 +44,15 @@ echo "新的Python程序已启动，PID: $NEW_PID"
 
 # 如果有旧进程在运行，等待5秒后停止旧进程
 if [ -n "$OLD_PID" ]; then
-    echo "等待2秒后停止旧应用..."
-    sleep 2
+    echo "等待1秒后停止旧应用..."
+    sleep 1
     
     if ps -p $OLD_PID > /dev/null; then
         echo "停止旧应用 (PID: $OLD_PID)"
         kill $OLD_PID
         
-        # 等待2秒检查是否正常退出
-        sleep 2
+        # 等待1秒检查是否正常退出
+        sleep 1
         if ps -p $OLD_PID > /dev/null; then
             echo "旧应用未能正常停止，强制终止中..."
             kill -9 $OLD_PID
