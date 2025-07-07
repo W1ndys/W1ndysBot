@@ -17,6 +17,9 @@ import json
 import logger
 from utils.generate import generate_reply_message, generate_text_message
 from api.message import send_private_msg, send_group_msg
+from core.auth import is_system_admin, is_group_admin
+
+SWITCH_COMMAND = "switch"
 
 # 数据根目录
 DATA_ROOT_DIR = "data"
@@ -215,3 +218,57 @@ async def handle_module_group_switch(MODULE_NAME, websocket, group_id, message_i
         return switch_status
     except Exception as e:
         logger.error(f"[{MODULE_NAME}]处理模块群聊开关命令失败: {e}")
+
+
+async def handle_events(websocket, message):
+    """
+    统一处理 switch 命令，支持群聊和私聊
+    用来扫描本群已开启的模块
+    """
+    try:
+        # 只处理文本消息
+        if message.get("post_type") != "message":
+            return
+
+        raw_message = message.get("raw_message", "").lower()
+        if raw_message != SWITCH_COMMAND:
+            return
+
+        # 鉴权
+        if not is_system_admin(str(message.get("user_id", ""))) and not is_group_admin(
+            str(message.get("sender", {}).get("role", ""))
+        ):
+            return
+
+        # 判断消息类型
+        message_type = message.get("message_type", "")
+        message_id = message.get("message_id", "")
+        reply_message = generate_reply_message(message_id)
+
+        if message_type == "group":
+            group_id = str(message.get("group_id", ""))
+
+            # 扫描本群已开启的模块
+            enabled_modules = []
+            for module_name in os.listdir(DATA_ROOT_DIR):
+                if is_group_switch_on(group_id, module_name):
+                    enabled_modules.append(module_name)
+
+            if enabled_modules:
+                switch_text = f"本群（{group_id}）已开启的模块：\n"
+                for i, module_name in enumerate(enabled_modules, 1):
+                    switch_text += f"{i}. 【{module_name}】\n"
+                switch_text += f"\n共计 {len(enabled_modules)} 个模块"
+            else:
+                switch_text = f"本群（{group_id}）暂未开启任何模块"
+
+            text_message = generate_text_message(switch_text)
+            await send_group_msg(
+                websocket,
+                group_id,
+                [reply_message, text_message],
+                note="del_msg=30",
+            )
+
+    except Exception as e:
+        logger.error(f"[SwitchManager]处理开关查询命令失败: {e}")
