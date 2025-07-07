@@ -222,32 +222,33 @@ async def handle_module_group_switch(MODULE_NAME, websocket, group_id, message_i
 
 async def handle_events(websocket, message):
     """
-    统一处理 switch 命令，支持群聊和私聊
+    统一处理 switch 命令，支持群聊
     用来扫描本群已开启的模块
     """
     try:
         # 只处理文本消息
         if message.get("post_type") != "message":
             return
-
         raw_message = message.get("raw_message", "").lower()
         if raw_message != SWITCH_COMMAND:
             return
 
-        # 鉴权
-        if not is_system_admin(str(message.get("user_id", ""))) and not is_group_admin(
-            str(message.get("sender", {}).get("role", ""))
-        ):
-            return
-
-        # 判断消息类型
+        # 获取基本信息
+        user_id = str(message.get("user_id", ""))
         message_type = message.get("message_type", "")
+        role = message.get("sender", {}).get("role", "")
+
+        # 鉴权 - 根据消息类型进行不同的权限检查
+        if message_type == "group":
+            group_id = str(message.get("group_id", ""))
+            # 群聊中需要是系统管理员或群管理员
+            if not is_system_admin(user_id) and not is_group_admin(role):
+                return
+
         message_id = message.get("message_id", "")
         reply_message = generate_reply_message(message_id)
 
         if message_type == "group":
-            group_id = str(message.get("group_id", ""))
-
             # 扫描本群已开启的模块
             enabled_modules = []
             for module_name in os.listdir(DATA_ROOT_DIR):
