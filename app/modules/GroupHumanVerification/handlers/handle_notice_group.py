@@ -254,9 +254,11 @@ class GroupNoticeHandler:
                 "assets",
                 "guide.png",
             )
+
             # 读取图片并转为base64
             with open(image_path, "rb") as f:
                 img_base64 = base64.b64encode(f.read()).decode("utf-8")
+
             msg_image = generate_image_message(img_base64, type="base64")
             await send_group_msg(
                 self.websocket,
