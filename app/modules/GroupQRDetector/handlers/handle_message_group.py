@@ -12,7 +12,7 @@ from utils.generate import (
 )
 from datetime import datetime
 from core.menu_manager import MenuManager
-from ..core.video_qr_detector import QRDetector
+from ..core.qr_detector import QRDetector
 import re
 import html
 import urllib.parse
