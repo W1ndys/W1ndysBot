@@ -58,8 +58,8 @@ class MetaEventHandler:
         """
         try:
             now = datetime.now()
-            # 只在0:10执行
-            if now.hour == 0 and now.minute == 10:
+            # 只在0:0执行
+            if now.hour == 0 and now.minute == 0:
                 current_minute = now.strftime("%Y-%m-%d %H:%M")
                 if MetaEventHandler._last_execute_minute == current_minute:
                     # 已经执行过，不再重复执行
