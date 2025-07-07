@@ -3,7 +3,7 @@ from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from core.auth import is_system_admin, is_group_admin
-from api.message import send_group_msg, delete_msg
+from api.message import send_group_msg, delete_msg, send_private_msg
 from api.group import set_group_ban
 from utils.generate import (
     generate_text_message,
@@ -16,6 +16,7 @@ from ..core.video_qr_detector import QRDetector
 import re
 import html
 import urllib.parse
+from config import OWNER_ID
 
 
 class GroupMessageHandler:
@@ -38,7 +39,7 @@ class GroupMessageHandler:
         self.nickname = self.sender.get("nickname", "")
         self.card = self.sender.get("card", "")
         self.role = self.sender.get("role", "")
-
+        self.url = ""
         # 初始化二维码检测器
         self.qr_detector = QRDetector()
 
@@ -120,6 +121,7 @@ class GroupMessageHandler:
             match = re.search(pattern, self.raw_message)
             if match:
                 url = self._decode_url(match.group(1))
+                self.url = url
                 return ("video", url)
 
         # 检测图片
@@ -128,6 +130,7 @@ class GroupMessageHandler:
             match = re.search(pattern, self.raw_message)
             if match:
                 url = self._decode_url(match.group(1))
+                self.url = url
                 return ("image", url)
 
         return None
@@ -177,3 +180,20 @@ class GroupMessageHandler:
 
         # 撤回消息
         await delete_msg(self.websocket, self.message_id)
+
+        # 上报给系统管理员
+        await send_private_msg(
+            self.websocket,
+            OWNER_ID,
+            [
+                generate_text_message(
+                    f"二维码警告提醒\n"
+                    f"group_id={self.group_id}\n"
+                    f"user_id={self.user_id}\n"
+                    f"nickname={self.nickname}\n"
+                    f"时间={self.formatted_time}\n"
+                    f"url={self.url}"
+                ),
+            ],
+            note="del_msg=30",
+        )
