@@ -3,14 +3,16 @@ import random
 import os
 import numpy as np
 import asyncio
+import platform
 from logger import logger
 
 try:
     from pyzbar import pyzbar
 
     PYZBAR_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     PYZBAR_AVAILABLE = False
+    PYZBAR_ERROR = str(e)
 
 
 class VideoQRDetector:
@@ -35,6 +37,37 @@ class VideoQRDetector:
             self.opencv_qr_available = True
         except:
             self.opencv_qr_available = False
+
+        # 检查依赖并给出友好提示
+        self._check_dependencies()
+
+    def _check_dependencies(self):
+        """检查依赖并给出安装建议"""
+        if not PYZBAR_AVAILABLE:
+            logger.warning("⚠️  pyzbar 不可用，二维码检测功能受限")
+            logger.warning(f"   错误信息: {PYZBAR_ERROR}")
+
+            if platform.system() == "Linux":
+                logger.warning("🔧 Linux 系统解决方案:")
+                logger.warning("   sudo apt-get update")
+                logger.warning("   sudo apt-get install libzbar0 libzbar-dev")
+                logger.warning("   pip install pyzbar")
+            elif platform.system() == "Windows":
+                logger.warning("🔧 Windows 系统解决方案:")
+                logger.warning("   pip install pyzbar")
+            elif platform.system() == "Darwin":  # macOS
+                logger.warning("🔧 macOS 系统解决方案:")
+                logger.warning("   brew install zbar")
+                logger.warning("   pip install pyzbar")
+
+        if not self.opencv_qr_available:
+            logger.warning("⚠️  OpenCV QR 检测器不可用")
+            logger.warning("🔧 解决方案:")
+            logger.warning("   pip install opencv-python")
+
+        if not PYZBAR_AVAILABLE and not self.opencv_qr_available:
+            logger.error("❌ 没有可用的二维码检测器！")
+            logger.error("   请安装 pyzbar 或确保 OpenCV 正常工作")
 
     def _validate_url(self, video_url):
         """
@@ -352,14 +385,18 @@ class VideoQRDetector:
         except:
             return "online_video"
 
-    async def extract_random_frame(self, video_url, save_image=True, mark_qr=True):
+    async def extract_random_frame(
+        self, video_url, save_image=True, mark_qr=True, max_retries=3
+    ):
         """
         从在线视频中随机抽取一帧并保存为图片，同时检测二维码。
+        如果没有检测到二维码，会重新抽取帧重试。
 
         Args:
             video_url (str): 在线视频链接
             save_image (bool): 是否保存图片
             mark_qr (bool): 是否保存标记了二维码的图片
+            max_retries (int): 最大重试次数，默认3次
 
         Returns:
             dict: 包含检测结果的字典
@@ -369,163 +406,261 @@ class VideoQRDetector:
             logger.error(f"错误：无效的视频URL {video_url}")
             return {"success": False, "error": "无效的视频URL"}
 
-        def _extract_frame():
+        # 确保输出目录存在
+        await self._ensure_output_dir()
+
+        # 获取视频信息（只获取一次）
+        video_info = await self._get_video_info(video_url)
+        if not video_info["success"]:
+            return video_info
+
+        # 记录所有尝试的结果
+        all_attempts = []
+
+        for attempt in range(max_retries):
+            logger.info(f"🎯 第 {attempt + 1} 次尝试检测二维码...")
+
+            # 抽取随机帧
+            frame_result = await self._extract_single_frame(video_url, video_info)
+            if not frame_result["success"]:
+                logger.error(f"第 {attempt + 1} 次尝试失败：{frame_result['error']}")
+                all_attempts.append(frame_result)
+                continue
+
+            frame = frame_result["frame"]
+            frame_index = frame_result["frame_index"]
+
+            # 检测二维码
+            qr_results = await self.detect_qr_codes(frame)
+
+            # 构建当前尝试的结果
+            current_result = {
+                "success": True,
+                "attempt": attempt + 1,
+                "frame_index": frame_index,
+                "total_frames": video_info["total_frames"],
+                "video_info": video_info.get("video_info", {}),
+                "has_qr_code": len(qr_results) > 0,
+                "qr_codes": qr_results,
+            }
+
+            # 如果检测到二维码，处理保存逻辑并返回结果
+            if qr_results:
+                logger.info(
+                    f"✅ 第 {attempt + 1} 次尝试成功检测到 {len(qr_results)} 个二维码！"
+                )
+
+                # 保存图片
+                if save_image:
+                    save_result = await self._save_frame_images(
+                        frame, video_url, frame_index, qr_results, mark_qr
+                    )
+                    current_result.update(save_result)
+
+                # 记录检测到的二维码信息
+                self._log_qr_results(qr_results)
+
+                # 记录所有尝试历史
+                all_attempts.append(current_result)
+                current_result["all_attempts"] = all_attempts
+
+                return current_result
+            else:
+                logger.warning(
+                    f"❌ 第 {attempt + 1} 次尝试未检测到二维码（帧索引：{frame_index}）"
+                )
+                all_attempts.append(current_result)
+
+        # 所有尝试都失败了
+        logger.error(f"❌ 经过 {max_retries} 次尝试，均未检测到二维码")
+
+        # 返回最后一次尝试的结果，但标记为最终失败
+        final_result = (
+            all_attempts[-1]
+            if all_attempts
+            else {"success": False, "error": "所有尝试都失败了"}
+        )
+        final_result.update(
+            {
+                "final_success": False,
+                "total_attempts": max_retries,
+                "all_attempts": all_attempts,
+                "message": f"经过 {max_retries} 次尝试，均未检测到二维码",
+            }
+        )
+
+        return final_result
+
+    async def _get_video_info(self, video_url):
+        """
+        获取视频基本信息
+        """
+
+        def _get_info():
             cap = cv2.VideoCapture(video_url)
 
             if not cap.isOpened():
                 logger.error(f"错误：无法打开视频URL {video_url}")
-                return None, {"success": False, "error": "无法打开视频URL"}
+                return {"success": False, "error": "无法打开视频URL"}
 
             total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            fps = cap.get(cv2.CAP_PROP_FPS)
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+            cap.release()
+
             if total_frames == 0:
                 logger.error(f"错误：视频 {video_url} 不包含任何帧。")
-                cap.release()
-                return None, {"success": False, "error": "视频不包含任何帧"}
+                return {"success": False, "error": "视频不包含任何帧"}
 
+            logger.info(f"📹 视频信息:")
+            logger.info(f"   总帧数: {total_frames}")
+            logger.info(f"   帧率: {fps}")
+            logger.info(f"   分辨率: {width}x{height}")
+
+            return {
+                "success": True,
+                "total_frames": total_frames,
+                "video_info": {"fps": fps, "width": width, "height": height},
+            }
+
+        return await asyncio.get_event_loop().run_in_executor(None, _get_info)
+
+    async def _extract_single_frame(self, video_url, video_info):
+        """
+        抽取单个随机帧
+        """
+
+        def _extract():
+            cap = cv2.VideoCapture(video_url)
+
+            if not cap.isOpened():
+                return {"success": False, "error": "无法打开视频URL"}
+
+            total_frames = video_info["total_frames"]
             random_frame_index = random.randint(0, total_frames - 1)
-            cap.set(cv2.CAP_PROP_POS_FRAMES, random_frame_index)
 
+            cap.set(cv2.CAP_PROP_POS_FRAMES, random_frame_index)
             ret, frame = cap.read()
             cap.release()
 
             if not ret:
-                logger.error(
-                    f"错误：未能读取视频 {video_url} 中的随机帧 {random_frame_index}。"
-                )
-                return None, {"success": False, "error": "无法读取视频帧"}
+                return {"success": False, "error": f"无法读取帧 {random_frame_index}"}
 
-            return frame, {
-                "success": True,
-                "frame_index": random_frame_index,
-                "total_frames": total_frames,
-            }
+            logger.info(f"📸 抽取帧 {random_frame_index}，形状：{frame.shape}")
 
-        # 确保输出目录存在
-        await self._ensure_output_dir()
+            return {"success": True, "frame": frame, "frame_index": random_frame_index}
 
-        # 在线程池中执行视频帧提取
-        frame, result = await asyncio.get_event_loop().run_in_executor(
-            None, _extract_frame
-        )
+        return await asyncio.get_event_loop().run_in_executor(None, _extract)
 
-        if not result["success"] or frame is None:
-            return result
+    async def _save_frame_images(
+        self, frame, video_url, frame_index, qr_results, mark_qr
+    ):
+        """
+        保存帧图片和标记图片
+        """
+        result = {}
+        video_name = self._get_video_name(video_url)
 
-        # 检测二维码
-        qr_results = await self.detect_qr_codes(frame)
+        # 保存原始帧
+        output_filename = f"frame_{video_name}_{frame_index}.jpg"
+        output_path = os.path.join(self.output_dir, output_filename)
 
-        result.update(
-            {
-                "has_qr_code": len(qr_results) > 0,
-                "qr_codes": qr_results,
-            }
-        )
+        try:
 
-        if save_image and frame is not None:
-            video_name = self._get_video_name(video_url)
-            output_filename = f"frame_{video_name}_{result['frame_index']}.jpg"
-            output_path = os.path.join(self.output_dir, output_filename)
+            def _save_image():
+                return cv2.imwrite(output_path, frame)
 
-            # 异步保存图片
+            success = await asyncio.get_event_loop().run_in_executor(None, _save_image)
+
+            if success:
+                result["image_path"] = output_path
+                logger.info(f"成功导出随机帧 {frame_index} 到：{output_path}")
+
+                if os.path.exists(output_path):
+                    file_size = os.path.getsize(output_path)
+                    logger.info(f"文件大小：{file_size} 字节")
+            else:
+                logger.error(f"错误：无法保存图片到 {output_path}")
+                result["save_error"] = "cv2.imwrite 返回 False"
+        except Exception as e:
+            logger.error(f"保存图片时发生错误：{e}")
+            result["save_error"] = str(e)
+
+        # 保存标记了二维码的图片
+        if mark_qr and qr_results:
             try:
-
-                def _save_image():
-                    return cv2.imwrite(output_path, frame)
-
-                success = await asyncio.get_event_loop().run_in_executor(
-                    None, _save_image
-                )
-
-                if success:
-                    result["image_path"] = output_path
-                    logger.info(
-                        f"成功导出随机帧 {result['frame_index']} 到：{output_path}"
-                    )
-                    # 验证文件是否真的存在
-                    if os.path.exists(output_path):
-                        file_size = os.path.getsize(output_path)
-                        logger.info(f"文件大小：{file_size} 字节")
-                    else:
-                        logger.warning(f"警告：文件保存后未找到：{output_path}")
-                else:
-                    logger.error(f"错误：无法保存图片到 {output_path}")
-                    result["save_error"] = "cv2.imwrite 返回 False"
-            except Exception as e:
-                logger.error(f"保存图片时发生错误：{e}")
-                result["save_error"] = str(e)
-
-        if qr_results:
-            logger.info(f"\n🔍 在图片中检测到 {len(qr_results)} 个二维码：")
-            for i, qr_info in enumerate(qr_results, 1):
-                logger.info(f"  二维码 {i}:")
-                logger.info(f"    类型: {qr_info['type']}")
-                logger.info(f"    内容: {qr_info['data']}")
-                logger.info(f"    位置: {qr_info['points']}")
-
-            # 可选：在图片上标记二维码位置并保存
-            if save_image and mark_qr and frame is not None:
 
                 def _create_marked_image():
                     frame_with_qr = frame.copy()
                     for qr_info in qr_results:
                         points = qr_info["points"]
-                        # 绘制二维码边界
-                        for i in range(len(points)):
-                            cv2.line(
-                                frame_with_qr,
-                                points[i],
-                                points[(i + 1) % len(points)],
-                                (0, 255, 0),
-                                2,
-                            )
+                        if points:  # 确保有坐标点
+                            # 绘制二维码边界
+                            for i in range(len(points)):
+                                cv2.line(
+                                    frame_with_qr,
+                                    points[i],
+                                    points[(i + 1) % len(points)],
+                                    (0, 255, 0),
+                                    2,
+                                )
 
-                        # 在二维码附近添加文本
-                        cv2.putText(
-                            frame_with_qr,
-                            f"QR: {qr_info['data'][:20]}...",
-                            (points[0][0], points[0][1] - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX,
-                            0.5,
-                            (0, 255, 0),
-                            1,
-                        )
+                            # 在二维码附近添加文本
+                            cv2.putText(
+                                frame_with_qr,
+                                f"QR: {qr_info['data'][:20]}...",
+                                (points[0][0], points[0][1] - 10),
+                                cv2.FONT_HERSHEY_SIMPLEX,
+                                0.5,
+                                (0, 255, 0),
+                                1,
+                            )
                     return frame_with_qr
 
                 frame_with_qr = await asyncio.get_event_loop().run_in_executor(
                     None, _create_marked_image
                 )
 
-                # 保存标记了二维码的图片
-                video_name = self._get_video_name(video_url)
-                marked_filename = (
-                    f"frame_{video_name}_{result['frame_index']}_marked.jpg"
-                )
+                marked_filename = f"frame_{video_name}_{frame_index}_marked.jpg"
                 marked_path = os.path.join(self.output_dir, marked_filename)
 
-                try:
+                def _save_marked_image():
+                    return cv2.imwrite(marked_path, frame_with_qr)
 
-                    def _save_marked_image():
-                        return cv2.imwrite(marked_path, frame_with_qr)
+                success = await asyncio.get_event_loop().run_in_executor(
+                    None, _save_marked_image
+                )
 
-                    success = await asyncio.get_event_loop().run_in_executor(
-                        None, _save_marked_image
-                    )
+                if success:
+                    result["marked_image_path"] = marked_path
+                    logger.info(f"已保存标记二维码的图片到：{marked_path}")
 
-                    if success:
-                        result["marked_image_path"] = marked_path
-                        logger.info(f"已保存标记二维码的图片到：{marked_path}")
-                        # 验证文件是否真的存在
-                        if os.path.exists(marked_path):
-                            file_size = os.path.getsize(marked_path)
-                            logger.info(f"标记图片文件大小：{file_size} 字节")
-                    else:
-                        logger.error(f"错误：无法保存标记图片到 {marked_path}")
-                except Exception as e:
-                    logger.error(f"保存标记图片时发生错误：{e}")
-        else:
-            logger.error("❌ 未在图片中检测到二维码")
+                    if os.path.exists(marked_path):
+                        file_size = os.path.getsize(marked_path)
+                        logger.info(f"标记图片文件大小：{file_size} 字节")
+                else:
+                    logger.error(f"错误：无法保存标记图片到 {marked_path}")
+
+            except Exception as e:
+                logger.error(f"保存标记图片时发生错误：{e}")
 
         return result
+
+    def _log_qr_results(self, qr_results):
+        """
+        记录二维码检测结果
+        """
+        logger.info(f"\n🔍 检测到 {len(qr_results)} 个二维码：")
+        for i, qr_info in enumerate(qr_results, 1):
+            logger.info(f"  二维码 {i}:")
+            logger.info(f"    类型: {qr_info['type']}")
+            logger.info(f"    内容: {qr_info['data']}")
+            logger.info(f"    检测方法: {qr_info['method']}")
+            logger.info(f"    预处理方法: {qr_info['preprocess_method']}")
+            if qr_info["points"]:
+                logger.info(f"    位置: {qr_info['points']}")
 
     async def has_qr_code(self, video_url, num_samples=3):
         """
