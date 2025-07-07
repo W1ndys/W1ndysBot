@@ -196,5 +196,4 @@ class GroupMessageHandler:
                     f"url={self.url}"
                 ),
             ],
-            note="del_msg=30",
         )
