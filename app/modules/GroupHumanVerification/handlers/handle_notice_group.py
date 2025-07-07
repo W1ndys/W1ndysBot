@@ -9,13 +9,19 @@ from .. import (
     NOTE_CONDITION,
     WARNING_COUNT,
 )
+import os
 import uuid
+import base64
 import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
 from api.group import set_group_ban
 from api.message import send_group_msg, delete_msg
-from utils.generate import generate_at_message, generate_text_message
+from utils.generate import (
+    generate_at_message,
+    generate_text_message,
+    generate_image_message,
+)
 from .data_manager import DataManager
 
 
@@ -242,10 +248,20 @@ class GroupNoticeHandler:
                 f"你可以直接复制此消息全部内容发送给机器人进行验证，无需单独复制验证码，直接临时会话私聊我即可，无需加好友。\n\n"
                 f"{code}"
             )
+            image_path = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "assets",
+                "guide.png",
+            )
+            # 读取图片并转为base64
+            with open(image_path, "rb") as f:
+                img_base64 = base64.b64encode(f.read()).decode("utf-8")
+            msg_image = generate_image_message(img_base64, type="base64")
             await send_group_msg(
                 self.websocket,
                 self.group_id,
-                [msg_at, msg_text],
+                [msg_at, msg_text, msg_image],
                 note=f"{NOTE_CONDITION}-group_id={self.group_id}-user_id={self.user_id}-del_msg=14400",  # 14400=4小时
             )
         except Exception as e:
