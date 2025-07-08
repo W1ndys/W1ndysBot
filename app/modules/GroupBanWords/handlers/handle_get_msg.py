@@ -33,7 +33,8 @@ class GetMsgHandler:
             user_id = match_user_id.group(1) if match_user_id else ""
             action = match_action.group(1) if match_action else ""
 
-            if group_id and user_id and action:
+            # 检查是否是该模块请求解析的获取消息内容
+            if group_id and user_id and action and MODULE_NAME in self.raw_message:
                 # 解禁
                 if action == UNBAN_WORD_COMMAND:
                     logger.info(f"[{MODULE_NAME}]解禁用户{user_id}，群号{group_id}")

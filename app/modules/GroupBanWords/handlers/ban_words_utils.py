@@ -2,6 +2,7 @@ import asyncio
 from datetime import datetime
 import re
 from .. import (
+    MODULE_NAME,
     BAN_WORD_WEIGHT_MAX,
     BAN_WORD_DURATION,
     UNBAN_WORD_COMMAND,
@@ -117,7 +118,10 @@ async def check_and_handle_ban_words(
         await send_private_msg(
             websocket,
             OWNER_ID,
-            [generate_text_message(admin_msg_content)],
+            [
+                generate_text_message(f"[{MODULE_NAME}]"),
+                generate_text_message(admin_msg_content),
+            ],
         )
 
         send_feishu_msg(
@@ -129,6 +133,7 @@ async def check_and_handle_ban_words(
             websocket,
             group_id,
             [
+                generate_text_message(f"[{MODULE_NAME}]"),
                 generate_at_message(user_id),
                 generate_text_message(
                     f"({user_id})请勿发送违禁消息，如误封请联系管理员，发广告的自觉点退群\n"
