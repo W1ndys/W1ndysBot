@@ -107,19 +107,16 @@ async def handle_events(websocket, msg):
             match = re.search(r"nc_get_rkey", echo)
             if match:
                 data_list = msg.get("data", [])
-                if isinstance(data_list, list) and len(data_list) > 0:
-                    for item in data_list:
-                        rkey = item.get("rkey")
-                        ttl = item.get("ttl")
-                        rkey_time = item.get("time")
-                        rkey_type = item.get("type")
-                        # 保存到文件
-                        save_rkey_to_file(item)
-                        logger.success(
-                            f"获取到nc_get_rkey: rkey={rkey}, ttl={ttl}, time={rkey_time}, type={rkey_type}，已保存到文件"
-                        )
-                else:
-                    logger.warning("未获取到有效的rkey数据列表")
+                for item in data_list:
+                    rkey = item.get("rkey")
+                    ttl = item.get("ttl")
+                    rkey_time = item.get("time")
+                    rkey_type = item.get("type")
+                    # 保存到文件
+                    save_rkey_to_file(item)
+                    logger.success(
+                        f"获取到nc_get_rkey: rkey={rkey}, ttl={ttl}, time={rkey_time}, type={rkey_type}，已保存到文件"
+                    )
     except Exception as e:
         logger.error(f"自动刷新rkey失败: {e}")
         await send_private_msg(websocket, OWNER_ID, f"自动刷新rkey失败: {e}")

@@ -2,13 +2,26 @@ import logger
 from config import OWNER_ID
 from api.group import get_group_list
 from api.message import send_private_msg
-import re
 import os
 import json
 import time
 
+DATA_DIR = os.path.join("data", "Core", "get_group_list.json")
+
+# 全局变量，记录上次请求时间
 last_request_time = 0
-REQUEST_INTERVAL = 600  # 10分钟，单位：秒
+REQUEST_INTERVAL = 3600  # 1小时，单位：秒
+
+
+def save_group_list_to_file(item):
+    """
+    保存rkey信息到文件，确保文件夹存在
+    """
+    dir_path = os.path.dirname(DATA_DIR)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path, exist_ok=True)
+    with open(DATA_DIR, "w", encoding="utf-8") as f:
+        json.dump(item, f, ensure_ascii=False, indent=2)
 
 
 async def handle_events(websocket, msg):
@@ -38,13 +51,16 @@ async def handle_events(websocket, msg):
         current_time = int(time.time())
         # 检查距离上次请求是否已超过10分钟
         if current_time - last_request_time >= REQUEST_INTERVAL:
-            # 发送nc_get_rkey请求
+            # 发送获取群列表的请求
             await get_group_list(websocket, no_cache=True)
             last_request_time = current_time
 
         if msg.get("status") == "ok":
             echo = msg.get("echo", "")
-            pass
+            if echo == "get_group_list":
+                # 保存data
+                save_group_list_to_file(msg.get("data", []))
+                logger.success(f"[Core]已保存群列表")
     except Exception as e:
-        logger.error(f"获取群列表失败: {e}")
-        await send_private_msg(websocket, OWNER_ID, f"获取群列表失败: {e}")
+        logger.error(f"[Core]获取群列表失败: {e}")
+        await send_private_msg(websocket, OWNER_ID, f"[Core]获取群列表失败: {e}")

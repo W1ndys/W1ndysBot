@@ -21,6 +21,7 @@ CORE_MODULES = [
     ("core.nc_get_rkey", "handle_events"),  # 自动刷新rkey
     ("core.menu_manager", "handle_events"),  # 全局菜单命令
     ("core.switchs", "handle_events"),  # 全局开关命令
+    ("core.get_group_list", "handle_events"),  # 获取群列表
     # 在这里添加其他必须加载的核心模块
 ]
 
