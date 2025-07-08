@@ -6,6 +6,8 @@ from .. import (
     ADD_GLOBAL_BAN_WORD_COMMAND,
     DELETE_GLOBAL_BAN_WORD_COMMAND,
     COPY_BAN_WORD_COMMAND,
+    ADD_BAN_WORD_COMMAND,
+    DELETE_BAN_WORD_COMMAND,
 )
 from core.menu_manager import MENU_COMMAND
 import logger
@@ -216,12 +218,20 @@ class PrivateMessageHandler:
             group_ban_words = GroupBanWordsHandler(
                 self.websocket, {**self.msg, "group_id": "0"}
             )
+
+            # 处理添加/删除违禁词（私聊中默认操作全局词库）
+            if self.raw_message.lower().startswith(
+                ADD_BAN_WORD_COMMAND.lower()
+            ) or self.raw_message.lower().startswith(DELETE_BAN_WORD_COMMAND.lower()):
+                await group_ban_words.handle()
+                return
+
             # 处理管理员解封 踢出
             if self.raw_message.lower().startswith(UNBAN_WORD_COMMAND.lower()):
                 await group_ban_words.handle_unban_word()
             elif self.raw_message.lower().startswith(KICK_BAN_WORD_COMMAND.lower()):
                 await group_ban_words.handle_kick_ban_word()
-            # 处理全局违禁词管理
+            # 处理全局违禁词管理（保留兼容性）
             elif self.raw_message.lower().startswith(
                 ADD_GLOBAL_BAN_WORD_COMMAND.lower()
             ):

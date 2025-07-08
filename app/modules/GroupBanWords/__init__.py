@@ -20,19 +20,23 @@ os.makedirs(DATA_DIR, exist_ok=True)
 BAN_WORD_WEIGHT_MAX = 100  # 违禁词封顶权重，超过视为违规
 BAN_WORD_DURATION = 30 * 24 * 60 * 60  # 违禁词封禁时长，单位：秒
 
-ADD_BAN_WORD_COMMAND = "添加违禁词"  # 添加违禁词命令
-DELETE_BAN_WORD_COMMAND = "删除违禁词"  # 删除违禁词命令
-ADD_GLOBAL_BAN_WORD_COMMAND = "添加全局违禁词"  # 添加全局违禁词命令
-DELETE_GLOBAL_BAN_WORD_COMMAND = "删除全局违禁词"  # 删除全局违禁词命令
+ADD_BAN_WORD_COMMAND = "添加违禁词"  # 添加违禁词命令（群聊添加群专属，私聊添加全局）
+DELETE_BAN_WORD_COMMAND = "删除违禁词"  # 删除违禁词命令（群聊删除群专属，私聊删除全局）
+ADD_GLOBAL_BAN_WORD_COMMAND = (
+    "添加全局违禁词"  # 添加全局违禁词命令（已废弃，保留兼容性）
+)
+DELETE_GLOBAL_BAN_WORD_COMMAND = (
+    "删除全局违禁词"  # 删除全局违禁词命令（已废弃，保留兼容性）
+)
 UNBAN_WORD_COMMAND = "解禁"  # 解禁被封禁用户命令
 KICK_BAN_WORD_COMMAND = "踢出"  # 踢出被封禁用户命令
 COPY_BAN_WORD_COMMAND = "复制违禁词"  # 复制违禁词命令
 
 COMMANDS = {
-    ADD_BAN_WORD_COMMAND: f"添加违禁词，用法：{ADD_BAN_WORD_COMMAND} 违禁词 权重(0-100，默认10)，例如：{ADD_BAN_WORD_COMMAND} sb 10",
-    DELETE_BAN_WORD_COMMAND: f"删除违禁词，用法：{DELETE_BAN_WORD_COMMAND} 违禁词，例如：{DELETE_BAN_WORD_COMMAND} sb",
-    ADD_GLOBAL_BAN_WORD_COMMAND: f"添加全局违禁词，用法：{ADD_GLOBAL_BAN_WORD_COMMAND} 违禁词 权重(0-100，默认10)，例如：{ADD_GLOBAL_BAN_WORD_COMMAND} sb 10",
-    DELETE_GLOBAL_BAN_WORD_COMMAND: f"删除全局违禁词，用法：{DELETE_GLOBAL_BAN_WORD_COMMAND} 违禁词，例如：{DELETE_GLOBAL_BAN_WORD_COMMAND} sb",
+    ADD_BAN_WORD_COMMAND: f"添加违禁词，用法：群聊中使用添加群专属违禁词，私聊中使用添加全局违禁词，格式：{ADD_BAN_WORD_COMMAND} 违禁词 权重(0-100，默认10)，例如：{ADD_BAN_WORD_COMMAND} sb 10",
+    DELETE_BAN_WORD_COMMAND: f"删除违禁词，用法：群聊中删除群专属违禁词，私聊中删除全局违禁词，格式：{DELETE_BAN_WORD_COMMAND} 违禁词，例如：{DELETE_BAN_WORD_COMMAND} sb",
+    ADD_GLOBAL_BAN_WORD_COMMAND: f"[已废弃] 添加全局违禁词，请在私聊中使用'{ADD_BAN_WORD_COMMAND}'命令",
+    DELETE_GLOBAL_BAN_WORD_COMMAND: f"[已废弃] 删除全局违禁词，请在私聊中使用'{DELETE_BAN_WORD_COMMAND}'命令",
     COPY_BAN_WORD_COMMAND: f"复制违禁词，用法：私聊：{COPY_BAN_WORD_COMMAND} 来源群号 目标群号，群聊：{COPY_BAN_WORD_COMMAND} 来源群号(复制到当前群)，全局词库群号为0",
     # 可以继续添加其他命令
 }
