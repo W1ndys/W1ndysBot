@@ -390,17 +390,27 @@ async def set_group_add_request(websocket, flag, approve, reason):
 async def get_group_info(websocket, group_id):
     """
     获取群信息
+    参数:
+        websocket: WebSocket连接对象
+        group_id (int/str): 群号，必填
+    返回:
+        bool: 操作是否成功（仅表示API是否发送成功，具体响应需通过echo处理）
+    特别注意:
+        由于WebSocket的特殊性，无法一对一获取相应信息，需通过echo字段处理响应
     """
     try:
+        # 构造请求payload，action为get_group_info，params包含group_id，echo用于后续响应识别
         payload = {
             "action": "get_group_info",
             "params": {"group_id": group_id},
             "echo": "get_group_info",
         }
+        # 发送请求到上游WebSocket
         await websocket.send(json.dumps(payload))
         logger.info(f"[API]已执行获取群信息")
         return True
     except Exception as e:
+        # 捕获异常并记录错误日志
         logger.error(f"[API]获取群信息失败: {e}")
         return False
 
