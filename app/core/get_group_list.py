@@ -49,8 +49,14 @@ async def handle_events(websocket, msg):
     global last_request_time
     try:
         current_time = int(time.time())
-        # 检查距离上次请求是否已超过10分钟
+        # 检查距离上次请求是否已超过指定时间
         if current_time - last_request_time >= REQUEST_INTERVAL:
+            # 发送获取群列表的请求
+            await get_group_list(websocket, no_cache=True)
+            last_request_time = current_time
+
+        # 如果有修改群名的通知
+        if msg.get("sub_type") == "group_name":
             # 发送获取群列表的请求
             await get_group_list(websocket, no_cache=True)
             last_request_time = current_time
