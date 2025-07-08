@@ -32,6 +32,7 @@ class GroupMessageHandler:
 
         self.repeat_probability = 0.1  # 随机概率，百分之10
         self.poke_probability = 0.1  # 随机概率，百分之10
+        self.max_message_length = 25  # 最大消息长度，超过此长度不进行随机复读
 
     async def handle(self):
         """
@@ -81,6 +82,10 @@ class GroupMessageHandler:
 
             # 如果消息中包含下面这些字符，则不处理
             if any(word in self.raw_message for word in ignore_words):
+                return
+
+            # 检查消息长度，超过最大长度则不处理
+            if len(self.raw_message) > self.max_message_length:
                 return
 
             # 随机复读消息内容
