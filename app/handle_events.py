@@ -258,6 +258,8 @@ class EventHandler:
                     group_id = msg.get("group_id")
                     if group_id is not None:
                         format_msg += f" | 群ID: {group_id}"
+            else:
+                format_msg += f" | 不支持解析的请求类型，原内容: {msg}"
 
         # notice 事件
         elif post_type == "notice":
@@ -268,6 +270,24 @@ class EventHandler:
                 user_id = msg.get("user_id")
                 if user_id is not None:
                     format_msg += f" | 用户ID: {user_id}"
+
+            # 新增对 notify/group_name 群名变更事件的解析
+            elif notice_type == "notify":
+                sub_type = msg.get("sub_type")
+                if sub_type == "group_name":
+                    format_msg += " | 通知类型: 群名变更"
+                    group_id = msg.get("group_id")
+                    if group_id is not None:
+                        format_msg += f" | 群ID: {group_id}"
+                    user_id = msg.get("user_id")
+                    if user_id is not None:
+                        format_msg += f" | 操作者ID: {user_id}"
+                    name_new = msg.get("name_new")
+                    if name_new is not None:
+                        format_msg += f" | 新群名: {name_new}"
+                    name_old = msg.get("name_old")
+                    if name_old is not None:
+                        format_msg += f" | 旧群名: {name_old}"
 
             elif notice_type == "friend_recall":
                 format_msg += " | 通知类型: 私聊消息撤回"
@@ -517,7 +537,8 @@ class EventHandler:
                 times = msg.get("times")
                 if times is not None:
                     format_msg += f" | 点赞次数: {times}"
-
+            else:
+                format_msg += f" | 不支持解析的通知类型，原内容: {msg}"
         else:
             format_msg += f" | [未知内容]"
             # 由于状态类型结构复杂，这里直接加入原内容
