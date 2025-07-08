@@ -689,9 +689,13 @@ class GroupBanWordsHandler:
                 return
 
             # 处理群内的管理员解封踢出命令（群管理员和系统管理员可使用）
-            if self.raw_message.startswith("[CQ:reply,id=") and (
-                UNBAN_WORD_COMMAND in self.raw_message
-                or KICK_BAN_WORD_COMMAND in self.raw_message
+            if (
+                self.raw_message.startswith("[CQ:reply,id=")
+                and (
+                    UNBAN_WORD_COMMAND in self.raw_message
+                    or KICK_BAN_WORD_COMMAND in self.raw_message
+                )
+                and (is_group_admin(self.role) or is_system_admin(self.user_id))
             ):
                 # 正则提取消息ID
                 pattern = r"\[CQ:reply,id=(\d+)\]"
