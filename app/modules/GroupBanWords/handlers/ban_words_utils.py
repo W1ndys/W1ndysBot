@@ -94,19 +94,8 @@ async def check_and_handle_ban_words(
         await delete_msg(websocket, message_id)
         # 设置用户状态
         data_manager.set_user_status(user_id, "ban")
-        # 发送警告消息
-        await send_group_msg(
-            websocket,
-            group_id,
-            [
-                generate_at_message(user_id),
-                generate_text_message(
-                    f"({user_id})请勿发送违禁消息，如误封请联系管理员，发广告的自觉点退群嘻嘻嘻嘻嘻"
-                ),
-            ],
-            note="del_msg=60",
-        )
-        # 发送管理员消息和飞书消息
+
+        # 发送管理员消息和飞书消息、群内消息
         # 构建共同的消息内容
         common_content = (
             f"时间: {formatted_time}\n"
@@ -134,6 +123,22 @@ async def check_and_handle_ban_words(
         send_feishu_msg(
             title=f"检测到违禁词",
             content=feishu_msg_content,
+        )
+
+        await send_group_msg(
+            websocket,
+            group_id,
+            [
+                generate_at_message(user_id),
+                generate_text_message(
+                    f"({user_id})请勿发送违禁消息，如误封请联系管理员，发广告的自觉点退群\n"
+                    f"时间: {formatted_time}\n"
+                    f"group_id={group_id}\n"
+                    f"user_id={user_id}\n"
+                    f"已封禁{BAN_WORD_DURATION}秒\n"
+                    f"管理员可回复本消息【{UNBAN_WORD_COMMAND}】或【{KICK_BAN_WORD_COMMAND}】来处理用户"
+                ),
+            ],
         )
         return True
     else:

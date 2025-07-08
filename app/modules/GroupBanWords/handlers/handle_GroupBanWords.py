@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+import re
 from .. import (
     MODULE_NAME,
     ADD_BAN_WORD_COMMAND,
@@ -14,7 +15,13 @@ from .data_manager_words import DataManager
 from .ban_words_utils import check_and_handle_ban_words
 from logger import logger
 from core.auth import is_group_admin, is_system_admin
-from api.message import send_group_msg, delete_msg, send_private_msg, get_forward_msg
+from api.message import (
+    send_group_msg,
+    delete_msg,
+    send_private_msg,
+    get_forward_msg,
+    get_msg,
+)
 from utils.generate import (
     generate_text_message,
     generate_reply_message,
@@ -679,6 +686,23 @@ class GroupBanWordsHandler:
                 return
             if self.raw_message.startswith(DELETE_GLOBAL_BAN_WORD_COMMAND):
                 await self.delete_global_ban_word()
+                return
+
+            # 处理群内的管理员解封踢出命令（群管理员和系统管理员可使用）
+            if self.raw_message.startswith("[CQ:reply,id=") and (
+                UNBAN_WORD_COMMAND in self.raw_message
+                or KICK_BAN_WORD_COMMAND in self.raw_message
+            ):
+                # 正则提取消息ID
+                pattern = r"\[CQ:reply,id=(\d+)\]"
+                match = re.search(pattern, self.raw_message)
+                message_id = match.group(1) if match else None
+                if message_id:
+                    await get_msg(
+                        self.websocket,
+                        message_id,
+                        note=f"{MODULE_NAME}-action={KICK_BAN_WORD_COMMAND if KICK_BAN_WORD_COMMAND in self.raw_message else UNBAN_WORD_COMMAND}",
+                    )
                 return
 
             # 复制违禁词

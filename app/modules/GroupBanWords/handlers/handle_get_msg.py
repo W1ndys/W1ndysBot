@@ -19,7 +19,8 @@ class GetMsgHandler:
 
     async def handle_get_msg(self):
         try:
-            # 正则提取群号和用户ID，raw_message中有格式为"群1049225772用户1414100329发送违禁词"的消息
+            # 正则提取群号和用户ID，raw_message中有格式为"group_id={group_id}\nuser_id={user_id}"的消息
+            # 正则提取action，echo中有格式为"get_msg-action={action}"的消息
             group_pattern = r"group_id=(\d+)"
             user_pattern = r"user_id=(\d+)"
             action_pattern = r"action=(\w+)"
