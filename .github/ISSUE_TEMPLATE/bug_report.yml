@@ -1,0 +1,111 @@
+name: Bug 反馈
+description: 报告你遇到的 Bug
+title: "[Bug] 模块名 - 简要描述"
+labels: ["bug"] # 自动添加 'bug' 标签
+assignees: ["W1ndys"] # 默认指派给 W1ndys
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 必填信息
+  - type: input
+    id: module_name
+    attributes:
+      label: 模块名称 (Module Name)
+      description: 请填写涉及的模块名称。
+      placeholder: 例如：用户管理模块
+    validations:
+      required: true
+  - type: textarea
+    id: problem_description
+    attributes:
+      label: 具体问题描述 (Detailed Problem Description)
+      description: 请尽可能详细地描述您遇到的 Bug。
+      placeholder: 例如：点击保存按钮后，系统无响应并弹出错误提示。
+      render: markdown
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### Bug 详细信息
+  - type: textarea
+    id: reproduce_steps
+    attributes:
+      label: 1. 复现步骤 (Steps to Reproduce)
+      description: 请提供清晰的步骤以便我们复现问题。(如果可以，请附上代码片段或操作流程。)
+      placeholder: |
+        1. 登录系统
+        2. 点击“编辑个人资料”
+        3. 修改用户名，然后点击保存
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: expected_result
+    attributes:
+      label: 2. 预期结果 (Expected Result)
+      description: 您期望在执行上述步骤后发生什么？
+      placeholder: 例如：用户名成功更新并显示“保存成功”提示。
+    validations:
+      required: true
+  - type: textarea
+    id: actual_result
+    attributes:
+      label: 3. 实际结果 (Actual Result)
+      description: 实际发生了什么？
+      placeholder: "例如：页面卡住，控制台显示\"TypeError: undefined is not a function\"错误。"
+    validations:
+      required: true
+  - type: textarea
+    id: error_screenshot
+    attributes:
+      label: 4. 错误信息或截图 (Error Message or Screenshot)
+      description: 请粘贴任何相关的错误日志、控制台输出或截图。
+      placeholder: "请在此处粘贴或拖放图片，或提供错误信息。"
+      render: markdown
+  - type: input
+    id: os
+    attributes:
+      label: 操作系统 (OS)
+      placeholder: 例如：Windows 10, macOS Ventura, Ubuntu 22.04
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: 浏览器 (Browser) [如果适用]
+      placeholder: 例如：Chrome 120, Firefox 118
+  - type: input
+    id: app_version
+    attributes:
+      label: 应用版本 (App Version) [如果适用]
+      placeholder: 例如：v1.2.3
+  - type: textarea
+    id: other_env
+    attributes:
+      label: 其他相关环境信息 (Other Relevant Environment Info)
+      description: 如果有其他需要说明的环境信息，请在此处填写。
+      render: markdown
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### 其他 (Optional)
+  - type: dropdown
+    id: tried_to_solve
+    attributes:
+      label: 你是否尝试过解决？ (Have you tried to resolve it?)
+      options:
+        - "否"
+        - "是"
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: tried_solution
+    attributes:
+      label: 如果尝试过，请说明你尝试了什么以及结果如何。
+      description: 仅在上面选择了“是”时填写。
+      placeholder: 例如：尝试清除浏览器缓存，但问题依旧。

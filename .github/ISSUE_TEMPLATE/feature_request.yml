@@ -1,0 +1,90 @@
+name: 新功能需求
+description: 提出一个新的功能或优化建议
+title: "[功能] 模块名 - 简要功能描述"
+labels: ["enhancement", "feature"] # 自动添加 'enhancement' 和 'feature' 标签
+assignees: ["W1ndys"] # 默认指派给 W1ndys
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 必填信息
+  - type: input
+    id: module_name
+    attributes:
+      label: 模块名称 (Module Name)
+      description: 请填写涉及的模块名称。
+      placeholder: 例如：报表生成模块
+    validations:
+      required: true
+  - type: textarea
+    id: request_description
+    attributes:
+      label: 具体需求描述 (Detailed Request Description)
+      description: 请尽可能详细地描述您的新功能需求或优化方案。
+      placeholder: 例如：希望能够根据日期范围导出Excel格式的销售数据报表。
+      render: markdown
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### 需求详细信息
+  - type: textarea
+    id: current_pain_point
+    attributes:
+      label: 1. 现有痛点或问题 (Current Pain Point or Problem)
+      description: 当前存在的什么问题促使你提出这个需求？
+      placeholder: 例如：目前只能查看当天数据，无法进行历史数据分析。
+      render: markdown
+  - type: textarea
+    id: desired_value
+    attributes:
+      label: 2. 期望解决的问题或带来的价值 (Desired Problem Solved or Value Added)
+      description: 这个新功能或优化将解决什么问题？它能带来什么价值？
+      placeholder: 例如：解决历史数据分析难题，提高决策效率。
+      render: markdown
+  - type: textarea
+    id: suggested_solution
+    attributes:
+      label: 3. 建议的解决方案 (Suggested Solution) [可选]
+      description: 如果你有具体的想法，请描述如何实现这个功能或优化。
+      placeholder: 例如：在报表页面增加日期选择器和导出按钮。
+      render: markdown
+  - type: textarea
+    id: reference_examples
+    attributes:
+      label: 4. 参考资料或示例 (Reference Materials or Examples) [可选]
+      description: 是否有其他产品或网站有类似的功能可以作为参考？请提供链接或截图。
+      placeholder: 例如：参见 [某网站报表导出功能](http://example.com/report)
+      render: markdown
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### 其他 (Optional)
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 你认为这个功能的优先级是？ (What is the priority of this feature?)
+      options:
+        - "高"
+        - "中"
+        - "低"
+      default: 1 # 默认选中“中”
+    validations:
+      required: true
+  - type: checkboxes
+    id: user_groups
+    attributes:
+      label: 对哪些用户群体有帮助？ (Who would benefit from this feature?)
+      options:
+        - label: 开发者
+        - label: 最终用户
+        - label: 产品经理
+        - label: 其他 (请在下方说明)
+  - type: input
+    id: other_user_group
+    attributes:
+      label: 其他用户群体说明
+      description: 如果你在上面选择了“其他”，请在此处说明。
