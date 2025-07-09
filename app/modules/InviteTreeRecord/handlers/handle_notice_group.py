@@ -207,10 +207,10 @@ class GroupNoticeHandler:
                     [
                         generate_text_message(
                             f"邀请入群记录通知\n\n"
-                            f"邀请者：{self.operator_id}\n"
-                            f"被邀请者：{self.user_id}\n"
-                            f"群号：{self.group_id}\n"
-                            f"邀请时间：{self.formatted_time}\n"
+                            f"time={self.formatted_time}\n"
+                            f"operator_id={self.operator_id}\n"
+                            f"user_id={self.user_id}\n"
+                            f"group_id={self.group_id}\n"
                             f"这是该邀请者邀请的第{invite_count}个成员。\n"
                         )
                     ],
