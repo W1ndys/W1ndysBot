@@ -86,20 +86,31 @@ class GroupMessageHandler:
                     ):
                         return
 
+                    # 移除命令前缀
+                    remaining_text = self.raw_message.removeprefix(
+                        VIEW_INVITE_RECORD
+                    ).strip()
+
                     operator_id = None
                     show_time = False
 
                     # 检查是否包含时间参数
-                    if "时间" in self.raw_message or "time" in self.raw_message.lower():
+                    if "时间" in remaining_text or "time" in remaining_text.lower():
                         show_time = True
+                        # 移除时间关键词
+                        remaining_text = (
+                            remaining_text.replace("时间", "")
+                            .replace("time", "")
+                            .strip()
+                        )
 
-                    cq_match = re.search(r"\[CQ:at,qq=(\d+)\]", self.raw_message)
+                    # 优先从CQ码中提取QQ号
+                    cq_match = re.search(r"\[CQ:at,qq=(\d+)\]", remaining_text)
                     if cq_match:
                         operator_id = cq_match.group(1)
                     else:
-                        num_match = re.search(
-                            rf"{VIEW_INVITE_RECORD}\s+(\d+)", self.raw_message
-                        )
+                        # 从剩余文本中提取数字（支持无空格的情况）
+                        num_match = re.search(r"(\d+)", remaining_text)
                         if num_match:
                             operator_id = num_match.group(1)
 
