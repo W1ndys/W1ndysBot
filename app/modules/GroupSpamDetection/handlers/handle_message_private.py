@@ -2,7 +2,7 @@ from .. import MODULE_NAME
 import logger
 from core.switchs import is_private_switch_on, handle_module_private_switch
 from datetime import datetime
-from core.auth import is_system_admin
+from app.utils.auth import is_system_admin
 
 
 class PrivateMessageHandler:

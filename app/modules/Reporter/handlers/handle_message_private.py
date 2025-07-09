@@ -1,7 +1,7 @@
 from .. import MODULE_NAME, SWITCH_NAME
 from core.menu_manager import MENU_COMMAND
 import logger
-from core.auth import is_system_admin
+from app.utils.auth import is_system_admin
 from core.switchs import is_private_switch_on, handle_module_private_switch
 from config import OWNER_ID
 from api.message import send_private_msg, send_private_msg_with_cq, get_msg

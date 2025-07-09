@@ -7,7 +7,7 @@ from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
-from core.auth import is_system_admin
+from app.utils.auth import is_system_admin
 
 
 class PrivateMessageHandler:

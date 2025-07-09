@@ -5,7 +5,7 @@ from .. import (
     DELETE_GROUP_RANDOM_MSG,
     SILENCE_MINUTES,
 )
-from core.auth import is_system_admin, is_group_admin
+from app.utils.auth import is_system_admin, is_group_admin
 from .data_manager import DataManager
 from api.message import send_group_msg
 from utils.generate import generate_text_message, generate_reply_message

@@ -9,7 +9,7 @@ from utils.generate import (
     generate_node_message,
 )
 from datetime import datetime
-from core.auth import is_system_admin
+from app.utils.auth import is_system_admin
 from core.menu_manager import MenuManager
 
 

@@ -19,7 +19,7 @@ from datetime import datetime, date, timedelta
 from .WordCloud import QQMessageAnalyzer
 from .LLM import DifyClient
 from core.menu_manager import MenuManager
-from core.auth import is_group_admin, is_system_admin
+from app.utils.auth import is_group_admin, is_system_admin
 
 
 class GroupMessageHandler:
