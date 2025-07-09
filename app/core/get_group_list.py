@@ -15,13 +15,49 @@ REQUEST_INTERVAL = 3600  # 1小时，单位：秒
 
 def save_group_list_to_file(item):
     """
-    保存rkey信息到文件，确保文件夹存在
+    保存群列表信息到文件，确保文件夹存在
     """
     dir_path = os.path.dirname(DATA_DIR)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path, exist_ok=True)
     with open(DATA_DIR, "w", encoding="utf-8") as f:
         json.dump(item, f, ensure_ascii=False, indent=2)
+
+
+def get_group_name_by_id(group_id):
+    """
+    根据群号获取群名
+
+    Args:
+        group_id (str或int): 群号
+
+    Returns:
+        str: 群名称，如果找不到则返回None
+    """
+    try:
+        # 确保群号是字符串格式
+        group_id = str(group_id)
+
+        # 检查文件是否存在
+        if not os.path.exists(DATA_DIR):
+            logger.warning(f"[Core]群列表文件不存在: {DATA_DIR}")
+            return None
+
+        # 读取群列表文件
+        with open(DATA_DIR, "r", encoding="utf-8") as f:
+            group_list = json.load(f)
+
+        # 查找匹配的群号
+        for group in group_list:
+            if str(group.get("group_id")) == group_id:
+                return group.get("group_name")
+
+        logger.warning(f"[Core]未找到群号 {group_id} 对应的群名")
+        return None
+
+    except Exception as e:
+        logger.error(f"[Core]获取群名失败: {e}")
+        return None
 
 
 async def handle_events(websocket, msg):

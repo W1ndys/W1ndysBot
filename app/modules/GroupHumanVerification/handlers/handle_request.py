@@ -5,6 +5,7 @@ from api.group import set_group_add_request
 from utils.generate import generate_text_message
 from api.message import send_group_msg, send_private_msg
 from config import OWNER_ID
+from core.get_group_list import get_group_name_by_id
 
 
 class RequestHandler:
@@ -66,7 +67,7 @@ class RequestHandler:
                 f"有人申请加入群聊\n"
                 f"即将自动同意\n"
                 f"请求时间: {self.formatted_time}\n"
-                f"group_id={self.group_id}\n"
+                f"group_id={self.group_id}({get_group_name_by_id(self.group_id)})\n"
                 f"user_id={self.user_id}\n"
                 f"flag={self.flag}\n"
                 f"comment={self.comment}"

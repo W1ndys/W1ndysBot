@@ -20,6 +20,7 @@ from api.group import set_group_ban
 from config import OWNER_ID
 from utils.feishu import send_feishu_msg
 from .data_manager_words import DataManager
+from core.get_group_list import get_group_name_by_id
 
 
 async def check_and_handle_ban_words(
@@ -100,7 +101,7 @@ async def check_and_handle_ban_words(
         # 构建共同的消息内容
         common_content = (
             f"时间: {formatted_time}\n"
-            f"group_id={group_id}\n"
+            f"group_id={group_id}({get_group_name_by_id(group_id)})\n"
             f"user_id={user_id}\n"
             f"已封禁{BAN_WORD_DURATION}秒\n"
             f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}"
@@ -138,7 +139,7 @@ async def check_and_handle_ban_words(
                 generate_text_message(
                     f"({user_id})请勿发送违禁消息，如误封请联系管理员，发广告的自觉点退群\n"
                     f"时间: {formatted_time}\n"
-                    f"group_id={group_id}\n"
+                    f"group_id={group_id}({get_group_name_by_id(group_id)})\n"
                     f"user_id={user_id}\n"
                     f"已封禁{BAN_WORD_DURATION}秒\n"
                     f"管理员可回复本消息【{UNBAN_WORD_COMMAND}】或【{KICK_BAN_WORD_COMMAND}】来处理用户"
