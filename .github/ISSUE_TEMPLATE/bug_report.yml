@@ -72,16 +72,6 @@ body:
       placeholder: 例如：Windows 10, macOS Ventura, Ubuntu 22.04
     validations:
       required: true
-  - type: input
-    id: browser
-    attributes:
-      label: 浏览器 (Browser) [如果适用]
-      placeholder: 例如：Chrome 120, Firefox 118
-  - type: input
-    id: app_version
-    attributes:
-      label: 应用版本 (App Version) [如果适用]
-      placeholder: 例如：v1.2.3
   - type: textarea
     id: other_env
     attributes:
@@ -108,4 +98,4 @@ body:
     attributes:
       label: 如果尝试过，请说明你尝试了什么以及结果如何。
       description: 仅在上面选择了“是”时填写。
-      placeholder: 例如：尝试清除浏览器缓存，但问题依旧。
+      placeholder: 例如：尝试重启程序，但问题依旧。
