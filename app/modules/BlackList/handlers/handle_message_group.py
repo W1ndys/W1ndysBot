@@ -13,7 +13,7 @@ from .. import (
 )
 import logger
 from core.menu_manager import MENU_COMMAND
-from app.utils.auth import is_group_admin, is_system_admin
+from utils.auth import is_group_admin, is_system_admin
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg, delete_msg
 from utils.generate import (

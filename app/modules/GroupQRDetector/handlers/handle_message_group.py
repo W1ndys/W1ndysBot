@@ -2,7 +2,7 @@ from .. import MODULE_NAME, SWITCH_NAME
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
-from app.utils.auth import is_system_admin, is_group_admin
+from utils.auth import is_system_admin, is_group_admin
 from api.message import send_group_msg, delete_msg, send_private_msg
 from api.group import set_group_ban
 from utils.generate import (

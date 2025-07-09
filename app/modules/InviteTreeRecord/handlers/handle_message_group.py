@@ -15,7 +15,7 @@ from .data_manager import InviteTreeRecordDataManager
 import re
 import asyncio
 from core.menu_manager import MenuManager
-from app.utils.auth import is_group_admin, is_system_admin
+from utils.auth import is_group_admin, is_system_admin
 
 
 class GroupMessageHandler:

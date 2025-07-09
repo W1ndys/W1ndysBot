@@ -22,7 +22,7 @@ from api.group import set_group_card
 from datetime import datetime
 from .data_manager import DataManager
 import re
-from app.utils.auth import is_group_admin, is_system_admin
+from utils.auth import is_group_admin, is_system_admin
 from core.menu_manager import MenuManager
 
 

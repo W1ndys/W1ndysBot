@@ -3,7 +3,7 @@ import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from datetime import datetime
 from .GroupSpamDetectionHandle import GroupSpamDetectionHandle
-from app.utils.auth import is_group_admin, is_system_admin
+from utils.auth import is_group_admin, is_system_admin
 
 
 class GroupMessageHandler:

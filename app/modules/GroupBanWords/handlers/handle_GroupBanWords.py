@@ -14,7 +14,7 @@ from .. import (
 from .data_manager_words import DataManager
 from .ban_words_utils import check_and_handle_ban_words
 from logger import logger
-from app.utils.auth import is_group_admin, is_system_admin
+from utils.auth import is_group_admin, is_system_admin
 from api.message import (
     send_group_msg,
     delete_msg,

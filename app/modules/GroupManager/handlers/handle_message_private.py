@@ -6,7 +6,7 @@ from api.message import send_private_msg
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from core.menu_manager import MenuManager
-from app.utils.auth import is_system_admin
+from utils.auth import is_system_admin
 
 
 class PrivateMessageHandler:

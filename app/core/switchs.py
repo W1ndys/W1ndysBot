@@ -17,7 +17,7 @@ import json
 import logger
 from utils.generate import generate_reply_message, generate_text_message
 from api.message import send_private_msg, send_group_msg
-from app.utils.auth import is_system_admin, is_group_admin
+from utils.auth import is_system_admin, is_group_admin
 
 SWITCH_COMMAND = "switch"
 

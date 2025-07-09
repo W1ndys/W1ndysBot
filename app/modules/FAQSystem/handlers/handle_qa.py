@@ -10,7 +10,7 @@ from .. import (
     MAX_SUGGESTIONS,
     DELETE_TIME,
 )
-from app.utils.auth import is_group_admin, is_system_admin
+from utils.auth import is_group_admin, is_system_admin
 from .db_manager import FAQDatabaseManager
 from .handle_match_qa import AdvancedFAQMatcher
 from api.message import send_group_msg, send_group_msg_with_cq, get_msg

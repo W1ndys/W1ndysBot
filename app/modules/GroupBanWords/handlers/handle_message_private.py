@@ -16,7 +16,7 @@ from api.message import send_private_msg, get_msg
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager_words import DataManager
-from app.utils.auth import is_system_admin
+from utils.auth import is_system_admin
 from core.menu_manager import MenuManager
 from .handle_GroupBanWords import GroupBanWordsHandler
 import asyncio

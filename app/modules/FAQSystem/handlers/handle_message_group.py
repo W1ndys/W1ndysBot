@@ -7,7 +7,7 @@ from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .handle_qa import QaHandler
 from core.menu_manager import MenuManager
-from app.utils.auth import is_group_admin, is_system_admin
+from utils.auth import is_group_admin, is_system_admin
 
 
 class GroupMessageHandler:
