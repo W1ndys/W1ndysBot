@@ -8,6 +8,7 @@ from .. import (
     STATUS_KICKED,
     STATUS_VERIFIED,
     WARNING_COUNT,
+    BAN_TIME,
 )
 from api.group import set_group_kick, set_group_ban
 from api.message import send_group_msg, send_private_msg, delete_msg
@@ -86,6 +87,9 @@ class GroupHumanVerificationHandler:
             # 记录需要提醒的用户消息（每行@和文本分开生成，合成列表）
             warning_msg_list = []
             for user_id, warning_count, code in user_list:
+                # 重新禁言未验证用户
+                await set_group_ban(self.websocket, group_id, user_id, BAN_TIME)
+
                 if warning_count > 1:
                     dm.update_warning_count(group_id, user_id, warning_count - 1)
                     # 每行用generate_at_message和generate_text_message生成
@@ -168,6 +172,9 @@ class GroupHumanVerificationHandler:
                     kick_users = []
                     warning_msg_list = []
                     for user_id, warning_count, code in user_list:
+                        # 重新禁言未验证用户
+                        await set_group_ban(self.websocket, group_id, user_id, BAN_TIME)
+
                         if warning_count > 1:
                             dm.update_warning_count(
                                 group_id, user_id, warning_count - 1
