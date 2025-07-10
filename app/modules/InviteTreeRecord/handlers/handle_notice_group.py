@@ -6,6 +6,7 @@ from .data_manager import InviteTreeRecordDataManager
 from config import OWNER_ID
 from utils.generate import generate_text_message
 from api.message import send_private_msg
+from core.get_group_list import get_group_name_by_id
 
 
 class GroupNoticeHandler:
@@ -211,6 +212,7 @@ class GroupNoticeHandler:
                             f"operator_id={self.operator_id}\n"
                             f"user_id={self.user_id}\n"
                             f"group_id={self.group_id}\n"
+                            f"group_name={get_group_name_by_id(self.group_id)}\n"
                             f"这是该邀请者邀请的第{invite_count}个成员。\n"
                         )
                     ],
