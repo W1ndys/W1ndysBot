@@ -1,5 +1,7 @@
 websockets
 requests
+beautifulsoup4
+cryptography
 colorlog
 aiohttp
 python-dotenv
@@ -9,8 +11,6 @@ jieba
 scipy
 matplotlib
 wordcloud
-python-dotenv
-beautifulsoup4 # 解析HTML，处理曲阜师范大学教务系统教室信息
 
 # 视频处理和计算机视觉
 opencv-python
