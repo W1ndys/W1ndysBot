@@ -306,3 +306,33 @@ def generate_node_message(user_id, nickname, content):
         "type": "node",
         "data": {"user_id": user_id, "nickname": nickname, "content": content},
     }
+
+
+def generate_file_message(file, name):
+    """
+    生成文件消息
+
+    Args:
+        file (str): 文件路径、URL或Base64编码
+            - 本地文件路径（如 D:/a.jpg），需要加前缀 file://
+            - 网络文件URL（如 http://xxx/xxx.png）
+            - Base64编码的文件数据，需要加前缀 base64://
+        name (str): 文件名，用于显示的文件名称
+
+    Returns:
+        dict: 包含文件消息段的字典，格式为:
+        {
+            "type": "file",
+            "data": {
+                "file": file,
+                "name": name
+            }
+        }
+
+    Note:
+        - 支持发送本地文件、网络文件和Base64编码的文件
+        - 本地文件需加前缀 file://
+        - 文件大小限制请参考服务端配置
+        - name参数用于设置接收方看到的文件名
+    """
+    return {"type": "file", "data": {"file": file, "name": name}}
