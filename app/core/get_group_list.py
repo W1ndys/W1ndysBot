@@ -60,6 +60,36 @@ def get_group_name_by_id(group_id):
         return None
 
 
+def get_all_group_ids():
+    """
+    获取所有群号
+
+    Returns:
+        list: 群号列表，如果获取失败则返回空列表
+    """
+    try:
+        # 检查文件是否存在
+        if not os.path.exists(DATA_DIR):
+            logger.warning(f"[Core]群列表文件不存在: {DATA_DIR}")
+            return []
+
+        # 读取群列表文件
+        with open(DATA_DIR, "r", encoding="utf-8") as f:
+            group_list = json.load(f)
+
+        # 提取所有群号
+        group_ids = [
+            str(group.get("group_id")) for group in group_list if group.get("group_id")
+        ]
+
+        logger.success(f"[Core]获取到 {len(group_ids)} 个群号, 群号列表: {group_ids}")
+        return group_ids
+
+    except Exception as e:
+        logger.error(f"[Core]获取所有群号失败: {e}")
+        return []
+
+
 async def handle_events(websocket, msg):
     """
     处理回应事件
