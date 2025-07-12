@@ -599,14 +599,14 @@ async def get_group_member_info(websocket, group_id, user_id, no_cache):
         return False
 
 
-async def get_group_member_list(websocket, group_id, no_cache, note=""):
+async def get_group_member_list(websocket, group_id, no_cache=False, note=""):
     """
     获取群成员列表
 
     参数:
         websocket: WebSocket连接
         group_id (str): 群号,必需
-        no_cache (bool): 是否不使用缓存,必需
+        no_cache (bool): 是否不使用缓存,可选
         note (str): 附加说明，用于在响应处理中获取结果
     返回:
         bool: 操作是否成功
@@ -615,7 +615,7 @@ async def get_group_member_list(websocket, group_id, no_cache, note=""):
         payload = {
             "action": "get_group_member_list",
             "params": {"group_id": group_id, "no_cache": no_cache},
-            "echo": f"get_group_member_list-{note}",
+            "echo": f"get_group_member_list-group_id={group_id}-{note}",
         }
         await websocket.send(json.dumps(payload))
         logger.info(f"[API]已执行获取群成员列表")
