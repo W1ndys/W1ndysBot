@@ -110,6 +110,7 @@ class PrivateMessageHandler:
                     r".*com\.tencent\.qun\.invite.*",  # 邀请加群的CQ码
                     r"教务.*",
                     "请求添加你为好友",
+                    ".*menu",
                 ]
 
                 # 检查消息是否包含任何忽略模式
