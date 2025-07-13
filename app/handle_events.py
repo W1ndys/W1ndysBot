@@ -163,6 +163,7 @@ class EventHandler:
                 "get_group_list",
                 "get_friend_list",
                 "get_group_info",
+                "nc_get_rkey",
                 # 可以根据需要继续添加
             ]
 
