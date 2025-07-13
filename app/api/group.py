@@ -618,7 +618,7 @@ async def get_group_member_list(websocket, group_id, no_cache=False, note=""):
             "echo": f"get_group_member_list-group_id={group_id}-{note}",
         }
         await websocket.send(json.dumps(payload))
-        logger.info(f"[API]已执行获取群{group_id}成员列表，note={note}")
+        logger.info(f"[API]已执行获取群 {group_id} 成员列表，note={note}")
         return True
     except Exception as e:
         logger.error(f"[API]获取群成员列表失败: {e}")
