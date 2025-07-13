@@ -156,7 +156,23 @@ class EventHandler:
         """处理websocket消息"""
         try:
             msg = json.loads(message)
-            logger.info(f"接收到websocket消息: {msg}")
+
+            # 日志忽略列表，echo字段包含这些字符串时不记录日志
+            LOG_IGNORE_ECHO_LIST = [
+                "get_group_member_list",
+                "get_group_list",
+                "get_friend_list",
+                "get_group_info",
+                # 可以根据需要继续添加
+            ]
+
+            # 判断是否需要忽略日志
+            echo_value = msg.get("echo", "")
+            if not any(
+                ignore_str in str(echo_value) for ignore_str in LOG_IGNORE_ECHO_LIST
+            ):
+                logger.info(f"接收到websocket消息: {msg}")
+
             # 每个 handler 独立异步后台处理
             for handler in self.handlers:
                 asyncio.create_task(self._safe_handle(handler, websocket, msg))
