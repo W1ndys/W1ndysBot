@@ -119,6 +119,10 @@ class PrivateMessageHandler:
                 ):
                     return
 
+                # 空消息不处理
+                if not self.raw_message.strip():
+                    return
+
                 await send_private_msg(
                     self.websocket,
                     OWNER_ID,
