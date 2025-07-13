@@ -9,7 +9,7 @@ import json
 import time
 from .get_group_list import get_all_group_ids
 
-DATA_DIR = os.path.join("data", "Core", "get_group_member_list")
+DATA_DIR = os.path.join("data", "Core", "group_member_list")
 
 # 全局变量，记录上次请求时间
 last_request_time = 0
