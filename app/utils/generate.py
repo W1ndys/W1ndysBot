@@ -308,15 +308,12 @@ def generate_node_message(user_id, nickname, content):
     }
 
 
-def generate_file_message(file, name):
+def generate_file_message(file_bytes, name):
     """
-    生成文件消息
+    生成文件消息（传入文件二进制，自动转为base64编码）
 
     Args:
-        file (str): 文件路径、URL或Base64编码
-            - 本地文件路径（如 D:/a.jpg），需要加前缀 file://
-            - 网络文件URL（如 http://xxx/xxx.png）
-            - Base64编码的文件数据，需要加前缀 base64://
+        file_bytes (bytes): 文件的二进制内容
         name (str): 文件名，用于显示的文件名称
 
     Returns:
@@ -324,15 +321,17 @@ def generate_file_message(file, name):
         {
             "type": "file",
             "data": {
-                "file": file,
+                "file": "base64://xxxxxx",  # 自动转为base64编码
                 "name": name
             }
         }
 
     Note:
-        - 支持发送本地文件、网络文件和Base64编码的文件
-        - 本地文件需加前缀 file://
+        - 只需传入文件的二进制内容，函数会自动转为base64格式
         - 文件大小限制请参考服务端配置
         - name参数用于设置接收方看到的文件名
     """
-    return {"type": "file", "data": {"file": file, "name": name}}
+    import base64
+
+    b64_data = base64.b64encode(file_bytes).decode("utf-8")
+    return {"type": "file", "data": {"file": f"base64://{b64_data}", "name": name}}
