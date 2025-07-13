@@ -109,6 +109,7 @@ class PrivateMessageHandler:
                     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",  # UUID
                     r".*com\.tencent\.qun\.invite.*",  # 邀请加群的CQ码
                     r"教务.*",
+                    "请求添加你为好友",
                 ]
 
                 # 检查消息是否包含任何忽略模式
