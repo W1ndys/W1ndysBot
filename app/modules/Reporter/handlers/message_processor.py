@@ -85,7 +85,6 @@ class MessageProcessor:
                         f"自动同意好友验证已{'开启' if switch[MODULE_NAME] else '关闭'}"
                     ),
                 ],
-                note="del_msg=10",
             )
             return True
         return False
@@ -99,6 +98,7 @@ class MessageProcessor:
             r"教务.*",
             "请求添加你为好友",
             ".*menu",
+            r"^我是.*",  # 新增“我是”开头的消息
         ]
 
         # 检查消息是否包含任何忽略模式
