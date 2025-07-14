@@ -1,6 +1,6 @@
 name: 新功能需求
 description: 提出一个新的功能或优化建议
-title: "[功能] 模块名 - 简要功能描述"
+title: "[功能] "
 labels: ["enhancement", "feature"]
 assignees: ["W1ndys"]
 body:
