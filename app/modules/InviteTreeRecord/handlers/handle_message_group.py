@@ -200,7 +200,7 @@ class GroupMessageHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"已执行踢出邀请树: {'， '.join(related_users)}"
+                                f"已执行踢出邀请树: {'  '.join(related_users)}"
                             ),
                         ],
                         note="del_msg=10",
