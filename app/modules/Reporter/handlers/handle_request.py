@@ -1,9 +1,12 @@
-from .. import MODULE_NAME
+import os
+import json
+from .. import MODULE_NAME, DATA_DIR
 import logger
 from utils.generate import generate_text_message
 from api.message import send_private_msg
 from config import OWNER_ID
 from datetime import datetime
+from api.user import set_friend_add_request
 
 
 class RequestHandler:
@@ -21,11 +24,45 @@ class RequestHandler:
         self.comment = self.msg.get("comment", "")
         self.flag = self.msg.get("flag", "")
 
+    def is_auto_agree_friend_verify(self):
+        """
+        判断是否开启自动同意好友验证
+        """
+        SWITCH_FILE = os.path.join(DATA_DIR, "auto_agree_friend_verify.json")
+        if not os.path.exists(SWITCH_FILE):
+            with open(SWITCH_FILE, "w") as f:
+                json.dump({}, f)
+        with open(SWITCH_FILE, "r") as f:
+            switch = json.load(f)
+        return switch.get(MODULE_NAME, False)
+
     async def handle_friend(self):
         """
         处理好友请求
         """
         try:
+            # 如果开启自动同意好友验证，则自动同意
+            if self.is_auto_agree_friend_verify():
+                await set_friend_add_request(
+                    self.websocket,
+                    self.flag,
+                    True,
+                )
+                await send_private_msg(
+                    self.websocket,
+                    OWNER_ID,
+                    [
+                        generate_text_message(
+                            f"自动同意好友请求\n"
+                            f"user_id={self.user_id}\n"
+                            f"request_type={self.request_type}\n"
+                            f"comment={self.comment}\n"
+                            f"flag={self.flag}\n"
+                        ),
+                    ],
+                )
+                return
+
             text_message = generate_text_message(
                 f"收到好友请求\n"
                 f"user_id={self.user_id}\n"

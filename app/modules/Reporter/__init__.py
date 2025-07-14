@@ -18,9 +18,11 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # ------------------------------------------------------------
 
 
+AUTO_AGREE_FRIEND_VERIFY = "自动同意好友验证"
 TEST_COMMAND = "测试"
 
 COMMANDS = {
-    TEST_COMMAND: "测试",
+    AUTO_AGREE_FRIEND_VERIFY: f"开启自动同意好友验证，用法：{AUTO_AGREE_FRIEND_VERIFY}",
+    TEST_COMMAND: f"测试，用法：{TEST_COMMAND}",
 }
 # ------------------------------------------------------------
