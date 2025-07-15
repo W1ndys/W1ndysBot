@@ -49,9 +49,6 @@ class GroupNoticeHandler:
         处理群聊通知
         """
         try:
-            # 如果没开启群聊开关，则不处理
-            if not is_group_switch_on(self.group_id, MODULE_NAME):
-                return
 
             if self.notice_type == "group_admin":
                 await self.handle_group_admin()
