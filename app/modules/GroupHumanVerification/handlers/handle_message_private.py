@@ -59,10 +59,6 @@ class PrivateMessageHandler:
                 )
                 return
 
-            # 如果没开启私聊开关，则不处理
-            if not is_private_switch_on(MODULE_NAME):
-                return
-
             # 初始化入群验证处理器
             group_human_verification_handler = GroupHumanVerificationHandler(
                 self.websocket, self.msg
