@@ -113,8 +113,8 @@ async def handle_events(websocket, msg):
         # 群通知事件
         # 如果有进群退群的通知（系统触发，不受请求间隔限制）
         if (
-            msg.get("sub_type") == "group_increase"
-            or msg.get("sub_type") == "group_decrease"
+            msg.get("notice_type") == "group_increase"
+            or msg.get("notice_type") == "group_decrease"
         ):
             group_id = str(msg.get("group_id"))
             # 发送获取该群的群成员列表的请求
