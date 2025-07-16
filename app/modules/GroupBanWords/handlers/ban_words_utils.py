@@ -104,7 +104,6 @@ async def check_and_handle_ban_words(
             f"group_id={group_id}\n"
             f"group_name={get_group_name_by_id(group_id)}\n"
             f"user_id={user_id}\n"
-            f"已封禁{BAN_WORD_DURATION}秒\n"
             f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}"
         )
 
@@ -143,7 +142,6 @@ async def check_and_handle_ban_words(
                     f"group_id={group_id}\n"
                     f"group_name={get_group_name_by_id(group_id)}\n"
                     f"user_id={user_id}\n"
-                    f"已封禁{BAN_WORD_DURATION}秒\n"
                     f"管理员可回复本消息【{UNBAN_WORD_COMMAND}】或【{KICK_BAN_WORD_COMMAND}】来处理用户"
                 ),
             ],
