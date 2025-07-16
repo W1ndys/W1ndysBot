@@ -133,7 +133,7 @@ async def check_and_handle_ban_words(
         await send_group_msg(
             websocket,
             group_id,
-            [
+            [  
                 generate_text_message(f"[{MODULE_NAME}]"),
                 generate_at_message(user_id),
                 generate_text_message(
