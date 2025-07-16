@@ -10,7 +10,7 @@ DATA_DIR = os.path.join("data", "Core", "get_group_list.json")
 
 # 全局变量，记录上次请求时间
 last_request_time = 0
-REQUEST_INTERVAL = 3600  # 1小时，单位：秒
+REQUEST_INTERVAL = 300  # 5分钟，单位：秒
 
 
 def save_group_list_to_file(item):
