@@ -20,7 +20,12 @@ image_name=$(echo $pull_command | awk '{print $3}')
 # 打印提取到的镜像名称和版本
 log "提取到的镜像名称和版本: $image_name"
 
-# Step 2: 接受用户输入的容器名字
+# Step 2: 拉取新镜像
+log "正在拉取镜像: $image_name"
+$pull_command || { log "镜像拉取失败"; exit 1; }
+log "镜像拉取成功"
+
+# Step 3: 接受用户输入的容器名字
 log "请输入容器名字（默认: napcat）："
 read container_name
 
@@ -29,7 +34,7 @@ if [ -z "$container_name" ]; then
   container_name="napcat"
 fi
 
-# 删除当前定义容器名字的容器
+# Step 4: 删除当前定义容器名字的容器
 log "删除容器 $container_name"
 docker stop $container_name
 docker rm $container_name
@@ -38,7 +43,7 @@ docker rm $container_name
 NAPCAT_UID=1000
 NAPCAT_GID=1000
 
-# Step 3: 使用新镜像运行容器
+# Step 5: 使用新镜像运行容器
 log "以新版镜像运行同名容器 $container_name"
 docker run -d --name $container_name --restart=always \
   --network host \
