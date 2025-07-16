@@ -6,6 +6,7 @@ from utils.generate import generate_text_message
 from api.message import send_group_msg, send_private_msg
 from config import OWNER_ID
 from core.get_group_list import get_group_name_by_id
+from core.switchs import is_group_switch_on
 
 
 class RequestHandler:
@@ -42,6 +43,9 @@ class RequestHandler:
             if self.sub_type == "invite":
                 await self.handle_group_invite()
             elif self.sub_type == "add":
+                # 如果没开启群聊开关，则不处理
+                if not is_group_switch_on(self.group_id, MODULE_NAME):
+                    return
                 await self.handle_group_add()
             else:
                 logger.error(f"[{MODULE_NAME}]收到未知群请求类型: {self.sub_type}")
