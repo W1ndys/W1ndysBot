@@ -14,4 +14,4 @@ text = ''.join(lines).replace(' ', '').replace('\t', '')
 # base64编码
 encoded = base64.b64encode(text.encode('utf-8'))
 print("Base64编码结果：")
-print(encoded.decode('utf-8'))
+print(f"添加违禁样本 {encoded.decode('utf-8')}")
