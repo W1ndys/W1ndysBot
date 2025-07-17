@@ -2,7 +2,6 @@ import sqlite3
 import os
 import re
 import glob
-import base64
 from typing import Optional
 from .. import MODULE_NAME
 
@@ -68,19 +67,6 @@ class DataManager:
                 status TEXT NOT NULL,
                 update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (group_id, user_id)
-            )
-            """
-        )
-
-        # 创建违禁样本表
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS ban_samples (
-                group_id TEXT NOT NULL,
-                sample_text TEXT NOT NULL,
-                weight INTEGER NOT NULL DEFAULT 10,
-                update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (group_id, sample_text)
             )
             """
         )
@@ -202,106 +188,6 @@ class DataManager:
                     source = "群专属" if word in group_words else "全局"
                     matched_words.append((f"{word}({source})", weight))
         return total_weight, matched_words
-
-    def add_sample(self, sample_text, weight=10):
-        """添加违禁样本
-        Args:
-            sample_text (str): 违禁样本文本
-            weight (int, optional): 权值，默认为10
-        Returns:
-            bool: 操作是否成功
-        """
-        assert self._conn is not None
-        cursor = self._conn.cursor()
-        cursor.execute(
-            """
-            INSERT INTO ban_samples (group_id, sample_text, weight, update_time) 
-            VALUES (?, ?, ?, CURRENT_TIMESTAMP) 
-            ON CONFLICT(group_id, sample_text) DO UPDATE SET 
-                weight=excluded.weight, 
-                update_time=CURRENT_TIMESTAMP
-            """,
-            (self.group_id, sample_text, weight),
-        )
-        self._conn.commit()
-        return True
-
-    def get_all_samples(self):
-        """获取当前群组的所有违禁样本
-        Returns:
-            list: 包含(sample_text, weight)元组的列表
-        """
-        assert self._conn is not None
-        cursor = self._conn.cursor()
-        cursor.execute(
-            "SELECT sample_text, weight FROM ban_samples WHERE group_id=?",
-            (self.group_id,),
-        )
-        return cursor.fetchall()
-
-    def delete_sample(self, sample_text):
-        """删除违禁样本
-        Args:
-            sample_text (str): 违禁样本文本
-        Returns:
-            bool: 操作是否成功
-        """
-        assert self._conn is not None
-        cursor = self._conn.cursor()
-        cursor.execute(
-            "DELETE FROM ban_samples WHERE group_id=? AND sample_text=?",
-            (self.group_id, sample_text),
-        )
-        rows_affected = cursor.rowcount
-        self._conn.commit()
-        return rows_affected > 0
-
-    def calc_message_similarity_weight(self, message):
-        """计算消息与违禁样本的相似度，如果达到阈值则判定为违规
-        Args:
-            message (str): 需要检查的消息文本
-        Returns:
-            tuple: (是否违规(bool), 匹配的样本列表)
-        """
-        try:
-            from fuzzywuzzy import fuzz
-        except ImportError:
-            # 如果没有安装 fuzzywuzzy，跳过相似度检测
-            return False, []
-
-        assert self._conn is not None
-        cursor = self._conn.cursor()
-
-        # 获取群专属违禁样本
-        cursor.execute(
-            "SELECT sample_text, weight FROM ban_samples WHERE group_id=?", (self.group_id,)
-        )
-        group_samples = dict(cursor.fetchall())
-
-        # 获取全局违禁样本（群号为"0"）
-        cursor.execute(
-            "SELECT sample_text, weight FROM ban_samples WHERE group_id=?",
-            (self.GLOBAL_GROUP_ID,),
-        )
-        global_samples = dict(cursor.fetchall())
-
-        # 合并样本库，群专属优先
-        merged_samples = global_samples.copy()
-        merged_samples.update(group_samples)
-
-        matched_samples = []
-        
-        from .. import SIMILARITY_THRESHOLD
-        
-        for sample_text, weight in merged_samples.items():
-            similarity = fuzz.ratio(message, sample_text)
-            if similarity >= SIMILARITY_THRESHOLD:
-                source = "群专属" if sample_text in group_samples else "全局"
-                matched_samples.append((f"{sample_text}({source})", similarity))
-        
-        # 如果有匹配的样本，返回True表示违规
-        is_violation = len(matched_samples) > 0
-        return is_violation, matched_samples
 
     def set_user_status(self, user_id, status, group_id=None):
         """设置某用户状态，若已存在则更新

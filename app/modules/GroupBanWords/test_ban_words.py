@@ -1,4 +1,4 @@
-from app.modules.GroupBanWords.handlers.data_manager_words import DataManager
+from modules.GroupBanWords.data_manager_words import DataManager
 
 
 if __name__ == "__main__":

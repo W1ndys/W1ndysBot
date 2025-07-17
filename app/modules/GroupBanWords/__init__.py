@@ -32,14 +32,6 @@ UNBAN_WORD_COMMAND = "解禁"  # 解禁被封禁用户命令
 KICK_BAN_WORD_COMMAND = "踢出"  # 踢出被封禁用户命令
 COPY_BAN_WORD_COMMAND = "复制违禁词"  # 复制违禁词命令
 
-# 添加新的命令常量
-ADD_BAN_SAMPLE_COMMAND = "添加违禁样本"
-DELETE_BAN_SAMPLE_COMMAND = "删除违禁样本"
-LIST_BAN_SAMPLES_COMMAND = "查看违禁样本"
-
-# 相似度阈值配置（独立于违禁词权重阈值）
-SIMILARITY_THRESHOLD = 80  # 相似度阈值，达到此阈值即判定为违规
-
 COMMANDS = {
     ADD_BAN_WORD_COMMAND: f"添加违禁词，用法：群聊中使用添加群专属违禁词，私聊中使用添加全局违禁词，格式：{ADD_BAN_WORD_COMMAND} 违禁词 权重(0-100，默认10)，例如：{ADD_BAN_WORD_COMMAND} sb 10",
     DELETE_BAN_WORD_COMMAND: f"删除违禁词，用法：群聊中删除群专属违禁词，私聊中删除全局违禁词，格式：{DELETE_BAN_WORD_COMMAND} 违禁词，例如：{DELETE_BAN_WORD_COMMAND} sb",

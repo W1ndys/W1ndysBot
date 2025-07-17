@@ -10,9 +10,6 @@ from .. import (
     UNBAN_WORD_COMMAND,
     KICK_BAN_WORD_COMMAND,
     COPY_BAN_WORD_COMMAND,
-    ADD_BAN_SAMPLE_COMMAND,
-    DELETE_BAN_SAMPLE_COMMAND,
-    LIST_BAN_SAMPLES_COMMAND,
 )
 from .data_manager_words import DataManager
 from .ban_words_utils import check_and_handle_ban_words
@@ -33,7 +30,6 @@ from utils.generate import (
 from api.group import set_group_ban, set_group_kick
 from config import OWNER_ID
 from utils.feishu import send_feishu_msg
-import base64
 
 
 class GroupBanWordsHandler:
@@ -537,234 +533,6 @@ class GroupBanWordsHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]删除全局违禁词失败: {e}")
 
-    async def add_ban_sample(self):
-        """添加违禁样本"""
-        try:
-            # 在私聊中，任何系统管理员都可以添加全局违禁样本
-            # 在群聊中，群管理员和系统管理员可以添加群专属违禁样本
-            if self.is_private:
-                if not is_system_admin(self.user_id):
-                    return
-                # 私聊中使用全局样本库的DataManager
-                data_manager = DataManager(DataManager.GLOBAL_GROUP_ID)
-                sample_type = "全局违禁样本"
-            else:
-                if not is_group_admin(self.role) and not is_system_admin(self.user_id):
-                    return
-                data_manager = self.data_manager
-                sample_type = "违禁样本"
-
-            # 过滤命令
-            content = self.raw_message.lstrip(ADD_BAN_SAMPLE_COMMAND).strip()
-
-            if not content:
-                error_msg = "请提供Base64编码的样本内容"
-                if self.is_private:
-                    await send_private_msg(
-                        self.websocket,
-                        self.user_id,
-                        [generate_text_message(error_msg)],
-                    )
-                else:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(error_msg),
-                        ],
-                        note="del_msg=10",
-                    )
-                return
-
-            try:
-                # 解码base64
-                decoded_bytes = base64.b64decode(content)
-
-                # 尝试多种编码方式解码
-                sample_text = None
-                encoding_attempts = [
-                    "utf-8",
-                ]
-
-                for encoding in encoding_attempts:
-                    try:
-                        sample_text = decoded_bytes.decode(encoding)
-                        logger.info(f"[{MODULE_NAME}]成功使用{encoding}编码解码样本")
-                        break
-                    except UnicodeDecodeError:
-                        continue
-
-                if sample_text is None:
-                    # 如果所有编码都失败，使用错误处理方式
-                    sample_text = decoded_bytes.decode("utf-8", errors="replace")
-                    logger.warning(
-                        f"[{MODULE_NAME}]使用替换模式解码样本，可能存在字符丢失"
-                    )
-
-            except Exception as e:
-                error_msg = f"Base64解码失败: {str(e)}\n请确保提供的是有效的Base64编码"
-                if self.is_private:
-                    await send_private_msg(
-                        self.websocket,
-                        self.user_id,
-                        [generate_text_message(error_msg)],
-                    )
-                else:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(error_msg),
-                        ],
-                        note="del_msg=10",
-                    )
-                return
-
-            # 验证解码后的内容
-            if not sample_text or len(sample_text.strip()) == 0:
-                error_msg = "解码后的样本内容为空"
-                if self.is_private:
-                    await send_private_msg(
-                        self.websocket,
-                        self.user_id,
-                        [generate_text_message(error_msg)],
-                    )
-                else:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(error_msg),
-                        ],
-                        note="del_msg=10",
-                    )
-                return
-
-            # 添加样本
-            is_success = data_manager.add_sample(sample_text.strip(), 10)
-            if is_success:
-                success_msg = f"添加{sample_type}成功\n样本内容: {sample_text[:50]}{'...' if len(sample_text) > 50 else ''}"
-                if self.is_private:
-                    await send_private_msg(
-                        self.websocket,
-                        self.user_id,
-                        [generate_text_message(success_msg)],
-                    )
-                else:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(success_msg),
-                        ],
-                        note="del_msg=10",
-                    )
-        except Exception as e:
-            logger.error(f"[{MODULE_NAME}]添加违禁样本失败: {e}")
-
-    async def delete_ban_sample(self):
-        """删除违禁样本"""
-        try:
-            # 权限检查逻辑同add_ban_sample
-            if self.is_private:
-                if not is_system_admin(self.user_id):
-                    return
-                data_manager = DataManager(DataManager.GLOBAL_GROUP_ID)
-                sample_type = "全局违禁样本"
-            else:
-                if not is_group_admin(self.role) and not is_system_admin(self.user_id):
-                    return
-                data_manager = self.data_manager
-                sample_type = "违禁样本"
-
-            # 过滤命令，获取样本文本（直接文本，不是base64）
-            sample_text = self.raw_message.lstrip(DELETE_BAN_SAMPLE_COMMAND).strip()
-
-            if not sample_text:
-                return
-
-            is_success = data_manager.delete_sample(sample_text)
-            if is_success:
-                success_msg = f"删除{sample_type}成功"
-            else:
-                success_msg = f"未找到该{sample_type}"
-
-            if self.is_private:
-                await send_private_msg(
-                    self.websocket,
-                    self.user_id,
-                    [generate_text_message(success_msg)],
-                )
-            else:
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(success_msg),
-                    ],
-                    note="del_msg=10",
-                )
-        except Exception as e:
-            logger.error(f"[{MODULE_NAME}]删除违禁样本失败: {e}")
-
-    async def list_ban_samples(self):
-        """查看违禁样本列表"""
-        try:
-            # 权限检查
-            if self.is_private:
-                if not is_system_admin(self.user_id):
-                    return
-                data_manager = DataManager(DataManager.GLOBAL_GROUP_ID)
-                sample_type = "全局违禁样本"
-            else:
-                if not is_group_admin(self.role) and not is_system_admin(self.user_id):
-                    return
-                data_manager = self.data_manager
-                sample_type = "违禁样本"
-
-            samples = data_manager.get_all_samples()
-
-            if not samples:
-                msg = f"当前没有{sample_type}"
-            else:
-                sample_list = []
-                for i, (sample_text, weight) in enumerate(samples, 1):
-                    # 限制显示长度
-                    display_text = (
-                        sample_text[:30] + "..."
-                        if len(sample_text) > 30
-                        else sample_text
-                    )
-                    sample_list.append(f"{i}. {display_text} (权重: {weight})")
-
-                msg = f"{sample_type}列表 (共{len(samples)}个):\n" + "\n".join(
-                    sample_list
-                )
-
-            if self.is_private:
-                await send_private_msg(
-                    self.websocket,
-                    self.user_id,
-                    [generate_text_message(msg)],
-                )
-            else:
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(msg),
-                    ],
-                    note="del_msg=30",
-                )
-        except Exception as e:
-            logger.error(f"[{MODULE_NAME}]查看违禁样本失败: {e}")
-
     async def check_and_handle_ban_words(self):
         """检测违禁词并处理相关逻辑"""
 
@@ -918,21 +686,6 @@ class GroupBanWordsHandler:
                 return
             if self.raw_message.startswith(DELETE_GLOBAL_BAN_WORD_COMMAND):
                 await self.delete_global_ban_word()
-                return
-
-            # 添加违禁样本
-            if self.raw_message.startswith(ADD_BAN_SAMPLE_COMMAND):
-                await self.add_ban_sample()
-                return
-
-            # 删除违禁样本
-            if self.raw_message.startswith(DELETE_BAN_SAMPLE_COMMAND):
-                await self.delete_ban_sample()
-                return
-
-            # 查看违禁样本
-            if self.raw_message.startswith(LIST_BAN_SAMPLES_COMMAND):
-                await self.list_ban_samples()
                 return
 
             # 处理群内的管理员解封踢出命令（群管理员和系统管理员可使用）
