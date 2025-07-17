@@ -8,6 +8,9 @@ from .. import (
     COPY_BAN_WORD_COMMAND,
     ADD_BAN_WORD_COMMAND,
     DELETE_BAN_WORD_COMMAND,
+    ADD_BAN_SAMPLE_COMMAND,
+    DELETE_BAN_SAMPLE_COMMAND,
+    LIST_BAN_SAMPLES_COMMAND,
 )
 from core.menu_manager import MENU_COMMAND
 import logger
@@ -259,6 +262,15 @@ class PrivateMessageHandler:
             # 处理私聊复制违禁词
             elif self.raw_message.lower().startswith(COPY_BAN_WORD_COMMAND.lower()):
                 await self.copy_ban_word_private()
+
+            # 处理违禁样本管理（私聊中默认操作全局样本库）
+            if (
+                self.raw_message.startswith(ADD_BAN_SAMPLE_COMMAND)
+                or self.raw_message.startswith(DELETE_BAN_SAMPLE_COMMAND)
+                or self.raw_message.startswith(LIST_BAN_SAMPLES_COMMAND)
+            ):
+                await group_ban_words.handle()
+                return
 
             # 新的解封踢出功能
             # 原消息内容: [CQ:reply,id=1734368035]{命令}，通过消息ID获取消息内容，进而解析用户ID，群号

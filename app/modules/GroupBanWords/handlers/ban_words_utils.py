@@ -45,6 +45,18 @@ async def check_and_handle_ban_words(
     Returns:
         bool: 是否触发违禁词
     """
+    data_manager = DataManager(group_id)
+    # 如果用户状态是ban，直接撤回加禁言
+    if data_manager.get_user_status(user_id) == "ban":
+        await delete_msg(websocket, message_id)
+        await set_group_ban(
+            websocket,
+            group_id,
+            user_id,
+            BAN_WORD_DURATION,
+        )
+        return True
+
     if not formatted_time:
         formatted_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -72,13 +84,16 @@ async def check_and_handle_ban_words(
     # 过滤后的消息
     print(f"过滤后的消息: {raw_message}")
 
-    # 计算违禁词权重
-    total_weight, matched_words = data_manager.calc_message_weight(raw_message)
-    is_banned = total_weight >= BAN_WORD_WEIGHT_MAX
+    # 第一步：相似度检测（优先级最高）
+    similarity_result, matched_samples = data_manager.calc_message_similarity_weight(
+        raw_message
+    )
 
-    if is_banned:
-        # 返回True，表示违规
-        # 发送请求获取本群历史消息记录，以便于在回应处理函数中处理
+    if similarity_result:  # 如果相似度检测触发违规
+        violation_type = "相似度违规"
+        is_banned = True
+
+        # 发送请求获取本群历史消息记录
         await get_group_msg_history(
             websocket,
             group_id,
@@ -97,14 +112,21 @@ async def check_and_handle_ban_words(
         # 设置用户状态
         data_manager.set_user_status(user_id, "ban")
 
-        # 发送管理员消息和飞书消息、群内消息
-        # 构建共同的消息内容
+        # 构建匹配信息（相似度检测结果）
+        match_details = "\n".join(
+            [
+                f"样本相似度匹配: {sample}（相似度{similarity}%）"
+                for sample, similarity in matched_samples
+            ]
+        )
+
         common_content = (
             f"时间: {formatted_time}\n"
             f"group_id={group_id}\n"
             f"group_name={get_group_name_by_id(group_id)}\n"
             f"user_id={user_id}\n"
-            f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}"
+            f"违规类型: {violation_type}\n"
+            f"匹配详情:\n{match_details}"
         )
 
         admin_msg_content = (
@@ -133,7 +155,89 @@ async def check_and_handle_ban_words(
         await send_group_msg(
             websocket,
             group_id,
-            [  
+            [
+                generate_text_message(f"[{MODULE_NAME}]"),
+                generate_at_message(user_id),
+                generate_text_message(
+                    f"({user_id})请勿发送违禁消息，如误封请联系管理员，发广告的自觉点退群\n"
+                    f"时间: {formatted_time}\n"
+                    f"group_id={group_id}\n"
+                    f"group_name={get_group_name_by_id(group_id)}\n"
+                    f"user_id={user_id}\n"
+                    f"管理员可回复本消息【{UNBAN_WORD_COMMAND}】或【{KICK_BAN_WORD_COMMAND}】来处理用户"
+                ),
+            ],
+        )
+        return True
+
+    # 第二步：如果相似度检测通过，再进行传统违禁词权重检测
+    traditional_weight, matched_words = data_manager.calc_message_weight(raw_message)
+    is_banned = traditional_weight >= BAN_WORD_WEIGHT_MAX
+
+    if is_banned:
+        violation_type = "违禁词权重违规"
+
+        # 发送请求获取本群历史消息记录
+        await get_group_msg_history(
+            websocket,
+            group_id,
+            count=15,
+            message_seq=0,
+            note=f"GroupBanWords-group_id={group_id}-is_banned_user_id={user_id}",
+        )
+        await set_group_ban(
+            websocket,
+            group_id,
+            user_id,
+            BAN_WORD_DURATION,
+        )
+        # 撤回消息
+        await delete_msg(websocket, message_id)
+        # 设置用户状态
+        data_manager.set_user_status(user_id, "ban")
+
+        # 构建匹配信息（违禁词权重检测结果）
+        match_details = "\n".join(
+            [f"违禁词匹配: {word}（权重{weight}）" for word, weight in matched_words]
+        )
+
+        common_content = (
+            f"时间: {formatted_time}\n"
+            f"group_id={group_id}\n"
+            f"group_name={get_group_name_by_id(group_id)}\n"
+            f"user_id={user_id}\n"
+            f"违规类型: {violation_type}\n"
+            f"总权重: {traditional_weight}\n"
+            f"匹配详情:\n{match_details}"
+        )
+
+        admin_msg_content = (
+            f"检测到违禁消息\n"
+            f"{common_content}\n"
+            f"相关消息已通过飞书上报\n"
+            f"引用回复本消息【{UNBAN_WORD_COMMAND}】或【{KICK_BAN_WORD_COMMAND}】来处理用户"
+        )
+
+        feishu_msg_content = f"{common_content}\n" f"raw_message={raw_message}"
+
+        await send_private_msg(
+            websocket,
+            OWNER_ID,
+            [
+                generate_text_message(f"[{MODULE_NAME}]"),
+                generate_text_message(admin_msg_content),
+            ],
+        )
+
+        send_feishu_msg(
+            title=f"检测到违禁词",
+            content=feishu_msg_content,
+        )
+
+        await send_group_msg(
+            websocket,
+            group_id,
+            [
                 generate_text_message(f"[{MODULE_NAME}]"),
                 generate_at_message(user_id),
                 generate_text_message(

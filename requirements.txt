@@ -17,3 +17,7 @@ opencv-python
 
 # 二维码检测
 pyzbar
+
+# 模糊匹配
+fuzzywuzzy
+python-Levenshtein
