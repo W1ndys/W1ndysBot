@@ -7,6 +7,24 @@ from .. import (
 )
 from .data_manager import DataManager
 from api.message import send_private_msg
+from core.get_group_member_list import get_group_member_user_ids
+
+
+def get_user_groups_in_associated_groups(user_id: str, group_id: str):
+    """
+    获取用户在同组其他群中的群号和组名
+    """
+    user_group_ids = []
+    group_name = ""
+    with DataManager() as dm:
+        result = dm.get_associated_groups(group_id)
+        if result:
+            for group_name in result:
+                for other_group_id in result[group_name]:
+                    member_list = get_group_member_user_ids(other_group_id)
+                    if user_id in member_list:
+                        user_group_ids.append(other_group_id)
+    return user_group_ids, group_name
 
 
 class Core:

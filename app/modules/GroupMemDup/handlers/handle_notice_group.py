@@ -2,6 +2,10 @@ from .. import MODULE_NAME
 import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
+from api.message import send_group_msg
+from utils.generate import generate_text_message, generate_at_message
+from api.group import set_group_kick
+from .core import get_user_groups_in_associated_groups
 
 
 class GroupNoticeHandler:
@@ -27,9 +31,6 @@ class GroupNoticeHandler:
         处理群聊通知
         """
         try:
-            # 如果没开启群聊开关，则不处理
-            if not is_group_switch_on(self.group_id, MODULE_NAME):
-                return
 
             if self.notice_type == "group_admin":
                 await self.handle_group_admin()
@@ -171,12 +172,50 @@ class GroupNoticeHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
 
+    async def detect_user_in_other_group(self):
+        """
+        检测用户是否在其他群中
+        """
+        try:
+            user_group_ids, group_name = get_user_groups_in_associated_groups(
+                self.user_id, self.group_id
+            )
+            if user_group_ids:
+                for group_id in user_group_ids:
+                    await send_group_msg(
+                        self.websocket,
+                        group_id,
+                        [
+                            generate_at_message(self.user_id),
+                            generate_text_message(
+                                f"系统检测到你已在【{group_name}】组的多个关联群中，请勿重复加入。你将被自动移出本群（群号：{group_id}）"
+                            ),
+                        ],
+                        note="del_msg=300",
+                    )
+                    await set_group_kick(self.websocket, group_id, self.user_id)
+                logger.success(
+                    f"[{MODULE_NAME}]用户{self.user_id}在【{group_name}】组的多个关联群中被检测到，已执行自动移除操作。"
+                )
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_at_message(self.user_id),
+                        generate_text_message(
+                            f"系统检测到你已在【{group_name}】组的其他关联群中，为维护群组秩序，你将被自动移出相关群聊。如有疑问请联系管理员。"
+                        ),
+                    ],
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]检测用户是否在其他群中失败: {e}")
+
     async def handle_group_increase_approve(self):
         """
         处理群聊成员增加 - 管理员已同意入群通知
         """
         try:
-            pass
+            await self.detect_user_in_other_group()
         except Exception as e:
             logger.error(
                 f"[{MODULE_NAME}]处理群聊成员增加 - 管理员已同意入群通知失败: {e}"
@@ -187,7 +226,7 @@ class GroupNoticeHandler:
         处理群聊成员增加 - 管理员邀请入群通知
         """
         try:
-            pass
+            await self.detect_user_in_other_group()
         except Exception as e:
             logger.error(
                 f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知失败: {e}"
