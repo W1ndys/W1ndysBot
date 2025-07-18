@@ -12,12 +12,16 @@ from utils.generate import generate_reply_message, generate_text_message
 class MessageProcessor:
     """消息处理核心逻辑"""
 
+    # 类变量，用于记录上次发送消息的用户
+    _last_user_id = None
+
     def __init__(
         self,
         websocket,
         user_id,
         message_id,
         raw_message,
+        message,
         formatted_time,
         nickname,
         group_id,
@@ -26,6 +30,7 @@ class MessageProcessor:
         self.user_id = user_id
         self.message_id = message_id
         self.raw_message = raw_message
+        self.message = message
         self.formatted_time = formatted_time
         self.nickname = nickname
         self.group_id = group_id
@@ -117,19 +122,30 @@ class MessageProcessor:
         if self.should_ignore_message():
             return False
 
-        await send_private_msg(
-            self.websocket,
-            OWNER_ID,
-            [
-                generate_text_message(
-                    f"用户ID🆔：{self.user_id}\n"
-                    f"发送时间：{self.formatted_time}\n"
-                    f"昵称：{self.nickname}\n"
-                    f"来源群号：{self.group_id if self.group_id else '无'}\n"
-                    f"消息内容见下条消息"
-                )
-            ],
-        )
-        await asyncio.sleep(0.4)
-        await send_private_msg_with_cq(self.websocket, OWNER_ID, self.raw_message)
+        # 检查是否与上次发送消息的用户相同
+        should_send_user_info = MessageProcessor._last_user_id != self.user_id
+
+        if should_send_user_info:
+            # 发送用户信息
+            await send_private_msg(
+                self.websocket,
+                OWNER_ID,
+                [
+                    generate_text_message(
+                        f"用户ID🆔：{self.user_id}\n"
+                        f"发送时间：{self.formatted_time}\n"
+                        f"昵称：{self.nickname}\n"
+                        f"来源群号：{self.group_id if self.group_id else '无'}\n"
+                        f"消息内容见下条消息"
+                    )
+                ],
+            )
+            await asyncio.sleep(0.4)
+
+        # 发送消息内容
+        await send_private_msg(self.websocket, OWNER_ID, self.message)
+
+        # 更新上次发送消息的用户ID
+        MessageProcessor._last_user_id = self.user_id
+
         return True
