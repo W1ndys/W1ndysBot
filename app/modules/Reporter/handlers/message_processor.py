@@ -135,7 +135,7 @@ class MessageProcessor:
                         f"用户ID🆔：{self.user_id}\n"
                         f"发送时间：{self.formatted_time}\n"
                         f"昵称：{self.nickname}\n"
-                        f"来源群号：{self.group_id if self.group_id else '无'}\n"
+                        f"来源：{f'群{self.group_id}' if self.group_id else '好友'}消息\n"
                         f"消息内容见下条消息"
                     )
                 ],
