@@ -31,36 +31,53 @@ class GroupMessageHandler:
         self.card = self.sender.get("card", "")  # 群名片
         self.role = self.sender.get("role", "")  # 群身份
 
+    async def _handle_switch_command(self):
+        """
+        处理群聊开关命令
+        """
+        if self.raw_message.lower() == SWITCH_NAME.lower():
+            # 鉴权
+            if not is_system_admin(self.user_id):
+                logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换群聊开关")
+                return True
+            await handle_module_group_switch(
+                MODULE_NAME,
+                self.websocket,
+                self.group_id,
+                self.message_id,
+            )
+            return True
+        return False
+
+    async def _handle_menu_command(self):
+        """
+        处理菜单命令（无视开关状态）
+        """
+        if self.raw_message.lower() == f"{SWITCH_NAME}{MENU_COMMAND}".lower():
+            menu_text = MenuManager.get_module_commands_text(MODULE_NAME)
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_reply_message(self.message_id),
+                    generate_text_message(menu_text),
+                ],
+                note="del_msg=30",
+            )
+            return True
+        return False
+
     async def handle(self):
         """
         处理群消息
         """
         try:
-            if self.raw_message.lower() == SWITCH_NAME.lower():
-                # 鉴权
-                if not is_system_admin(self.user_id):
-                    logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换群聊开关")
-                    return
-                await handle_module_group_switch(
-                    MODULE_NAME,
-                    self.websocket,
-                    self.group_id,
-                    self.message_id,
-                )
+            # 处理群聊开关命令
+            if await self._handle_switch_command():
                 return
 
-            # 处理菜单命令（无视开关状态）
-            if self.raw_message.lower() == f"{SWITCH_NAME}{MENU_COMMAND}".lower():
-                menu_text = MenuManager.get_module_commands_text(MODULE_NAME)
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(menu_text),
-                    ],
-                    note="del_msg=30",
-                )
+            # 处理菜单命令
+            if await self._handle_menu_command():
                 return
 
             # 如果没开启群聊开关，则不处理
