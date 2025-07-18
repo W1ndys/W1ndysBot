@@ -29,6 +29,49 @@ def save_group_member_list_to_file(group_id, data):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
+def get_group_member_user_ids(group_id):
+    """
+    根据群号获取群成员QQ号列表
+
+    Args:
+        group_id (str或int): 群号
+
+    Returns:
+        list: QQ号列表，如果找不到则返回空列表，QQ号是str类型
+    """
+    try:
+        # 确保群号是字符串格式
+        group_id = str(group_id)
+
+        # 构建文件路径
+        file_path = os.path.join(DATA_DIR, f"{group_id}.json")
+
+        # 检查文件是否存在
+        if not os.path.exists(file_path):
+            logger.warning(f"[Core]群成员列表文件不存在: {file_path}")
+            return []
+
+        # 读取群成员列表文件
+        with open(file_path, "r", encoding="utf-8") as f:
+            member_list = json.load(f)
+
+        # 提取所有成员的QQ号
+        user_ids = []
+        for member in member_list:
+            user_id = member.get("user_id")
+            if user_id:
+                user_ids.append(str(user_id))
+
+        logger.info(
+            f"[Core]成功获取群 {group_id} 的成员QQ号列表，共 {len(user_ids)} 个成员"
+        )
+        return user_ids
+
+    except Exception as e:
+        logger.error(f"[Core]获取群成员QQ号列表失败: {e}")
+        return []
+
+
 def get_group_name_by_id(group_id):
     """
     根据群号获取群名
@@ -43,21 +86,29 @@ def get_group_name_by_id(group_id):
         # 确保群号是字符串格式
         group_id = str(group_id)
 
+        # 构建文件路径
+        file_path = os.path.join(DATA_DIR, f"{group_id}.json")
+
         # 检查文件是否存在
-        if not os.path.exists(DATA_DIR):
-            logger.warning(f"[Core]群列表文件不存在: {DATA_DIR}")
+        if not os.path.exists(file_path):
+            logger.warning(f"[Core]群成员列表文件不存在: {file_path}")
             return None
 
-        # 读取群列表文件
-        with open(DATA_DIR, "r", encoding="utf-8") as f:
-            group_list = json.load(f)
+        # 读取群成员列表文件
+        with open(file_path, "r", encoding="utf-8") as f:
+            member_list = json.load(f)
 
-        # 查找匹配的群号
-        for group in group_list:
-            if str(group.get("group_id")) == group_id:
-                return group.get("group_name")
+        # 从第一个成员中获取群号，验证是否匹配
+        if member_list and len(member_list) > 0:
+            stored_group_id = str(member_list[0].get("group_id", ""))
+            if stored_group_id == group_id:
+                # 这里需要从群列表中获取群名，而不是从成员列表
+                # 成员列表中没有群名信息，需要调用群列表相关函数
+                from .get_group_list import get_group_name_by_id as get_name_from_list
 
-        logger.warning(f"[Core]未找到群号 {group_id} 对应的群名")
+                return get_name_from_list(group_id)
+
+        logger.warning(f"[Core]未找到群号 {group_id} 对应的群成员信息")
         return None
 
     except Exception as e:
