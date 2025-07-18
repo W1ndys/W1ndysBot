@@ -511,6 +511,171 @@ async def send_forward_msg(
         logger.error(f"[API]执行发送合并转发消息失败: {e}")
 
 
+async def send_private_forward_msg(websocket, user_id, messages, note=""):
+    """
+    发送私聊合并转发消息
+
+    Args:
+        websocket: WebSocket连接实例
+        user_id (Union[int, str]): 好友的QQ号 (必填)
+        messages (list): 消息节点列表 (必填)
+            每个节点格式：{
+                "type": "node",
+                "data": {
+                    "nickname": "发送者昵称",
+                    "user_id": "发送者QQ号",
+                    "content": [消息段列表]
+                }
+            }
+        note (str, optional): 消息备注 (默认值为空字符串)
+
+    Returns:
+        None: 该函数通过websocket发送请求，不直接返回结果
+
+    Example:
+        messages = [
+            {
+                "type": "node",
+                "data": {
+                    "nickname": "发送者1",
+                    "user_id": "123456789",
+                    "content": [{"type": "text", "data": {"text": "消息内容1"}}]
+                }
+            },
+            {
+                "type": "node",
+                "data": {
+                    "nickname": "发送者2",
+                    "user_id": "987654321",
+                    "content": [{"type": "text", "data": {"text": "消息内容2"}}]
+                }
+            }
+        ]
+        await send_private_forward_msg(websocket, user_id, messages)
+    """
+    try:
+        # 参数校验
+        if not user_id:
+            logger.error("[API]执行发送私聊合并转发消息失败: user_id不能为空")
+            return
+
+        if not messages:
+            logger.error("[API]执行发送私聊合并转发消息失败: messages不能为空")
+            return
+
+        # 构建请求参数
+        payload = {
+            "action": "send_private_forward_msg",
+            "params": {"user_id": user_id, "messages": messages},
+            "echo": f"send_private_forward_msg-{note}",
+        }
+
+        # 发送请求
+        await websocket.send(json.dumps(payload))
+        logger.info(f"[API]已执行发送私聊合并转发消息到用户 {user_id}")
+
+    except Exception as e:
+        logger.error(f"[API]执行发送私聊合并转发消息失败: {e}")
+
+
+async def send_group_forward_msg(
+    websocket, group_id, messages, news, prompt, summary, source, note=""
+):
+    """
+    发送群聊合并转发消息
+
+    Args:
+        websocket: WebSocket连接实例
+        group_id (Union[int, str]): 群号 (必填)
+        messages (list): 消息节点列表 (必填)
+            每个节点格式：{
+                "type": "node",
+                "data": {
+                    "user_id": "发送者QQ号",
+                    "nickname": "发送者昵称",
+                    "content": [消息段列表]
+                }
+            }
+        news (list): 消息预览列表 (必填)
+            格式：[{"text": "预览文本"}]
+        prompt (str): 消息外显 (必填)
+        summary (str): 底下文本 (必填)
+        source (str): 消息内容/标题 (必填)
+        note (str, optional): 消息备注 (默认值为空字符串)
+
+    Returns:
+        None: 该函数通过websocket发送请求，不直接返回结果
+
+    Example:
+        messages = [
+            {
+                "type": "node",
+                "data": {
+                    "user_id": "123456789",
+                    "nickname": "发送者1",
+                    "content": [{"type": "text", "data": {"text": "消息内容1"}}]
+                }
+            },
+            {
+                "type": "node",
+                "data": {
+                    "user_id": "987654321",
+                    "nickname": "发送者2",
+                    "content": [{"type": "text", "data": {"text": "消息内容2"}}]
+                }
+            }
+        ]
+        news = [{"text": "消息预览"}]
+        await send_group_forward_msg(websocket, group_id, messages, news, "外显", "底下文本", "消息来源")
+    """
+    try:
+        # 参数校验
+        if not group_id:
+            logger.error("[API]执行发送群聊合并转发消息失败: group_id不能为空")
+            return
+
+        if not messages:
+            logger.error("[API]执行发送群聊合并转发消息失败: messages不能为空")
+            return
+
+        if not news:
+            logger.error("[API]执行发送群聊合并转发消息失败: news不能为空")
+            return
+
+        if not prompt:
+            logger.error("[API]执行发送群聊合并转发消息失败: prompt不能为空")
+            return
+
+        if not summary:
+            logger.error("[API]执行发送群聊合并转发消息失败: summary不能为空")
+            return
+
+        if not source:
+            logger.error("[API]执行发送群聊合并转发消息失败: source不能为空")
+            return
+
+        # 构建请求参数
+        payload = {
+            "action": "send_group_forward_msg",
+            "params": {
+                "group_id": group_id,
+                "messages": messages,
+                "news": news,
+                "prompt": prompt,
+                "summary": summary,
+                "source": source,
+            },
+            "echo": f"send_group_forward_msg-{note}",
+        }
+
+        # 发送请求
+        await websocket.send(json.dumps(payload))
+        logger.info(f"[API]已执行发送群聊合并转发消息到群 {group_id}")
+
+    except Exception as e:
+        logger.error(f"[API]执行发送群聊合并转发消息失败: {e}")
+
+
 async def group_poke(websocket, group_id, user_id):
     """
     发送戳一戳
