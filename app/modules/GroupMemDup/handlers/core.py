@@ -1,0 +1,117 @@
+from logger import logger
+from .. import (
+    MODULE_NAME,
+    ASSOCIATE_GROUPS_COMMAND,
+    REMOVE_GROUPS_COMMAND,
+    ADD_GROUPS_COMMAND,
+)
+from .data_manager import DataManager
+from api.message import send_private_msg
+
+
+class Core:
+    def __init__(self, websocket, user_id: str, raw_message: str):
+        self.user_id = user_id
+        self.raw_message = raw_message
+        self.websocket = websocket
+
+    async def _handle_associate_groups_command(self):
+        try:
+            # 解析命令
+            command = self.raw_message.split(" ")[0]
+            if command == ASSOCIATE_GROUPS_COMMAND:
+                # 解析参数
+                params = self.raw_message.split(" ")[1:]
+                # 处理参数
+                group_name = params[0]
+                group_ids = params[1:]
+                # 处理参数
+                with DataManager() as dm:
+                    result, message = dm.create_group_association(group_name, group_ids)
+                    if result:
+                        await send_private_msg(self.websocket, self.user_id, message)
+                    else:
+                        await send_private_msg(self.websocket, self.user_id, message)
+                    return True
+        except Exception as e:
+            logger.error(
+                f"[{MODULE_NAME}]{self.user_id}处理关联群号命令时发生异常: {e}"
+            )
+            await send_private_msg(
+                self.websocket, self.user_id, "处理关联群号命令时发生异常: " + str(e)
+            )
+            return False
+
+    async def _handle_remove_groups_command(self):
+        try:
+            # 解析命令
+            command = self.raw_message.split(" ")[0]
+            if command == REMOVE_GROUPS_COMMAND:
+                # 解析参数
+                params = self.raw_message.split(" ")[1:]
+                # 处理参数
+                group_name = params[0]
+                group_ids = params[1:]
+                # 处理参数
+                with DataManager() as dm:
+                    result, message = dm.remove_groups_from_association(
+                        group_name, group_ids
+                    )
+                    if result:
+                        await send_private_msg(self.websocket, self.user_id, message)
+                    else:
+                        await send_private_msg(self.websocket, self.user_id, message)
+                    return True
+        except Exception as e:
+            logger.error(
+                f"[{MODULE_NAME}]{self.user_id}处理删除群号命令时发生异常: {e}"
+            )
+            await send_private_msg(
+                self.websocket, self.user_id, "处理删除群号命令时发生异常: " + str(e)
+            )
+            return False
+
+    async def _handle_add_groups_command(self):
+        try:
+            # 解析命令
+            command = self.raw_message.split(" ")[0]
+            if command == ADD_GROUPS_COMMAND:
+                # 解析参数
+                params = self.raw_message.split(" ")[1:]
+                # 处理参数
+                group_name = params[0]
+                group_ids = params[1:]
+                # 处理参数
+                with DataManager() as dm:
+                    result, message = dm.add_groups_to_association(
+                        group_name, group_ids
+                    )
+                    if result:
+                        await send_private_msg(self.websocket, self.user_id, message)
+                    else:
+                        await send_private_msg(self.websocket, self.user_id, message)
+                    return True
+        except Exception as e:
+            logger.error(
+                f"[{MODULE_NAME}]{self.user_id}处理添加群号命令时发生异常: {e}"
+            )
+            await send_private_msg(
+                self.websocket, self.user_id, "处理添加群号命令时发生异常: " + str(e)
+            )
+            return False
+
+    async def handle(self):
+        try:
+            if self.raw_message.startswith(ASSOCIATE_GROUPS_COMMAND):
+                await self._handle_associate_groups_command()
+            elif self.raw_message.startswith(REMOVE_GROUPS_COMMAND):
+                await self._handle_remove_groups_command()
+            elif self.raw_message.startswith(ADD_GROUPS_COMMAND):
+                await self._handle_add_groups_command()
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]{self.user_id}处理私聊消息失败: {e}")
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                f"[{MODULE_NAME}]处理私聊消息失败: {e}",
+            )

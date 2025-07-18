@@ -5,7 +5,7 @@ from core.switchs import is_private_switch_on, handle_module_private_switch
 from api.message import send_private_msg
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
-from .data_manager import DataManager
+from .core import Core
 from utils.auth import is_system_admin
 from core.menu_manager import MenuManager
 
@@ -82,15 +82,17 @@ class PrivateMessageHandler:
 
             # 新增：根据sub_type判断消息类型
             if self.sub_type == "friend":
-                # 处理好友私聊消息
-                with DataManager() as dm:
-                    # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                    pass
+                # 处理核心逻辑
+                # 鉴权
+                if not is_system_admin(self.user_id):
+                    logger.error(f"[{MODULE_NAME}]{self.user_id}无权限使用私聊功能")
+                    return
+                # 处理核心逻辑
+                core = Core(self.websocket, self.user_id, self.raw_message)
+                await core.handle()
             elif self.sub_type == "group":
                 # 处理临时会话消息（如群临时会话）
-                with DataManager() as dm:
-                    # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                    pass
+                pass
             else:
                 # 其他类型的私聊消息
                 logger.info(
