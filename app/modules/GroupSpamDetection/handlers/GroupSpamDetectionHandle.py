@@ -2,7 +2,7 @@ from collections import defaultdict
 from .. import MODULE_NAME
 import logger
 from api.group import set_group_ban
-from api.message import send_group_msg
+from api.message import delete_msg, send_group_msg
 from utils.generate import generate_text_message, generate_at_message
 import re
 
@@ -42,13 +42,6 @@ class GroupSpamDetectionHandle:
                 self.user_id
             ]
             now = float(self.time)
-            # 判断是否为图片CQ码，是则统一标记
-            # 图片消息格式为：[CQ:image,summary=&#91;动画表情&#93;,file=xxx.jpg,sub_type=1,url=xxx]
-            if re.match(r"\[CQ:image,[^\]]+\]", self.raw_message):
-                contents.append("[IMAGE_MSG]")
-            else:
-                contents.append(self.raw_message)
-            timestamps.append(now)
 
             # 获取当前分钟
             current_minute = int(now // 60)
@@ -59,6 +52,41 @@ class GroupSpamDetectionHandle:
             def should_warn():
                 # 只在本分钟未警告过才允许警告
                 return warned_minute != current_minute
+
+            # 新增：检测消息换行数
+            newline_count = self.raw_message.count("\n")
+            if newline_count > 100 and should_warn():
+                logger.info(
+                    f"[{MODULE_NAME}] 用户{self.user_id}在群{self.group_id} 发送消息包含{newline_count}个换行符，超过限制(100)，视为刷屏。"
+                )
+                # 禁言加警告加撤回
+                await delete_msg(self.websocket, self.message_id)
+                await set_group_ban(
+                    self.websocket, self.group_id, self.user_id, self.ban_minutes * 60
+                )
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_at_message(self.user_id),
+                        generate_text_message(f"({self.user_id})"),
+                        generate_text_message("禁止发送过长消息刷屏，请注意发言规范"),
+                    ],
+                    note="del_msg=120",
+                )
+                # 记录本分钟已警告
+                GroupSpamDetectionHandle.warned_users_minute[self.group_id][
+                    self.user_id
+                ] = current_minute
+                return  # 检测到换行刷屏后直接返回，不需要继续其他检测
+
+            # 判断是否为图片CQ码，是则统一标记
+            # 图片消息格式为：[CQ:image,summary=&#91;动画表情&#93;,file=xxx.jpg,sub_type=1,url=xxx]
+            if re.match(r"\[CQ:image,[^\]]+\]", self.raw_message):
+                contents.append("[IMAGE_MSG]")
+            else:
+                contents.append(self.raw_message)
+            timestamps.append(now)
 
             # 高频消息检测
             # 移除时间窗口外的消息
