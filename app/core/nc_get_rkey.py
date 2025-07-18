@@ -28,8 +28,23 @@ def replace_rkey_match(match):
             # 读取本地rkey
             with open(DATA_DIR, "r", encoding="utf-8") as f:
                 rkey_json = json.load(f)
-            new_rkey = rkey_json[0].get("rkey")
+
+            # 选择合适的rkey，优先使用type=10的，如果没有则使用第一个
+            new_rkey = None
+            for rkey_item in rkey_json:
+                if rkey_item.get("type") == 10:
+                    new_rkey = rkey_item.get("rkey")
+                    break
+
+            # 如果没有找到type=10的，使用第一个可用的
+            if not new_rkey and rkey_json:
+                new_rkey = rkey_json[0].get("rkey")
+
             if new_rkey:
+                # 去掉rkey值开头的&rkey=前缀，只保留实际的rkey值
+                if new_rkey.startswith("&rkey="):
+                    new_rkey = new_rkey[6:]  # 去掉"&rkey="前缀
+
                 # 替换rkey参数
                 new_cq_img = re.sub(rkey_pattern, f"rkey={new_rkey}", cq_img)
                 return new_cq_img
