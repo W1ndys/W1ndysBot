@@ -167,7 +167,6 @@ class GroupMessageHandler:
                     f"({self.user_id})禁止发送包含二维码的{media_type == 'video' and '视频' or '图片'}"
                 ),
             ],
-            note="del_msg=30",
         )
 
         # 禁言用户
