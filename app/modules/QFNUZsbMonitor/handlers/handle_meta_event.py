@@ -87,7 +87,9 @@ class MetaEventHandler:
                     change_messages.append(change_info)
         return change_messages
 
-    async def _notify_groups(self, change_messages: list[str]):
+    async def _notify_groups(
+        self, change_messages: list[str], enabled_groups: list[str]
+    ):
         """向启用的群组发送通知"""
         if not change_messages:
             logger.info(f"[{MODULE_NAME}] 招生状态无变化。")
@@ -96,11 +98,6 @@ class MetaEventHandler:
         logger.info(
             f"[{MODULE_NAME}] 共检测到 {len(change_messages)} 条招生状态变化，准备推送。"
         )
-        enabled_groups = get_all_enabled_groups(MODULE_NAME)
-
-        if not enabled_groups:
-            logger.info(f"[{MODULE_NAME}] 没有启用的群聊，不推送消息。")
-            return
 
         message_to_send = "曲阜师范大学招生状态有新变化！\n" + "\n".join(
             change_messages
@@ -118,6 +115,11 @@ class MetaEventHandler:
         处理心跳
         """
         try:
+            enabled_groups = get_all_enabled_groups(MODULE_NAME)
+            if not enabled_groups:
+                logger.debug(f"[{MODULE_NAME}] 没有启用的群聊，跳过招生状态检测。")
+                return
+
             status_file = os.path.join(DATA_DIR, "status.json")
 
             client = GetLqcx()
@@ -137,7 +139,7 @@ class MetaEventHandler:
 
             change_messages = self._compare_statuses(old_status, new_status)
 
-            await self._notify_groups(change_messages)
+            await self._notify_groups(change_messages, enabled_groups)
 
             self._update_status_file(status_file, new_status)
 
