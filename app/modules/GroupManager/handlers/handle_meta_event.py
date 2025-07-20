@@ -94,7 +94,6 @@ class MetaEventHandler:
                                         f"🌙 宵禁时间开始({start_time})，晚安~"
                                     )
                                 ],
-                                note="del_msg=120",
                             )
 
                         elif action == "end":
@@ -113,7 +112,6 @@ class MetaEventHandler:
                                         f"☀️ 宵禁时间结束({end_time})，早安~"
                                     )
                                 ],
-                                note="del_msg=120",
                             )
 
         except Exception as e:
