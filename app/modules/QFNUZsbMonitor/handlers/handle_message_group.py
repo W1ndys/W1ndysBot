@@ -127,7 +127,11 @@ class GroupMessageHandler:
             else:
                 message = "\n".join(message_lines)
 
-            message += "\n数据仅供参考，以官方为准，数据一分钟更新一次。\n曲阜师范大学新生群 1046961227 提供技术支持，欢迎互相邀请加入。"
+            message += "\n数据仅供参考，以官方为准，数据一分钟更新一次。"
+            if self.group_id != "264545015":
+                message += (
+                    "\n曲阜师范大学新生群 1046961227 提供技术支持，欢迎互相邀请加入。"
+                )
 
             await send_group_msg(
                 self.websocket,
