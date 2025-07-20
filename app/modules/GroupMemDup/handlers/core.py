@@ -1,12 +1,14 @@
+import asyncio
 from logger import logger
 from .. import (
     MODULE_NAME,
     ASSOCIATE_GROUPS_COMMAND,
     REMOVE_GROUPS_COMMAND,
     ADD_GROUPS_COMMAND,
+    SEND_MESSAGE_COMMAND,
 )
 from .data_manager import DataManager
-from api.message import send_private_msg
+from api.message import send_private_msg, send_group_msg
 from core.get_group_member_list import get_group_member_user_ids
 
 
@@ -118,6 +120,36 @@ class Core:
             )
             return False
 
+    async def _handle_send_message_command(self):
+        try:
+            # 解析命令
+            params = self.raw_message.split(" ")
+
+            # 处理参数
+            group_name = params[1]
+            message = params[2]
+
+            logger.success(
+                f"[{MODULE_NAME}]{self.user_id}处理群发命令: {group_name} {message}"
+            )
+
+            # 处理参数
+            with DataManager() as dm:
+                group_ids = dm.get_group_info(group_name)
+                if group_ids:
+                    for group_id in group_ids:
+                        await send_group_msg(self.websocket, group_id, message)
+                        await asyncio.sleep(0.5)
+                else:
+                    await send_private_msg(self.websocket, self.user_id, message)
+                return True
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]{self.user_id}处理群发命令时发生异常: {e}")
+            await send_private_msg(
+                self.websocket, self.user_id, "处理群发命令时发生异常: " + str(e)
+            )
+            return False
+
     async def handle(self):
         try:
             if self.raw_message.startswith(ASSOCIATE_GROUPS_COMMAND):
@@ -126,6 +158,8 @@ class Core:
                 await self._handle_remove_groups_command()
             elif self.raw_message.startswith(ADD_GROUPS_COMMAND):
                 await self._handle_add_groups_command()
+            elif self.raw_message.startswith(SEND_MESSAGE_COMMAND):
+                await self._handle_send_message_command()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]{self.user_id}处理私聊消息失败: {e}")
             await send_private_msg(

@@ -25,8 +25,12 @@ REMOVE_GROUPS_COMMAND = "删除群号"
 # 添加群号命令：向某个组添加若干群号
 ADD_GROUPS_COMMAND = "添加群号"
 
+# 群发命令：向某个组群发消息
+SEND_MESSAGE_COMMAND = "群发"
+
 COMMANDS = {
     ASSOCIATE_GROUPS_COMMAND: "关联群号，用法：关联群号 组名 群号1 群号2 ...",
     REMOVE_GROUPS_COMMAND: "删除群号，用法：删除群号 组名 群号1 群号2 ...",
     ADD_GROUPS_COMMAND: "添加群号，用法：添加群号 组名 群号1 群号2 ...",
+    SEND_MESSAGE_COMMAND: "群发，用法：群发 组名 消息",
 }
