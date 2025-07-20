@@ -18,10 +18,11 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # 模块的一些命令可以在这里定义，方便在其他地方调用，提高代码的复用率
 # ------------------------------------------------------------
 
-EXAMPLE_COMMAND = "示例命令"  # 示例命令
+# 查询招生状态
+QUERY_ADMISSION_STATUS_COMMAND = "招生状态"
 
 COMMANDS = {
-    EXAMPLE_COMMAND: "示例命令，用法：示例命令",
+    QUERY_ADMISSION_STATUS_COMMAND: "招生状态，用法：招生状态+空格+省份",
     # 可以继续添加其他命令
 }
 # ------------------------------------------------------------

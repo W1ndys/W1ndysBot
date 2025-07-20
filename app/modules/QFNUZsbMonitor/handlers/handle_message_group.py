@@ -1,4 +1,4 @@
-from .. import MODULE_NAME, SWITCH_NAME
+from .. import MODULE_NAME, SWITCH_NAME, QUERY_ADMISSION_STATUS_COMMAND, DATA_DIR
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
@@ -6,8 +6,9 @@ from utils.auth import is_system_admin
 from api.message import send_group_msg
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
-from .data_manager import DataManager
 from core.menu_manager import MenuManager
+import os
+import json
 
 
 class GroupMessageHandler:
@@ -67,6 +68,80 @@ class GroupMessageHandler:
             return True
         return False
 
+    async def _handle_query_admission_status_command(self):
+        """
+        处理招生状态查询命令
+        """
+        try:
+            # 分离参数
+            params = self.raw_message.split(" ")
+            if len(params) < 2:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    "请输入省份",
+                )
+                return True
+            province = params[1]
+            status_file = os.path.join(DATA_DIR, "status.json")
+
+            if not os.path.exists(status_file):
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    "暂无招生状态信息。",
+                )
+                return True
+
+            with open(status_file, "r", encoding="utf-8") as f:
+                status_data = json.load(f)
+
+            if not status_data.get("can_query", False):
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    "当前暂不可查询。",
+                )
+                return True
+
+            province_status = status_data.get("provinces", {}).get(province)
+
+            if not province_status:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    f"未找到省份【{province}】的招生信息，请检查省份名称是否正确。",
+                )
+                return True
+
+            year = status_data.get("year", "")
+            school_name = status_data.get("school_name", "")
+            message_lines = [f"{school_name} {year}年 在【{province}】的录取状态:"]
+
+            for category, details in province_status.items():
+                status_text = details.get("status_text", "暂无信息")
+                message_lines.append(f"· {category}: {status_text}")
+
+            if len(message_lines) == 1:
+                message = f"暂未查询到【{province}】的详细录取状态信息。"
+            else:
+                message = "\n".join(message_lines)
+
+            message += "\n数据仅供参考，以官方为准，数据一分钟更新一次。\n曲阜师范大学新生群1046961227提供技术支持"
+
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_reply_message(self.message_id),
+                    generate_text_message(message),
+                ],
+            )
+            return True
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理招生状态查询命令失败: {e}")
+            return False
+
     async def handle(self):
         """
         处理群消息
@@ -84,10 +159,9 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            # 示例：使用with语句块进行数据库操作
-            with DataManager() as dm:
-                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                pass
+            # 处理招生状态查询命令
+            if self.raw_message.startswith(QUERY_ADMISSION_STATUS_COMMAND):
+                await self._handle_query_admission_status_command()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
