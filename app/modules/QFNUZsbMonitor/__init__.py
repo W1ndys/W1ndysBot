@@ -2,13 +2,13 @@ import os
 
 
 # 模块名称
-MODULE_NAME = "Template"
+MODULE_NAME = "QFNUZsbMonitor"
 
 # 模块开关名称
-SWITCH_NAME = "tp"
+SWITCH_NAME = "qzm"
 
 # 模块描述
-MODULE_DESCRIPTION = "模板模块"
+MODULE_DESCRIPTION = "曲阜师范大学招生状态监控"
 
 # 数据目录
 DATA_DIR = os.path.join("data", MODULE_NAME)
