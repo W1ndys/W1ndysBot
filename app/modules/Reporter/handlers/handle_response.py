@@ -1,9 +1,10 @@
-from .. import MODULE_NAME
+from .. import MODULE_NAME, FORWARD_MESSAGE_TO_OWNER
 import logger
 import re
 from api.user import set_friend_add_request, set_group_add_request
 from api.message import send_private_msg
 from utils.generate import generate_text_message
+from .data_manager import DataManager
 
 
 class ResponseHandler:
@@ -24,6 +25,12 @@ class ResponseHandler:
                 and MODULE_NAME in self.echo
             ):
                 await self._handle_request_response()
+
+            # 处理转发消息给owner的响应
+            if isinstance(self.echo, str) and self.echo.startswith(
+                f"send_private_msg-{MODULE_NAME}-{FORWARD_MESSAGE_TO_OWNER}"
+            ):
+                await self._handle_forward_message_to_owner()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理响应失败: {e}")
 
@@ -87,3 +94,50 @@ class ResponseHandler:
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理请求响应失败: {e}")
+
+    async def _handle_forward_message_to_owner(self):
+        """处理转发消息给owner的响应"""
+        try:
+            # 获取转发消息id
+            forwarded_message_id = self.data.get("message_id", "")
+
+            # 正则提取发送者id和原始消息id
+            user_id_pattern = r"user_id=(\d+)"
+            original_message_id_pattern = r"original_message_id=(\d+)"
+
+            # 在echo字段执行正则匹配
+            user_id_match = re.search(user_id_pattern, self.echo)
+            original_message_id_match = re.search(
+                original_message_id_pattern, self.echo
+            )
+
+            # 提取匹配结果
+            user_id = user_id_match.group(1) if user_id_match else None
+            original_message_id = (
+                original_message_id_match.group(1)
+                if original_message_id_match
+                else None
+            )
+
+            # 检查必要参数
+            if not (user_id and original_message_id and forwarded_message_id):
+                logger.error(
+                    f"[{MODULE_NAME}]参数缺失，无法更新消息映射关系。user_id: {user_id}, original_message_id: {original_message_id}, forwarded_message_id: {forwarded_message_id}"
+                )
+                return
+
+            # 更新消息映射关系
+            with DataManager() as data_manager:
+                update_result = data_manager.update_forwarded_message_id(
+                    original_message_id, forwarded_message_id
+                )
+                if update_result:
+                    logger.success(
+                        f"[{MODULE_NAME}]已成功更新消息映射关系：发送者ID={user_id}, 原始消息ID={original_message_id}, 转发消息ID={forwarded_message_id}"
+                    )
+                else:
+                    logger.warning(
+                        f"[{MODULE_NAME}]未能更新消息映射关系，可能原始消息ID不存在：{original_message_id}"
+                    )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理转发消息给owner的响应失败: {e}")

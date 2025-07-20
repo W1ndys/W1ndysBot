@@ -111,6 +111,10 @@ class PrivateMessageHandler:
             # 处理自动同意好友验证
             if await processor.handle_auto_agree_friend_verify():
                 return
+
+            # 处理owner回复转发消息
+            if await processor.handle_forward_message_to_owner_reply():
+                return
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理管理员消息失败: {e}")
 

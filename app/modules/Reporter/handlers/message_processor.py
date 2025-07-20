@@ -3,10 +3,11 @@ import os
 import json
 import asyncio
 import logger
-from .. import MODULE_NAME, AUTO_AGREE_FRIEND_VERIFY, DATA_DIR
+from .. import MODULE_NAME, AUTO_AGREE_FRIEND_VERIFY, DATA_DIR, FORWARD_MESSAGE_TO_OWNER
 from config import OWNER_ID
 from api.message import send_private_msg, send_private_msg_with_cq, get_msg
 from utils.generate import generate_reply_message, generate_text_message
+from .data_manager import DataManager
 
 
 class MessageProcessor:
@@ -67,6 +68,40 @@ class MessageProcessor:
                 note = f"{MODULE_NAME}-action={action}-operate_user_id={self.user_id}"
                 await get_msg(self.websocket, reply_msg_id, note)
                 return True
+        return False
+
+    async def handle_forward_message_to_owner_reply(self):
+        """处理owner回复转发消息"""
+        if self.raw_message.startswith(f"[CQ:reply,id="):
+            # 提取被回复消息ID（即数据库里的转发消息id）和回复内容
+            # 回复CQ码后面的内容全是需要转发回去的内容，正则提取
+            reply_content = re.search(r"\[CQ:reply,id=(\d+)\](.*)", self.raw_message)
+            if reply_content:
+                forwarded_message_id = reply_content.group(1)
+                reply_content = reply_content.group(2)
+
+                # 根据转发消息id获取原始消息内容
+                with DataManager() as data_manager:
+                    original_message_id = data_manager.get_original_message_id(
+                        forwarded_message_id
+                    )
+                    original_sender_id = data_manager.get_original_sender_id(
+                        forwarded_message_id
+                    )
+
+                    # 构造回复消息
+                    reply_message = generate_reply_message(original_message_id)
+                    text_message = generate_text_message(reply_content)
+                    if original_message_id:
+                        await send_private_msg(
+                            self.websocket,
+                            original_sender_id,
+                            [reply_message, text_message],
+                        )
+                        logger.success(
+                            f"[{MODULE_NAME}]已回复原始消息：发送者ID={original_sender_id}, 原始消息ID={original_message_id}, 回复内容={reply_content}"
+                        )
+            return True
         return False
 
     async def handle_auto_agree_friend_verify(self):
@@ -144,7 +179,21 @@ class MessageProcessor:
             await asyncio.sleep(0.4)
 
         # 发送消息内容
-        await send_private_msg(self.websocket, OWNER_ID, self.message)
+        await send_private_msg(
+            self.websocket,
+            OWNER_ID,
+            self.message,
+            note=f"{MODULE_NAME}-{FORWARD_MESSAGE_TO_OWNER}-user_id={self.user_id}-original_message_id={self.message_id}",
+        )
+
+        # 存储消息映射关系（发送者ID, 原始消息ID）
+        with DataManager() as data_manager:
+            data_manager.add_original_message(
+                self.user_id, self.message_id, self.raw_message
+            )
+            logger.success(
+                f"[{MODULE_NAME}]已存储上报消息映射：发送者ID={self.user_id}, 原始消息ID={self.message_id}"
+            )
 
         # 更新上次发送消息的用户ID
         MessageProcessor._last_user_id = self.user_id
