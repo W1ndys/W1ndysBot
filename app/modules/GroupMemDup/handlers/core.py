@@ -38,10 +38,10 @@ class Core:
     async def _handle_associate_groups_command(self):
         try:
             # 解析命令
-            command = self.raw_message.split(" ")[0]
+            command = self.raw_message.split()[0]
             if command == ASSOCIATE_GROUPS_COMMAND:
                 # 解析参数
-                params = self.raw_message.split(" ")[1:]
+                params = self.raw_message.split()[1:]
                 # 处理参数
                 group_name = params[0]
                 group_ids = params[1:]
@@ -65,10 +65,10 @@ class Core:
     async def _handle_remove_groups_command(self):
         try:
             # 解析命令
-            command = self.raw_message.split(" ")[0]
+            command = self.raw_message.split()[0]
             if command == REMOVE_GROUPS_COMMAND:
                 # 解析参数
-                params = self.raw_message.split(" ")[1:]
+                params = self.raw_message.split()[1:]
                 # 处理参数
                 group_name = params[0]
                 group_ids = params[1:]
@@ -94,10 +94,10 @@ class Core:
     async def _handle_add_groups_command(self):
         try:
             # 解析命令
-            command = self.raw_message.split(" ")[0]
+            command = self.raw_message.split()[0]
             if command == ADD_GROUPS_COMMAND:
                 # 解析参数
-                params = self.raw_message.split(" ")[1:]
+                params = self.raw_message.split()[1:]
                 # 处理参数
                 group_name = params[0]
                 group_ids = params[1:]
@@ -123,7 +123,7 @@ class Core:
     async def _handle_send_message_command(self):
         try:
             # 解析命令
-            params = self.raw_message.split(" ")
+            params = self.raw_message.split()
 
             # 处理参数
             group_name = params[1]

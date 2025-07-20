@@ -74,7 +74,7 @@ class GroupMessageHandler:
         """
         try:
             # 分离参数
-            params = self.raw_message.split(" ")
+            params = self.raw_message.split()
             if len(params) < 2:
                 await send_group_msg(
                     self.websocket,

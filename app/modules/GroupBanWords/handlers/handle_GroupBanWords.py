@@ -62,9 +62,9 @@ class GroupBanWordsHandler:
             # 过滤命令
             self.raw_message = self.raw_message.lstrip(UNBAN_WORD_COMMAND).strip()
             # 获取群号
-            banned_group_id = self.raw_message.split(" ")[0]
+            banned_group_id = self.raw_message.split()[0]
             # 获取被封禁用户ID
-            banned_user_id = self.raw_message.split(" ")[1]
+            banned_user_id = self.raw_message.split()[1]
             # 解封用户
             await set_group_ban(
                 self.websocket,
@@ -105,9 +105,9 @@ class GroupBanWordsHandler:
             # 过滤命令
             ban_word = self.raw_message.lstrip(KICK_BAN_WORD_COMMAND).strip()
             # 获取被封禁用户ID
-            banned_user_id = ban_word.split(" ")[1]
+            banned_user_id = ban_word.split()[1]
             # 获取群号
-            banned_group_id = ban_word.split(" ")[0]
+            banned_group_id = ban_word.split()[0]
             # 更新用户状态为已踢出
             self.data_manager.set_user_status(banned_user_id, "kick", banned_group_id)
             # 发送成功消息

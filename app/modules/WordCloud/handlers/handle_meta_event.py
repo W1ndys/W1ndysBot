@@ -170,7 +170,7 @@ class MetaEventHandler:
             # 提取时间（只保留时分，去掉秒和日期）
             time_str = msg["message_time"]
             if " " in time_str:
-                time_part = time_str.split(" ")[1]  # 获取时间部分
+                time_part = time_str.split()[1]  # 获取时间部分
                 time_part = time_part[:5]  # 只保留时:分
             else:
                 time_part = time_str[:5]
