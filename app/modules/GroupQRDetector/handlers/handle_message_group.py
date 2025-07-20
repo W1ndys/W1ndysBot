@@ -126,6 +126,19 @@ class GroupMessageHandler:
 
         # 检测图片
         elif self.raw_message.startswith("[CQ:image,file="):
+            # 提取文件大小
+            file_size_pattern = r"file_size=(\d+)"
+            file_size_match = re.search(file_size_pattern, self.raw_message)
+
+            if file_size_match:
+                file_size = int(file_size_match.group(1))
+                # 5MB = 5 * 1024 * 1024 = 5242880 字节
+                if file_size > 5242880:
+                    logger.info(
+                        f"[{MODULE_NAME}]图片文件大小({file_size}字节)超过5MB，跳过二维码检测"
+                    )
+                    return None
+
             pattern = r"url=(.*?),file_size="
             match = re.search(pattern, self.raw_message)
             if match:
