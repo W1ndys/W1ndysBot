@@ -85,7 +85,6 @@ class PrivateMessageHandler:
                 # 处理核心逻辑
                 # 鉴权
                 if not is_system_admin(self.user_id):
-                    logger.error(f"[{MODULE_NAME}]{self.user_id}无权限使用私聊功能")
                     return
                 # 处理核心逻辑
                 core = Core(self.websocket, self.user_id, self.raw_message)
