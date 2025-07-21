@@ -90,18 +90,17 @@ class GroupMessageHandler:
 
     async def _handle_media_qr_detection(self):
         """处理媒体文件的二维码检测"""
-        media_url = self._extract_media_url()
-        if not media_url:
+        media_type, url = self._extract_media_url()
+        if not media_type or not url:
             return
 
-        media_type, url = media_url
         logger.info(f"[{MODULE_NAME}]{media_type}链接: {url}")
 
         # 根据媒体类型调用相应的检测方法
         if media_type == "video":
             result = await self.qr_detector.detect_video_from_url(url)
         elif media_type == "image":
-            result = await self.qr_detector.detect_image_from_url(self.url)
+            result = await self.qr_detector.detect_image_from_url(url)
         else:
             return
 
@@ -114,7 +113,7 @@ class GroupMessageHandler:
         从消息中提取媒体URL
 
         Returns:
-            tuple: (media_type, url) 或 None
+            media_type, url 或 None
         """
         # 检测视频
         if self.raw_message.startswith("[CQ:video,file="):
@@ -123,10 +122,11 @@ class GroupMessageHandler:
             if match:
                 url = self._decode_url(match.group(1))
                 self.url = url
-                return ("video", url)
+                return "video", url
 
         # 检测图片
         elif self.raw_message.startswith("[CQ:image,file="):
+            logger.info(f"[{MODULE_NAME}]图片链接: {self.raw_message}")
             # 提取文件大小
             file_size_pattern = r"file_size=(\d+)"
             file_size_match = re.search(file_size_pattern, self.raw_message)
@@ -138,16 +138,16 @@ class GroupMessageHandler:
                     logger.info(
                         f"[{MODULE_NAME}]图片文件大小({file_size}字节)超过2MB，跳过二维码检测"
                     )
-                    return None
+                    return None, None
 
             pattern = r"url=(.*?),file_size="
             match = re.search(pattern, self.raw_message)
             if match:
                 url = self._decode_url(match.group(1))
                 self.url = replace_rkey(url)
-                return ("image", url)
+                return "image", url
 
-        return None
+        return None, None
 
     def _decode_url(self, url):
         """
