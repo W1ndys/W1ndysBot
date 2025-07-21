@@ -14,6 +14,7 @@ from .. import (
     GROUP_CANCEL_CURFEW_COMMAND,
     GROUP_TOGGLE_CURFEW_COMMAND,
     GROUP_QUERY_CURFEW_COMMAND,
+    GROUP_TOGGLE_AUTO_APPROVE_COMMAND,
 )
 import logger
 from core.menu_manager import MENU_COMMAND
@@ -123,6 +124,8 @@ class GroupMessageHandler:
                     await group_manager_handle.handle_cancel_curfew()
                 elif self.raw_message.startswith(GROUP_TOGGLE_CURFEW_COMMAND):
                     await group_manager_handle.handle_toggle_curfew()
+                elif self.raw_message.startswith(GROUP_TOGGLE_AUTO_APPROVE_COMMAND):
+                    await group_manager_handle.handle_toggle_auto_approve()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")

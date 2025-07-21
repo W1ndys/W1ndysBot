@@ -33,6 +33,9 @@ GROUP_SET_CURFEW_COMMAND = "设置宵禁"  # 设置宵禁命令
 GROUP_CANCEL_CURFEW_COMMAND = "取消宵禁"  # 取消宵禁命令
 GROUP_TOGGLE_CURFEW_COMMAND = "切换宵禁"  # 切换宵禁开关命令
 GROUP_QUERY_CURFEW_COMMAND = "查询宵禁"  # 查询宵禁状态命令
+GROUP_TOGGLE_AUTO_APPROVE_COMMAND = "切换同意入群"  # 切换自动同意入群命令
+
+
 # ------------------------------------------------------------
 
 COMMANDS = {
@@ -49,4 +52,5 @@ COMMANDS = {
     GROUP_CANCEL_CURFEW_COMMAND: "取消当前群的宵禁设置，将删除所有宵禁配置",
     GROUP_TOGGLE_CURFEW_COMMAND: "切换宵禁功能的开启/关闭状态，不删除配置",
     GROUP_QUERY_CURFEW_COMMAND: "查询当前群的宵禁设置和状态",
+    GROUP_TOGGLE_AUTO_APPROVE_COMMAND: "切换自动同意入群功能的开启/关闭状态",
 }

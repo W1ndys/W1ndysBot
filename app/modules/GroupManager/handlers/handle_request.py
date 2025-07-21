@@ -1,6 +1,8 @@
 from .. import MODULE_NAME
 import logger
 from datetime import datetime
+from .data_manager import DataManager
+from api.group import set_group_add_request
 
 
 class RequestHandler:
@@ -17,6 +19,7 @@ class RequestHandler:
         self.user_id = self.msg.get("user_id", "")
         self.comment = self.msg.get("comment", "")
         self.flag = self.msg.get("flag", "")
+        self.group_id = self.msg.get("group_id", "")
 
     async def handle_friend(self):
         """
@@ -56,7 +59,17 @@ class RequestHandler:
         处理加群请求
         """
         try:
-            pass
+            # 检查是否开启自动同意入群
+            with DataManager() as dm:
+                is_auto_approve_enabled = dm.get_auto_approve_status(self.group_id)
+
+                if is_auto_approve_enabled:
+                    # 自动同意入群请求
+                    await set_group_add_request(self.websocket, self.flag, True)
+                    logger.info(
+                        f"[{MODULE_NAME}]自动同意用户 {self.user_id} 加入群 {self.group_id}"
+                    )
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理加群请求失败: {e}")
 

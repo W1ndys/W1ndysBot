@@ -3,7 +3,12 @@
 """
 
 import logger
-from .. import MODULE_NAME, GROUP_RECALL_COMMAND, SCAN_INACTIVE_USER_COMMAND
+from .. import (
+    MODULE_NAME,
+    GROUP_RECALL_COMMAND,
+    SCAN_INACTIVE_USER_COMMAND,
+    GROUP_TOGGLE_AUTO_APPROVE_COMMAND,
+)
 from api.group import (
     set_group_ban,
     set_group_kick,
@@ -558,5 +563,92 @@ class GroupManagerHandle:
                 self.websocket,
                 self.group_id,
                 [generate_text_message(f"❌ 取消宵禁失败：{str(e)}")],
+                note="del_msg=60",
+            )
+
+    async def handle_auto_approve(self):
+        """
+        处理自动同意入群开关
+        """
+        try:
+            with DataManager() as dm:
+                if self.raw_message.startswith(GROUP_TOGGLE_AUTO_APPROVE_COMMAND):
+                    # 开启自动同意入群
+                    success = dm.set_auto_approve_status(self.group_id, True)
+                    if success:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [generate_text_message("✅ 自动同意入群已开启")],
+                            note="del_msg=60",
+                        )
+                    else:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [generate_text_message("❌ 开启自动同意入群失败")],
+                            note="del_msg=60",
+                        )
+                elif self.raw_message.startswith(GROUP_TOGGLE_AUTO_APPROVE_COMMAND):
+                    # 关闭自动同意入群
+                    success = dm.set_auto_approve_status(self.group_id, False)
+                    if success:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [generate_text_message("✅ 自动同意入群已关闭")],
+                            note="del_msg=60",
+                        )
+                    else:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [generate_text_message("❌ 关闭自动同意入群失败")],
+                            note="del_msg=60",
+                        )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理自动同意入群失败: {e}")
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [generate_text_message(f"❌ 操作失败：{str(e)}")],
+                note="del_msg=60",
+            )
+
+    async def handle_toggle_auto_approve(self):
+        """
+        处理切换自动同意入群开关
+        """
+        try:
+            with DataManager() as dm:
+                # 获取当前状态并切换
+                current_status = dm.get_auto_approve_status(self.group_id)
+                new_status = dm.toggle_auto_approve_status(self.group_id)
+
+                if new_status != current_status:  # 确认状态确实发生了改变
+                    status_text = "已开启" if new_status else "已关闭"
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_text_message(
+                                f"✅ 自动同意入群功能切换成功！\n📋 当前状态：{status_text}"
+                            )
+                        ],
+                        note="del_msg=60",
+                    )
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [generate_text_message("❌ 切换自动同意入群状态失败")],
+                        note="del_msg=60",
+                    )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]切换自动同意入群状态失败: {e}")
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [generate_text_message(f"❌ 操作失败：{str(e)}")],
                 note="del_msg=60",
             )

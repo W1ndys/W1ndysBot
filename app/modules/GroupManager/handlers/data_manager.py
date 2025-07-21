@@ -51,6 +51,16 @@ class DataManager:
         """
         )
 
+        # 创建自动同意入群设置表
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS auto_approve_settings (
+                group_id TEXT PRIMARY KEY,
+                is_enabled INTEGER NOT NULL DEFAULT 0
+            )
+        """
+        )
+
         # 创建禁言记录表的索引
         self.cursor.execute(
             """
@@ -74,6 +84,13 @@ class DataManager:
         self.cursor.execute(
             """
             CREATE INDEX IF NOT EXISTS idx_curfew_group ON curfew_settings(group_id)
+        """
+        )
+
+        # 创建自动同意入群设置表的索引
+        self.cursor.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_auto_approve_group ON auto_approve_settings(group_id)
         """
         )
 
@@ -381,3 +398,63 @@ class DataManager:
             (group_id, trigger_time),
         )
         self.conn.commit()
+
+    def set_auto_approve_status(self, group_id, is_enabled):
+        """
+        设置群自动同意入群状态
+
+        参数:
+            group_id: 群号
+            is_enabled: 是否启用自动同意入群 (True/False)
+
+        返回:
+            bool: 操作是否成功
+        """
+        try:
+            self.cursor.execute(
+                """
+                INSERT OR REPLACE INTO auto_approve_settings (group_id, is_enabled)
+                VALUES (?, ?)
+                """,
+                (group_id, int(is_enabled)),
+            )
+            self.conn.commit()
+            return True
+        except Exception as e:
+            return False
+
+    def get_auto_approve_status(self, group_id):
+        """
+        获取群自动同意入群状态
+
+        参数:
+            group_id: 群号
+
+        返回:
+            bool: 是否启用自动同意入群，默认False
+        """
+        self.cursor.execute(
+            "SELECT is_enabled FROM auto_approve_settings WHERE group_id=?",
+            (group_id,),
+        )
+        result = self.cursor.fetchone()
+
+        return bool(result[0]) if result else False
+
+    def toggle_auto_approve_status(self, group_id):
+        """
+        切换群自动同意入群开关状态
+
+        参数:
+            group_id: 群号
+
+        返回:
+            bool: 切换后的状态
+        """
+        # 获取当前状态
+        current_status = self.get_auto_approve_status(group_id)
+        # 切换状态
+        new_status = not current_status
+
+        success = self.set_auto_approve_status(group_id, new_status)
+        return new_status if success else current_status

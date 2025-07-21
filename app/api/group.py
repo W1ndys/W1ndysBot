@@ -360,7 +360,7 @@ async def upload_group_file(websocket, group_id, file, name, folder_id):
         return False
 
 
-async def set_group_add_request(websocket, flag, approve, reason):
+async def set_group_add_request(websocket, flag, approve, reason=""):
     """
     处理加群请求
 
