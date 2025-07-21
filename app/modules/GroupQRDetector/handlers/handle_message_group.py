@@ -17,6 +17,7 @@ import re
 import html
 import urllib.parse
 from config import OWNER_ID
+from core.nc_get_rkey import replace_rkey
 
 
 class GroupMessageHandler:
@@ -100,7 +101,7 @@ class GroupMessageHandler:
         if media_type == "video":
             result = await self.qr_detector.detect_video_from_url(url)
         elif media_type == "image":
-            result = await self.qr_detector.detect_image_from_url(url)
+            result = await self.qr_detector.detect_image_from_url(self.url)
         else:
             return
 
@@ -143,7 +144,7 @@ class GroupMessageHandler:
             match = re.search(pattern, self.raw_message)
             if match:
                 url = self._decode_url(match.group(1))
-                self.url = url
+                self.url = replace_rkey(url)
                 return ("image", url)
 
         return None
@@ -205,7 +206,7 @@ class GroupMessageHandler:
                     f"nickname={self.nickname}\n"
                     f"时间={self.formatted_time}\n"
                     f"media_type={media_type}\n"
-                    f"url={self.url}"
+                    f"url={replace_rkey(self.url)}"
                 ),
             ],
         )
