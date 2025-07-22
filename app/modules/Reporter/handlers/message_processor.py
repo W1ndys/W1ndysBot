@@ -90,13 +90,11 @@ class MessageProcessor:
                     )
 
                     # 构造回复消息
-                    reply_message = generate_reply_message(original_message_id)
-                    text_message = generate_text_message(reply_content)
+                    reply_message = f"[CQ:reply,id={original_message_id}]"
+                    message = f"{reply_message}{reply_content}"
                     if original_message_id:
-                        await send_private_msg(
-                            self.websocket,
-                            original_sender_id,
-                            [reply_message, text_message],
+                        await send_private_msg_with_cq(
+                            self.websocket, original_sender_id, message
                         )
                         logger.success(
                             f"[{MODULE_NAME}]已回复原始消息：发送者ID={original_sender_id}, 原始消息ID={original_message_id}, 回复内容={reply_content}"
