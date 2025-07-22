@@ -99,8 +99,6 @@ class GroupMessageHandler:
         # 根据媒体类型调用相应的检测方法
         if media_type == "video":
             result = await self.qr_detector.detect_video_from_url(url)
-        elif media_type == "image":
-            result = await self.qr_detector.detect_image_from_url(url)
         else:
             return
 
@@ -124,29 +122,6 @@ class GroupMessageHandler:
                 self.url = url
                 return "video", url
 
-        # 检测图片
-        elif self.raw_message.startswith("[CQ:image,file="):
-            logger.info(f"[{MODULE_NAME}]图片链接: {self.raw_message}")
-            # 提取文件大小
-            file_size_pattern = r"file_size=(\d+)"
-            file_size_match = re.search(file_size_pattern, self.raw_message)
-
-            if file_size_match:
-                file_size = int(file_size_match.group(1))
-                # 2MB = 2 * 1024 * 1024 = 2097152 字节
-                if file_size > 2097152:
-                    logger.info(
-                        f"[{MODULE_NAME}]图片文件大小({file_size}字节)超过2MB，跳过二维码检测"
-                    )
-                    return None, None
-
-            pattern = r"url=(.*?),file_size="
-            match = re.search(pattern, self.raw_message)
-            if match:
-                url = self._decode_url(match.group(1))
-                self.url = replace_rkey(url)
-                return "image", url
-
         return None, None
 
     def _decode_url(self, url):
@@ -169,7 +144,7 @@ class GroupMessageHandler:
         处理检测到二维码的情况
 
         Args:
-            media_type (str): 媒体类型 ("video" 或 "image")
+            media_type (str): 媒体类型 ("video")
         """
         # 发送警告消息
         await send_group_msg(
@@ -177,9 +152,7 @@ class GroupMessageHandler:
             self.group_id,
             [
                 generate_at_message(self.user_id),
-                generate_text_message(
-                    f"({self.user_id})禁止发送包含二维码的{media_type == 'video' and '视频' or '图片'}"
-                ),
+                generate_text_message(f"({self.user_id})禁止发送包含二维码的视频"),
             ],
         )
 
