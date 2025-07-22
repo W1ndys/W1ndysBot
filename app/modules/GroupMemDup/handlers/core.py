@@ -8,7 +8,7 @@ from .. import (
     SEND_MESSAGE_COMMAND,
 )
 from .data_manager import DataManager
-from api.message import send_private_msg, send_group_msg
+from api.message import send_private_msg, send_group_msg_with_cq
 from core.get_group_member_list import get_group_member_user_ids
 
 
@@ -138,7 +138,7 @@ class Core:
                 group_ids = dm.get_group_info(group_name)
                 if group_ids:
                     for group_id in group_ids:
-                        await send_group_msg(self.websocket, group_id, message)
+                        await send_group_msg_with_cq(self.websocket, group_id, message)
                         await asyncio.sleep(0.5)
                 else:
                     await send_private_msg(self.websocket, self.user_id, message)
