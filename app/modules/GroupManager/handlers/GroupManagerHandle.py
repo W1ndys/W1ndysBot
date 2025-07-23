@@ -107,7 +107,7 @@ class GroupManagerHandle:
                 # 如果打破群记录
                 elif break_group_record:
                     message_parts.append(
-                        f"恭喜用户 {user_id} 打破本群今日禁言最高记录！\n时长：{duration} 秒"
+                        f"恭喜用户 {user_id} 打破本群今日禁言最高记录！\n时长：{duration} 秒\n🏆 新的禁言之王诞生！"
                     )
                 # 如果没有打破任何记录，只显示当前禁言时长
                 else:
@@ -124,23 +124,9 @@ class GroupManagerHandle:
                     note="del_msg=60",
                 )
 
-                # 如果当前用户成为了禁言之王，单独显示禁言之王信息
-                top_user = dm.get_group_today_top_mute_user(self.group_id)
-                if top_user and str(top_user[0]) != str(
-                    user_id
-                ):  # 如果禁言之王不是当前用户，才单独显示
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_at_message(top_user[0]),
-                            generate_text_message(
-                                f"本群今日禁言之王：{top_user[0]}\n"
-                                f"禁言时长：{top_user[1]} 秒"
-                            ),
-                        ],
-                        note="del_msg=60",
-                    )
+                # 移除原来的禁言之王单独显示逻辑，避免重复发送
+                # 现在只有在打破群记录时才会在上面的消息中显示禁言之王信息
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]更新禁言记录失败: {e}")
 
