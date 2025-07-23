@@ -28,6 +28,8 @@ ADD_GROUPS_COMMAND = "添加群号"
 VIEW_GROUPS_COMMAND = "查看群号"
 # 查看群组命令：查看所有群组
 VIEW_GROUPS_LIST_COMMAND = "查看群组"
+# 删除群组命令：删除某个群组下的所有群号
+DELETE_GROUP_COMMAND = "删除群组"
 
 # 群发命令：向某个组群发消息
 SEND_MESSAGE_COMMAND = "群发"
@@ -38,5 +40,6 @@ COMMANDS = {
     ADD_GROUPS_COMMAND: "添加群号，用法：添加群号 组名 群号1 群号2 ...",
     VIEW_GROUPS_COMMAND: "查看群号，用法：查看群号 组名",
     VIEW_GROUPS_LIST_COMMAND: "查看群组，用法：查看群组",
+    DELETE_GROUP_COMMAND: "删除群组，用法：删除群组 组名",
     SEND_MESSAGE_COMMAND: "群发，用法：群发 组名 消息",
 }

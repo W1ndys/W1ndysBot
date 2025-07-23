@@ -8,6 +8,7 @@ from .. import (
     SEND_MESSAGE_COMMAND,
     VIEW_GROUPS_COMMAND,
     VIEW_GROUPS_LIST_COMMAND,
+    DELETE_GROUP_COMMAND,
 )
 from .data_manager import DataManager
 from api.message import send_private_msg, send_group_msg_with_cq
@@ -225,6 +226,33 @@ class Core:
             )
             return False
 
+    async def _handle_delete_group_command(self):
+        """处理删除群组命令"""
+        try:
+            # 解析命令
+            parts = self.raw_message.split()
+            if len(parts) < 2:
+                await send_private_msg(
+                    self.websocket, self.user_id, "命令格式错误，请提供群组名"
+                )
+                return False
+
+            group_name = parts[1]
+
+            with DataManager() as dm:
+                result, message = dm.delete_group_association(group_name)
+                await send_private_msg(self.websocket, self.user_id, message)
+                return True
+
+        except Exception as e:
+            logger.error(
+                f"[{MODULE_NAME}]{self.user_id}处理删除群组命令时发生异常: {e}"
+            )
+            await send_private_msg(
+                self.websocket, self.user_id, "处理删除群组命令时发生异常: " + str(e)
+            )
+            return False
+
     async def handle(self):
         try:
             if self.raw_message.startswith(ASSOCIATE_GROUPS_COMMAND):
@@ -239,6 +267,8 @@ class Core:
                 await self._handle_view_groups_command()
             elif self.raw_message.startswith(VIEW_GROUPS_LIST_COMMAND):
                 await self._handle_view_groups_list_command()
+            elif self.raw_message.startswith(DELETE_GROUP_COMMAND):
+                await self._handle_delete_group_command()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]{self.user_id}处理私聊消息失败: {e}")
             await send_private_msg(
