@@ -52,7 +52,7 @@ class MenuManager:
                 return "暂无可用命令。"
             text = ""
             for cmd, desc in commands.items():
-                text += f"- {cmd}: {desc}\n\n"
+                text += f"{cmd}: {desc}\n\n"
             return text
         except Exception as e:
             logger.error(f"获取模块 {module_name} 命令信息失败: {e}")
