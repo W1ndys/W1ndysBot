@@ -1,5 +1,7 @@
 import os
 import json
+import asyncio
+import random
 from .. import MODULE_NAME, DATA_DIR
 import logger
 from utils.generate import generate_text_message
@@ -43,6 +45,8 @@ class RequestHandler:
         try:
             # 如果开启自动同意好友验证，则自动同意
             if self.is_auto_agree_friend_verify():
+                # 随机延迟1-5秒
+                await asyncio.sleep(random.randint(1, 5))
                 await set_friend_add_request(
                     self.websocket,
                     self.flag,
