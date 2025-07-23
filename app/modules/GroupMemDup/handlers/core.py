@@ -6,6 +6,8 @@ from .. import (
     REMOVE_GROUPS_COMMAND,
     ADD_GROUPS_COMMAND,
     SEND_MESSAGE_COMMAND,
+    VIEW_GROUPS_COMMAND,
+    VIEW_GROUPS_LIST_COMMAND,
 )
 from .data_manager import DataManager
 from api.message import send_private_msg, send_group_msg_with_cq
@@ -163,6 +165,66 @@ class Core:
             )
             return False
 
+    async def _handle_view_groups_command(self):
+        """处理查看指定群组下所有群号的命令"""
+        try:
+            # 解析命令
+            parts = self.raw_message.split()
+            if len(parts) < 2:
+                await send_private_msg(
+                    self.websocket, self.user_id, "命令格式错误，请提供群组名"
+                )
+                return False
+
+            group_name = parts[1]
+
+            with DataManager() as dm:
+                group_ids = dm.get_groups_in_association(group_name)
+                if group_ids:
+                    message = f"群组 '{group_name}' 包含以下群号：\n"
+                    message += "\n".join([f"- {group_id}" for group_id in group_ids])
+                    message += f"\n\n共 {len(group_ids)} 个群"
+                else:
+                    message = f"群组 '{group_name}' 不存在或为空"
+
+                await send_private_msg(self.websocket, self.user_id, message)
+                return True
+
+        except Exception as e:
+            logger.error(
+                f"[{MODULE_NAME}]{self.user_id}处理查看群组命令时发生异常: {e}"
+            )
+            await send_private_msg(
+                self.websocket, self.user_id, "处理查看群组命令时发生异常: " + str(e)
+            )
+            return False
+
+    async def _handle_view_groups_list_command(self):
+        """处理查看所有群组名字的命令"""
+        try:
+            with DataManager() as dm:
+                group_names = dm.get_all_group_names()
+                if group_names:
+                    message = "所有群组名字：\n"
+                    message += "\n".join([f"- {name}" for name in group_names])
+                    message += f"\n\n共 {len(group_names)} 个群组"
+                else:
+                    message = "暂无任何群组"
+
+                await send_private_msg(self.websocket, self.user_id, message)
+                return True
+
+        except Exception as e:
+            logger.error(
+                f"[{MODULE_NAME}]{self.user_id}处理查看群组列表命令时发生异常: {e}"
+            )
+            await send_private_msg(
+                self.websocket,
+                self.user_id,
+                "处理查看群组列表命令时发生异常: " + str(e),
+            )
+            return False
+
     async def handle(self):
         try:
             if self.raw_message.startswith(ASSOCIATE_GROUPS_COMMAND):
@@ -173,6 +235,10 @@ class Core:
                 await self._handle_add_groups_command()
             elif self.raw_message.startswith(SEND_MESSAGE_COMMAND):
                 await self._handle_send_message_command()
+            elif self.raw_message.startswith(VIEW_GROUPS_COMMAND):
+                await self._handle_view_groups_command()
+            elif self.raw_message.startswith(VIEW_GROUPS_LIST_COMMAND):
+                await self._handle_view_groups_list_command()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]{self.user_id}处理私聊消息失败: {e}")
             await send_private_msg(

@@ -404,3 +404,32 @@ class DataManager:
 
         except sqlite3.Error:
             return {}
+
+    def get_all_group_names(self):
+        """
+        获取所有群组名字
+
+        Returns:
+            list: 所有群组名字列表
+        """
+        try:
+            self.cursor.execute(
+                "SELECT DISTINCT group_name FROM group_associations ORDER BY group_name"
+            )
+            results = self.cursor.fetchall()
+            return [row[0] for row in results]
+
+        except sqlite3.Error:
+            return []
+
+    def get_groups_in_association(self, group_name):
+        """
+        获取指定群组下的所有群号
+
+        Args:
+            group_name (str): 群组名
+
+        Returns:
+            list: 该群组下的所有群号列表，如果群组不存在则返回空列表
+        """
+        return self.get_group_info(group_name)
