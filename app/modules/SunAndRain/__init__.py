@@ -2,13 +2,13 @@ import os
 
 
 # 模块名称
-MODULE_NAME = "QFNUWordsGame"
+MODULE_NAME = "SunAndRain"
 
 # 模块开关名称
-SWITCH_NAME = "qfnuwg"
+SWITCH_NAME = "sar"
 
 # 模块描述
-MODULE_DESCRIPTION = "以QFNU为背景的文字游戏"
+MODULE_DESCRIPTION = "阳光和雨滴，新生军训特色文字游戏"
 
 # 数据目录
 DATA_DIR = os.path.join("data", MODULE_NAME)
