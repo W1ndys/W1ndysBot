@@ -122,12 +122,18 @@ class Core:
 
     async def _handle_send_message_command(self):
         try:
-            # 解析命令
-            params = self.raw_message.split()
+            # 解析命令 - 限制分割次数，保留消息中的空格
+            parts = self.raw_message.split(" ", 2)  # 最多分割2次，得到3个部分
+
+            if len(parts) < 3:
+                await send_private_msg(
+                    self.websocket, self.user_id, "命令格式错误，请提供群组名和消息内容"
+                )
+                return False
 
             # 处理参数
-            group_name = params[1]
-            message = params[2]
+            group_name = parts[1]
+            message = parts[2]  # 第二个空格后的所有内容，保持原样
 
             logger.success(
                 f"[{MODULE_NAME}]{self.user_id}处理群发命令: {group_name} {message}"
@@ -140,8 +146,15 @@ class Core:
                     for group_id in group_ids:
                         await send_group_msg_with_cq(self.websocket, group_id, message)
                         await asyncio.sleep(0.5)
+                    await send_private_msg(
+                        self.websocket,
+                        self.user_id,
+                        f"群发成功, 已发送到下列群号：{', '.join(group_ids)}",
+                    )
                 else:
-                    await send_private_msg(self.websocket, self.user_id, message)
+                    await send_private_msg(
+                        self.websocket, self.user_id, "未找到指定的群组"
+                    )
                 return True
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]{self.user_id}处理群发命令时发生异常: {e}")
