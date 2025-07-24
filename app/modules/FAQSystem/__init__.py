@@ -22,7 +22,7 @@ DELETE_FAQ = "删除问答"
 GET_FAQ = "获取问答"
 # ------------------------------------------------------------
 HIGH_THRESHOLD = 0.8  # 高阈值：直接回复答案
-LOW_THRESHOLD = 0.5  # 低阈值：显示相关问题引导
+LOW_THRESHOLD = 0.6  # 低阈值：显示相关问题引导
 MAX_SUGGESTIONS = 10  # 最大建议问题数量
 DELETE_TIME = 300  # 消息撤回延迟时间
 
