@@ -24,9 +24,7 @@ GOOD_MORNING_COMMAND2 = "早"  # 早安命令2
 
 
 COMMANDS = {
-    SIGN_IN_COMMAND: "签到，用法：签到",
-    GOOD_MORNING_COMMAND1: "早安，用法：早安",
-    GOOD_MORNING_COMMAND2: "早，用法：早",
+    f"{SIGN_IN_COMMAND}|{GOOD_MORNING_COMMAND1}|{GOOD_MORNING_COMMAND2}": "随机奖励1-5个(阳光/雨滴)",
     # 可以继续添加其他命令
 }
 # ------------------------------------------------------------
