@@ -102,7 +102,7 @@ async def handle_events(websocket, message):
                 [reply_message, text_message],
                 note="del_msg=30",
             )
-        elif message_type == "private":
+        elif message_type == "private" and message.get("sub_type") == "friend":
             user_id = str(message.get("user_id", ""))
             await send_private_msg(
                 websocket,
