@@ -579,7 +579,7 @@ async def send_private_forward_msg(websocket, user_id, messages, note=""):
 
 
 async def send_group_forward_msg(
-    websocket, group_id, messages, news, prompt, summary, source, note=""
+    websocket, group_id, messages, source, news, prompt, summary, note=""
 ):
     """
     发送群聊合并转发消息
@@ -596,11 +596,11 @@ async def send_group_forward_msg(
                     "content": [消息段列表]
                 }
             }
+        source (str): 消息内容/标题 (必填)
         news (list): 消息预览列表 (必填)
             格式：[{"text": "预览文本"}]
-        prompt (str): 消息外显 (必填)
         summary (str): 底下文本 (必填)
-        source (str): 消息内容/标题 (必填)
+        prompt (str): 消息外显 (必填)
         note (str, optional): 消息备注 (默认值为空字符串)
 
     Returns:
