@@ -34,7 +34,7 @@ class GetMsgHandler:
             action = match_action.group(1) if match_action else ""
 
             # 检查是否是该模块请求解析的获取消息内容
-            if group_id and user_id and action and MODULE_NAME in self.raw_message:
+            if group_id and user_id and action:
                 # 解禁
                 if action == UNBAN_WORD_COMMAND:
                     logger.info(f"[{MODULE_NAME}]解禁用户{user_id}，群号{group_id}")
@@ -54,7 +54,7 @@ class GetMsgHandler:
                         OWNER_ID,
                         [
                             generate_text_message(
-                                f"已将用户{user_id}解禁，群号{group_id}"
+                                f"[{MODULE_NAME}]已将用户{user_id}解禁，群号{group_id}"
                             )
                         ],
                     )
@@ -79,7 +79,7 @@ class GetMsgHandler:
                         OWNER_ID,
                         [
                             generate_text_message(
-                                f"已将用户{user_id}踢出群{group_id}，理由：发送违禁词"
+                                f"[{MODULE_NAME}]已将用户{user_id}踢出群{group_id}"
                             )
                         ],
                     )

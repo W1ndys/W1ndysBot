@@ -146,7 +146,6 @@ async def check_and_handle_ban_words(
             websocket,
             group_id,
             [
-                generate_text_message(f"[{MODULE_NAME}]"),
                 generate_at_message(user_id),
                 generate_text_message(
                     f"({user_id})请勿发送违禁消息，如误封请联系管理员，发广告的自觉点退群\n"
