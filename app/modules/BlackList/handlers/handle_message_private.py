@@ -2,7 +2,7 @@ from .. import MODULE_NAME, SWITCH_NAME
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_private_switch_on, handle_module_private_switch
-from api.message import send_private_msg
+from api.message import send_private_msg, get_msg
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from core.menu_manager import MenuManager
@@ -108,6 +108,20 @@ class PrivateMessageHandler:
                     return
                 elif self.raw_message.startswith(PRIVATE_BLACKLIST_CLEAR_COMMAND):
                     await blacklist_handler.clear_global_blacklist()
+                    return
+
+                if (
+                    self.raw_message.startswith("[CQ:reply,id=")
+                    and PRIVATE_BLACKLIST_ADD_COMMAND in self.raw_message
+                ):
+                    # 检查是否是单纯的回复拉黑（不包含其他QQ号或@）
+                    reply_content = self.raw_message.split("]", 1)[1].strip()
+                    if reply_content == PRIVATE_BLACKLIST_ADD_COMMAND:
+                        # 这是回复某条消息进行拉黑的情况
+                        await blacklist_handler.add_global_blacklist_by_reply()
+                    else:
+                        # 这是回复消息同时包含其他拉黑目标的情况
+                        await blacklist_handler.add_global_blacklist_private()
                     return
 
         except Exception as e:
@@ -513,4 +527,44 @@ class BlackListHandlePrivate(BlackListHandle):
             return True
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]私聊解黑失败: {e}")
+            return False
+
+    async def add_global_blacklist_by_reply(self):
+        """
+        通过回复消息进行拉黑
+        """
+        try:
+            # 提取回复消息的ID
+            import re
+
+            reply_pattern = r"\[CQ:reply,id=(\d+)\]"
+            reply_match = re.search(reply_pattern, self.raw_message)
+
+            if not reply_match:
+                logger.error(f"[{MODULE_NAME}]未找到有效的回复消息ID")
+                reply_message = "无法获取回复消息ID"
+                await send_private_msg(
+                    self.websocket,
+                    self.target_id,
+                    [
+                        generate_reply_message(reply_message),
+                        generate_text_message(reply_message),
+                    ],
+                )
+                return False
+
+            reply_msg_id = reply_match.group(1)
+            logger.info(f"[{MODULE_NAME}]提取到回复消息ID: {reply_msg_id}")
+
+            # 调用获取消息详情的方法
+            await get_msg(
+                self.websocket,
+                reply_msg_id,
+                note=f"{MODULE_NAME}-action={PRIVATE_BLACKLIST_ADD_COMMAND}",
+            )
+
+            return True
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]通过回复消息拉黑失败: {e}")
             return False
