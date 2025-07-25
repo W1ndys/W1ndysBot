@@ -11,7 +11,7 @@ import logger
 LOGS_DIR = "logs"
 
 # 天数
-DAYS = 7
+DAYS = 4
 
 
 async def clean_logs(websocket, msg):
