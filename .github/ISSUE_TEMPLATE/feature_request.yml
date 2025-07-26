@@ -10,8 +10,6 @@ body:
       label: 模块名称
       description: 请填写涉及的模块名称
       placeholder: 例如：报表生成模块
-    validations:
-      required: true
   - type: textarea
     id: feature_description
     attributes:
@@ -32,6 +30,3 @@ body:
         
         优先级：
         高/中/低
-      render: markdown
-    validations:
-      required: true

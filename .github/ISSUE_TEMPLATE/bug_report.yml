@@ -10,8 +10,6 @@ body:
       label: 模块名称
       description: 请填写涉及的模块名称
       placeholder: 例如：用户管理模块
-    validations:
-      required: true
   - type: textarea
     id: problem_description
     attributes:
@@ -34,6 +32,3 @@ body:
         
         操作系统：
         Windows 10 / macOS / Linux
-      render: markdown
-    validations:
-      required: true
