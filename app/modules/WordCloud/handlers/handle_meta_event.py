@@ -77,45 +77,21 @@ class MetaEventHandler:
                 # 第一步：先遍历所有群，发送昨日词云
                 group_messages_data = {}  # 存储每个群的消息数据，用于后续AI处理
 
+                # 并发处理所有群的词云生成
+                wordcloud_tasks = []
                 for group_id in group_switches:
-                    analyzer = QQMessageAnalyzer(group_id)
-                    # 获取昨日所有消息
-                    yesterday_messages = analyzer.get_daily_messages_with_details(
-                        yesterday_str
-                    )
-                    # 存储消息数据供后续AI处理使用
-                    group_messages_data[group_id] = yesterday_messages
+                    task = self._process_wordcloud_generation(group_id, yesterday_str)
+                    wordcloud_tasks.append(task)
 
-                    # 生成词云和top10词汇
-                    img_base64 = analyzer.generate_wordcloud_image_base64(yesterday_str)
-                    wordcloud_data, top10_words = analyzer.generate_daily_report(
-                        yesterday_str
-                    )
-                    messages = [
-                        generate_text_message(
-                            f"群{group_id}昨日({yesterday_str})的词云和top10词汇如下：\n"
-                        ),
-                        generate_text_message(
-                            "top10词汇：\n"
-                            + "\n".join(
-                                [
-                                    f"{i+1}. {word}（{count}次）"
-                                    for i, (word, count) in enumerate(top10_words)
-                                ]
-                            )
-                        ),
-                    ]
-                    if img_base64 is not None:
-                        messages.append(generate_image_message(img_base64))
-                    else:
-                        logger.warning(
-                            f"[{MODULE_NAME}]群{group_id}昨日({yesterday_str})的词云图片生成失败，img_base64为None"
-                        )
-                    await send_group_msg(
-                        self.websocket,
-                        group_id,
-                        messages,
-                    )
+                # 并发执行所有词云生成任务
+                if wordcloud_tasks:
+                    wordcloud_results = await asyncio.gather(*wordcloud_tasks)
+
+                    # 收集消息数据用于后续AI处理
+                    for result in wordcloud_results:
+                        if result:
+                            group_id, yesterday_messages = result
+                            group_messages_data[group_id] = yesterday_messages
 
                 # 第二步：并发处理所有群的AI总结
                 ai_tasks = []
@@ -132,21 +108,101 @@ class MetaEventHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")
 
-    async def _process_ai_summary(self, group_id, yesterday_messages, yesterday_str):
+    async def _process_wordcloud_generation(self, group_id, yesterday_str):
         """
-        处理单个群的AI总结
+        处理单个群的词云生成（在新线程中执行）
         """
         try:
-            # 将消息转换为简洁的txt格式，减少token占用
-            messages_txt = self._convert_messages_to_txt(yesterday_messages)
+            # 在新线程中执行词云生成相关的计算密集型任务
+            def _generate_wordcloud():
+                analyzer = QQMessageAnalyzer(group_id)
+                # 获取昨日所有消息
+                yesterday_messages = analyzer.get_daily_messages_with_details(
+                    yesterday_str
+                )
+                # 生成词云和top10词汇
+                img_base64 = analyzer.generate_wordcloud_image_base64(yesterday_str)
+                wordcloud_data, top10_words = analyzer.generate_daily_report(
+                    yesterday_str
+                )
+                return yesterday_messages, img_base64, top10_words
 
-            # 发送Dify请求
-            response = await DifyClient().send_request(
-                f"group_{group_id}",
-                f"以下是群{group_id}在{yesterday_str}的聊天记录：\n{messages_txt}",
+            # 使用 asyncio.to_thread 在新线程中执行
+            yesterday_messages, img_base64, top10_words = await asyncio.to_thread(
+                _generate_wordcloud
             )
-            answer, tokens, price, currency = DifyClient.parse_response(response)
-            # 发送Dify响应
+
+            # 发送词云消息
+            messages = [
+                generate_text_message(
+                    f"群{group_id}昨日({yesterday_str})的词云和top10词汇如下：\n"
+                ),
+                generate_text_message(
+                    "top10词汇：\n"
+                    + "\n".join(
+                        [
+                            f"{i+1}. {word}（{count}次）"
+                            for i, (word, count) in enumerate(top10_words)
+                        ]
+                    )
+                ),
+            ]
+            if img_base64 is not None:
+                messages.append(generate_image_message(img_base64))
+            else:
+                logger.warning(
+                    f"[{MODULE_NAME}]群{group_id}昨日({yesterday_str})的词云图片生成失败，img_base64为None"
+                )
+            await send_group_msg(
+                self.websocket,
+                group_id,
+                messages,
+            )
+
+            # 返回消息数据供AI总结使用
+            return group_id, yesterday_messages
+
+        except Exception as e:
+            logger.error(
+                f"[{MODULE_NAME}]群{group_id}昨日({yesterday_str})的词云生成处理失败: {e}"
+            )
+            return None
+
+    async def _process_ai_summary(self, group_id, yesterday_messages, yesterday_str):
+        """
+        处理单个群的AI总结（完全在新线程中执行）
+        """
+        try:
+            # 在新线程中执行整个AI总结流程
+            def _ai_summary_workflow():
+                # 将消息转换为简洁的txt格式，减少token占用
+                messages_txt = self._convert_messages_to_txt(yesterday_messages)
+
+                # 创建DifyClient实例并同步调用
+                client = DifyClient()
+
+                # 这里需要在新线程中使用asyncio.run来运行异步函数
+                import asyncio
+
+                async def _async_ai_workflow():
+                    # 发送Dify请求（现在在新线程中执行）
+                    response = await client.send_request(
+                        f"group_{group_id}",
+                        f"以下是群{group_id}在{yesterday_str}的聊天记录：\n{messages_txt}",
+                    )
+                    # 解析响应
+                    answer, tokens, price, currency = await DifyClient.parse_response(
+                        response
+                    )
+                    return answer
+
+                # 在新线程中运行异步AI工作流
+                return asyncio.run(_async_ai_workflow())
+
+            # 使用 asyncio.to_thread 在新线程中执行完整的AI总结流程
+            answer = await asyncio.to_thread(_ai_summary_workflow)
+
+            # 发送Dify响应（在主线程中执行）
             await send_group_msg_with_cq(
                 self.websocket,
                 group_id,

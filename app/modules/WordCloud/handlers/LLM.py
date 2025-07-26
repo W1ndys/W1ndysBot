@@ -45,7 +45,7 @@ class DifyClient:
 
     async def send_request(self, user_id, message, conversation_id=""):
         """
-        发送请求到 Dify API
+        发送请求到 Dify API（在新线程中执行）
 
         Args:
             user_id (str): 用户ID
@@ -55,120 +55,138 @@ class DifyClient:
         Returns:
             str: API 响应的 JSON 字符串
         """
-        # 获取API密钥
-        api_key = self.get_api_key()
 
-        # 如果没有API密钥，返回错误信息
-        if not api_key:
-            logger.error(f"[{MODULE_NAME}]Dify API密钥为空")
-            return ""
+        # 将整个请求流程包装在一个函数中，在新线程中执行
+        def _make_api_request():
+            import asyncio
 
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        }
+            async def _async_request():
+                # 获取API密钥
+                api_key = self.get_api_key()
 
-        data = {
-            "inputs": {},
-            "query": message,
-            "conversation_id": conversation_id,
-            "response_mode": "blocking",
-            "user": user_id,
-            "files": [],
-        }
+                # 如果没有API密钥，返回错误信息
+                if not api_key:
+                    logger.error(f"[{MODULE_NAME}]Dify API密钥为空")
+                    return ""
 
-        # 设置重试次数
-        max_retries = 3
-        for attempt in range(max_retries):
-            try:
-                # 设置超时时间
-                timeout = aiohttp.ClientTimeout(total=60, connect=10)
+                headers = {
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                }
 
-                async with aiohttp.ClientSession(timeout=timeout) as session:
-                    logger.info(f"[{MODULE_NAME}]尝试第 {attempt + 1} 次请求 Dify API")
-                    async with session.post(
-                        self.api_url, headers=headers, json=data
-                    ) as response:
-                        if response.status == 200:
-                            result = await response.text()
-                            logger.info(f"[{MODULE_NAME}]Dify API 请求成功")
-                            return result
-                        else:
-                            logger.error(
-                                f"[{MODULE_NAME}]API 返回状态码: {response.status}"
+                data = {
+                    "inputs": {},
+                    "query": message,
+                    "conversation_id": conversation_id,
+                    "response_mode": "blocking",
+                    "user": user_id,
+                    "files": [],
+                }
+
+                # 设置重试次数
+                max_retries = 3
+                for attempt in range(max_retries):
+                    try:
+                        # 设置超时时间
+                        timeout = aiohttp.ClientTimeout(total=60, connect=10)
+
+                        async with aiohttp.ClientSession(timeout=timeout) as session:
+                            logger.info(
+                                f"[{MODULE_NAME}]尝试第 {attempt + 1} 次请求 Dify API"
+                            )
+                            async with session.post(
+                                self.api_url, headers=headers, json=data
+                            ) as response:
+                                if response.status == 200:
+                                    result = await response.text()
+                                    logger.info(f"[{MODULE_NAME}]Dify API 请求成功")
+                                    return result
+                                else:
+                                    logger.error(
+                                        f"[{MODULE_NAME}]API 返回状态码: {response.status}"
+                                    )
+
+                    except asyncio.TimeoutError:
+                        logger.error(
+                            f"[{MODULE_NAME}]请求超时 (尝试 {attempt + 1}/{max_retries})"
+                        )
+                        if attempt == max_retries - 1:
+                            return json.dumps(
+                                {
+                                    "answer": "请求超时，请稍后重试",
+                                    "metadata": {
+                                        "usage": {
+                                            "total_tokens": 0,
+                                            "total_price": 0,
+                                            "currency": "USD",
+                                        }
+                                    },
+                                }
                             )
 
-            except asyncio.TimeoutError:
-                logger.error(
-                    f"[{MODULE_NAME}]请求超时 (尝试 {attempt + 1}/{max_retries})"
-                )
-                if attempt == max_retries - 1:
-                    return json.dumps(
-                        {
-                            "answer": "请求超时，请稍后重试",
-                            "metadata": {
-                                "usage": {
-                                    "total_tokens": 0,
-                                    "total_price": 0,
-                                    "currency": "USD",
+                    except aiohttp.ClientConnectorError as e:
+                        logger.error(
+                            f"[{MODULE_NAME}]连接错误 (尝试 {attempt + 1}/{max_retries}): {str(e)}"
+                        )
+                        if attempt == max_retries - 1:
+                            return json.dumps(
+                                {
+                                    "answer": "网络连接失败，请检查网络设置",
+                                    "metadata": {
+                                        "usage": {
+                                            "total_tokens": 0,
+                                            "total_price": 0,
+                                            "currency": "USD",
+                                        }
+                                    },
                                 }
-                            },
-                        }
-                    )
+                            )
 
-            except aiohttp.ClientConnectorError as e:
-                logger.error(
-                    f"[{MODULE_NAME}]连接错误 (尝试 {attempt + 1}/{max_retries}): {str(e)}"
-                )
-                if attempt == max_retries - 1:
-                    return json.dumps(
-                        {
-                            "answer": "网络连接失败，请检查网络设置",
-                            "metadata": {
-                                "usage": {
-                                    "total_tokens": 0,
-                                    "total_price": 0,
-                                    "currency": "USD",
+                    except Exception as e:
+                        logger.error(
+                            f"[{MODULE_NAME}]请求失败 (尝试 {attempt + 1}/{max_retries}): {str(e)}"
+                        )
+                        if attempt == max_retries - 1:
+                            return json.dumps(
+                                {
+                                    "answer": f"请求失败: {str(e)}",
+                                    "metadata": {
+                                        "usage": {
+                                            "total_tokens": 0,
+                                            "total_price": 0,
+                                            "currency": "USD",
+                                        }
+                                    },
                                 }
-                            },
-                        }
-                    )
+                            )
 
-            except Exception as e:
-                logger.error(
-                    f"[{MODULE_NAME}]请求失败 (尝试 {attempt + 1}/{max_retries}): {str(e)}"
+                    # 如果不是最后一次尝试，等待一段时间再重试
+                    if attempt < max_retries - 1:
+                        await asyncio.sleep(2**attempt)  # 指数退避：2, 4, 8 秒
+
+                return json.dumps(
+                    {
+                        "answer": "所有重试尝试都失败了",
+                        "metadata": {
+                            "usage": {
+                                "total_tokens": 0,
+                                "total_price": 0,
+                                "currency": "USD",
+                            }
+                        },
+                    }
                 )
-                if attempt == max_retries - 1:
-                    return json.dumps(
-                        {
-                            "answer": f"请求失败: {str(e)}",
-                            "metadata": {
-                                "usage": {
-                                    "total_tokens": 0,
-                                    "total_price": 0,
-                                    "currency": "USD",
-                                }
-                            },
-                        }
-                    )
 
-            # 如果不是最后一次尝试，等待一段时间再重试
-            if attempt < max_retries - 1:
-                await asyncio.sleep(2**attempt)  # 指数退避：2, 4, 8 秒
+            # 在新线程中运行异步函数
+            return asyncio.run(_async_request())
 
-        return json.dumps(
-            {
-                "answer": "所有重试尝试都失败了",
-                "metadata": {
-                    "usage": {"total_tokens": 0, "total_price": 0, "currency": "USD"}
-                },
-            }
-        )
+        # 使用 asyncio.to_thread 在新线程中执行API请求
+        return await asyncio.to_thread(_make_api_request)
 
     @staticmethod
-    def parse_response(response_text):
+    async def parse_response(response_text):
         """
-        解析 Dify API 返回的响应
+        解析 Dify API 返回的响应（在新线程中执行）
 
         Args:
             response_text (str): API 响应的 JSON 字符串
@@ -176,17 +194,26 @@ class DifyClient:
         Returns:
             tuple: (answer, total_tokens, total_price, currency)
         """
-        try:
-            response = json.loads(response_text)
-            return (
-                response.get("answer", ""),
-                response.get("metadata", {}).get("usage", {}).get("total_tokens", 0),
-                response.get("metadata", {}).get("usage", {}).get("total_price", 0),
-                response.get("metadata", {}).get("usage", {}).get("currency", "USD"),
-            )
-        except json.JSONDecodeError as e:
-            print(f"解析响应失败: {e}")
-            return ("解析响应失败", 0, 0, "USD")
+
+        def _parse_json():
+            try:
+                response = json.loads(response_text)
+                return (
+                    response.get("answer", ""),
+                    response.get("metadata", {})
+                    .get("usage", {})
+                    .get("total_tokens", 0),
+                    response.get("metadata", {}).get("usage", {}).get("total_price", 0),
+                    response.get("metadata", {})
+                    .get("usage", {})
+                    .get("currency", "USD"),
+                )
+            except json.JSONDecodeError as e:
+                print(f"解析响应失败: {e}")
+                return ("解析响应失败", 0, 0, "USD")
+
+        # 使用 asyncio.to_thread 在新线程中执行JSON解析
+        return await asyncio.to_thread(_parse_json)
 
 
 async def main():
@@ -195,7 +222,7 @@ async def main():
     response = await client.send_request("abc-123", "你好")
     print("原始响应:", response)
 
-    answer, tokens, price, currency = client.parse_response(response)
+    answer, tokens, price, currency = await client.parse_response(response)
     print(f"回答: {answer}")
     print(f"Token数: {tokens}")
     print(f"价格: {price} {currency}")
