@@ -6,11 +6,17 @@ import random
 
 
 class DataManager:
-    def __init__(self):
-        data_dir = os.path.join("data", MODULE_NAME)
-        os.makedirs(data_dir, exist_ok=True)
-        db_path = os.path.join(data_dir, f"data.db")
-        self.conn = sqlite3.connect(db_path)
+    def __init__(self, year=None):
+        self.data_dir = os.path.join("data", MODULE_NAME)
+        os.makedirs(self.data_dir, exist_ok=True)
+
+        # 按年份命名数据库文件：sar_年份.db
+        # 如果未指定年份，使用当前年份
+        self.year = year if year is not None else datetime.now().year
+        db_filename = f"sar_{self.year}.db"
+        self.db_path = os.path.join(self.data_dir, db_filename)
+
+        self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
         self._create_table()
 
@@ -683,13 +689,143 @@ class DataManager:
         except Exception as e:
             return {"code": 500, "data": None, "message": f"数据库错误: {str(e)}"}
 
+    def get_available_years(self):
+        """获取所有可用的年份数据库"""
+        try:
+            available_years = []
+            for filename in os.listdir(self.data_dir):
+                if filename.startswith("sar_") and filename.endswith(".db"):
+                    year_str = filename[4:-3]  # 去掉 "sar_" 和 ".db"
+                    try:
+                        year = int(year_str)
+                        available_years.append(year)
+                    except ValueError:
+                        continue
+
+            available_years.sort(reverse=True)  # 按年份倒序排列
+            return {
+                "code": 200,
+                "data": available_years,
+                "message": f"获取可用年份成功，共{len(available_years)}个年份",
+            }
+        except Exception as e:
+            return {"code": 500, "data": None, "message": f"获取可用年份失败: {str(e)}"}
+
+    def get_yearly_summary(self, group_id):
+        """获取当前年份的群组总结信息"""
+        try:
+            # 获取总体统计
+            stats_result = self.get_total_stats(group_id)
+            if stats_result["code"] != 200:
+                return stats_result
+
+            # 获取活跃用户数量
+            self.cursor.execute(
+                """
+                SELECT COUNT(DISTINCT user_id) as active_users
+                FROM user_checkin 
+                WHERE group_id = ?
+            """,
+                (group_id,),
+            )
+            active_users = self.cursor.fetchone()[0]
+
+            # 获取总签到次数
+            self.cursor.execute(
+                """
+                SELECT COUNT(*) as total_checkins
+                FROM checkin_records 
+                WHERE group_id = ?
+            """,
+                (group_id,),
+            )
+            total_checkins = self.cursor.fetchone()[0]
+
+            return {
+                "code": 200,
+                "data": {
+                    "year": self.year,
+                    "group_id": group_id,
+                    "active_users": active_users,
+                    "total_checkins": total_checkins,
+                    "type_stats": stats_result["data"],
+                },
+                "message": f"获取{self.year}年群组总结成功",
+            }
+        except Exception as e:
+            return {"code": 500, "data": None, "message": f"获取年度总结失败: {str(e)}"}
+
+    @staticmethod
+    def create_for_year(year):
+        """为指定年份创建数据管理器实例"""
+        return DataManager(year=year)
+
+    @staticmethod
+    def get_user_cross_year_stats(group_id, user_id):
+        """获取用户跨年度统计信息"""
+        try:
+            data_dir = os.path.join("data", MODULE_NAME)
+            if not os.path.exists(data_dir):
+                return {"code": 404, "data": None, "message": "数据目录不存在"}
+
+            yearly_stats = []
+            total_stats = {
+                "total_count": 0,
+                "total_checkin_days": 0,
+                "years_participated": 0,
+            }
+
+            # 遍历所有年份的数据库
+            for filename in os.listdir(data_dir):
+                if filename.startswith("sar_") and filename.endswith(".db"):
+                    year_str = filename[4:-3]
+                    try:
+                        year = int(year_str)
+                        with DataManager(year) as dm:
+                            user_info = dm.get_user_info(group_id, user_id)
+                            if user_info["code"] == 200 and user_info["data"]:
+                                user_data = user_info["data"][0]
+                                type_name = "阳光" if user_data[3] == 0 else "雨露"
+                                count = user_data[4]
+                                total_checkin_days = user_data[7]
+
+                                yearly_stats.append(
+                                    {
+                                        "year": year,
+                                        "type_name": type_name,
+                                        "count": count,
+                                        "total_checkin_days": total_checkin_days,
+                                    }
+                                )
+
+                                total_stats["total_count"] += count
+                                total_stats["total_checkin_days"] += total_checkin_days
+                                total_stats["years_participated"] += 1
+                    except (ValueError, Exception):
+                        continue
+
+            yearly_stats.sort(key=lambda x: x["year"], reverse=True)
+
+            return {
+                "code": 200,
+                "data": {"yearly_stats": yearly_stats, "total_stats": total_stats},
+                "message": f"获取跨年度统计成功，参与了{len(yearly_stats)}个年份",
+            }
+        except Exception as e:
+            return {
+                "code": 500,
+                "data": None,
+                "message": f"获取跨年度统计失败: {str(e)}",
+            }
+
 
 if __name__ == "__main__":
     # 使用with语句确保数据库连接正确关闭
     with DataManager() as dm:
-        print("=" * 60)
-        print("测试 SunAndRain 数据管理器 - 用户只能选择一种类型")
-        print("=" * 60)
+        print("=" * 70)
+        print(f"测试 SunAndRain 数据管理器 - {dm.year}年数据库")
+        print(f"数据库文件：{os.path.basename(dm.db_path)}")
+        print("=" * 70)
 
         # 测试添加用户（阳光类型）
         print("\n1. 测试选择阳光类型:")
@@ -774,6 +910,42 @@ if __name__ == "__main__":
                     f"发言{i+1}: 获得{reward_amount}个雨露，当前总数：{update_result['data']['count']}"
                 )
 
-        print("\n" + "=" * 60)
-        print("测试完成 - 验证了用户只能选择一种类型的逻辑、重置功能及发言奖励")
-        print("=" * 60)
+        # 测试年份管理功能
+        print("\n16. 测试年份管理功能:")
+        years_result = dm.get_available_years()
+        print("可用年份:", years_result["data"])
+
+        # 测试年度总结
+        print("\n17. 测试年度总结:")
+        summary_result = dm.get_yearly_summary(123456)
+        if summary_result["code"] == 200:
+            summary = summary_result["data"]
+            print(f"{summary['year']}年群组总结:")
+            print(f"  活跃用户: {summary['active_users']}人")
+            print(f"  总签到: {summary['total_checkins']}次")
+            print(f"  类型统计: {summary['type_stats']}")
+
+        # 测试跨年度统计
+        print("\n18. 测试跨年度统计:")
+        cross_year_result = DataManager.get_user_cross_year_stats(123456, 987654)
+        if cross_year_result["code"] == 200:
+            print("跨年度统计:", cross_year_result["message"])
+            print("总统计:", cross_year_result["data"]["total_stats"])
+
+        # 测试创建历史年份数据库
+        print("\n19. 测试创建历史年份数据库:")
+        last_year = dm.year - 1
+        print(f"创建{last_year}年数据库测试...")
+        with DataManager(last_year) as dm_last_year:
+            print(
+                f"  {last_year}年数据库文件: {os.path.basename(dm_last_year.db_path)}"
+            )
+            # 添加一些历史数据
+            result = dm_last_year.add_user(123456, 987654, 0)
+            if result["code"] == 200:
+                print(f"  {last_year}年用户添加成功")
+
+        print("\n" + "=" * 70)
+        print("测试完成 - 验证了用户逻辑、重置功能、发言奖励及年份数据库管理")
+        print(f"✅ 数据按年份分离，便于历史数据管理和年度统计")
+        print("=" * 70)

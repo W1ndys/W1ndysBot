@@ -8,7 +8,7 @@ MODULE_NAME = "SunAndRain"
 SWITCH_NAME = "sar"
 
 # 模块描述
-MODULE_DESCRIPTION = "阳光和雨露，新生军训特色文字游戏"
+MODULE_DESCRIPTION = "阳光和雨露，新生军训特色文字游戏（按年份存储数据）"
 
 # 数据目录
 DATA_DIR = os.path.join("data", MODULE_NAME)
