@@ -764,6 +764,16 @@ if __name__ == "__main__":
         new_checkin_result = dm.daily_checkin(123456, 987654, 1)
         print("重新选择后签到:", new_checkin_result["message"])
 
+        # 测试发言奖励功能
+        print("\n15. 测试发言奖励功能:")
+        for i in range(5):
+            reward_amount = random.randint(1, 5)
+            update_result = dm.update_user_count(123456, 987654, 1, reward_amount)
+            if update_result["code"] == 200:
+                print(
+                    f"发言{i+1}: 获得{reward_amount}个雨露，当前总数：{update_result['data']['count']}"
+                )
+
         print("\n" + "=" * 60)
-        print("测试完成 - 验证了用户只能选择一种类型的逻辑及重置功能")
+        print("测试完成 - 验证了用户只能选择一种类型的逻辑、重置功能及发言奖励")
         print("=" * 60)

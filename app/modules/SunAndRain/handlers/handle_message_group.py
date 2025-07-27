@@ -1,4 +1,4 @@
-from .. import MODULE_NAME, SWITCH_NAME, SIGN_IN_COMMAND, SELECT_COMMAND
+from .. import MODULE_NAME, SWITCH_NAME, SIGN_IN_COMMAND, SELECT_COMMAND, QUERY_COMMAND
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
@@ -8,6 +8,7 @@ from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
+import random
 
 
 class GroupMessageHandler:
@@ -187,6 +188,152 @@ class GroupMessageHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理选择命令失败: {e}")
 
+    async def _handle_query_command(self):
+        """
+        处理查询命令 - 查看用户当前拥有的数值
+        """
+        try:
+            if self.raw_message.startswith(QUERY_COMMAND):
+                with DataManager() as dm:
+                    # 检查用户是否已经选择了类型
+                    user_info = dm.get_user_info(self.group_id, self.user_id)
+
+                    if user_info["code"] != 200 or not user_info["data"]:
+                        # 用户还没有选择类型
+                        no_selection_message = (
+                            "❌ 您还没有选择类型！\n"
+                            "🌟 请先选择您的类型：\n"
+                            "✨ 阳光类型：发送「选择 阳光」\n"
+                            "💧 雨露类型：发送「选择 雨露」\n"
+                            "📝 选择后即可开始签到和获得发言奖励！"
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(no_selection_message),
+                            ],
+                        )
+                        return
+
+                    # 获取用户信息
+                    user_data = user_info["data"][0]
+                    user_type = user_data[3]  # type字段
+                    type_name = "阳光" if user_type == 0 else "雨露"
+                    count = user_data[4]  # count字段
+                    consecutive_days = user_data[5]  # consecutive_days字段
+                    total_checkin_days = user_data[7]  # total_checkin_days字段
+                    last_checkin_date = user_data[6]  # last_checkin_date字段
+
+                    # 构建查询结果消息
+                    query_message = (
+                        f"📊 您的{type_name}状态\n"
+                        f"💎 当前拥有：{count}个{type_name}\n"
+                        f"📈 连续签到：{consecutive_days}天\n"
+                        f"📅 累计签到：{total_checkin_days}天\n"
+                    )
+
+                    if last_checkin_date:
+                        query_message += f"⏰ 上次签到：{last_checkin_date}\n"
+
+                    # 添加鼓励信息
+                    if count >= 1000:
+                        query_message += "🏆 您已经是超级大佬了！"
+                    elif count >= 500:
+                        query_message += "🌟 您的努力真是令人敬佩！"
+                    elif count >= 200:
+                        query_message += "✨ 继续加油，您很棒！"
+                    elif count >= 100:
+                        query_message += "🎯 已经突破100了，真不错！"
+                    elif count >= 50:
+                        query_message += "💪 半百达成，继续努力！"
+                    else:
+                        query_message += "📝 多发言多签到，数值会越来越多哦！"
+
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(query_message),
+                        ],
+                    )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理查询命令失败: {e}")
+
+    async def _handle_speech_reward(self):
+        """
+        处理发言奖励 - 用户每次发言随机获得1-5个数值
+        """
+        try:
+            with DataManager() as dm:
+                # 检查用户是否已经选择了类型
+                user_info = dm.get_user_info(self.group_id, self.user_id)
+
+                if user_info["code"] != 200 or not user_info["data"]:
+                    # 用户还没有选择类型，不给予奖励
+                    return
+
+                # 获取用户的类型
+                user_type = user_info["data"][0][3]  # type字段
+                type_name = "阳光" if user_type == 0 else "雨露"
+
+                # 随机生成1-5的奖励
+                reward_amount = random.randint(1, 5)
+
+                # 更新用户数值
+                update_result = dm.update_user_count(
+                    self.group_id, self.user_id, user_type, reward_amount
+                )
+
+                if update_result["code"] == 200:
+                    new_count = update_result["data"]["count"]
+
+                    # 发送奖励提示消息（低频率，避免刷屏）
+                    # 只有在特殊情况下才提示
+                    should_notify = (
+                        reward_amount == 5  # 获得最高奖励5时提示
+                        or new_count % 100 == 0  # 每100个数值时提示
+                        or new_count
+                        in [10, 25, 50, 200, 300, 500, 1000]  # 特定里程碑提示
+                    )
+
+                    if should_notify:
+                        reward_message = (
+                            f"🎉 发言奖励！\n"
+                            f"💎 获得：{reward_amount}个{type_name}\n"
+                            f"📊 当前拥有：{new_count}个{type_name}"
+                        )
+
+                        # 添加里程碑特殊提示
+                        if new_count >= 500:
+                            reward_message += f"\n🏆 恭喜！您已拥有{new_count}个{type_name}，真是太厉害了！"
+                        elif new_count >= 200:
+                            reward_message += (
+                                f"\n🌟 了不起！您的{type_name}已经达到{new_count}个！"
+                            )
+                        elif new_count >= 100:
+                            reward_message += (
+                                f"\n✨ 太棒了！您的{type_name}突破了100个！"
+                            )
+                        elif new_count in [10, 20, 30, 50]:
+                            reward_message += (
+                                f"\n🎯 里程碑达成：{new_count}个{type_name}！"
+                            )
+
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(reward_message),
+                            ],
+                        )
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理发言奖励失败: {e}")
+
     async def handle(self):
         """
         处理群消息
@@ -204,12 +351,40 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            # 示例：使用with语句块进行数据库操作
+            # 处理特定命令
             if self.raw_message.startswith(SIGN_IN_COMMAND):
                 await self._handle_sign_in_command()
                 return
             if self.raw_message.startswith(SELECT_COMMAND):
                 await self._handle_select_command()
                 return
+            if self.raw_message.startswith(QUERY_COMMAND):
+                await self._handle_query_command()
+                return
+
+            # 处理普通发言奖励
+            # 排除一些不应该获得奖励的消息类型
+            excluded_patterns = [
+                "签到",
+                "选择",
+                "查询",
+                "菜单",
+                "help",
+                "帮助",
+                SWITCH_NAME.lower(),
+                f"{SWITCH_NAME}{MENU_COMMAND}".lower(),
+            ]
+
+            # 检查消息是否为纯文本且不是命令
+            if (
+                self.raw_message.strip()
+                and not any(
+                    pattern in self.raw_message.lower() for pattern in excluded_patterns
+                )
+                and len(self.raw_message.strip()) >= 2
+            ):  # 至少2个字符才给奖励
+
+                await self._handle_speech_reward()
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
