@@ -1,4 +1,4 @@
-from .. import MODULE_NAME, SWITCH_NAME
+from .. import MODULE_NAME, SWITCH_NAME, SIGN_IN_COMMAND, SELECT_COMMAND
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
@@ -67,6 +67,65 @@ class GroupMessageHandler:
             return True
         return False
 
+    async def _handle_sign_in_command(self):
+        """
+        处理签到命令
+        """
+        try:
+            if self.raw_message.startswith(SIGN_IN_COMMAND):
+                with DataManager() as dm:
+                    result = dm.daily_checkin(self.group_id, self.user_id, 0)
+                    if result["code"] == 200:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(result["message"]),
+                            ],
+                        )
+                    else:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(result["message"]),
+                            ],
+                        )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理签到命令失败: {e}")
+
+    async def _handle_select_command(self):
+        """
+        处理选择命令
+        """
+        try:
+            if self.raw_message.startswith(SELECT_COMMAND):
+                with DataManager() as dm:
+                    result = dm.add_user(self.group_id, self.user_id, 0)
+                    if result["code"] == 200:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(result["message"]),
+                            ],
+                        )
+                    else:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(result["message"]),
+                            ],
+                        )
+                    return
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理选择命令失败: {e}")
+
     async def handle(self):
         """
         处理群消息
@@ -85,9 +144,11 @@ class GroupMessageHandler:
                 return
 
             # 示例：使用with语句块进行数据库操作
-            with DataManager() as dm:
-                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                pass
-
+            if self.raw_message.startswith(SIGN_IN_COMMAND):
+                await self._handle_sign_in_command()
+                return
+            if self.raw_message.startswith(SELECT_COMMAND):
+                await self._handle_select_command()
+                return
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
