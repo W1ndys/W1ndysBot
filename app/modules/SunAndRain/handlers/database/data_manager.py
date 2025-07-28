@@ -6,6 +6,7 @@ import random
 from .database_base import DatabaseBase
 from .user_checkin_handler import UserCheckinHandler
 from .checkin_records_handler import CheckinRecordsHandler
+from .invite_data_handler import InviteDataHandler
 
 
 class DataManager:
@@ -18,6 +19,7 @@ class DataManager:
         # 初始化各个处理器
         self.user_handler = UserCheckinHandler(self.year)
         self.records_handler = CheckinRecordsHandler(self.year)
+        self.invite_handler = InviteDataHandler(self.year)
 
         # 为了保持兼容性，保留一些基本属性
         self.data_dir = self.user_handler.data_dir
@@ -36,6 +38,10 @@ class DataManager:
             pass
         try:
             self.records_handler.__exit__(exc_type, exc_val, exc_tb)
+        except:
+            pass
+        try:
+            self.invite_handler.__exit__(exc_type, exc_val, exc_tb)
         except:
             pass
 
@@ -69,7 +75,17 @@ class DataManager:
     def delete_user(self, group_id, user_id):
         """删除用户的所有记录"""
         try:
-            # 先删除签到记录
+            # 先删除邀请记录
+            invite_result = self.invite_handler.delete_user_invite_records(
+                group_id, user_id
+            )
+            invite_deleted = (
+                invite_result["data"]["deleted_count"]
+                if invite_result["code"] == 200
+                else 0
+            )
+
+            # 删除签到记录
             records_result = self.records_handler.delete_user_records(group_id, user_id)
             checkin_deleted = (
                 records_result["data"]["checkin_records"]
@@ -77,13 +93,13 @@ class DataManager:
                 else 0
             )
 
-            # 再删除用户信息
+            # 最后删除用户信息
             user_result = self.user_handler.delete_user(group_id, user_id)
             user_deleted = (
                 user_result["data"]["user_records"] if user_result["code"] == 200 else 0
             )
 
-            total_deleted = checkin_deleted + user_deleted
+            total_deleted = invite_deleted + checkin_deleted + user_deleted
 
             if total_deleted > 0:
                 return {
@@ -92,8 +108,9 @@ class DataManager:
                         "deleted_count": total_deleted,
                         "user_records": user_deleted,
                         "checkin_records": checkin_deleted,
+                        "invite_records": invite_deleted,
                     },
-                    "message": f"删除用户成功，删除了{total_deleted}条记录（用户信息:{user_deleted}条，签到记录:{checkin_deleted}条）",
+                    "message": f"删除用户成功，删除了{total_deleted}条记录（用户信息:{user_deleted}条，签到记录:{checkin_deleted}条，邀请记录:{invite_deleted}条）",
                 }
             else:
                 return {"code": 404, "data": None, "message": "用户不存在，无需删除"}
@@ -140,6 +157,14 @@ class DataManager:
     def reset_group_data(self, group_id):
         """重置群组的所有数据"""
         try:
+            # 重置邀请记录
+            invite_result = self.invite_handler.delete_group_invite_records(group_id)
+            invite_deleted = (
+                invite_result["data"]["deleted_count"]
+                if invite_result["code"] == 200
+                else 0
+            )
+
             # 重置签到记录
             records_result = self.records_handler.reset_group_records(group_id)
             records_deleted = (
@@ -156,12 +181,12 @@ class DataManager:
                 else 0
             )
 
-            total_deleted = records_deleted + user_deleted
+            total_deleted = invite_deleted + records_deleted + user_deleted
 
             return {
                 "code": 200,
                 "data": {"deleted_count": total_deleted},
-                "message": f"重置群组数据成功，删除了{total_deleted}条记录",
+                "message": f"重置群组数据成功，删除了{total_deleted}条记录（邀请记录:{invite_deleted}条，签到记录:{records_deleted}条，用户数据:{user_deleted}条）",
             }
         except Exception as e:
             return {"code": 500, "data": None, "message": f"数据库错误: {str(e)}"}
@@ -380,6 +405,123 @@ class DataManager:
         """获取连续签到天数排行榜"""
         return self.user_handler.get_consecutive_ranking(group_id, user_type, limit)
 
+    # ===== 邀请相关方法 =====
+    def add_invite_record(self, group_id, operator_id, user_id, invite_time=None):
+        """添加邀请记录"""
+        return self.invite_handler.add_invite_record(
+            group_id, operator_id, user_id, invite_time
+        )
+
+    def process_invite_reward(
+        self, group_id, operator_id, user_id, reward_amount, invite_time=None
+    ):
+        """处理邀请入群：添加邀请记录并奖励操作者指定数量的数值"""
+        try:
+            # 1. 首先检查操作者是否已经选择了类型
+            operator_info = self.get_user_info(group_id, operator_id)
+            if operator_info["code"] != 200 or not operator_info["data"]:
+                return {
+                    "code": 404,
+                    "data": None,
+                    "message": f"❌ 邀请者不存在！",
+                }
+
+            operator_data = operator_info["data"][0]
+            operator_type = operator_data[3]  # type字段
+            type_name = DatabaseBase.get_type_name(operator_type)
+            current_count = operator_data[4]  # count字段
+
+            # 2. 添加邀请记录
+            invite_result = self.add_invite_record(
+                group_id, operator_id, user_id, invite_time
+            )
+            if invite_result["code"] != 200:
+                return {
+                    "code": 500,
+                    "data": None,
+                    "message": f"❌ 添加邀请记录失败：{invite_result['message']}",
+                }
+
+            # 3. 奖励操作者指定数量的数值
+            reward_result = self.update_user_count(
+                group_id, operator_id, operator_type, reward_amount
+            )
+            if reward_result["code"] != 200:
+                # 如果奖励失败，尝试删除刚才添加的邀请记录
+                try:
+                    record_id = invite_result["data"]["id"]
+                    self.delete_invite_record(record_id)
+                except:
+                    pass  # 删除失败也不影响主要逻辑
+
+                return {
+                    "code": 500,
+                    "data": None,
+                    "message": f"❌ 奖励发放失败：{reward_result['message']}",
+                }
+
+            new_total_count = reward_result["data"]["count"]
+            invite_record_id = invite_result["data"]["id"]
+
+            return {
+                "code": 200,
+                "data": {
+                    "invite_record_id": invite_record_id,
+                    "operator_id": operator_id,
+                    "invited_user_id": user_id,
+                    "operator_type": operator_type,
+                    "type_name": type_name,
+                    "reward_amount": reward_amount,
+                    "previous_count": current_count,
+                    "new_total_count": new_total_count,
+                    "invite_time": invite_result["data"]["invite_time"],
+                },
+                "message": f"🎉 邀请成功！\n"
+                f"👤 邀请者：{operator_id}\n"
+                f"🆕 新成员：{user_id}\n"
+                f"⏰ 邀请时间：{invite_result['data']['invite_time']}\n"
+                f"🎁 邀请奖励：{reward_amount}个{type_name}\n"
+                f"📊 当前拥有：{new_total_count}个{type_name}（+{reward_amount}）\n"
+                f"✨ 感谢您为群组带来新成员！",
+            }
+
+        except Exception as e:
+            return {
+                "code": 500,
+                "data": None,
+                "message": f"❌ 处理邀请奖励失败: {str(e)}\n⚠️ 请稍后重试或联系管理员",
+            }
+
+    def get_invite_records_by_group(self, group_id, limit=50, offset=0):
+        """获取群组的邀请记录"""
+        return self.invite_handler.get_invite_records_by_group(group_id, limit, offset)
+
+    def get_invite_records_by_operator(self, group_id, operator_id, limit=50):
+        """获取特定操作者的邀请记录"""
+        return self.invite_handler.get_invite_records_by_operator(
+            group_id, operator_id, limit
+        )
+
+    def get_invite_records_by_user(self, group_id, user_id, limit=50):
+        """获取特定用户被邀请的记录"""
+        return self.invite_handler.get_invite_records_by_user(group_id, user_id, limit)
+
+    def get_operator_invite_stats(self, group_id, operator_id):
+        """获取操作者的邀请统计信息"""
+        return self.invite_handler.get_operator_invite_stats(group_id, operator_id)
+
+    def get_group_invite_stats(self, group_id):
+        """获取群组邀请统计信息"""
+        return self.invite_handler.get_group_invite_stats(group_id)
+
+    def get_top_inviters(self, group_id, limit=10):
+        """获取群组内邀请次数最多的用户排行榜"""
+        return self.invite_handler.get_top_inviters(group_id, limit)
+
+    def delete_invite_record(self, record_id):
+        """删除指定的邀请记录"""
+        return self.invite_handler.delete_invite_record(record_id)
+
     # ===== 年份和统计相关方法 =====
     def get_available_years(self):
         """获取所有可用的年份数据库"""
@@ -425,6 +567,14 @@ class DataManager:
             # 获取总签到次数 - 通过记录处理器获取
             total_checkins = self.records_handler.get_total_checkins_count(group_id)
 
+            # 获取邀请统计 - 通过邀请处理器获取
+            invite_stats_result = self.get_group_invite_stats(group_id)
+            invite_stats = (
+                invite_stats_result["data"]
+                if invite_stats_result["code"] == 200
+                else {}
+            )
+
             return {
                 "code": 200,
                 "data": {
@@ -433,6 +583,7 @@ class DataManager:
                     "active_users": active_users,
                     "total_checkins": total_checkins,
                     "type_stats": stats_result["data"],
+                    "invite_stats": invite_stats,
                 },
                 "message": f"获取{self.year}年群组总结成功",
             }
@@ -502,135 +653,3 @@ class DataManager:
                 "data": None,
                 "message": f"获取跨年度统计失败: {str(e)}",
             }
-
-
-if __name__ == "__main__":
-    # 使用with语句确保数据库连接正确关闭
-    with DataManager() as dm:
-        print("=" * 70)
-        print(f"测试 SunAndRain 数据管理器 - {dm.year}年数据库")
-        print(f"数据库文件：{os.path.basename(dm.db_path)}")
-        print("=" * 70)
-
-        # 测试添加用户（阳光类型）
-        print("\n1. 测试选择阳光类型:")
-        result1 = dm.add_user(123456, 987654, 0)
-        print("选择阳光:", result1["message"])
-
-        # 测试重复选择同一类型
-        print("\n2. 测试重复选择阳光:")
-        result1_duplicate = dm.add_user(123456, 987654, 0)
-        print("重复选择阳光:", result1_duplicate["message"])
-
-        # 测试选择不同类型（应该被拒绝）
-        print("\n3. 测试切换到雨露类型（应该失败）:")
-        result1_switch = dm.add_user(123456, 987654, 1)
-        print("尝试切换到雨露:", result1_switch["message"])
-
-        # 测试新用户选择雨露类型
-        print("\n4. 测试新用户选择雨露类型:")
-        result1_rain = dm.add_user(123456, 111111, 1)
-        print("新用户选择雨露:", result1_rain["message"])
-
-        # 测试新用户尝试切换类型（应该被拒绝）
-        print("\n5. 测试新用户切换到阳光类型（应该失败）:")
-        result1_rain_switch = dm.add_user(123456, 111111, 0)
-        print("尝试切换到阳光:", result1_rain_switch["message"])
-
-        # 测试签到功能（阳光）
-        print("\n6. 测试阳光用户签到:")
-        result2 = dm.daily_checkin(123456, 987654, 0)
-        print("阳光签到:", result2["message"])
-
-        # 测试签到功能（雨露）
-        print("\n7. 测试雨露用户签到:")
-        result2_rain = dm.daily_checkin(123456, 111111, 1)
-        print("雨露签到:", result2_rain["message"])
-
-        # 测试重复签到
-        print("\n8. 测试重复签到:")
-        result3 = dm.daily_checkin(123456, 987654, 0)
-        print("重复签到:", result3["message"])
-
-        # 获取签到统计
-        print("\n9. 获取签到统计:")
-        result4 = dm.get_user_checkin_stats(123456, 987654, 0)
-        print("阳光用户签到统计:", result4)
-
-        # 获取签到历史
-        print("\n10. 获取签到历史:")
-        result5 = dm.get_checkin_history(123456, 987654, 0)
-        print("阳光用户签到历史:", result5)
-
-        # 获取连续签到排行榜
-        print("\n11. 获取连续签到排行榜:")
-        result6 = dm.get_consecutive_ranking(123456, 0)
-        print("阳光排行榜:", result6)
-
-        result6_rain = dm.get_consecutive_ranking(123456, 1)
-        print("雨露排行榜:", result6_rain)
-
-        # 测试重置用户类型选择功能
-        print("\n12. 测试重置用户类型选择:")
-        reset_result = dm.reset_user_type_choice(123456, 987654)
-        print("重置用户类型:", reset_result["message"])
-
-        # 测试重置后重新选择
-        print("\n13. 测试重置后重新选择雨露:")
-        reselect_result = dm.add_user(123456, 987654, 1)
-        print("重置后选择雨露:", reselect_result["message"])
-
-        # 验证重新选择后的签到
-        print("\n14. 测试重新选择后的签到:")
-        new_checkin_result = dm.daily_checkin(123456, 987654, 1)
-        print("重新选择后签到:", new_checkin_result["message"])
-
-        # 测试发言奖励功能
-        print("\n15. 测试发言奖励功能:")
-        for i in range(5):
-            reward_amount = random.randint(1, 5)
-            update_result = dm.update_user_count(123456, 987654, 1, reward_amount)
-            if update_result["code"] == 200:
-                print(
-                    f"发言{i+1}: 获得{reward_amount}个雨露，当前总数：{update_result['data']['count']}"
-                )
-
-        # 测试年份管理功能
-        print("\n16. 测试年份管理功能:")
-        years_result = dm.get_available_years()
-        print("可用年份:", years_result["data"])
-
-        # 测试年度总结
-        print("\n17. 测试年度总结:")
-        summary_result = dm.get_yearly_summary(123456)
-        if summary_result["code"] == 200:
-            summary = summary_result["data"]
-            print(f"{summary['year']}年群组总结:")
-            print(f"  活跃用户: {summary['active_users']}人")
-            print(f"  总签到: {summary['total_checkins']}次")
-            print(f"  类型统计: {summary['type_stats']}")
-
-        # 测试跨年度统计
-        print("\n18. 测试跨年度统计:")
-        cross_year_result = DataManager.get_user_cross_year_stats(123456, 987654)
-        if cross_year_result["code"] == 200:
-            print("跨年度统计:", cross_year_result["message"])
-            print("总统计:", cross_year_result["data"]["total_stats"])
-
-        # 测试创建历史年份数据库
-        print("\n19. 测试创建历史年份数据库:")
-        last_year = dm.year - 1
-        print(f"创建{last_year}年数据库测试...")
-        with DataManager(last_year) as dm_last_year:
-            print(
-                f"  {last_year}年数据库文件: {os.path.basename(dm_last_year.db_path)}"
-            )
-            # 添加一些历史数据
-            result = dm_last_year.add_user(123456, 987654, 0)
-            if result["code"] == 200:
-                print(f"  {last_year}年用户添加成功")
-
-        print("\n" + "=" * 70)
-        print("测试完成 - 验证了用户逻辑、重置功能、发言奖励及年份数据库管理")
-        print(f"✅ 数据按年份分离，便于历史数据管理和年度统计")
-        print("=" * 70)

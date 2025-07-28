@@ -1,6 +1,4 @@
 from .database_base import DatabaseBase
-from datetime import datetime
-import random
 
 
 class CheckinRecordsHandler(DatabaseBase):

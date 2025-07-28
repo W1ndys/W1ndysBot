@@ -7,14 +7,8 @@
 """
 
 import os
-import sys
 import random
-from datetime import datetime
-
-# 添加项目根目录到路径
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
-
-from data_manager import DataManager
+from .data_manager import DataManager
 
 
 def test_refactored_functionality():

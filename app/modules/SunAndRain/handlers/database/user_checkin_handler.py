@@ -1,5 +1,4 @@
 from .database_base import DatabaseBase
-import random
 
 
 class UserCheckinHandler(DatabaseBase):

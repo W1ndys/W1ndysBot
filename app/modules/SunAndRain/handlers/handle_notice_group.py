@@ -2,6 +2,10 @@ from .. import MODULE_NAME
 import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
+from .database.data_manager import DataManager
+from core.switchs import is_group_switch_on
+from api.message import send_group_msg
+from utils.generate import generate_at_message, generate_text_message
 
 
 class GroupNoticeHandler:
@@ -184,10 +188,39 @@ class GroupNoticeHandler:
 
     async def handle_group_increase_invite(self):
         """
-        处理群聊成员增加 - 管理员邀请入群通知
+        处理群聊成员增加 - 管理员邀请入群通知，邀请入群奖励数值
         """
         try:
-            pass
+            # 如果没开启群聊开关，则不处理
+            if not is_group_switch_on(self.group_id, MODULE_NAME):
+                return
+
+            with DataManager() as dm:
+                result = dm.process_invite_reward(
+                    self.group_id, self.operator_id, self.user_id, 50
+                )
+                if result["code"] == 200:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_at_message(self.operator_id),
+                            generate_text_message(result["message"]),
+                        ],
+                    )
+                elif result["code"] == 500:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_at_message(self.operator_id),
+                            generate_text_message(result["message"]),
+                        ],
+                    )
+                    logger.error(
+                        f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知失败: {result['message']}"
+                    )
+
         except Exception as e:
             logger.error(
                 f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知失败: {e}"
