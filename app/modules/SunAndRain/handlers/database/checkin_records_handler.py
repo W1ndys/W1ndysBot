@@ -1,4 +1,5 @@
 from .database_base import DatabaseBase
+from ... import CONSECUTIVE_BONUS_CONFIG
 
 
 class CheckinRecordsHandler(DatabaseBase):
@@ -266,27 +267,17 @@ class CheckinRecordsHandler(DatabaseBase):
     @staticmethod
     def calculate_consecutive_bonus(consecutive_days):
         """计算连续签到奖励"""
-        if consecutive_days >= 30:
-            return 30  # 连续30天+30奖励
-        elif consecutive_days >= 15:
-            return 20  # 连续15天+20奖励
-        elif consecutive_days >= 7:
-            return 15  # 连续7天+15奖励
-        elif consecutive_days >= 3:
-            return 10  # 连续3天+10奖励
-        else:
-            return 0  # 少于3天无奖励
+        # 从大到小检查连续天数，返回对应奖励
+        for required_days in sorted(CONSECUTIVE_BONUS_CONFIG.keys(), reverse=True):
+            if consecutive_days >= required_days:
+                return CONSECUTIVE_BONUS_CONFIG[required_days]
+        return 0  # 少于最小天数无奖励
 
     @staticmethod
     def get_next_bonus_days(current_days):
         """获取下一个奖励里程碑需要的天数"""
-        if current_days < 3:
-            return 3
-        elif current_days < 7:
-            return 7
-        elif current_days < 15:
-            return 15
-        elif current_days < 30:
-            return 30
-        else:
-            return 0  # 已达到最高奖励
+        # 从小到大检查，找到第一个大于当前天数的里程碑
+        for required_days in sorted(CONSECUTIVE_BONUS_CONFIG.keys()):
+            if current_days < required_days:
+                return required_days
+        return 0  # 已达到最高奖励

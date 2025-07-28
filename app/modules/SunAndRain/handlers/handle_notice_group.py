@@ -1,4 +1,4 @@
-from .. import MODULE_NAME
+from .. import MODULE_NAME, INVITE_REWARD
 import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
@@ -197,7 +197,7 @@ class GroupNoticeHandler:
 
             with DataManager() as dm:
                 result = dm.process_invite_reward(
-                    self.group_id, self.operator_id, self.user_id, 50
+                    self.group_id, self.operator_id, self.user_id, INVITE_REWARD
                 )
                 if result["code"] == 200:
                     logger.info(

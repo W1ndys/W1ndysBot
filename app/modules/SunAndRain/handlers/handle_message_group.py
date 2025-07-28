@@ -1,4 +1,15 @@
-from .. import MODULE_NAME, SWITCH_NAME, SIGN_IN_COMMAND, SELECT_COMMAND, QUERY_COMMAND
+from .. import (
+    MODULE_NAME,
+    SWITCH_NAME,
+    SIGN_IN_COMMAND,
+    SELECT_COMMAND,
+    QUERY_COMMAND,
+    SPEECH_REWARD_MIN,
+    SPEECH_REWARD_MAX,
+    SPEECH_REWARD_NOTIFY_CONDITIONS,
+    MILESTONE_VALUES,
+    MILESTONE_NOTIFY_INTERVAL,
+)
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
@@ -280,7 +291,7 @@ class GroupMessageHandler:
                 type_name = "阳光" if user_type == 0 else "雨露"
 
                 # 随机生成1-5的奖励
-                reward_amount = random.randint(1, 5)
+                reward_amount = random.randint(SPEECH_REWARD_MIN, SPEECH_REWARD_MAX)
 
                 # 更新用户数值
                 update_result = dm.update_user_count(
@@ -296,10 +307,10 @@ class GroupMessageHandler:
                     # 发送奖励提示消息（低频率，避免刷屏）
                     # 只有在特殊情况下才提示
                     should_notify = (
-                        reward_amount == 5  # 获得最高奖励5时提示
-                        or new_count % 100 == 0  # 每100个数值时提示
-                        or new_count
-                        in [10, 25, 50, 200, 300, 500, 1000]  # 特定里程碑提示
+                        reward_amount == SPEECH_REWARD_MAX  # 获得最高奖励5时提示
+                        or new_count % MILESTONE_NOTIFY_INTERVAL
+                        == 0  # 每100个数值时提示
+                        or new_count in MILESTONE_VALUES  # 特定里程碑提示
                     )
 
                     if should_notify:
@@ -320,7 +331,7 @@ class GroupMessageHandler:
                             reward_message += (
                                 f"\n✨ 太棒了！您的{type_name}突破了100个！"
                             )
-                        elif new_count in [10, 20, 30, 50]:
+                        elif new_count in MILESTONE_VALUES:
                             reward_message += (
                                 f"\n🎯 里程碑达成：{new_count}个{type_name}！"
                             )

@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from ... import MODULE_NAME
+from ... import MODULE_NAME, CHECKIN_BASE_REWARD_MIN, CHECKIN_BASE_REWARD_MAX
 import random
 
 from .database_base import DatabaseBase
@@ -281,7 +281,9 @@ class DataManager:
 
             # 计算基础奖励
             if base_reward is None:
-                base_reward = random.randint(5, 15)
+                base_reward = random.randint(
+                    CHECKIN_BASE_REWARD_MIN, CHECKIN_BASE_REWARD_MAX
+                )
 
             # 计算连续签到奖励
             bonus_reward = CheckinRecordsHandler.calculate_consecutive_bonus(
