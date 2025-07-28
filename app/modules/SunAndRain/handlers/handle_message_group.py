@@ -6,7 +6,7 @@ from utils.auth import is_system_admin
 from api.message import send_group_msg
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
-from .data_manager import DataManager
+from .database.data_manager import DataManager
 from core.menu_manager import MenuManager
 import random
 
