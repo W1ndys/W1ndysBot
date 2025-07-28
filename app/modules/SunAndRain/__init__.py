@@ -41,7 +41,9 @@ MILESTONE_VALUES = [10, 25, 50, 200, 300, 500, 1000]  # 特定里程碑数值
 MILESTONE_NOTIFY_INTERVAL = 100  # 每100个数值提示一次
 
 
-ANNOUNCEMENT_MESSAGE = "发送‘sarmenu’，查看菜单，游戏bug反馈请前往：1046961227技术支持"
+ANNOUNCEMENT_MESSAGE = (
+    "\n\n发送‘sarmenu’，查看菜单，游戏bug反馈请前往：1046961227技术支持"
+)
 
 # ============================================
 
