@@ -200,6 +200,9 @@ class GroupNoticeHandler:
                     self.group_id, self.operator_id, self.user_id, 50
                 )
                 if result["code"] == 200:
+                    logger.info(
+                        f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知成功: {result['message']}"
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
@@ -209,6 +212,9 @@ class GroupNoticeHandler:
                         ],
                     )
                 elif result["code"] == 500:
+                    logger.error(
+                        f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知失败: {result['message']}"
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
@@ -216,9 +222,6 @@ class GroupNoticeHandler:
                             generate_at_message(self.operator_id),
                             generate_text_message(result["message"]),
                         ],
-                    )
-                    logger.error(
-                        f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知失败: {result['message']}"
                     )
 
         except Exception as e:
