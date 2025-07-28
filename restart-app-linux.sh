@@ -32,16 +32,9 @@ else
     echo "未找到虚拟环境，使用系统 Python。"
 fi
 
-# 创建logs目录（如果不存在）
-mkdir -p logs
-
-# 生成带时间戳的日志文件名
-TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
-LOG_FILE="logs/app_${TIMESTAMP}.log"
-
-# 后台运行新的Python程序并保存PID - 记录所有输出到带时间戳的日志文件
-echo "启动新的应用实例，日志将保存到 $LOG_FILE ..."
-nohup python3 main.py >"$LOG_FILE" 2>&1 &
+# 后台运行新的Python程序并保存PID - 只记录错误输出到日志
+echo "启动新的应用实例..."
+nohup python3 main.py >/dev/null 2>app.log &
 
 # 保存新进程的PID到文件
 NEW_PID=$!
@@ -70,15 +63,8 @@ if [ -n "$OLD_PID" ]; then
     fi
 fi
 
-# 创建最新日志的软链接，方便查看
-ln -sf "app_${TIMESTAMP}.log" logs/latest.log
-
 echo "应用重启完成，新PID保存在app/app.pid中"
-echo "所有输出将记录到 $LOG_FILE 文件中"
-echo "可通过 tail -f logs/latest.log 查看最新日志"
-
-# 清理7天前的日志文件
-find logs -name "app_*.log" -mtime +7 -delete 2>/dev/null || true
+echo "仅错误输出将记录到app.log文件中"
 
 # 退出虚拟环境
 if [ -n "$VIRTUAL_ENV" ]; then
