@@ -249,7 +249,6 @@ class DataManager:
                         "type_name": type_name,
                     },
                     "message": f"⚠️ 今日已签到完成！\n"
-                    f"📅 签到日期：{checkin_date}\n"
                     f"⏰ 签到时间：{checkin_time}\n"
                     f"🎁 基础奖励：{reward_amount}个{type_name}\n"
                     f"🔥 连续奖励：{bonus_amount}个{type_name}\n"
@@ -349,7 +348,6 @@ class DataManager:
                     "previous_count": current_count,
                 },
                 "message": f"🎉 签到成功！\n"
-                f"📅 签到日期：{current_date}\n"
                 f"⏰ 签到时间：{current_time}\n"
                 f"🎁 基础奖励：{base_reward}个{type_name}\n"
                 f"{bonus_info}"
