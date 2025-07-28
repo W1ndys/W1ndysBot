@@ -40,12 +40,8 @@ CONSECUTIVE_BONUS_CONFIG = {
 MILESTONE_VALUES = [10, 25, 50, 200, 300, 500, 1000]  # 特定里程碑数值
 MILESTONE_NOTIFY_INTERVAL = 100  # 每100个数值提示一次
 
-# 发言奖励提示配置
-SPEECH_REWARD_NOTIFY_CONDITIONS = {
-    "max_reward": SPEECH_REWARD_MAX,  # 获得最高奖励时提示
-    "interval": MILESTONE_NOTIFY_INTERVAL,  # 每N个数值时提示
-    "milestones": MILESTONE_VALUES,  # 特定里程碑提示
-}
+
+ANNOUNCEMENT_MESSAGE = "发送‘sarmenu’，查看菜单，游戏bug反馈请前往：1046961227技术支持"
 
 # ============================================
 

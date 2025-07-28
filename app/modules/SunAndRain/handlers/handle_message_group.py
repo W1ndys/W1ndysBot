@@ -6,9 +6,9 @@ from .. import (
     QUERY_COMMAND,
     SPEECH_REWARD_MIN,
     SPEECH_REWARD_MAX,
-    SPEECH_REWARD_NOTIFY_CONDITIONS,
     MILESTONE_VALUES,
     MILESTONE_NOTIFY_INTERVAL,
+    ANNOUNCEMENT_MESSAGE,
 )
 from core.menu_manager import MENU_COMMAND
 import logger
@@ -104,7 +104,9 @@ class GroupMessageHandler:
                             [
                                 generate_reply_message(self.message_id),
                                 generate_text_message(no_selection_message),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
                             ],
+                            note="del_msg=10",
                         )
                         return
 
@@ -119,7 +121,9 @@ class GroupMessageHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(result["message"]),
+                            generate_text_message(ANNOUNCEMENT_MESSAGE),
                         ],
+                        note="del_msg=10",
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理签到命令失败: {e}")
@@ -147,7 +151,9 @@ class GroupMessageHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(help_message),
+                            generate_text_message(ANNOUNCEMENT_MESSAGE),
                         ],
+                        note="del_msg=10",
                     )
                     return
 
@@ -180,7 +186,9 @@ class GroupMessageHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(error_message),
+                            generate_text_message(ANNOUNCEMENT_MESSAGE),
                         ],
+                        note="del_msg=10",
                     )
                     return
 
@@ -193,6 +201,7 @@ class GroupMessageHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(result["message"]),
+                            generate_text_message(ANNOUNCEMENT_MESSAGE),
                         ],
                     )
                     return
@@ -224,7 +233,9 @@ class GroupMessageHandler:
                             [
                                 generate_reply_message(self.message_id),
                                 generate_text_message(no_selection_message),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
                             ],
+                            note="del_msg=10",
                         )
                         return
 
@@ -268,7 +279,9 @@ class GroupMessageHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(query_message),
+                            generate_text_message(ANNOUNCEMENT_MESSAGE),
                         ],
+                        note="del_msg=10",
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理查询命令失败: {e}")
@@ -342,7 +355,9 @@ class GroupMessageHandler:
                             [
                                 generate_reply_message(self.message_id),
                                 generate_text_message(reward_message),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
                             ],
+                            note="del_msg=10",
                         )
 
         except Exception as e:
