@@ -142,6 +142,9 @@ class Core:
                 f"[{MODULE_NAME}]{self.user_id}处理群发命令: {group_name} {message}"
             )
 
+            # 把消息中的“艾特全体”转换为CQ码格式的全体成员
+            message = message.replace("艾特全体", "[CQ:at,qq=all]")
+
             # 处理参数
             with DataManager() as dm:
                 group_ids = dm.get_group_info(group_name)
