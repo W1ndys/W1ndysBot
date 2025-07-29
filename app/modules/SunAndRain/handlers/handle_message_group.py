@@ -313,7 +313,7 @@ class GroupMessageHandler:
 
                 if update_result["code"] == 200:
                     logger.info(
-                        f"[{MODULE_NAME}]发言奖励，user_id:{self.user_id},group_id:{self.group_id},user_type:{user_type},reward_amount:{reward_amount},new_count:{update_result['data']['new_total']}"
+                        f"[{MODULE_NAME}]发言奖励，user_id:{self.user_id},group_id:{self.group_id},user_type:{user_type},reward_amount:{reward_amount},new_count:{update_result['data']['count']}"
                     )
                     new_count = update_result["data"]["count"]
 
