@@ -148,14 +148,11 @@ async def check_and_handle_ban_words(
             [
                 generate_at_message(user_id),
                 generate_text_message(
-                    f"({user_id})请勿发送违禁消息，如误封请联系管理员，发广告的自觉点退群\n"
-                    f"时间: {formatted_time}\n"
-                    f"group_id={group_id}\n"
-                    f"group_name={get_group_name_by_id(group_id)}\n"
-                    f"user_id={user_id}\n"
-                    f"管理员可回复本消息【{UNBAN_WORD_COMMAND}】或【{KICK_BAN_WORD_COMMAND}】来处理用户"
+                    f"({user_id})请勿发送违禁消息，如误封请联系管理员\n"
+                    f"group_id={group_id}，user_id={user_id}"
                 ),
             ],
+            note="del_msg=1000",
         )
         return True
     else:
