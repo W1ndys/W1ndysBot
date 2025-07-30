@@ -75,7 +75,9 @@ class MessageProcessor:
         if self.raw_message.startswith(f"[CQ:reply,id="):
             # 提取被回复消息ID（即数据库里的转发消息id）和回复内容
             # 回复CQ码后面的内容全是需要转发回去的内容，正则提取
-            reply_content = re.search(r"\[CQ:reply,id=(\d+)\](.*)", self.raw_message)
+            reply_content = re.search(
+                r"\[CQ:reply,id=(\d+)\](.*)", self.raw_message, re.DOTALL
+            )
             if reply_content:
                 forwarded_message_id = reply_content.group(1)
                 reply_content = reply_content.group(2)
