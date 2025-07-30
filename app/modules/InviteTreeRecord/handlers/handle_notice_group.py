@@ -7,6 +7,7 @@ from config import OWNER_ID
 from utils.generate import generate_text_message
 from api.message import send_private_msg
 from core.get_group_list import get_group_name_by_id
+from core.get_group_member_list import is_user_admin_or_owner
 
 
 class GroupNoticeHandler:
@@ -194,6 +195,13 @@ class GroupNoticeHandler:
         try:
             # 检测群开关
             if not is_group_switch_on(self.group_id, MODULE_NAME):
+                return
+
+            # 如果操作者是群主或管理员，则不处理
+            if is_user_admin_or_owner(self.group_id, self.operator_id):
+                logger.info(
+                    f"[{MODULE_NAME}]操作者({self.operator_id})是群主或管理员，不记录邀请记录"
+                )
                 return
 
             # 添加邀请树记录
