@@ -203,6 +203,7 @@ class GroupMessageHandler:
                             generate_text_message(result["message"]),
                             generate_text_message(ANNOUNCEMENT_MESSAGE),
                         ],
+                        note="del_msg=10",
                     )
                     return
         except Exception as e:
