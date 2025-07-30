@@ -2,6 +2,9 @@ from .. import MODULE_NAME
 import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
+from api.group import set_group_ban
+from api.message import send_group_msg
+from utils.generate import generate_at_message, generate_text_message
 
 
 class GroupNoticeHandler:
@@ -198,7 +201,30 @@ class GroupNoticeHandler:
         处理群聊消息撤回通知
         """
         try:
-            pass
+            # 是否开启开关
+            if not is_group_switch_on(self.group_id, MODULE_NAME):
+                return
+
+            # 如果操作者是2854196310
+            if self.operator_id == "2854196310":
+                # 说明检测到违禁消息被QQ官方机器人Q群管家撤回了，给他禁言1小时
+                await set_group_ban(
+                    self.websocket,
+                    self.group_id,
+                    self.user_id,
+                    duration=60 * 60,
+                )
+                # 发个警告
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_at_message(self.user_id),
+                        generate_text_message(
+                            f"({self.user_id}) 本群禁止发布二维码，如误封请联系管理员处理"
+                        ),
+                    ],
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊消息撤回通知失败: {e}")
 
