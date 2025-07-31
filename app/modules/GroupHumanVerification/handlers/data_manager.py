@@ -35,6 +35,7 @@ class DataManager:
             created_at TEXT,  -- 存储为字符串格式的时间，如'2024-06-01 12:00:00'
             warning_count INTEGER,  -- 剩余警告次数
             message_id TEXT,  -- 入群验证提示消息的消息id
+            last_warning_time TEXT,  -- 上次警告时间，存储为字符串格式
             UNIQUE(group_id, user_id)
             )"""
         )
@@ -49,6 +50,11 @@ class DataManager:
             self.conn.commit()
         if "message_id" not in columns:
             self.cursor.execute("ALTER TABLE data_table ADD COLUMN message_id TEXT")
+            self.conn.commit()
+        if "last_warning_time" not in columns:
+            self.cursor.execute(
+                "ALTER TABLE data_table ADD COLUMN last_warning_time TEXT"
+            )
             self.conn.commit()
 
     def __enter__(self):
@@ -94,7 +100,7 @@ class DataManager:
         :return: 数据字典或None
         """
         self.cursor.execute(
-            "SELECT group_id, user_id, code, status, created_at, warning_count, message_id FROM data_table WHERE group_id=? AND user_id=?",
+            "SELECT group_id, user_id, code, status, created_at, warning_count, message_id, last_warning_time FROM data_table WHERE group_id=? AND user_id=?",
             (group_id, user_id),
         )
         row = self.cursor.fetchone()
@@ -110,6 +116,7 @@ class DataManager:
                 "created_at": row[4],
                 "warning_count": row[5],
                 "message_id": row[6],
+                "last_warning_time": row[7],
             }
         else:
             return None
@@ -254,3 +261,85 @@ class DataManager:
             return row[0]
         else:
             return None
+
+    def update_last_warning_time(self, group_id, user_id, warning_time):
+        """
+        更新指定用户的最后警告时间
+        :param group_id: 群号
+        :param user_id: QQ号
+        :param warning_time: 警告时间（字符串格式）
+        """
+        self.cursor.execute(
+            "UPDATE data_table SET last_warning_time=? WHERE group_id=? AND user_id=?",
+            (warning_time, group_id, user_id),
+        )
+        self.conn.commit()
+        logger.info(
+            f"更新最后警告时间成功，group_id={group_id}, user_id={user_id}, warning_time={warning_time}"
+        )
+
+    def get_users_need_warning_by_time(self):
+        """
+        获取需要基于时间间隔进行警告的用户
+        返回所有未验证且距离入群时间为4小时倍数的用户
+        :return: {group_id: [(user_id, warning_count, code, created_at, last_warning_time), ...], ...}
+        """
+        self.cursor.execute(
+            "SELECT group_id, user_id, warning_count, code, created_at, last_warning_time FROM data_table WHERE status=?",
+            (STATUS_UNVERIFIED,),
+        )
+        rows = self.cursor.fetchall()
+        result = {}
+
+        from datetime import datetime 
+
+        current_time = datetime.now()
+
+        for (
+            group_id,
+            user_id,
+            warning_count,
+            code,
+            created_at,
+            last_warning_time,
+        ) in rows:
+            try:
+                # 解析入群时间
+                join_time = datetime.strptime(created_at, "%Y-%m-%d %H:%M:%S")
+
+                # 计算入群后经过的小时数
+                hours_since_join = int(
+                    (current_time - join_time).total_seconds() / 3600
+                )
+
+                # 检查是否为4小时的倍数且大于0
+                if hours_since_join > 0 and hours_since_join % 4 == 0:
+                    # 检查是否已经在这个时间点警告过
+                    should_warn = True
+                    if last_warning_time:
+                        last_warn_time = datetime.strptime(
+                            last_warning_time, "%Y-%m-%d %H:%M:%S"
+                        )
+                        # 如果距离上次警告不足4小时，则跳过
+                        if (current_time - last_warn_time).total_seconds() < 4 * 3600:
+                            should_warn = False
+
+                    if should_warn:
+                        result.setdefault(group_id, []).append(
+                            (
+                                user_id,
+                                warning_count,
+                                code,
+                                created_at,
+                                last_warning_time,
+                            )
+                        )
+
+            except ValueError as e:
+                logger.error(
+                    f"解析时间格式失败: {e}, created_at={created_at}, last_warning_time={last_warning_time}"
+                )
+                continue
+
+        logger.info(f"获取需要基于时间警告的用户成功，result={result}")
+        return result

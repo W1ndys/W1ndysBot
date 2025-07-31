@@ -50,24 +50,16 @@ class MetaEventHandler:
 
     async def handle_heartbeat(self):
         """
-        处理心跳
+        处理心跳 - 每4小时提醒未验证用户
         """
         try:
-            # 获取当前小时和分钟
+            # 获取当前时间
             now = datetime.now()
-            hour = now.hour
             minute = now.minute
-            # 设定的扫描小时
-            scan_hours = [0, 8, 12, 16, 20]
-            # 只在整点触发，且只触发一次（通过类变量记录上次触发小时）
-            if (
-                hour in scan_hours
-                and minute == 0
-                and MetaEventHandler._last_scan_hour != hour
-            ):
-                MetaEventHandler._last_scan_hour = hour
-                # 调用自动扫描
+            # 每小时的整点检查（避免频繁检查）
+            if minute == 0:
+                # 调用基于时间间隔的扫描
                 handler = GroupHumanVerificationHandler(self.websocket, self.msg)
-                await handler.handle_scan_verification()
+                await handler.handle_scan_verification_by_time()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")
