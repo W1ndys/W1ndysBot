@@ -205,6 +205,9 @@ class GroupMessageHandler:
                         ],
                         note="del_msg=10",
                     )
+                    logger.info(
+                        f"[{MODULE_NAME}]群 {self.group_id} 的 {self.user_id} 执行了踢出邀请树，被踢出人员：{' '.join(related_users)}"
+                    )
                     return
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
