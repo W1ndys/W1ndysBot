@@ -56,27 +56,27 @@ class ResponseHandler:
             raw_message = self.data.get("raw_message", "")
             # 在原始消息里提取user_id
             pattern = r"user_id=(\d+)"
-            match = re.search(pattern, raw_message)
-            if not match:
+            matches = re.findall(pattern, raw_message)
+            if not matches:
                 logger.error(
                     f"[{MODULE_NAME}]从原始消息里提取user_id失败: {raw_message}"
                 )
-                return
-            user_id = match.group(1)
-            logger.info(f"[{MODULE_NAME}]提取到user_id: {user_id}")
-            # 添加全局黑名单
-            with BlackListDataManager() as data_manager:
-                data_manager.add_global_blacklist(user_id)
+                return False
+            for user_id in matches:
+                logger.info(f"[{MODULE_NAME}]提取到user_id: {user_id}")
+                # 添加全局黑名单
+                with BlackListDataManager() as data_manager:
+                    data_manager.add_global_blacklist(user_id)
                 await send_private_msg(
                     self.websocket,
                     OWNER_ID,
                     [
                         generate_text_message(
-                            f"[{MODULE_NAME}]已将用户{user_id}拉入全局黑名单"
+                            f"[{MODULE_NAME}]已将用户{', '.join(matches)}拉入全局黑名单"
                         )
                     ],
                 )
-                return
+            return True
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理私聊拉黑响应失败: {e}")
 
