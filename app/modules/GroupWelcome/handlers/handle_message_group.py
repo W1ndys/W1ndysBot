@@ -132,8 +132,8 @@ class GroupMessageHandler:
                     return
                 # 获取参数1
                 param1 = params[1]
-                # 获取参数2，参数1往后的所有内容都算参数2，无视空格
-                param2 = " ".join(params[2:])
+                # 获取参数2，参数1往后的所有内容都算参数2，保留换行
+                param2 = self.raw_message.split(None, 2)[2] if len(params) > 2 else ""
 
                 # 判断参数1是否为in或out
                 if param1 not in ["in", "out"]:

@@ -7,7 +7,7 @@ class DataManager:
     def __init__(self):
         data_dir = os.path.join("data", MODULE_NAME)
         os.makedirs(data_dir, exist_ok=True)
-        db_path = os.path.join(data_dir, f"data.db")
+        db_path = os.path.join(data_dir, f"{MODULE_NAME}.db")
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         self._create_table()
