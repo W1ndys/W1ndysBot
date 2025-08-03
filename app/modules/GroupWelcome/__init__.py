@@ -19,10 +19,10 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # ------------------------------------------------------------
 
 BASE_COMMAND = "/gw"  # 基础命令
-GWSET = f"{BASE_COMMAND}set"  # 设置入群欢迎信息命令
+GWSET = f"{BASE_COMMAND}set"  # 设置入群欢迎退群提醒信息命令
 
 COMMANDS = {
     BASE_COMMAND: f"开启入群欢迎退群提醒，用法：{BASE_COMMAND}",
-    GWSET: f"设置入群欢迎信息，用法：{GWSET}+空格+欢迎信息",
+    GWSET: f"设置入群欢迎退群提醒信息，用法：{GWSET}+空格+[参数1]+空格+[参数2]，参数1可选in或out，参数2为入群欢迎退群提醒信息",
 }
 # ------------------------------------------------------------

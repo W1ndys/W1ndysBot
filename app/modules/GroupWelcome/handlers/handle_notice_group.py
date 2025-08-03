@@ -2,6 +2,9 @@ from .. import MODULE_NAME
 import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
+from api.message import send_group_msg_with_cq
+from core.nc_get_rkey import replace_rkey
+from .data_manager import DataManager
 
 
 class GroupNoticeHandler:
@@ -137,7 +140,20 @@ class GroupNoticeHandler:
         处理群聊成员减少 - 主动退群通知
         """
         try:
-            pass
+            with DataManager() as dm:
+                notice_content = dm.get_notice_content(self.group_id, "out")
+                if notice_content:
+                    await send_group_msg_with_cq(
+                        self.websocket,
+                        self.group_id,
+                        f"[CQ:at,qq={self.user_id}]({self.user_id})\n{replace_rkey(notice_content)}",
+                    )
+                else:
+                    await send_group_msg_with_cq(
+                        self.websocket,
+                        self.group_id,
+                        f"[CQ:at,qq={self.user_id}]({self.user_id})退群了o(╥﹏╥)o",
+                    )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 主动退群通知失败: {e}")
 
@@ -146,7 +162,11 @@ class GroupNoticeHandler:
         处理群聊成员减少 - 成员被踢通知
         """
         try:
-            pass
+            await send_group_msg_with_cq(
+                self.websocket,
+                self.group_id,
+                f"[CQ:at,qq={self.user_id}]({self.user_id})被踢了o(╥﹏╥)o",
+            )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 成员被踢通知失败: {e}")
 
@@ -164,34 +184,22 @@ class GroupNoticeHandler:
         处理群聊成员增加通知
         """
         try:
-            if self.sub_type == "approve":
-                await self.handle_group_increase_approve()
-            elif self.sub_type == "invite":
-                await self.handle_group_increase_invite()
+            with DataManager() as dm:
+                notice_content = dm.get_notice_content(self.group_id, "in")
+                if notice_content:
+                    await send_group_msg_with_cq(
+                        self.websocket,
+                        self.group_id,
+                        f"[CQ:at,qq={self.user_id}]({self.user_id})\n{replace_rkey(notice_content)}",
+                    )
+                else:
+                    await send_group_msg_with_cq(
+                        self.websocket,
+                        self.group_id,
+                        f"[CQ:at,qq={self.user_id}]({self.user_id})欢迎入群~",
+                    )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
-
-    async def handle_group_increase_approve(self):
-        """
-        处理群聊成员增加 - 管理员已同意入群通知
-        """
-        try:
-            pass
-        except Exception as e:
-            logger.error(
-                f"[{MODULE_NAME}]处理群聊成员增加 - 管理员已同意入群通知失败: {e}"
-            )
-
-    async def handle_group_increase_invite(self):
-        """
-        处理群聊成员增加 - 管理员邀请入群通知
-        """
-        try:
-            pass
-        except Exception as e:
-            logger.error(
-                f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知失败: {e}"
-            )
 
     async def handle_group_recall(self):
         """

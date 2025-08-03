@@ -1,8 +1,8 @@
-from .. import MODULE_NAME, SWITCH_NAME
+from .. import MODULE_NAME, SWITCH_NAME, GWSET
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
-from utils.auth import is_system_admin
+from utils.auth import is_system_admin, is_group_admin
 from api.message import send_group_msg
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
@@ -67,6 +67,111 @@ class GroupMessageHandler:
             return True
         return False
 
+    async def _handle_set_in_welcome_message(self, message):
+        """
+        处理设置入群消息
+        """
+        try:
+            with DataManager() as dm:
+                dm.set_notice_content(self.group_id, "in", message)
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message("入群消息设置成功"),
+                    ],
+                )
+                logger.info(
+                    f"[{MODULE_NAME}]设置入群消息成功，群号：{self.group_id}，消息：{message}"
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理设置入群消息失败: {e}")
+
+    async def _handle_set_out_welcome_message(self, message):
+        """
+        处理设置退群消息
+        """
+        try:
+            with DataManager() as dm:
+                dm.set_notice_content(self.group_id, "out", message)
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message("退群消息设置成功"),
+                    ],
+                )
+                logger.info(
+                    f"[{MODULE_NAME}]设置退群消息成功，群号：{self.group_id}，消息：{message}"
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理设置退群消息失败: {e}")
+
+    async def _handle_set_welcome_message(self):
+        """
+        处理设置入群欢迎退群通知消息
+        """
+        try:
+            if self.raw_message.startswith(GWSET):
+                # 获取参数
+                params = self.raw_message.split()
+                if len(params) < 3:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(
+                                "参数不足，请使用/gwset [参数1] [参数2]，参数1可选in或out，参数2为入群欢迎退群提醒信息"
+                            ),
+                        ],
+                        note="del_msg=10",
+                    )
+                    return
+                # 获取参数1
+                param1 = params[1]
+                # 获取参数2，参数1往后的所有内容都算参数2，无视空格
+                param2 = " ".join(params[2:])
+
+                # 判断参数1是否为in或out
+                if param1 not in ["in", "out"]:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(
+                                "参数1错误，请使用/gwset [参数1] [参数2]，参数1可选in或out"
+                            ),
+                        ],
+                        note="del_msg=10",
+                    )
+                    return
+
+                # 判断参数2是否为空
+                if not param2:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message("参数2不能为空"),
+                        ],
+                    )
+                    return
+
+                # 处理存储入群消息
+                if param1 == "in":
+                    # 存储入群消息
+                    await self._handle_set_in_welcome_message(param2)
+                elif param1 == "out":
+                    # 存储退群消息
+                    await self._handle_set_out_welcome_message(param2)
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理设置入群欢迎退群通知消息失败: {e}")
+
     async def handle(self):
         """
         处理群消息
@@ -84,10 +189,12 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            # 示例：使用with语句块进行数据库操作
-            with DataManager() as dm:
-                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                pass
+            # 鉴权
+            if not is_system_admin(self.user_id) and not is_group_admin(self.role):
+                return
+
+            # 处理设置入群欢迎退群通知消息
+            await self._handle_set_welcome_message()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
