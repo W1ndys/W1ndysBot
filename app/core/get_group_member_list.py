@@ -155,13 +155,12 @@ async def handle_events(websocket, msg):
         current_time = int(time.time())
         # 检查距离上次请求是否已超过指定时间
         if current_time - last_request_time >= REQUEST_INTERVAL:
+            last_request_time = current_time
             # 延迟2秒让群列表更新
             await asyncio.sleep(2)
-            # 直接发送获取所有群的群成员信息请求
             group_ids = get_all_group_ids()
             for group_id in group_ids:
                 await get_group_member_list(websocket, group_id)
-            last_request_time = current_time
 
         # 群通知事件
         # 如果有进群退群的通知（系统触发，不受请求间隔限制）
