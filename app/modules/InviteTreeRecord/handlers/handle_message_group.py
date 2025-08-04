@@ -7,7 +7,7 @@ from .. import (
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
-from api.message import send_group_msg
+from api.message import send_group_msg, send_private_msg
 from utils.generate import generate_reply_message, generate_text_message
 from api.group import set_group_kick
 from datetime import datetime
@@ -16,6 +16,7 @@ import re
 import asyncio
 from core.menu_manager import MenuManager
 from utils.auth import is_group_admin, is_system_admin
+from config import OWNER_ID
 
 
 class GroupMessageHandler:
@@ -204,6 +205,12 @@ class GroupMessageHandler:
                             ),
                         ],
                         note="del_msg=10",
+                    )
+                    # 上报系统级管理员
+                    await send_private_msg(
+                        self.websocket,
+                        OWNER_ID,
+                        f"群 {self.group_id} 的 {self.user_id} 执行了踢出邀请树，被踢出人员：{' '.join(related_users)}",
                     )
                     logger.info(
                         f"[{MODULE_NAME}]群 {self.group_id} 的 {self.user_id} 执行了踢出邀请树，被踢出人员：{' '.join(related_users)}"
