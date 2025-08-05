@@ -37,7 +37,7 @@ class GroupMessageHandler:
         """
         if self.raw_message.lower() == SWITCH_NAME.lower():
             # 鉴权
-            if not is_system_admin(self.user_id):
+            if not is_system_admin(self.user_id) and not is_group_admin(self.role):
                 logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换群聊开关")
                 return True
             await handle_module_group_switch(
