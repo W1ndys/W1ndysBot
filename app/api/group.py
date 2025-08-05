@@ -95,6 +95,51 @@ async def set_group_ban(websocket, group_id, user_id, duration):
         return False
 
 
+async def set_group_ban_multiple(websocket, group_id, user_ids, duration, note=""):
+    """
+    批量群禁言
+
+    Args:
+        websocket: WebSocket连接对象，用于与上游通信
+        group_id (str): 群号
+        user_ids (list): 要禁言的用户ID列表
+        duration (int): 禁言时长，单位秒，0表示取消禁言，30天=2592000秒
+        note (str, optional): 附加说明，用于在响应处理中获取结果
+
+    Returns:
+        bool: 操作是否成功，True表示成功，False表示失败
+
+    Note:
+        此函数为占位符，需要您根据实际需求实现批量禁言逻辑
+        可以选择：
+        1. 使用现有的set_group_ban函数循环调用
+        2. 实现新的批量禁言API（如果上游支持）
+        3. 添加适当的延时避免频率限制
+    """
+    try:
+        # TODO: 请在此处实现批量禁言逻辑
+        # 示例实现：循环调用单个禁言API
+        success_count = 0
+        for user_id in user_ids:
+            try:
+                await set_group_ban(websocket, group_id, user_id, duration)
+                success_count += 1
+                # 添加小延时避免频率限制
+                import asyncio
+
+                await asyncio.sleep(0.1)
+            except Exception as e:
+                logger.error(f"[API]禁言用户 {user_id} 失败: {e}")
+
+        logger.info(
+            f"[API]批量禁言完成，成功禁言 {success_count}/{len(user_ids)} 个用户"
+        )
+        return success_count > 0
+    except Exception as e:
+        logger.error(f"[API]批量群禁言失败: {e}")
+        return False
+
+
 async def get_group_system_msg(websocket, group_id):
     """
     获取群系统消息
