@@ -64,15 +64,14 @@ class MetaEventHandler:
                 or (current_time - MetaEventHandler.last_execution_time).total_seconds()
                 >= 60
             ):
-
-                logger.success(f"[{MODULE_NAME}]开始执行群随机消息发送任务")
                 MetaEventHandler.last_execution_time = current_time
 
                 for group_id in get_all_enabled_groups(MODULE_NAME):
                     await send_group_random_msg(self.websocket, group_id)
+                    logger.success(
+                        f"[{MODULE_NAME}]群{group_id}随机消息发送任务执行完成"
+                    )
                     await asyncio.sleep(1)
-
-                logger.success(f"[{MODULE_NAME}]群随机消息发送任务执行完成")
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")
