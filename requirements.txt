@@ -12,6 +12,10 @@ scipy
 matplotlib
 wordcloud
 
+# Excel 相关库
+openpyxl
+xlrd==1.2.0
+
 # 视频处理和计算机视觉
 opencv-python
 
