@@ -481,8 +481,7 @@ class DataManager:
                 f"🆕 新成员：{user_id}\n"
                 f"⏰ 邀请时间：{invite_result['data']['invite_time']}\n"
                 f"🎁 邀请奖励：{reward_amount}个{type_name}\n"
-                f"📊 当前拥有：{new_total_count}个{type_name}（+{reward_amount}）\n"
-                f"✨ 感谢您为群组带来新成员！",
+                f"📊 当前拥有：{new_total_count}个{type_name}（+{reward_amount}）\n",
             }
 
         except Exception as e:

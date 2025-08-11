@@ -210,6 +210,7 @@ class GroupNoticeHandler:
                             generate_at_message(self.operator_id),
                             generate_text_message(result["message"]),
                         ],
+                        note="del_msg=20",
                     )
                 elif result["code"] == 500:
                     logger.error(
@@ -222,6 +223,7 @@ class GroupNoticeHandler:
                             generate_at_message(self.operator_id),
                             generate_text_message(result["message"]),
                         ],
+                        note="del_msg=20",
                     )
 
         except Exception as e:
