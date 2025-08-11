@@ -188,7 +188,7 @@ class GroupManagerHandle:
                 [
                     generate_text_message(f"已踢出用户\n{' '.join(target_user_ids)}"),
                 ],
-                note="del_msg=30",
+                note="del_msg=10",
             )
 
         except Exception as e:
