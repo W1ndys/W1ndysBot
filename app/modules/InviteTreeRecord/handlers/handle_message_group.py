@@ -208,7 +208,7 @@ class GroupMessageHandler:
         await send_private_msg(
             self.websocket,
             OWNER_ID,
-            f"群 {self.group_id} 的 {self.user_id} 执行了踢出邀请树，被踢出人员：{' '.join(related_users)}",
+            f"群 {self.group_id} 的 {self.user_id} 执行了踢出邀请树，被踢出人员：\n {' '.join(related_users)}",
         )
         logger.info(
             f"[{MODULE_NAME}]群 {self.group_id} 的 {self.user_id} 执行了踢出邀请树，被踢出人员：{' '.join(related_users)}"
