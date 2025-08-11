@@ -1,1 +1,0 @@
-pnpm docs:clean-dev
