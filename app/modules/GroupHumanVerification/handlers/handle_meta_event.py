@@ -50,14 +50,15 @@ class MetaEventHandler:
 
     async def handle_heartbeat(self):
         """
-        处理心跳 - 每4小时提醒未验证用户
+        处理心跳 - 仅在白天（如8:00-22:00）每小时整点提醒未验证用户，夜间不提醒
         """
         try:
             # 获取当前时间
             now = datetime.now()
+            hour = now.hour
             minute = now.minute
-            # 每小时的整点检查（避免频繁检查）
-            if minute == 0:
+            # 仅在白天8:00-22:00之间的整点进行提醒
+            if 8 <= hour < 22 and minute == 0:
                 # 调用基于时间间隔的扫描
                 handler = GroupHumanVerificationHandler(self.websocket, self.msg)
                 await handler.handle_scan_verification_by_time()
