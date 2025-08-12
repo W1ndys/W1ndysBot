@@ -264,7 +264,7 @@ class GroupNoticeHandler:
                 self.websocket,
                 self.group_id,
                 [msg_at, msg_text, msg_image],
-                note=f"{NOTE_CONDITION}-group_id={self.group_id}-user_id={self.user_id}-del_msg=14400",  # 14400=4小时
+                note=f"{NOTE_CONDITION}-group_id={self.group_id}-user_id={self.user_id}-del_msg=21600",  # 21600=6小时
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
