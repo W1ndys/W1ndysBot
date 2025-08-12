@@ -383,6 +383,9 @@ class GroupMessageHandler:
 
             # 处理特定命令
             if self.raw_message.startswith(SIGN_IN_COMMAND):
+                # 黑名单用户
+                if self.user_id in ["3649056059"]:
+                    return
                 await self._handle_sign_in_command()
                 return
             if self.raw_message.startswith(SELECT_COMMAND):
