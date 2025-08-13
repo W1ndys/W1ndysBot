@@ -1,39 +1,29 @@
 import logging
 import colorlog
 import os
+import asyncio
 from datetime import datetime, timezone, timedelta
-
+from api.message import send_private_msg
+from config import OWNER_ID
 
 # 自定义SUCCESS日志级别 (在INFO和WARNING之间)
 SUCCESS = 25  # INFO是20，WARNING是30
 logging.addLevelName(SUCCESS, "SUCCESS")
 
+
 # 添加success方法到logging模块
-
-
 def _logger_success(self, message, *args, **kwargs):
     if self.isEnabledFor(SUCCESS):
         self._log(SUCCESS, message, args, **kwargs)
 
 
-# 自定义NAPCAT日志级别 (在INFO和WARNING之间)
-NAPCAT = 26  # INFO是20，WARNING是30
-logging.addLevelName(NAPCAT, "NAPCAT")
-
-
-# 添加napcat方法到logging模块
-def _logger_napcat(self, message, *args, **kwargs):
-    if self.isEnabledFor(NAPCAT):
-        self._log(NAPCAT, message, args, **kwargs)
-
-
 # 将success方法添加到Logger类 - 使用setattr避免类型检查问题
 setattr(logging.Logger, "success", _logger_success)
-setattr(logging.Logger, "napcat", _logger_napcat)
 
 
 class Logger:
-    def __init__(self, logs_dir="logs", console_level="INFO"):
+    def __init__(self, websocket=None, logs_dir="logs", console_level="INFO"):
+        self.websocket = websocket
         self.root_logger = logging.getLogger()
         self.console_level = console_level  # 重命名为更明确的含义
 
@@ -125,15 +115,28 @@ class Logger:
 
     def error(self, message):
         logging.error(message)
+        # 异步发送私聊到OWNER_ID
+        if OWNER_ID and self.websocket:
+            try:
+                # 通过事件循环调度异步任务
+                loop = asyncio.get_event_loop()
+                # 兼容在协程和主线程下的调用
+                if loop.is_running():
+                    asyncio.create_task(
+                        send_private_msg(self.websocket, OWNER_ID, f"[ERROR] {message}")
+                    )
+                else:
+                    loop.run_until_complete(
+                        send_private_msg(self.websocket, OWNER_ID, f"[ERROR] {message}")
+                    )
+            except Exception as e:
+                logging.error(f"发送错误日志到OWNER_ID失败: {e}")
 
     def critical(self, message):
         logging.critical(message)
 
     def success(self, message):
         logging.log(SUCCESS, message)
-
-    def napcat(self, message):
-        logging.log(NAPCAT, message)
 
     def set_console_level(self, level):
         """动态设置控制台日志级别"""
@@ -175,37 +178,3 @@ def critical(message):
 
 def success(message):
     logger.success(message)
-
-
-def napcat(message):
-    logger.napcat(message)
-
-
-if __name__ == "__main__":
-    # 演示logger的使用方法
-
-    # 1. 使用全局logger实例
-    logger.debug("这是一条调试日志")
-    logger.info("这是一条信息日志")
-    logger.warning("这是一条警告日志")
-    logger.error("这是一条错误日志")
-    logger.critical("这是一条严重错误日志")
-    logger.success("这是一条成功日志")
-    logger.napcat("这是一条Napcat信息日志")
-    # 2. 使用便捷函数
-    debug("使用便捷函数：调试信息")
-    info("使用便捷函数：普通信息")
-    warning("使用便捷函数：警告信息")
-    error("使用便捷函数：错误信息")
-    critical("使用便捷函数：严重错误")
-    success("使用便捷函数：成功信息")
-    napcat("使用便捷函数：Napcat信息")
-
-    # 3. 修改日志级别
-    print("\n修改日志级别为DEBUG后的输出:")
-    logger.set_level(logging.DEBUG)
-    logger.debug("修改级别后可以看到的调试日志")
-
-    # 4. 创建自定义日志实例
-    custom_logger = Logger(logs_dir="custom_logs", console_level="INFO")
-    custom_logger.info("这是来自自定义日志器的消息")

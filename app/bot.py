@@ -23,6 +23,9 @@ async def connect_to_bot():
         # 连接到 WebSocket
         async with websockets.connect(connection_url) as websocket:
             try:
+                # 将websocket实例化到logger
+                logger.websocket = websocket
+
                 handler = EventHandler(websocket)  # 为每个连接创建一个独立实例
                 async for message in websocket:
                     try:

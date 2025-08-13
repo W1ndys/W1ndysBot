@@ -90,6 +90,56 @@ def get_all_group_ids():
         return []
 
 
+def get_group_member_info_by_id(group_id):
+    """
+    根据群号获取该群的成员信息（当前人数、最大人数和群名）
+
+    Args:
+        group_id (str或int): 群号
+
+    Returns:
+        dict: 包含成员信息的字典，格式：
+              {
+                  "member_count": int,      # 当前群成员数量
+                  "max_member_count": int,  # 群最大成员数量限制
+                  "group_name": str         # 群名称
+              }
+              如果找不到则返回None
+    """
+    try:
+        # 确保群号是字符串格式
+        group_id = str(group_id)
+
+        # 检查文件是否存在
+        if not os.path.exists(DATA_DIR):
+            logger.warning(f"[Core]群列表文件不存在: {DATA_DIR}")
+            return None
+
+        # 读取群列表文件
+        with open(DATA_DIR, "r", encoding="utf-8") as f:
+            group_list = json.load(f)
+
+        # 查找匹配的群号
+        for group in group_list:
+            if str(group.get("group_id")) == group_id:
+                member_info = {
+                    "member_count": group.get("member_count", 0),
+                    "max_member_count": group.get("max_member_count", 0),
+                    "group_name": group.get("group_name", ""),
+                }
+                logger.info(
+                    f"[Core]获取群 {group_id} 成员信息: 当前人数 {member_info['member_count']}, 最大人数 {member_info['max_member_count']}, 群名 {member_info['group_name']}"
+                )
+                return member_info
+
+        logger.warning(f"[Core]未找到群号 {group_id} 对应的成员信息")
+        return None
+
+    except Exception as e:
+        logger.error(f"[Core]获取群成员信息失败: {e}")
+        return None
+
+
 async def handle_events(websocket, msg):
     """
     处理回应事件
