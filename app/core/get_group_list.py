@@ -177,6 +177,15 @@ async def handle_events(websocket, msg):
             await get_group_list(websocket, no_cache=True)
             last_request_time = current_time
 
+        # 如果有进退群通知
+        if (
+            msg.get("notice_type") == "group_increase"
+            or msg.get("notice_type") == "group_decrease"
+        ):
+            # 发送获取群列表的请求
+            await get_group_list(websocket, no_cache=True)
+            last_request_time = current_time
+
         if msg.get("status") == "ok":
             echo = msg.get("echo", "")
             if echo == "get_group_list":
