@@ -115,6 +115,14 @@ class MetaEventHandler:
         处理心跳
         """
         try:
+            # 新增：仅在7月到9月之间进行检测
+            from datetime import datetime
+
+            now = datetime.now()
+            if now.month < 7 or now.month > 9:
+                logger.debug(f"[{MODULE_NAME}] 当前不在7月至9月，跳过招生状态检测。")
+                return
+
             enabled_groups = get_all_enabled_groups(MODULE_NAME)
             if not enabled_groups:
                 logger.debug(f"[{MODULE_NAME}] 没有启用的群聊，跳过招生状态检测。")
