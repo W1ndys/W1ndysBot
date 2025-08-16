@@ -295,27 +295,31 @@ class GroupMessageHandler:
     async def _handle_ranking_command(self):
         """
         处理排行榜命令 - 查看全服前十名或本群前十名
+        只支持完全匹配和带指定参数的格式
         """
         try:
-            if self.raw_message.startswith(RANKING_COMMAND):
-                message_parts = self.raw_message.strip().split()
+            message_parts = self.raw_message.strip().split()
 
-                # 默认显示所有类型的排行榜
+            # 只处理完全匹配的情况
+            if len(message_parts) == 1 and message_parts[0] == RANKING_COMMAND:
+                # 完全匹配"排行榜"，显示所有类型
                 show_type = None
                 type_name = "全部"
-
-                # 解析用户指定的类型
-                if len(message_parts) >= 2:
-                    choice = message_parts[1].strip()
-                    if choice in ["阳光", "阳光类型", "阳光型", "sun", "sunshine"]:
-                        show_type = 0
-                        type_name = "阳光"
-                    elif choice in ["雨露", "雨露类型", "雨露型", "rain", "raindrop"]:
-                        show_type = 1
-                        type_name = "雨露"
-                    # 如果输入了不识别的类型，静默处理（按照用户要求）
-                    elif choice not in ["阳光", "雨露"]:
-                        return
+            elif len(message_parts) == 2 and message_parts[0] == RANKING_COMMAND:
+                # 带参数的格式"排行榜 类型"
+                choice = message_parts[1].strip()
+                if choice in ["阳光", "阳光类型", "阳光型", "sun", "sunshine"]:
+                    show_type = 0
+                    type_name = "阳光"
+                elif choice in ["雨露", "雨露类型", "雨露型", "rain", "raindrop"]:
+                    show_type = 1
+                    type_name = "雨露"
+                else:
+                    # 不识别的类型，静默处理
+                    return
+            else:
+                # 不符合格式，静默处理
+                return
 
                 with DataManager() as dm:
                     ranking_message = f"📊 {type_name}排行榜\n\n"
@@ -692,7 +696,11 @@ class GroupMessageHandler:
             if self.raw_message.startswith(QUERY_COMMAND):
                 await self._handle_query_command()
                 return
-            if self.raw_message.startswith(RANKING_COMMAND):
+            # 排行榜命令需要精确匹配
+            message_parts = self.raw_message.strip().split()
+            if (len(message_parts) == 1 and message_parts[0] == RANKING_COMMAND) or (
+                len(message_parts) == 2 and message_parts[0] == RANKING_COMMAND
+            ):
                 await self._handle_ranking_command()
                 return
             if self.raw_message.startswith(LOTTERY_COMMAND):
