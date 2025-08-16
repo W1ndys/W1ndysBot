@@ -4,6 +4,11 @@ from .. import (
     SIGN_IN_COMMAND,
     SELECT_COMMAND,
     QUERY_COMMAND,
+    RANKING_COMMAND,
+    LOTTERY_COMMAND,
+    LOTTERY_COST,
+    LOTTERY_REWARD_MIN,
+    LOTTERY_REWARD_MAX,
     SPEECH_REWARD_MIN,
     SPEECH_REWARD_MAX,
     MILESTONE_VALUES,
@@ -287,6 +292,299 @@ class GroupMessageHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理查询命令失败: {e}")
 
+    async def _handle_ranking_command(self):
+        """
+        处理排行榜命令 - 查看全服前十名或本群前十名
+        """
+        try:
+            if self.raw_message.startswith(RANKING_COMMAND):
+                message_parts = self.raw_message.strip().split()
+
+                # 默认显示所有类型的排行榜
+                show_type = None
+                type_name = "全部"
+
+                # 解析用户指定的类型
+                if len(message_parts) >= 2:
+                    choice = message_parts[1].strip()
+                    if choice in ["阳光", "阳光类型", "阳光型", "sun", "sunshine"]:
+                        show_type = 0
+                        type_name = "阳光"
+                    elif choice in ["雨露", "雨露类型", "雨露型", "rain", "raindrop"]:
+                        show_type = 1
+                        type_name = "雨露"
+                    # 如果输入了不识别的类型，静默处理（按照用户要求）
+                    elif choice not in ["阳光", "雨露"]:
+                        return
+
+                with DataManager() as dm:
+                    ranking_message = f"📊 {type_name}排行榜\n\n"
+
+                    # 根据是否指定类型决定显示方式
+                    if show_type is not None:
+                        # 显示指定类型的排行榜
+                        # 全服前十
+                        global_result = dm.get_global_ranking(show_type, 10)
+                        if global_result["code"] == 200 and global_result["data"]:
+                            ranking_message += f"🌍 全服{type_name}前十名：\n"
+                            for i, (user_id, group_id, count) in enumerate(
+                                global_result["data"], 1
+                            ):
+                                ranking_message += (
+                                    f"{i}. {user_id} - {count}个{type_name}\n"
+                                )
+                        else:
+                            ranking_message += f"🌍 全服{type_name}榜：暂无数据\n"
+
+                        ranking_message += "\n"
+
+                        # 本群前十
+                        group_result = dm.get_group_ranking(
+                            self.group_id, show_type, 10
+                        )
+                        if group_result["code"] == 200 and group_result["data"]:
+                            ranking_message += f"👥 本群{type_name}前十名：\n"
+                            for i, (user_id, count) in enumerate(
+                                group_result["data"], 1
+                            ):
+                                ranking_message += (
+                                    f"{i}. {user_id} - {count}个{type_name}\n"
+                                )
+                        else:
+                            ranking_message += f"👥 本群{type_name}榜：暂无数据\n"
+                    else:
+                        # 显示所有类型的排行榜
+                        for type_val, type_str in [(0, "阳光"), (1, "雨露")]:
+                            # 全服前五
+                            global_result = dm.get_global_ranking(type_val, 5)
+                            if global_result["code"] == 200 and global_result["data"]:
+                                ranking_message += f"🌍 全服{type_str}前五名：\n"
+                                for i, (user_id, group_id, count) in enumerate(
+                                    global_result["data"], 1
+                                ):
+                                    ranking_message += (
+                                        f"{i}. {user_id} - {count}个{type_str}\n"
+                                    )
+                            else:
+                                ranking_message += f"🌍 全服{type_str}榜：暂无数据\n"
+
+                            ranking_message += "\n"
+
+                            # 本群前五
+                            group_result = dm.get_group_ranking(
+                                self.group_id, type_val, 5
+                            )
+                            if group_result["code"] == 200 and group_result["data"]:
+                                ranking_message += f"👥 本群{type_str}前五名：\n"
+                                for i, (user_id, count) in enumerate(
+                                    group_result["data"], 1
+                                ):
+                                    ranking_message += (
+                                        f"{i}. {user_id} - {count}个{type_str}\n"
+                                    )
+                            else:
+                                ranking_message += f"👥 本群{type_str}榜：暂无数据\n"
+
+                            ranking_message += "\n"
+
+                    ranking_message += "💡 提示：发送「排行榜 阳光」或「排行榜 雨露」查看指定类型详细排行"
+
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(ranking_message),
+                            generate_text_message(ANNOUNCEMENT_MESSAGE),
+                        ],
+                        note="del_msg=30",
+                    )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理排行榜命令失败: {e}")
+
+    async def _handle_lottery_command(self):
+        """
+        处理抽奖命令 - 抽阳光/抽雨露
+        """
+        try:
+            if self.raw_message.startswith(LOTTERY_COMMAND):
+                message_parts = self.raw_message.strip()
+
+                # 解析抽奖类型
+                lottery_type = None
+                type_name = ""
+
+                if message_parts in [
+                    f"{LOTTERY_COMMAND}阳光",
+                    f"{LOTTERY_COMMAND}太阳",
+                ]:
+                    lottery_type = 0
+                    type_name = "阳光"
+                elif message_parts in [
+                    f"{LOTTERY_COMMAND}雨露",
+                    f"{LOTTERY_COMMAND}雨",
+                ]:
+                    lottery_type = 1
+                    type_name = "雨露"
+                else:
+                    # 不符合格式，静默处理
+                    return
+
+                with DataManager() as dm:
+                    # 首先检查用户是否已经选择了类型
+                    user_info = dm.get_user_info(self.group_id, self.user_id)
+
+                    if user_info["code"] != 200 or not user_info["data"]:
+                        # 用户还没有选择类型
+                        no_selection_message = (
+                            "❌ 您还没有选择类型！\n"
+                            "🌟 请先选择您的类型：\n"
+                            "✨ 阳光类型：发送「选择 阳光」\n"
+                            "💧 雨露类型：发送「选择 雨露」\n"
+                            "📝 选择后即可开始抽奖！"
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(no_selection_message),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
+                            ],
+                            note="del_msg=10",
+                        )
+                        return
+
+                    # 获取用户的类型
+                    user_data = user_info["data"][0]
+                    user_type = user_data[3]  # type字段
+                    user_type_name = "阳光" if user_type == 0 else "雨露"
+                    current_count = user_data[4]  # count字段
+
+                    # 检查用户类型是否匹配
+                    if user_type != lottery_type:
+                        mismatch_message = (
+                            f"❌ 类型不匹配！\n"
+                            f"📝 您的类型是：{user_type_name}\n"
+                            f"🎲 只能使用「抽{user_type_name}」命令\n"
+                            f"💡 提示：每个用户只能抽取自己类型的奖励"
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(mismatch_message),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
+                            ],
+                            note="del_msg=10",
+                        )
+                        return
+
+                    # 检查用户是否有足够的数值
+                    if current_count < LOTTERY_COST:
+                        insufficient_message = (
+                            f"❌ {type_name}不足！\n"
+                            f"💎 当前拥有：{current_count}个{type_name}\n"
+                            f"🎲 抽奖需要：{LOTTERY_COST}个{type_name}\n"
+                            f"📝 请通过签到和发言获得更多{type_name}"
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(insufficient_message),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
+                            ],
+                            note="del_msg=10",
+                        )
+                        return
+
+                    # 执行抽奖：先扣除花费，再给予奖励
+                    # 扣除花费
+                    cost_result = dm.update_user_count(
+                        self.group_id, self.user_id, user_type, -LOTTERY_COST
+                    )
+
+                    if cost_result["code"] != 200:
+                        error_message = f"❌ 抽奖失败：{cost_result['message']}"
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(error_message),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
+                            ],
+                            note="del_msg=10",
+                        )
+                        return
+
+                    # 随机奖励
+                    reward_amount = random.randint(
+                        LOTTERY_REWARD_MIN, LOTTERY_REWARD_MAX
+                    )
+
+                    # 给予奖励
+                    reward_result = dm.update_user_count(
+                        self.group_id, self.user_id, user_type, reward_amount
+                    )
+
+                    if reward_result["code"] != 200:
+                        # 如果给予奖励失败，需要把花费退回去
+                        dm.update_user_count(
+                            self.group_id, self.user_id, user_type, LOTTERY_COST
+                        )
+                        error_message = f"❌ 抽奖失败：{reward_result['message']}"
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(error_message),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
+                            ],
+                            note="del_msg=10",
+                        )
+                        return
+
+                    final_count = reward_result["data"]["count"]
+                    net_change = reward_amount - LOTTERY_COST
+
+                    # 构建抽奖结果消息
+                    lottery_message = (
+                        f"🎲 抽{type_name}结果\n"
+                        f"💰 花费：{LOTTERY_COST}个{type_name}\n"
+                        f"🎁 获得：{reward_amount}个{type_name}\n"
+                        f"📊 净收益：{net_change:+}个{type_name}\n"
+                        f"💎 当前拥有：{final_count}个{type_name}"
+                    )
+
+                    # 添加结果评价
+                    if reward_amount >= 15:
+                        lottery_message += "\n🎉 大奖！运气爆棚！"
+                    elif reward_amount >= 10:
+                        lottery_message += "\n✨ 不错的运气！"
+                    elif reward_amount >= 5:
+                        lottery_message += "\n😊 运气还行！"
+                    else:
+                        lottery_message += "\n😅 下次会更好的！"
+
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(lottery_message),
+                            generate_text_message(ANNOUNCEMENT_MESSAGE),
+                        ],
+                        note="del_msg=10",
+                    )
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理抽奖命令失败: {e}")
+
     async def _handle_speech_reward(self):
         """
         处理发言奖励 - 用户每次发言随机获得1-5个数值
@@ -394,6 +692,12 @@ class GroupMessageHandler:
             if self.raw_message.startswith(QUERY_COMMAND):
                 await self._handle_query_command()
                 return
+            if self.raw_message.startswith(RANKING_COMMAND):
+                await self._handle_ranking_command()
+                return
+            if self.raw_message.startswith(LOTTERY_COMMAND):
+                await self._handle_lottery_command()
+                return
 
             # 处理普通发言奖励
             # 排除一些不应该获得奖励的消息类型
@@ -401,6 +705,11 @@ class GroupMessageHandler:
                 "签到",
                 "选择",
                 "查询",
+                "排行榜",
+                "抽阳光",
+                "抽雨露",
+                "抽太阳",
+                "抽雨",
                 "菜单",
                 "help",
                 "帮助",

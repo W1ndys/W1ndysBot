@@ -41,9 +41,7 @@ MILESTONE_VALUES = [10, 25, 50, 200, 300, 500, 1000]  # 特定里程碑数值
 MILESTONE_NOTIFY_INTERVAL = 100  # 每100个数值提示一次
 
 
-ANNOUNCEMENT_MESSAGE = (
-    "\n\n发送‘sarmenu’，查看菜单，游戏bug反馈请联系QQ2769731875"
-)
+ANNOUNCEMENT_MESSAGE = "\n\n发送‘sarmenu’，查看菜单，游戏bug反馈请联系QQ2769731875"
 
 
 # 模块的一些命令可以在这里定义，方便在其他地方调用，提高代码的复用率
@@ -52,12 +50,21 @@ ANNOUNCEMENT_MESSAGE = (
 SELECT_COMMAND = "选择"  # 选择命令，用于选择阳光和雨露
 SIGN_IN_COMMAND = "签到"  # 签到命令
 QUERY_COMMAND = "查询"  # 查询命令，查看当前数值
+RANKING_COMMAND = "排行榜"  # 排行榜命令
+LOTTERY_COMMAND = "抽"  # 抽奖命令，抽阳光/抽雨露
+
+# 抽奖配置
+LOTTERY_COST = 10  # 抽奖花费
+LOTTERY_REWARD_MIN = 1  # 抽奖最小奖励
+LOTTERY_REWARD_MAX = 20  # 抽奖最大奖励
 
 
 COMMANDS = {
     f"{SELECT_COMMAND}": "选择类型，用法：选择 阳光 / 选择 雨露",
     f"{SIGN_IN_COMMAND}": "每日签到获得奖励，连续签到有额外奖励",
     f"{QUERY_COMMAND}": "查询当前拥有的数值，用法：查询",
+    f"{RANKING_COMMAND}": "查看排行榜，用法：排行榜 / 排行榜 阳光 / 排行榜 雨露",
+    f"{LOTTERY_COMMAND}阳光/{LOTTERY_COMMAND}雨露": f"抽奖功能，花费{LOTTERY_COST}个数值，随机获得{LOTTERY_REWARD_MIN}-{LOTTERY_REWARD_MAX}个数值",
     "发言奖励": f"每次发言随机获得{SPEECH_REWARD_MIN}-{SPEECH_REWARD_MAX}个数值（需先选择类型）",
     "邀请奖励": f"邀请好友获得奖励{INVITE_REWARD}个数值",
     # 可以继续添加其他命令

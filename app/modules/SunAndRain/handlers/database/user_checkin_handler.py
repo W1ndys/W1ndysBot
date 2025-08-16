@@ -194,6 +194,25 @@ class UserCheckinHandler(DatabaseBase):
         except Exception as e:
             return {"code": 500, "data": None, "message": f"数据库错误: {str(e)}"}
 
+    def get_global_ranking(self, user_type, limit=10):
+        """获取全服指定类型的排行榜"""
+        try:
+            query = """
+                SELECT user_id, group_id, count FROM user_checkin 
+                WHERE type = ?
+                ORDER BY count DESC
+                LIMIT ?
+            """
+            results = self.execute_query(query, (user_type, limit))
+
+            return {
+                "code": 200,
+                "data": results,
+                "message": f"获取全服排行榜成功，共{len(results)}条记录",
+            }
+        except Exception as e:
+            return {"code": 500, "data": None, "message": f"数据库错误: {str(e)}"}
+
     def get_all_group_users(self, group_id):
         """获取群组内所有用户的信息"""
         try:

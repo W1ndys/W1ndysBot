@@ -68,6 +68,10 @@ class DataManager:
         """获取群组内指定类型的排行榜"""
         return self.user_handler.get_group_ranking(group_id, user_type, limit)
 
+    def get_global_ranking(self, user_type, limit=10):
+        """获取全服指定类型的排行榜"""
+        return self.user_handler.get_global_ranking(user_type, limit)
+
     def get_all_group_users(self, group_id):
         """获取群组内所有用户的信息"""
         return self.user_handler.get_all_group_users(group_id)
