@@ -300,12 +300,11 @@ class GroupMessageHandler:
         try:
             message_parts = self.raw_message.strip().split()
 
-            # 只处理完全匹配的情况
-            if len(message_parts) == 1 and message_parts[0] == RANKING_COMMAND:
+            if len(message_parts) == 1:
                 # 完全匹配"排行榜"，显示所有类型
                 show_type = None
                 type_name = "全部"
-            elif len(message_parts) == 2 and message_parts[0] == RANKING_COMMAND:
+            elif len(message_parts) == 2:
                 # 带参数的格式"排行榜 类型"
                 choice = message_parts[1].strip()
                 if choice in ["阳光", "阳光类型", "阳光型", "sun", "sunshine"]:
@@ -321,88 +320,84 @@ class GroupMessageHandler:
                 # 不符合格式，静默处理
                 return
 
-                with DataManager() as dm:
-                    ranking_message = f"📊 {type_name}排行榜\n\n"
+            with DataManager() as dm:
+                ranking_message = f"📊 {type_name}排行榜\n\n"
 
-                    # 根据是否指定类型决定显示方式
-                    if show_type is not None:
-                        # 显示指定类型的排行榜
-                        # 全服前十
-                        global_result = dm.get_global_ranking(show_type, 10)
+                # 根据是否指定类型决定显示方式
+                if show_type is not None:
+                    # 显示指定类型的排行榜
+                    # 全服前十
+                    global_result = dm.get_global_ranking(show_type, 10)
+                    if global_result["code"] == 200 and global_result["data"]:
+                        ranking_message += f"🌍 全服{type_name}前十名：\n"
+                        for i, (user_id, group_id, count) in enumerate(
+                            global_result["data"], 1
+                        ):
+                            ranking_message += (
+                                f"{i}. {user_id} - {count}个{type_name}\n"
+                            )
+                    else:
+                        ranking_message += f"🌍 全服{type_name}榜：暂无数据\n"
+
+                    ranking_message += "\n"
+
+                    # 本群前十
+                    group_result = dm.get_group_ranking(self.group_id, show_type, 10)
+                    if group_result["code"] == 200 and group_result["data"]:
+                        ranking_message += f"👥 本群{type_name}前十名：\n"
+                        for i, (user_id, count) in enumerate(group_result["data"], 1):
+                            ranking_message += (
+                                f"{i}. {user_id} - {count}个{type_name}\n"
+                            )
+                    else:
+                        ranking_message += f"👥 本群{type_name}榜：暂无数据\n"
+                else:
+                    # 显示所有类型的排行榜
+                    for type_val, type_str in [(0, "阳光"), (1, "雨露")]:
+                        # 全服前五
+                        global_result = dm.get_global_ranking(type_val, 5)
                         if global_result["code"] == 200 and global_result["data"]:
-                            ranking_message += f"🌍 全服{type_name}前十名：\n"
+                            ranking_message += f"🌍 全服{type_str}前五名：\n"
                             for i, (user_id, group_id, count) in enumerate(
                                 global_result["data"], 1
                             ):
                                 ranking_message += (
-                                    f"{i}. {user_id} - {count}个{type_name}\n"
+                                    f"{i}. {user_id} - {count}个{type_str}\n"
                                 )
                         else:
-                            ranking_message += f"🌍 全服{type_name}榜：暂无数据\n"
+                            ranking_message += f"🌍 全服{type_str}榜：暂无数据\n"
 
                         ranking_message += "\n"
 
-                        # 本群前十
-                        group_result = dm.get_group_ranking(
-                            self.group_id, show_type, 10
-                        )
+                        # 本群前五
+                        group_result = dm.get_group_ranking(self.group_id, type_val, 5)
                         if group_result["code"] == 200 and group_result["data"]:
-                            ranking_message += f"👥 本群{type_name}前十名：\n"
+                            ranking_message += f"👥 本群{type_str}前五名：\n"
                             for i, (user_id, count) in enumerate(
                                 group_result["data"], 1
                             ):
                                 ranking_message += (
-                                    f"{i}. {user_id} - {count}个{type_name}\n"
+                                    f"{i}. {user_id} - {count}个{type_str}\n"
                                 )
                         else:
-                            ranking_message += f"👥 本群{type_name}榜：暂无数据\n"
-                    else:
-                        # 显示所有类型的排行榜
-                        for type_val, type_str in [(0, "阳光"), (1, "雨露")]:
-                            # 全服前五
-                            global_result = dm.get_global_ranking(type_val, 5)
-                            if global_result["code"] == 200 and global_result["data"]:
-                                ranking_message += f"🌍 全服{type_str}前五名：\n"
-                                for i, (user_id, group_id, count) in enumerate(
-                                    global_result["data"], 1
-                                ):
-                                    ranking_message += (
-                                        f"{i}. {user_id} - {count}个{type_str}\n"
-                                    )
-                            else:
-                                ranking_message += f"🌍 全服{type_str}榜：暂无数据\n"
+                            ranking_message += f"👥 本群{type_str}榜：暂无数据\n"
 
-                            ranking_message += "\n"
+                        ranking_message += "\n"
 
-                            # 本群前五
-                            group_result = dm.get_group_ranking(
-                                self.group_id, type_val, 5
-                            )
-                            if group_result["code"] == 200 and group_result["data"]:
-                                ranking_message += f"👥 本群{type_str}前五名：\n"
-                                for i, (user_id, count) in enumerate(
-                                    group_result["data"], 1
-                                ):
-                                    ranking_message += (
-                                        f"{i}. {user_id} - {count}个{type_str}\n"
-                                    )
-                            else:
-                                ranking_message += f"👥 本群{type_str}榜：暂无数据\n"
+                ranking_message += (
+                    "💡 提示：发送「排行榜 阳光」或「排行榜 雨露」查看指定类型详细排行"
+                )
 
-                            ranking_message += "\n"
-
-                    ranking_message += "💡 提示：发送「排行榜 阳光」或「排行榜 雨露」查看指定类型详细排行"
-
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(ranking_message),
-                            generate_text_message(ANNOUNCEMENT_MESSAGE),
-                        ],
-                        note="del_msg=30",
-                    )
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(ranking_message),
+                        generate_text_message(ANNOUNCEMENT_MESSAGE),
+                    ],
+                    note="del_msg=30",
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理排行榜命令失败: {e}")
 
@@ -697,9 +692,9 @@ class GroupMessageHandler:
                 await self._handle_query_command()
                 return
             # 排行榜命令需要精确匹配
-            message_parts = self.raw_message.strip().split()
-            if (len(message_parts) == 1 and message_parts[0] == RANKING_COMMAND) or (
-                len(message_parts) == 2 and message_parts[0] == RANKING_COMMAND
+            if self.raw_message.strip() == RANKING_COMMAND or (
+                self.raw_message.strip().startswith(RANKING_COMMAND + " ")
+                and len(self.raw_message.strip().split()) == 2
             ):
                 await self._handle_ranking_command()
                 return
