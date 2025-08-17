@@ -58,13 +58,17 @@ LOTTERY_COST = 10  # 抽奖花费
 LOTTERY_REWARD_MIN = 1  # 抽奖最小奖励
 LOTTERY_REWARD_MAX = 20  # 抽奖最大奖励
 
+# 倍率抽奖配置
+MULTIPLIER_MAX = 100  # 最大允许倍率
+MULTIPLIER_MIN = 1  # 最小倍率（等于不使用倍率）
+
 
 COMMANDS = {
     f"{SELECT_COMMAND}": "选择类型，用法：选择 阳光 / 选择 雨露",
     f"{SIGN_IN_COMMAND}": "每日签到获得奖励，连续签到有额外奖励",
     f"{QUERY_COMMAND}": "查询当前拥有的数值，用法：查询",
     f"{RANKING_COMMAND}": "查看排行榜，用法：排行榜 / 排行榜 阳光 / 排行榜 雨露",
-    f"{LOTTERY_COMMAND}阳光/{LOTTERY_COMMAND}雨露": f"抽奖功能，花费{LOTTERY_COST}个数值，随机获得{LOTTERY_REWARD_MIN}-{LOTTERY_REWARD_MAX}个数值",
+    f"{LOTTERY_COMMAND}阳光/{LOTTERY_COMMAND}雨露": f"抽奖功能，花费{LOTTERY_COST}个数值，随机获得{LOTTERY_REWARD_MIN}-{LOTTERY_REWARD_MAX}个数值，支持倍率：抽阳光 10",
     "发言奖励": f"每次发言随机获得{SPEECH_REWARD_MIN}-{SPEECH_REWARD_MAX}个数值（需先选择类型）",
     "邀请奖励": f"邀请好友获得奖励{INVITE_REWARD}个数值",
     # 可以继续添加其他命令

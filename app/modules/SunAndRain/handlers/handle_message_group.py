@@ -9,6 +9,8 @@ from .. import (
     LOTTERY_COST,
     LOTTERY_REWARD_MIN,
     LOTTERY_REWARD_MAX,
+    MULTIPLIER_MAX,
+    MULTIPLIER_MIN,
     SPEECH_REWARD_MIN,
     SPEECH_REWARD_MAX,
     MILESTONE_VALUES,
@@ -403,30 +405,82 @@ class GroupMessageHandler:
 
     async def _handle_lottery_command(self):
         """
-        处理抽奖命令 - 抽阳光/抽雨露
+        处理抽奖命令 - 抽阳光/抽雨露，支持倍率
         """
         try:
             if self.raw_message.startswith(LOTTERY_COMMAND):
-                message_parts = self.raw_message.strip()
+                message_parts = self.raw_message.strip().split()
 
-                # 解析抽奖类型
+                # 解析抽奖类型和倍率
                 lottery_type = None
                 type_name = ""
+                multiplier = 1  # 默认倍率为1
 
-                if message_parts in [
-                    f"{LOTTERY_COMMAND}阳光",
-                    f"{LOTTERY_COMMAND}太阳",
-                ]:
-                    lottery_type = 0
-                    type_name = "阳光"
-                elif message_parts in [
-                    f"{LOTTERY_COMMAND}雨露",
-                    f"{LOTTERY_COMMAND}雨",
-                ]:
-                    lottery_type = 1
-                    type_name = "雨露"
+                # 检查是否有倍率参数
+                if len(message_parts) == 1:
+                    # 只有命令，如 "抽阳光"
+                    command = message_parts[0]
+                    if command in [f"{LOTTERY_COMMAND}阳光", f"{LOTTERY_COMMAND}太阳"]:
+                        lottery_type = 0
+                        type_name = "阳光"
+                    elif command in [f"{LOTTERY_COMMAND}雨露", f"{LOTTERY_COMMAND}雨"]:
+                        lottery_type = 1
+                        type_name = "雨露"
+                    else:
+                        return
+                elif len(message_parts) == 2:
+                    # 有倍率参数，如 "抽阳光 10"
+                    command = message_parts[0]
+                    multiplier_str = message_parts[1]
+
+                    if command in [f"{LOTTERY_COMMAND}阳光", f"{LOTTERY_COMMAND}太阳"]:
+                        lottery_type = 0
+                        type_name = "阳光"
+                    elif command in [f"{LOTTERY_COMMAND}雨露", f"{LOTTERY_COMMAND}雨"]:
+                        lottery_type = 1
+                        type_name = "雨露"
+                    else:
+                        return
+
+                    # 解析倍率
+                    try:
+                        multiplier = int(multiplier_str)
+                        if multiplier < MULTIPLIER_MIN or multiplier > MULTIPLIER_MAX:
+                            error_message = (
+                                f"❌ 倍率无效！\n"
+                                f"📊 倍率范围：{MULTIPLIER_MIN}-{MULTIPLIER_MAX}\n"
+                                f"📝 示例：抽{type_name} 10"
+                            )
+                            await send_group_msg(
+                                self.websocket,
+                                self.group_id,
+                                [
+                                    generate_reply_message(self.message_id),
+                                    generate_text_message(error_message),
+                                    generate_text_message(ANNOUNCEMENT_MESSAGE),
+                                ],
+                                note="del_msg=10",
+                            )
+                            return
+                    except ValueError:
+                        error_message = (
+                            f"❌ 倍率格式错误！\n"
+                            f"📊 倍率必须是数字，范围：{MULTIPLIER_MIN}-{MULTIPLIER_MAX}\n"
+                            f"📝 示例：抽{type_name} 10"
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(error_message),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
+                            ],
+                            note="del_msg=10",
+                        )
+                        return
                 else:
-                    # 不符合格式，静默处理
+                    # 格式不正确，静默处理
                     return
 
                 with DataManager() as dm:
@@ -480,14 +534,24 @@ class GroupMessageHandler:
                         )
                         return
 
+                    # 计算实际花费（倍率影响）
+                    actual_cost = LOTTERY_COST * multiplier
+
                     # 检查用户是否有足够的数值
-                    if current_count < LOTTERY_COST:
+                    if current_count < actual_cost:
                         insufficient_message = (
                             f"❌ {type_name}不足！\n"
                             f"💎 当前拥有：{current_count}个{type_name}\n"
-                            f"🎲 抽奖需要：{LOTTERY_COST}个{type_name}\n"
-                            f"📝 请通过签到和发言获得更多{type_name}"
+                            f"🎲 抽奖需要：{actual_cost}个{type_name}"
                         )
+                        if multiplier > 1:
+                            insufficient_message += (
+                                f"（{LOTTERY_COST} × {multiplier}倍率）"
+                            )
+                        insufficient_message += (
+                            f"\n📝 请通过签到和发言获得更多{type_name}"
+                        )
+
                         await send_group_msg(
                             self.websocket,
                             self.group_id,
@@ -503,7 +567,7 @@ class GroupMessageHandler:
                     # 执行抽奖：先扣除花费，再给予奖励
                     # 扣除花费
                     cost_result = dm.update_user_count(
-                        self.group_id, self.user_id, user_type, -LOTTERY_COST
+                        self.group_id, self.user_id, user_type, -actual_cost
                     )
 
                     if cost_result["code"] != 200:
@@ -520,20 +584,19 @@ class GroupMessageHandler:
                         )
                         return
 
-                    # 随机奖励
-                    reward_amount = random.randint(
-                        LOTTERY_REWARD_MIN, LOTTERY_REWARD_MAX
-                    )
+                    # 随机奖励（倍率影响）
+                    base_reward = random.randint(LOTTERY_REWARD_MIN, LOTTERY_REWARD_MAX)
+                    actual_reward = base_reward * multiplier
 
                     # 给予奖励
                     reward_result = dm.update_user_count(
-                        self.group_id, self.user_id, user_type, reward_amount
+                        self.group_id, self.user_id, user_type, actual_reward
                     )
 
                     if reward_result["code"] != 200:
                         # 如果给予奖励失败，需要把花费退回去
                         dm.update_user_count(
-                            self.group_id, self.user_id, user_type, LOTTERY_COST
+                            self.group_id, self.user_id, user_type, actual_cost
                         )
                         error_message = f"❌ 抽奖失败：{reward_result['message']}"
                         await send_group_msg(
@@ -549,26 +612,59 @@ class GroupMessageHandler:
                         return
 
                     final_count = reward_result["data"]["count"]
-                    net_change = reward_amount - LOTTERY_COST
+                    net_change = actual_reward - actual_cost
 
                     # 构建抽奖结果消息
-                    lottery_message = (
-                        f"🎲 抽{type_name}结果\n"
-                        f"💰 花费：{LOTTERY_COST}个{type_name}\n"
-                        f"🎁 获得：{reward_amount}个{type_name}\n"
+                    lottery_message = f"🎲 抽{type_name}结果\n"
+
+                    if multiplier > 1:
+                        lottery_message += (
+                            f"🔥 {multiplier}倍率抽奖\n"
+                            f"💰 花费：{actual_cost}个{type_name}（{LOTTERY_COST} × {multiplier}）\n"
+                            f"🎁 获得：{actual_reward}个{type_name}（{base_reward} × {multiplier}）\n"
+                        )
+                    else:
+                        lottery_message += (
+                            f"💰 花费：{actual_cost}个{type_name}\n"
+                            f"🎁 获得：{actual_reward}个{type_name}\n"
+                        )
+
+                    lottery_message += (
                         f"📊 净收益：{net_change:+}个{type_name}\n"
                         f"💎 当前拥有：{final_count}个{type_name}"
                     )
 
-                    # 添加结果评价
-                    if reward_amount >= 15:
-                        lottery_message += "\n🎉 大奖！运气爆棚！"
-                    elif reward_amount >= 10:
-                        lottery_message += "\n✨ 不错的运气！"
-                    elif reward_amount >= 5:
-                        lottery_message += "\n😊 运气还行！"
+                    # 添加结果评价（基于基础奖励值评价，但倍率会增强效果）
+                    if base_reward >= 15:
+                        if multiplier > 1:
+                            lottery_message += (
+                                f"\n🎉 大奖！运气爆棚！{multiplier}倍收益真是太棒了！"
+                            )
+                        else:
+                            lottery_message += "\n🎉 大奖！运气爆棚！"
+                    elif base_reward >= 10:
+                        if multiplier > 1:
+                            lottery_message += (
+                                f"\n✨ 不错的运气！{multiplier}倍加成让收益更丰厚！"
+                            )
+                        else:
+                            lottery_message += "\n✨ 不错的运气！"
+                    elif base_reward >= 5:
+                        if multiplier > 1:
+                            lottery_message += (
+                                f"\n😊 运气还行！{multiplier}倍倍率帮了大忙！"
+                            )
+                        else:
+                            lottery_message += "\n😊 运气还行！"
                     else:
-                        lottery_message += "\n😅 下次会更好的！"
+                        if multiplier > 1:
+                            lottery_message += f"\n😅 下次会更好的！不过{multiplier}倍倍率至少没让你亏太多～"
+                        else:
+                            lottery_message += "\n😅 下次会更好的！"
+
+                    # 在无倍率的情况下添加倍率提示
+                    if multiplier == 1:
+                        lottery_message += f"\n💡 提示：支持倍率抽奖！试试「抽{type_name} 数字」，倍率越高风险和收益越大"
 
                     await send_group_msg(
                         self.websocket,
