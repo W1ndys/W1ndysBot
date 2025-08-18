@@ -136,6 +136,7 @@ class MessageProcessor:
             r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",  # UUID
             r".*com\.tencent\.qun\.invite.*",  # 邀请加群的CQ码
             r"教务.*",
+            r"^预选课查询.*",  # 新增以"预选课查询"开头的消息
             "请求添加你为好友",
             ".*menu",
             r"^我是.*",  # 新增"我是"开头的消息
