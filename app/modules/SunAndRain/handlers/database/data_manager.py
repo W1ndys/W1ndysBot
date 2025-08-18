@@ -8,6 +8,7 @@ from .user_checkin_handler import UserCheckinHandler
 from .checkin_records_handler import CheckinRecordsHandler
 from .invite_data_handler import InviteDataHandler
 from .daily_speech_handler import DailySpeechHandler
+from .lottery_limit_handler import LotteryLimitHandler
 
 
 class DataManager:
@@ -22,6 +23,7 @@ class DataManager:
         self.records_handler = CheckinRecordsHandler(self.year)
         self.invite_handler = InviteDataHandler(self.year)
         self.speech_handler = DailySpeechHandler(self.year)
+        self.lottery_limit_handler = LotteryLimitHandler(self.year)
 
         # 为了保持兼容性，保留一些基本属性
         self.data_dir = self.user_handler.data_dir
@@ -48,6 +50,10 @@ class DataManager:
             pass
         try:
             self.speech_handler.__exit__(exc_type, exc_val, exc_tb)
+        except:
+            pass
+        try:
+            self.lottery_limit_handler.__exit__(exc_type, exc_val, exc_tb)
         except:
             pass
 
@@ -113,6 +119,16 @@ class DataManager:
                 else 0
             )
 
+            # 删除抽奖限制记录
+            lottery_result = self.lottery_limit_handler.delete_user_lottery_records(
+                group_id, user_id
+            )
+            lottery_deleted = (
+                lottery_result["data"]["deleted_count"]
+                if lottery_result["code"] == 200
+                else 0
+            )
+
             # 最后删除用户信息
             user_result = self.user_handler.delete_user(group_id, user_id)
             user_deleted = (
@@ -120,7 +136,11 @@ class DataManager:
             )
 
             total_deleted = (
-                invite_deleted + checkin_deleted + speech_deleted + user_deleted
+                invite_deleted
+                + checkin_deleted
+                + speech_deleted
+                + lottery_deleted
+                + user_deleted
             )
 
             if total_deleted > 0:
@@ -132,8 +152,9 @@ class DataManager:
                         "checkin_records": checkin_deleted,
                         "invite_records": invite_deleted,
                         "speech_records": speech_deleted,
+                        "lottery_records": lottery_deleted,
                     },
-                    "message": f"删除用户成功，删除了{total_deleted}条记录（用户信息:{user_deleted}条，签到记录:{checkin_deleted}条，邀请记录:{invite_deleted}条，发言记录:{speech_deleted}条）",
+                    "message": f"删除用户成功，删除了{total_deleted}条记录（用户信息:{user_deleted}条，签到记录:{checkin_deleted}条，邀请记录:{invite_deleted}条，发言记录:{speech_deleted}条，抽奖记录:{lottery_deleted}条）",
                 }
             else:
                 return {"code": 404, "data": None, "message": "用户不存在，无需删除"}
@@ -702,3 +723,34 @@ class DataManager:
                 "data": None,
                 "message": f"获取跨年度统计失败: {str(e)}",
             }
+
+    # ===== 抽奖限制相关方法 =====
+    def check_lottery_cooldown(self, group_id, user_id, user_type, cooldown_minutes=1):
+        """检查用户抽奖冷却时间"""
+        return self.lottery_limit_handler.check_lottery_cooldown(
+            group_id, user_id, user_type, cooldown_minutes
+        )
+
+    def update_lottery_time(self, group_id, user_id, user_type, lottery_time=None):
+        """更新用户抽奖时间"""
+        return self.lottery_limit_handler.update_lottery_time(
+            group_id, user_id, user_type, lottery_time
+        )
+
+    def get_user_lottery_history(self, group_id, user_id, user_type=None, limit=10):
+        """获取用户抽奖历史记录"""
+        return self.lottery_limit_handler.get_user_lottery_history(
+            group_id, user_id, user_type, limit
+        )
+
+    def clean_old_lottery_records(self, days_to_keep=7):
+        """清理旧的抽奖记录"""
+        return self.lottery_limit_handler.clean_old_records(days_to_keep)
+
+    def delete_user_lottery_records(self, group_id, user_id):
+        """删除指定用户的所有抽奖限制记录"""
+        return self.lottery_limit_handler.delete_user_lottery_records(group_id, user_id)
+
+    def get_group_lottery_stats(self, group_id, hours=24):
+        """获取群组内指定时间段的抽奖统计"""
+        return self.lottery_limit_handler.get_group_lottery_stats(group_id, hours)

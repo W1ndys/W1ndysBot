@@ -535,6 +535,43 @@ class GroupMessageHandler:
                         )
                         return
 
+                    # 检查抽奖冷却时间（一分钟限制）
+                    cooldown_check = dm.check_lottery_cooldown(
+                        self.group_id, self.user_id, user_type, cooldown_minutes=1
+                    )
+                    
+                    if cooldown_check["code"] != 200:
+                        # 用户在冷却时间内，无法抽奖
+                        cooldown_data = cooldown_check["data"]
+                        if cooldown_data and not cooldown_data["can_lottery"]:
+                            remaining_seconds = cooldown_data["remaining_seconds"]
+                            minutes = remaining_seconds // 60
+                            seconds = remaining_seconds % 60
+                            
+                            if minutes > 0:
+                                time_text = f"{minutes}分{seconds}秒"
+                            else:
+                                time_text = f"{seconds}秒"
+                            
+                            cooldown_message = (
+                                f"⏰ 抽奖冷却中！\n"
+                                f"📝 每位用户在同一群内一分钟只能抽一次{type_name}\n"
+                                f"⏳ 还需等待：{time_text}\n"
+                                f"💡 请耐心等待冷却时间结束"
+                            )
+                            
+                            await send_group_msg(
+                                self.websocket,
+                                self.group_id,
+                                [
+                                    generate_reply_message(self.message_id),
+                                    generate_text_message(cooldown_message),
+                                    generate_text_message(ANNOUNCEMENT_MESSAGE),
+                                ],
+                                note="del_msg=10",
+                            )
+                            return
+
                     # 计算实际花费（倍率影响）
                     actual_cost = LOTTERY_COST * multiplier
 
@@ -614,6 +651,15 @@ class GroupMessageHandler:
 
                     final_count = reward_result["data"]["count"]
                     net_change = actual_reward - actual_cost
+
+                    # 更新用户抽奖时间（用于冷却时间计算）
+                    lottery_time_result = dm.update_lottery_time(
+                        self.group_id, self.user_id, user_type
+                    )
+                    if lottery_time_result["code"] != 200:
+                        logger.warning(
+                            f"[{MODULE_NAME}]更新用户抽奖时间失败: {lottery_time_result['message']}"
+                        )
 
                     # 构建抽奖结果消息
                     lottery_message = f"🎲 抽{type_name}结果\n"
