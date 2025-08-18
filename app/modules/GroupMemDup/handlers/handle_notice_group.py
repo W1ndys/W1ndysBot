@@ -206,6 +206,7 @@ class GroupNoticeHandler:
                             f"系统检测到你已在【{group_name}】组的其他关联群中，为维护群组秩序，你将被自动移出相关群聊。如有疑问请联系管理员。"
                         ),
                     ],
+                    note="del_msg=300",
                 )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]检测用户是否在其他群中失败: {e}")
