@@ -72,9 +72,43 @@ class AdvancedFAQMatcher:
         """
         构建TF-IDF索引和关键词倒排索引，用于高效检索。
         """
+        # 检查是否有问答对数据
+        if not self.FAQ_pairs:
+            self.tfidf_matrix = None
+            self.keyword_index.clear()
+            return
+
         # 构建TF-IDF索引
         questions = [q for _, q, a in self.FAQ_pairs]
-        self.tfidf_matrix = self.vectorizer.fit_transform(questions).tocsr()  # type: ignore
+
+        # 检查问题是否为空或只包含停用词
+        if not questions or all(not q.strip() for q in questions):
+            self.tfidf_matrix = None
+            self.keyword_index.clear()
+            return
+
+        # 检查分词后是否有有效词汇
+        valid_questions = []
+        for q in questions:
+            tokens = self._tokenize(q)
+            if tokens:  # 只保留分词后有内容的问题
+                valid_questions.append(q)
+
+        if not valid_questions:
+            self.tfidf_matrix = None
+            self.keyword_index.clear()
+            return
+
+        try:
+            self.tfidf_matrix = self.vectorizer.fit_transform(valid_questions).tocsr()  # type: ignore
+        except ValueError as e:
+            # 如果仍然出现词汇为空的错误，设置为None
+            if "empty vocabulary" in str(e):
+                self.tfidf_matrix = None
+                self.keyword_index.clear()
+                return
+            else:
+                raise e
 
         # 构建关键词倒排索引
         self.keyword_index.clear()
@@ -113,7 +147,22 @@ class AdvancedFAQMatcher:
             (orig_question, orig_answer, score, id) 或 (None, None, score, None)
         """
         if not self.FAQ_pairs or self.tfidf_matrix is None:
-            return None, None, 0.0, None
+            # 如果没有TF-IDF索引，尝试使用纯编辑距离进行匹配
+            if not self.FAQ_pairs:
+                return None, None, 0.0, None
+
+            best_score = 0.0
+            best_match = None
+
+            for FAQ_id, question, answer in self.FAQ_pairs:
+                seq_score = difflib.SequenceMatcher(None, query, question).ratio()
+                if seq_score > best_score:
+                    best_score = seq_score
+                    best_match = (question, answer, seq_score, FAQ_id)
+
+            if best_match and best_score >= self.threshold:
+                return best_match
+            return None, None, best_score, None
 
         # 步骤1: 初步筛选候选问题
         candidate_indices = self._get_candidate_indices(query)
@@ -163,8 +212,20 @@ class AdvancedFAQMatcher:
         返回:
             list，包含 (question, answer, score, qa_id) 的元组列表，按相似度降序排列
         """
-        if not self.FAQ_pairs or self.tfidf_matrix is None:
+        if not self.FAQ_pairs:
             return []
+
+        if self.tfidf_matrix is None:
+            # 如果没有TF-IDF索引，使用纯编辑距离进行匹配
+            results = []
+            for FAQ_id, question, answer in self.FAQ_pairs:
+                seq_score = difflib.SequenceMatcher(None, query, question).ratio()
+                if seq_score >= min_score:
+                    results.append((question, answer, seq_score, FAQ_id))
+
+            # 按相似度降序排列并限制数量
+            results.sort(key=lambda x: x[2], reverse=True)
+            return results[:max_results]
 
         # 获取候选问题索引
         candidate_indices = self._get_candidate_indices(query)
