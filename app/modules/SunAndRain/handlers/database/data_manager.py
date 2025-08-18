@@ -7,6 +7,7 @@ from .database_base import DatabaseBase
 from .user_checkin_handler import UserCheckinHandler
 from .checkin_records_handler import CheckinRecordsHandler
 from .invite_data_handler import InviteDataHandler
+from .daily_speech_handler import DailySpeechHandler
 
 
 class DataManager:
@@ -20,6 +21,7 @@ class DataManager:
         self.user_handler = UserCheckinHandler(self.year)
         self.records_handler = CheckinRecordsHandler(self.year)
         self.invite_handler = InviteDataHandler(self.year)
+        self.speech_handler = DailySpeechHandler(self.year)
 
         # 为了保持兼容性，保留一些基本属性
         self.data_dir = self.user_handler.data_dir
@@ -42,6 +44,10 @@ class DataManager:
             pass
         try:
             self.invite_handler.__exit__(exc_type, exc_val, exc_tb)
+        except:
+            pass
+        try:
+            self.speech_handler.__exit__(exc_type, exc_val, exc_tb)
         except:
             pass
 
@@ -97,13 +103,25 @@ class DataManager:
                 else 0
             )
 
+            # 删除发言统计记录
+            speech_result = self.speech_handler.delete_user_speech_records(
+                group_id, user_id
+            )
+            speech_deleted = (
+                speech_result["data"]["deleted_count"]
+                if speech_result["code"] == 200
+                else 0
+            )
+
             # 最后删除用户信息
             user_result = self.user_handler.delete_user(group_id, user_id)
             user_deleted = (
                 user_result["data"]["user_records"] if user_result["code"] == 200 else 0
             )
 
-            total_deleted = invite_deleted + checkin_deleted + user_deleted
+            total_deleted = (
+                invite_deleted + checkin_deleted + speech_deleted + user_deleted
+            )
 
             if total_deleted > 0:
                 return {
@@ -113,8 +131,9 @@ class DataManager:
                         "user_records": user_deleted,
                         "checkin_records": checkin_deleted,
                         "invite_records": invite_deleted,
+                        "speech_records": speech_deleted,
                     },
-                    "message": f"删除用户成功，删除了{total_deleted}条记录（用户信息:{user_deleted}条，签到记录:{checkin_deleted}条，邀请记录:{invite_deleted}条）",
+                    "message": f"删除用户成功，删除了{total_deleted}条记录（用户信息:{user_deleted}条，签到记录:{checkin_deleted}条，邀请记录:{invite_deleted}条，发言记录:{speech_deleted}条）",
                 }
             else:
                 return {"code": 404, "data": None, "message": "用户不存在，无需删除"}
@@ -198,6 +217,33 @@ class DataManager:
     def get_total_stats(self, group_id):
         """获取群组的统计信息"""
         return self.user_handler.get_total_stats(group_id)
+
+    # ===== 每日发言奖励相关方法 =====
+    def check_daily_speech_limit(
+        self, group_id, user_id, user_type, reward_amount, daily_limit
+    ):
+        """检查是否超过每日发言奖励上限"""
+        return self.speech_handler.check_daily_reward_limit(
+            group_id, user_id, user_type, reward_amount, daily_limit
+        )
+
+    def add_speech_reward_record(self, group_id, user_id, user_type, reward_amount):
+        """添加发言奖励记录"""
+        return self.speech_handler.add_speech_reward(
+            group_id, user_id, user_type, reward_amount
+        )
+
+    def get_daily_speech_stats(self, group_id, user_id, user_type, date=None):
+        """获取用户指定日期的发言统计"""
+        return self.speech_handler.get_daily_speech_stats(
+            group_id, user_id, user_type, date
+        )
+
+    def get_user_speech_history(self, group_id, user_id, user_type, days=7):
+        """获取用户最近几天的发言统计历史"""
+        return self.speech_handler.get_user_speech_history(
+            group_id, user_id, user_type, days
+        )
 
     # ===== 签到相关方法 =====
     def daily_checkin(self, group_id, user_id, user_type, base_reward=None):

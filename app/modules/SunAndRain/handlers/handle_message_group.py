@@ -13,6 +13,7 @@ from .. import (
     MULTIPLIER_MIN,
     SPEECH_REWARD_MIN,
     SPEECH_REWARD_MAX,
+    DAILY_SPEECH_REWARD_LIMIT,
     MILESTONE_VALUES,
     MILESTONE_NOTIFY_INTERVAL,
     ANNOUNCEMENT_MESSAGE,
@@ -682,7 +683,7 @@ class GroupMessageHandler:
 
     async def _handle_speech_reward(self):
         """
-        处理发言奖励 - 用户每次发言随机获得1-5个数值
+        处理发言奖励 - 用户每次发言随机获得1-5个数值，支持每日上限限制
         """
         try:
             with DataManager() as dm:
@@ -700,59 +701,109 @@ class GroupMessageHandler:
                 # 随机生成1-5的奖励
                 reward_amount = random.randint(SPEECH_REWARD_MIN, SPEECH_REWARD_MAX)
 
-                # 更新用户数值
-                update_result = dm.update_user_count(
-                    self.group_id, self.user_id, user_type, reward_amount
+                # 检查每日发言奖励上限
+                limit_check = dm.check_daily_speech_limit(
+                    self.group_id,
+                    self.user_id,
+                    user_type,
+                    reward_amount,
+                    DAILY_SPEECH_REWARD_LIMIT,
                 )
 
-                if update_result["code"] == 200:
+                if limit_check["code"] != 200:
+                    logger.error(
+                        f"[{MODULE_NAME}]检查每日发言上限失败: {limit_check['message']}"
+                    )
+                    return
+
+                limit_data = limit_check["data"]
+
+                # 如果无法给予奖励（已达上限）
+                if not limit_data["can_reward"]:
                     logger.info(
-                        f"[{MODULE_NAME}]发言奖励，user_id:{self.user_id},group_id:{self.group_id},user_type:{user_type},reward_amount:{reward_amount},new_count:{update_result['data']['count']}"
+                        f"[{MODULE_NAME}]用户已达每日发言奖励上限，user_id:{self.user_id},group_id:{self.group_id},current_total:{limit_data['current_total']},daily_limit:{limit_data['daily_limit']}"
                     )
-                    new_count = update_result["data"]["count"]
+                    return
 
-                    # 发送奖励提示消息（低频率，避免刷屏）
-                    # 只有在特殊情况下才提示
-                    should_notify = (
-                        reward_amount == SPEECH_REWARD_MAX  # 获得最高奖励5时提示
-                        or new_count % MILESTONE_NOTIFY_INTERVAL
-                        == 0  # 每100个数值时提示
-                        or new_count in MILESTONE_VALUES  # 特定里程碑提示
+                # 获取实际可以给予的奖励（可能因上限而调整）
+                actual_reward = limit_data["actual_reward"]
+                current_total = limit_data["current_total"]
+                is_limited = actual_reward < reward_amount
+
+                # 更新用户数值
+                update_result = dm.update_user_count(
+                    self.group_id, self.user_id, user_type, actual_reward
+                )
+
+                if update_result["code"] != 200:
+                    logger.error(
+                        f"[{MODULE_NAME}]更新用户数值失败: {update_result['message']}"
+                    )
+                    return
+
+                # 记录发言奖励统计
+                speech_record_result = dm.add_speech_reward_record(
+                    self.group_id, self.user_id, user_type, actual_reward
+                )
+
+                if speech_record_result["code"] != 200:
+                    logger.warning(
+                        f"[{MODULE_NAME}]记录发言奖励统计失败: {speech_record_result['message']}"
                     )
 
-                    if should_notify:
-                        reward_message = (
-                            f"🎉 发言奖励！\n"
-                            f"💎 获得：{reward_amount}个{type_name}\n"
-                            f"📊 当前拥有：{new_count}个{type_name}"
-                        )
+                logger.info(
+                    f"[{MODULE_NAME}]发言奖励，user_id:{self.user_id},group_id:{self.group_id},user_type:{user_type},reward_amount:{actual_reward},new_count:{update_result['data']['count']},daily_total:{current_total + actual_reward}"
+                )
+                new_count = update_result["data"]["count"]
+                new_daily_total = current_total + actual_reward
 
-                        # 添加里程碑特殊提示
-                        if new_count >= 500:
-                            reward_message += f"\n🏆 恭喜！您已拥有{new_count}个{type_name}，真是太厉害了！"
-                        elif new_count >= 200:
-                            reward_message += (
-                                f"\n🌟 了不起！您的{type_name}已经达到{new_count}个！"
-                            )
-                        elif new_count >= 100:
-                            reward_message += (
-                                f"\n✨ 太棒了！您的{type_name}突破了100个！"
-                            )
-                        elif new_count in MILESTONE_VALUES:
-                            reward_message += (
-                                f"\n🎯 里程碑达成：{new_count}个{type_name}！"
-                            )
+                # 发送奖励提示消息（低频率，避免刷屏）
+                # 只有在特殊情况下才提示
+                should_notify = (
+                    actual_reward == SPEECH_REWARD_MAX  # 获得最高奖励5时提示
+                    or new_count % MILESTONE_NOTIFY_INTERVAL == 0  # 每100个数值时提示
+                    or new_count in MILESTONE_VALUES  # 特定里程碑提示
+                    or is_limited  # 被上限限制时提示
+                    or new_daily_total
+                    >= DAILY_SPEECH_REWARD_LIMIT  # 达到每日上限时提示
+                )
 
-                        await send_group_msg(
-                            self.websocket,
-                            self.group_id,
-                            [
-                                generate_reply_message(self.message_id),
-                                generate_text_message(reward_message),
-                                generate_text_message(ANNOUNCEMENT_MESSAGE),
-                            ],
-                            note="del_msg=10",
+                if should_notify:
+                    reward_message = (
+                        f"🎉 发言奖励！\n"
+                        f"💎 获得：{actual_reward}个{type_name}\n"
+                        f"📊 当前拥有：{new_count}个{type_name}\n"
+                        f"📅 今日发言奖励：{new_daily_total}/{DAILY_SPEECH_REWARD_LIMIT}"
+                    )
+
+                    # 添加上限相关提示
+                    if is_limited:
+                        reward_message += f"\n⚠️ 今日发言奖励已接近上限，实际获得{actual_reward}个（原本{reward_amount}个）"
+                    elif new_daily_total >= DAILY_SPEECH_REWARD_LIMIT:
+                        reward_message += f"\n🔻 今日发言奖励已达上限{DAILY_SPEECH_REWARD_LIMIT}个，明天再来吧！"
+
+                    # 添加里程碑特殊提示
+                    if new_count >= 500:
+                        reward_message += f"\n🏆 恭喜！您已拥有{new_count}个{type_name}，真是太厉害了！"
+                    elif new_count >= 200:
+                        reward_message += (
+                            f"\n🌟 了不起！您的{type_name}已经达到{new_count}个！"
                         )
+                    elif new_count >= 100:
+                        reward_message += f"\n✨ 太棒了！您的{type_name}突破了100个！"
+                    elif new_count in MILESTONE_VALUES:
+                        reward_message += f"\n🎯 里程碑达成：{new_count}个{type_name}！"
+
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(reward_message),
+                            generate_text_message(ANNOUNCEMENT_MESSAGE),
+                        ],
+                        note="del_msg=10",
+                    )
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理发言奖励失败: {e}")

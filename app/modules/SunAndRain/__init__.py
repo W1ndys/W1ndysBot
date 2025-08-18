@@ -24,6 +24,7 @@ CHECKIN_BASE_REWARD_MAX = 15  # 签到基础奖励最大值
 # 发言奖励配置
 SPEECH_REWARD_MIN = 1  # 发言奖励最小值
 SPEECH_REWARD_MAX = 5  # 发言奖励最大值
+DAILY_SPEECH_REWARD_LIMIT = 50  # 每日发言奖励上限数值
 
 # 邀请奖励配置
 INVITE_REWARD = 50  # 邀请入群奖励数值
@@ -69,7 +70,7 @@ COMMANDS = {
     f"{QUERY_COMMAND}": "查询当前拥有的数值，用法：查询",
     f"{RANKING_COMMAND}": "查看排行榜，用法：排行榜 / 排行榜 阳光 / 排行榜 雨露",
     f"{LOTTERY_COMMAND}阳光/{LOTTERY_COMMAND}雨露": f"抽奖功能，花费{LOTTERY_COST}个数值，随机获得{LOTTERY_REWARD_MIN}-{LOTTERY_REWARD_MAX}个数值，支持倍率：抽阳光 10",
-    "发言奖励": f"每次发言随机获得{SPEECH_REWARD_MIN}-{SPEECH_REWARD_MAX}个数值（需先选择类型）",
+    "发言奖励": f"每次发言随机获得{SPEECH_REWARD_MIN}-{SPEECH_REWARD_MAX}个数值，每日上限{DAILY_SPEECH_REWARD_LIMIT}个（需先选择类型）",
     "邀请奖励": f"邀请好友获得奖励{INVITE_REWARD}个数值",
     # 可以继续添加其他命令
 }
