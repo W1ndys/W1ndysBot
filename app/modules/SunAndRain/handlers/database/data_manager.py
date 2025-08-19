@@ -754,3 +754,16 @@ class DataManager:
     def get_group_lottery_stats(self, group_id, hours=24):
         """获取群组内指定时间段的抽奖统计"""
         return self.lottery_limit_handler.get_group_lottery_stats(group_id, hours)
+
+    # ===== 每日抽奖次数限制相关方法 =====
+    def check_daily_lottery_limit(self, group_id, user_id, user_type, daily_limit):
+        """检查今日抽奖次数是否未超限"""
+        return self.lottery_limit_handler.check_daily_lottery_limit(
+            group_id, user_id, user_type, daily_limit
+        )
+
+    def increment_daily_lottery_count(self, group_id, user_id, user_type):
+        """抽奖成功后将今日抽奖次数+1"""
+        return self.lottery_limit_handler.increment_daily_lottery_count(
+            group_id, user_id, user_type
+        )

@@ -11,6 +11,7 @@ from .. import (
     LOTTERY_REWARD_MAX,
     MULTIPLIER_MAX,
     MULTIPLIER_MIN,
+    DAILY_LOTTERY_LIMIT,
     SPEECH_REWARD_MIN,
     SPEECH_REWARD_MAX,
     DAILY_SPEECH_REWARD_LIMIT,
@@ -94,6 +95,32 @@ class GroupMessageHandler:
         try:
             if self.raw_message.startswith(SIGN_IN_COMMAND):
                 with DataManager() as dm:
+                    # 每日抽奖次数限制检查
+                    limit_check = dm.check_daily_lottery_limit(
+                        self.group_id, self.user_id, lottery_type, DAILY_LOTTERY_LIMIT
+                    )
+                    if limit_check["code"] != 200:
+                        limit_data = limit_check.get("data") or {}
+                        today_count = limit_data.get("today_count", 0)
+                        limit_msg = (
+                            f"⏰ 今日抽奖次数已达上限！\n"
+                            f"📅 日期：{limit_data.get('date', '')}\n"
+                            f"📝 上限：{DAILY_LOTTERY_LIMIT} 次\n"
+                            f"📊 你已抽奖：{today_count} 次\n"
+                            f"💡 提示：明日零点后将重置次数"
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(limit_msg),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
+                            ],
+                            note="del_msg=10",
+                        )
+                        return
+
                     # 首先检查用户是否已经选择了类型
                     user_info = dm.get_user_info(self.group_id, self.user_id)
 
@@ -651,6 +678,15 @@ class GroupMessageHandler:
 
                     final_count = reward_result["data"]["count"]
                     net_change = actual_reward - actual_cost
+
+                    # 抽奖成功，累计今日次数
+                    inc_res = dm.increment_daily_lottery_count(
+                        self.group_id, self.user_id, user_type
+                    )
+                    if inc_res.get("code") != 200:
+                        logger.warning(
+                            f"[{MODULE_NAME}]更新今日抽奖次数失败: {inc_res.get('message')}"
+                        )
 
                     # 更新用户抽奖时间（用于冷却时间计算）
                     lottery_time_result = dm.update_lottery_time(

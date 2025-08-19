@@ -9,6 +9,7 @@ class LotteryLimitHandler(DatabaseBase):
     def __init__(self, year=None):
         super().__init__(year)
         self._create_lottery_limit_table()
+        self._create_daily_lottery_table()
 
     def _create_lottery_limit_table(self):
         """创建抽奖限制表"""
@@ -177,6 +178,106 @@ class LotteryLimitHandler(DatabaseBase):
 
         except Exception as e:
             return {"code": 500, "data": None, "message": f"更新抽奖时间失败: {str(e)}"}
+
+    def _create_daily_lottery_table(self):
+        """创建每日抽奖计数表（按天限制次数）"""
+        table_schema = """
+        CREATE TABLE IF NOT EXISTS daily_lottery_count (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            group_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            user_type INTEGER NOT NULL,
+            date TEXT NOT NULL,
+            count INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(group_id, user_id, user_type, date)
+        )
+        """
+        self.create_table("daily_lottery_count", table_schema)
+
+        # 创建索引
+        try:
+            self.cursor.execute(
+                "CREATE INDEX IF NOT EXISTS idx_daily_lottery_lookup ON daily_lottery_count(group_id, user_id, user_type, date)"
+            )
+            self.cursor.execute(
+                "CREATE INDEX IF NOT EXISTS idx_daily_lottery_date ON daily_lottery_count(date)"
+            )
+            self.conn.commit()
+        except Exception:
+            pass
+
+    def check_daily_lottery_limit(self, group_id, user_id, user_type, daily_limit):
+        """
+        检查用户今日抽奖次数是否达到上限
+
+        Returns:
+            dict: {
+                code: 200/403/500,
+                data: { can_lottery: bool, today_count: int, daily_limit: int, date: str },
+                message: str
+            }
+        """
+        try:
+            today = self.get_current_date()
+            query = """
+                SELECT count FROM daily_lottery_count
+                WHERE group_id = ? AND user_id = ? AND user_type = ? AND date = ?
+            """
+            result = self.execute_query(query, (group_id, user_id, user_type, today))
+
+            today_count = result[0][0] if result else 0
+            can_lottery = today_count < daily_limit
+
+            return {
+                "code": 200 if can_lottery else 403,
+                "data": {
+                    "can_lottery": can_lottery,
+                    "today_count": today_count,
+                    "daily_limit": daily_limit,
+                    "date": today,
+                },
+                "message": "可以抽奖" if can_lottery else "已达今日抽奖次数上限",
+            }
+        except Exception as e:
+            return {
+                "code": 500,
+                "data": None,
+                "message": f"检查每日抽奖上限失败: {str(e)}",
+            }
+
+    def increment_daily_lottery_count(self, group_id, user_id, user_type):
+        """将今日抽奖次数 +1"""
+        try:
+            today = self.get_current_date()
+            query = """
+                INSERT INTO daily_lottery_count (group_id, user_id, user_type, date, count)
+                VALUES (?, ?, ?, ?, 1)
+                ON CONFLICT(group_id, user_id, user_type, date)
+                DO UPDATE SET count = count + 1, updated_at = CURRENT_TIMESTAMP
+            """
+            rows = self.execute_update(query, (group_id, user_id, user_type, today))
+
+            # 返回最新计数
+            fetch_query = """
+                SELECT count FROM daily_lottery_count
+                WHERE group_id = ? AND user_id = ? AND user_type = ? AND date = ?
+            """
+            res = self.execute_query(fetch_query, (group_id, user_id, user_type, today))
+            new_count = res[0][0] if res else 1
+
+            return {
+                "code": 200,
+                "data": {"date": today, "count": new_count, "rows_affected": rows},
+                "message": "更新今日抽奖次数成功",
+            }
+        except Exception as e:
+            return {
+                "code": 500,
+                "data": None,
+                "message": f"更新今日抽奖次数失败: {str(e)}",
+            }
 
     def get_user_lottery_history(self, group_id, user_id, user_type=None, limit=10):
         """
