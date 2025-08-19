@@ -95,32 +95,6 @@ class GroupMessageHandler:
         try:
             if self.raw_message.startswith(SIGN_IN_COMMAND):
                 with DataManager() as dm:
-                    # 每日抽奖次数限制检查
-                    limit_check = dm.check_daily_lottery_limit(
-                        self.group_id, self.user_id, lottery_type, DAILY_LOTTERY_LIMIT
-                    )
-                    if limit_check["code"] != 200:
-                        limit_data = limit_check.get("data") or {}
-                        today_count = limit_data.get("today_count", 0)
-                        limit_msg = (
-                            f"⏰ 今日抽奖次数已达上限！\n"
-                            f"📅 日期：{limit_data.get('date', '')}\n"
-                            f"📝 上限：{DAILY_LOTTERY_LIMIT} 次\n"
-                            f"📊 你已抽奖：{today_count} 次\n"
-                            f"💡 提示：明日零点后将重置次数"
-                        )
-                        await send_group_msg(
-                            self.websocket,
-                            self.group_id,
-                            [
-                                generate_reply_message(self.message_id),
-                                generate_text_message(limit_msg),
-                                generate_text_message(ANNOUNCEMENT_MESSAGE),
-                            ],
-                            note="del_msg=10",
-                        )
-                        return
-
                     # 首先检查用户是否已经选择了类型
                     user_info = dm.get_user_info(self.group_id, self.user_id)
 
@@ -598,6 +572,32 @@ class GroupMessageHandler:
                                 note="del_msg=10",
                             )
                             return
+
+                    # 每日抽奖次数限制检查（在类型校验和冷却检查通过后）
+                    limit_check = dm.check_daily_lottery_limit(
+                        self.group_id, self.user_id, user_type, DAILY_LOTTERY_LIMIT
+                    )
+                    if limit_check["code"] != 200:
+                        limit_data = limit_check.get("data") or {}
+                        today_count = limit_data.get("today_count", 0)
+                        limit_msg = (
+                            f"⏰ 今日抽奖次数已达上限！\n"
+                            f"📅 日期：{limit_data.get('date', '')}\n"
+                            f"📝 上限：{DAILY_LOTTERY_LIMIT} 次\n"
+                            f"📊 你已抽奖：{today_count} 次\n"
+                            f"💡 提示：明日零点后将重置次数"
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(limit_msg),
+                                generate_text_message(ANNOUNCEMENT_MESSAGE),
+                            ],
+                            note="del_msg=10",
+                        )
+                        return
 
                     # 计算实际花费（倍率影响）
                     actual_cost = LOTTERY_COST * multiplier
