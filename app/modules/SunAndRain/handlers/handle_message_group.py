@@ -21,7 +21,7 @@ from .. import (
 from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
-from utils.auth import is_system_admin
+from utils.auth import is_system_admin, is_group_admin
 from api.message import send_group_msg
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
@@ -57,7 +57,7 @@ class GroupMessageHandler:
         """
         if self.raw_message.lower() == SWITCH_NAME.lower():
             # 鉴权
-            if not is_system_admin(self.user_id):
+            if not is_system_admin(self.user_id) and not is_group_admin(self.role):
                 logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换群聊开关")
                 return True
             await handle_module_group_switch(
@@ -539,7 +539,7 @@ class GroupMessageHandler:
                     cooldown_check = dm.check_lottery_cooldown(
                         self.group_id, self.user_id, user_type, cooldown_minutes=1
                     )
-                    
+
                     if cooldown_check["code"] != 200:
                         # 用户在冷却时间内，无法抽奖
                         cooldown_data = cooldown_check["data"]
@@ -547,19 +547,19 @@ class GroupMessageHandler:
                             remaining_seconds = cooldown_data["remaining_seconds"]
                             minutes = remaining_seconds // 60
                             seconds = remaining_seconds % 60
-                            
+
                             if minutes > 0:
                                 time_text = f"{minutes}分{seconds}秒"
                             else:
                                 time_text = f"{seconds}秒"
-                            
+
                             cooldown_message = (
                                 f"⏰ 抽奖冷却中！\n"
                                 f"📝 每位用户在同一群内一分钟只能抽一次{type_name}\n"
                                 f"⏳ 还需等待：{time_text}\n"
                                 f"💡 请耐心等待冷却时间结束"
                             )
-                            
+
                             await send_group_msg(
                                 self.websocket,
                                 self.group_id,
