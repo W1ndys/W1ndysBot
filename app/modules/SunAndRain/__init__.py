@@ -57,7 +57,7 @@ LOTTERY_COMMAND = "抽"  # 抽奖命令，抽阳光/抽雨露
 # 抽奖配置
 LOTTERY_COST = 10  # 抽奖花费
 LOTTERY_REWARD_MIN = 1  # 抽奖最小奖励
-LOTTERY_REWARD_MAX = 20  # 抽奖最大奖励
+LOTTERY_REWARD_MAX = 15  # 抽奖最大奖励
 
 # 倍率抽奖配置
 MULTIPLIER_MAX = 10  # 最大允许倍率
