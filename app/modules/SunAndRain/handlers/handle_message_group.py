@@ -688,6 +688,10 @@ class GroupMessageHandler:
                             f"[{MODULE_NAME}]更新今日抽奖次数失败: {inc_res.get('message')}"
                         )
 
+                    # 获取今日抽奖次数和剩余次数
+                    today_lottery_count = inc_res.get("data", {}).get("count", 0)
+                    remaining_lottery_count = DAILY_LOTTERY_LIMIT - today_lottery_count
+
                     # 更新用户抽奖时间（用于冷却时间计算）
                     lottery_time_result = dm.update_lottery_time(
                         self.group_id, self.user_id, user_type
@@ -714,7 +718,8 @@ class GroupMessageHandler:
 
                     lottery_message += (
                         f"📊 净收益：{net_change:+}个{type_name}\n"
-                        f"💎 当前拥有：{final_count}个{type_name}"
+                        f"💎 当前拥有：{final_count}个{type_name}\n"
+                        f"🎯 今日抽奖：{today_lottery_count}/{DAILY_LOTTERY_LIMIT}（剩余{remaining_lottery_count}次）"
                     )
 
                     # 添加结果评价（基于基础奖励值评价，但倍率会增强效果）
