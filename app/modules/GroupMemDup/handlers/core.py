@@ -145,6 +145,7 @@ class Core:
             # 把消息中的“艾特全体”转换为CQ码格式的全体成员
             message = message.replace("艾特全体", "[CQ:at,qq=all]")
 
+            note = ""
             # 检测消息中是否有“设为代办”
             if "设为代办" in message:
                 # 定义note变量以便发消息接口使用
@@ -161,7 +162,7 @@ class Core:
                             self.websocket,
                             group_id,
                             message,
-                            f"{note}-group_id={group_id}",
+                            note=f"{note}-group_id={group_id}",
                         )
                         await asyncio.sleep(0.5)
                     await send_private_msg(
