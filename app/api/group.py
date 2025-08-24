@@ -2,6 +2,24 @@ import json
 import logger
 
 
+async def set_group_todo(websocket, group_id, message_id):
+    """
+    设置群待办
+    """
+    try:
+        payload = {
+            "action": "set_group_todo",
+            "params": {"group_id": group_id, "message_id": message_id},
+            "echo": "set_group_todo",
+        }
+        await websocket.send(json.dumps(payload))
+        logger.info(f"[API]已执行设置群待办")
+        return True
+    except Exception as e:
+        logger.error(f"[API]设置群待办失败: {e}")
+        return False
+
+
 async def set_group_kick_members(
     websocket, group_id, user_id, reject_add_request=False, note=""
 ):
