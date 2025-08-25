@@ -62,10 +62,6 @@ async def check_and_handle_ban_words(
         )
         return True
 
-    # 过滤图片CQ码和视频CQ码
-    raw_message = re.sub(r"\[CQ:image,.*?\]", "", raw_message)
-    raw_message = re.sub(r"\[CQ:video,.*?\]", "", raw_message)
-
     # 文本预处理
     # 删除所有空格，换行符，制表符
     raw_message = (
@@ -78,8 +74,6 @@ async def check_and_handle_ban_words(
     raw_message = re.sub(
         r"[，。！？；：\'‘’“”【】「」『』（）《》〈〉…—～·、]", "", raw_message
     )
-    # 删除所有英文标点符号
-    raw_message = re.sub(r'[,.:;!?\'"()\[\]{}<>—~`]', "", raw_message)
 
     # 过滤后的消息
     print(f"过滤后的消息: {raw_message}")
