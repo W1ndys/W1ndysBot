@@ -134,12 +134,7 @@ class GroupHumanVerificationHandler:
                 await asyncio.sleep(0.05)  # 释放控制权
             # 合并提醒消息，一次性发到群里（每行@和文本分开生成，合成列表）
             if warning_msg_list:
-                await send_group_msg(
-                    self.websocket,
-                    group_id,
-                    warning_msg_list,
-                    note="del_msg=14400",
-                )
+                await send_group_msg(self.websocket, group_id, warning_msg_list)
             # 依次踢出需要踢出的用户前，群内合并通知
             if kick_users:
                 message = []
