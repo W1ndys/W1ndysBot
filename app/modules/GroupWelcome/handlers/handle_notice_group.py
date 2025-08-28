@@ -153,6 +153,7 @@ class GroupNoticeHandler:
                         self.websocket,
                         self.group_id,
                         f"[CQ:at,qq={self.user_id}]({self.user_id})退群了o(╥﹏╥)o",
+                        note="del_msg=300",
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 主动退群通知失败: {e}")
