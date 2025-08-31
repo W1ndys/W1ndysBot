@@ -48,12 +48,13 @@ class MetaEventHandler:
                 pass
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理生命周期失败: {e}")
-
     async def handle_heartbeat(self):
         """
         处理心跳，检测宵禁时间并自动执行全员禁言操作
         """
         try:
+            # 不发送宵禁通知的群号列表
+            no_notification_groups = ["531850420"]
 
             # 获取当前时间
             current_time = datetime.now()
@@ -85,16 +86,17 @@ class MetaEventHandler:
                             )
                             await set_group_whole_ban(self.websocket, group_id, True)
 
-                            # 发送通知消息
-                            await send_group_msg(
-                                self.websocket,
-                                group_id,
-                                [
-                                    generate_text_message(
-                                        f"🌙 宵禁时间开始({start_time})，晚安~"
-                                    )
-                                ],
-                            )
+                            # 发送通知消息（特定群号不发通知）
+                            if group_id not in no_notification_groups:
+                                await send_group_msg(
+                                    self.websocket,
+                                    group_id,
+                                    [
+                                        generate_text_message(
+                                            f"🌙 宵禁时间开始({start_time})，晚安~"
+                                        )
+                                    ],
+                                )
 
                         elif action == "end":
                             # 宵禁结束
@@ -103,16 +105,17 @@ class MetaEventHandler:
                             )
                             await set_group_whole_ban(self.websocket, group_id, False)
 
-                            # 发送通知消息
-                            await send_group_msg(
-                                self.websocket,
-                                group_id,
-                                [
-                                    generate_text_message(
-                                        f"☀️ 宵禁时间结束({end_time})，早安~"
-                                    )
-                                ],
-                            )
+                            # 发送通知消息（特定群号不发通知）
+                            if group_id not in no_notification_groups:
+                                await send_group_msg(
+                                    self.websocket,
+                                    group_id,
+                                    [
+                                        generate_text_message(
+                                            f"☀️ 宵禁时间结束({end_time})，早安~"
+                                        )
+                                    ],
+                                )
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳宵禁检测失败: {e}")
