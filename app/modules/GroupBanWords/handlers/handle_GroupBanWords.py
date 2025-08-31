@@ -10,6 +10,8 @@ from .. import (
     UNBAN_WORD_COMMAND,
     KICK_BAN_WORD_COMMAND,
     COPY_BAN_WORD_COMMAND,
+    ADD_WHITELIST_COMMAND,
+    DELETE_WHITELIST_COMMAND,
 )
 from .data_manager_words import DataManager
 from .ban_words_utils import check_and_handle_ban_words
@@ -142,6 +144,82 @@ class GroupBanWordsHandler:
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]踢出用户失败: {e}")
+
+    async def _handle_whitelist_command(
+        self, command, action_func, success_msg_template, failure_msg_template
+    ):
+        """处理添加/删除白名单的通用函数"""
+        try:
+            # 权限检查
+            if self.is_private:
+                if not is_system_admin(self.user_id):
+                    return
+            else:
+                if not is_group_admin(self.role) and not is_system_admin(self.user_id):
+                    return
+
+            content = self.raw_message.lstrip(command).strip()
+            user_id_match = re.search(r"\d+", content)
+            if not user_id_match:
+                error_msg = "未识别到有效的QQ号"
+                if self.is_private:
+                    await send_private_msg(
+                        self.websocket,
+                        self.user_id,
+                        [generate_text_message(error_msg)],
+                    )
+                else:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [generate_text_message(error_msg)],
+                        note="del_msg=10",
+                    )
+                return
+
+            target_user_id = user_id_match.group(0)
+
+            if action_func(target_user_id):
+                reply_msg = success_msg_template.format(user_id=target_user_id)
+            else:
+                reply_msg = failure_msg_template.format(user_id=target_user_id)
+
+            if self.is_private:
+                await send_private_msg(
+                    self.websocket,
+                    self.user_id,
+                    [generate_text_message(reply_msg)],
+                )
+            else:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(reply_msg),
+                    ],
+                    note="del_msg=10",
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理白名单命令 '{command}' 失败: {e}")
+
+    async def add_whitelist_user(self):
+        scope = "全局" if self.is_private else "本群"
+        await self._handle_whitelist_command(
+            ADD_WHITELIST_COMMAND,
+            self.data_manager.add_whitelist_user,
+            f"已将用户 {{user_id}} 添加到{scope}白名单",
+            f"添加用户 {{user_id}} 到{scope}白名单失败",
+        )
+
+    async def delete_whitelist_user(self):
+        scope = "全局" if self.is_private else "本群"
+        await self._handle_whitelist_command(
+            DELETE_WHITELIST_COMMAND,
+            self.data_manager.delete_whitelist_user,
+            f"已将用户 {{user_id}} 从{scope}白名单中移除",
+            f"从{scope}白名单中移除用户 {{user_id}} 失败或用户不存在",
+        )
 
     async def add_ban_word(self):
         try:
@@ -707,6 +785,15 @@ class GroupBanWordsHandler:
                         message_id,
                         note=f"{MODULE_NAME}-action={KICK_BAN_WORD_COMMAND if KICK_BAN_WORD_COMMAND in self.raw_message else UNBAN_WORD_COMMAND}",
                     )
+                return
+
+            # 添加白名单
+            if self.raw_message.startswith(ADD_WHITELIST_COMMAND):
+                await self.add_whitelist_user()
+                return
+            # 删除白名单
+            if self.raw_message.startswith(DELETE_WHITELIST_COMMAND):
+                await self.delete_whitelist_user()
                 return
 
             # 复制违禁词

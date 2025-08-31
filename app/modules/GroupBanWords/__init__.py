@@ -31,6 +31,8 @@ DELETE_GLOBAL_BAN_WORD_COMMAND = (
 UNBAN_WORD_COMMAND = "解禁"  # 解禁被封禁用户命令
 KICK_BAN_WORD_COMMAND = "踢出"  # 踢出被封禁用户命令
 COPY_BAN_WORD_COMMAND = "复制违禁词"  # 复制违禁词命令
+ADD_WHITELIST_COMMAND = "gbw添加白名单"  # 添加白名单命令
+DELETE_WHITELIST_COMMAND = "gbw删除白名单"  # 删除白名单命令
 
 COMMANDS = {
     ADD_BAN_WORD_COMMAND: f"添加违禁词，用法：群聊中使用添加群专属违禁词，私聊中使用添加全局违禁词，格式：{ADD_BAN_WORD_COMMAND} 违禁词 权重(0-100，默认10)，例如：{ADD_BAN_WORD_COMMAND} sb 10",
@@ -38,6 +40,8 @@ COMMANDS = {
     ADD_GLOBAL_BAN_WORD_COMMAND: f"[已废弃] 添加全局违禁词，请在私聊中使用'{ADD_BAN_WORD_COMMAND}'命令",
     DELETE_GLOBAL_BAN_WORD_COMMAND: f"[已废弃] 删除全局违禁词，请在私聊中使用'{DELETE_BAN_WORD_COMMAND}'命令",
     COPY_BAN_WORD_COMMAND: f"复制违禁词，用法：私聊：{COPY_BAN_WORD_COMMAND} 来源群号 目标群号，群聊：{COPY_BAN_WORD_COMMAND} 来源群号(复制到当前群)，全局词库群号为0",
+    ADD_WHITELIST_COMMAND: f"添加白名单，用法：私聊中添加全局白名单，群聊中添加群专属白名单，格式：{ADD_WHITELIST_COMMAND} @用户或QQ号",
+    DELETE_WHITELIST_COMMAND: f"删除白名单，用法：私聊中删除全局白名单，群聊中删除群专属白名单，格式：{DELETE_WHITELIST_COMMAND} @用户或QQ号",
     # 可以继续添加其他命令
 }
 # ------------------------------------------------------------

@@ -1,8 +1,8 @@
 import sqlite3
 import os
 import re
-import glob
 from typing import Optional
+from datetime import datetime
 from .. import MODULE_NAME
 
 
@@ -52,7 +52,7 @@ class DataManager:
                 group_id TEXT NOT NULL,
                 word TEXT NOT NULL,
                 weight INTEGER NOT NULL,
-                update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                update_time TEXT,
                 PRIMARY KEY (group_id, word)
             )
             """
@@ -65,13 +65,29 @@ class DataManager:
                 group_id TEXT NOT NULL,
                 user_id TEXT NOT NULL,
                 status TEXT NOT NULL,
-                update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                update_time TEXT,
+                PRIMARY KEY (group_id, user_id)
+            )
+            """
+        )
+
+        # 创建白名单表
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS whitelist (
+                group_id TEXT NOT NULL,
+                user_id TEXT NOT NULL,
+                update_time TEXT,
                 PRIMARY KEY (group_id, user_id)
             )
             """
         )
 
         cls._conn.commit()
+
+    def _get_formatted_time(self):
+        """获取格式化时间字符串"""
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def add_word(self, word, weight=10):
         """添加敏感词及权值，若已存在则更新权值和时间
@@ -85,13 +101,19 @@ class DataManager:
         cursor = self._conn.cursor()
         cursor.execute(
             """
-            INSERT INTO ban_words (group_id, word, weight, update_time) 
-            VALUES (?, ?, ?, CURRENT_TIMESTAMP) 
-            ON CONFLICT(group_id, word) DO UPDATE SET 
-                weight=excluded.weight, 
-                update_time=CURRENT_TIMESTAMP
+            INSERT INTO ban_words (group_id, word, weight, update_time)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(group_id, word) DO UPDATE SET
+                weight=excluded.weight,
+                update_time=?
             """,
-            (self.group_id, word, weight),
+            (
+                self.group_id,
+                word,
+                weight,
+                self._get_formatted_time(),
+                self._get_formatted_time(),
+            ),
         )
         self._conn.commit()
         return True
@@ -119,8 +141,8 @@ class DataManager:
         assert self._conn is not None  # 添加断言确保连接存在
         cursor = self._conn.cursor()
         cursor.execute(
-            "UPDATE ban_words SET weight=?, update_time=CURRENT_TIMESTAMP WHERE group_id=? AND word=?",
-            (new_weight, self.group_id, word),
+            "UPDATE ban_words SET weight=?, update_time=? WHERE group_id=? AND word=?",
+            (new_weight, self._get_formatted_time(), self.group_id, word),
         )
         self._conn.commit()
         return cursor.rowcount > 0
@@ -189,6 +211,72 @@ class DataManager:
                     matched_words.append((f"{word}({source})", weight))
         return total_weight, matched_words
 
+    def add_whitelist_user(self, user_id):
+        """添加白名单用户"""
+        assert self._conn is not None
+        cursor = self._conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO whitelist (group_id, user_id, update_time)
+            VALUES (?, ?, ?)
+            ON CONFLICT(group_id, user_id) DO UPDATE SET
+                update_time=?
+            """,
+            (
+                self.group_id,
+                user_id,
+                self._get_formatted_time(),
+                self._get_formatted_time(),
+            ),
+        )
+        self._conn.commit()
+        return True
+
+    def delete_whitelist_user(self, user_id):
+        """删除白名单用户"""
+        assert self._conn is not None
+        cursor = self._conn.cursor()
+        cursor.execute(
+            "DELETE FROM whitelist WHERE group_id=? AND user_id=?",
+            (self.group_id, user_id),
+        )
+        rows_affected = cursor.rowcount
+        self._conn.commit()
+        return rows_affected > 0
+
+    def is_user_whitelisted(self, user_id):
+        """检查用户是否在白名单中（群专属或全局）"""
+        assert self._conn is not None
+        cursor = self._conn.cursor()
+
+        # 检查群专属白名单
+        cursor.execute(
+            "SELECT 1 FROM whitelist WHERE group_id=? AND user_id=?",
+            (self.group_id, user_id),
+        )
+        if cursor.fetchone():
+            return True
+
+        # 检查全局白名单
+        if self.group_id != self.GLOBAL_GROUP_ID:
+            cursor.execute(
+                "SELECT 1 FROM whitelist WHERE group_id=? AND user_id=?",
+                (self.GLOBAL_GROUP_ID, user_id),
+            )
+            if cursor.fetchone():
+                return True
+
+        return False
+
+    def get_whitelist(self):
+        """获取当前群组的白名单列表"""
+        assert self._conn is not None
+        cursor = self._conn.cursor()
+        cursor.execute(
+            "SELECT user_id FROM whitelist WHERE group_id=?", (self.group_id,)
+        )
+        return [row[0] for row in cursor.fetchall()]
+
     def set_user_status(self, user_id, status, group_id=None):
         """设置某用户状态，若已存在则更新
         Args:
@@ -204,13 +292,19 @@ class DataManager:
         target_group_id = group_id if group_id is not None else self.group_id
         cursor.execute(
             """
-            INSERT INTO user_status (group_id, user_id, status, update_time) 
-            VALUES (?, ?, ?, CURRENT_TIMESTAMP) 
-            ON CONFLICT(group_id, user_id) DO UPDATE SET 
-                status=excluded.status, 
-                update_time=CURRENT_TIMESTAMP
+            INSERT INTO user_status (group_id, user_id, status, update_time)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(group_id, user_id) DO UPDATE SET
+                status=excluded.status,
+                update_time=?
             """,
-            (target_group_id, user_id, status),
+            (
+                target_group_id,
+                user_id,
+                status,
+                self._get_formatted_time(),
+                self._get_formatted_time(),
+            ),
         )
         self._conn.commit()
         return True
@@ -319,7 +413,7 @@ class DataManager:
         assert cls._conn is not None  # 添加断言确保连接存在
         cursor = cls._conn.cursor()
         cursor.execute(
-            "SELECT DISTINCT group_id FROM ban_words UNION SELECT DISTINCT group_id FROM user_status ORDER BY group_id"
+            "SELECT DISTINCT group_id FROM ban_words UNION SELECT DISTINCT group_id FROM user_status UNION SELECT DISTINCT group_id FROM whitelist ORDER BY group_id"
         )
         return [row[0] for row in cursor.fetchall()]
 

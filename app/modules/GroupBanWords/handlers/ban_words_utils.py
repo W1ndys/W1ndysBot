@@ -51,6 +51,10 @@ async def check_and_handle_ban_words(
 
     data_manager = DataManager(group_id)
 
+    # 检查用户是否在白名单中
+    if data_manager.is_user_whitelisted(user_id):
+        return False
+
     # 如果用户是ban状态，直接禁言撤回
     if data_manager.get_user_status(user_id) == "ban":
         await delete_msg(websocket, message_id)

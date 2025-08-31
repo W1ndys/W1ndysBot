@@ -8,6 +8,8 @@ from .. import (
     COPY_BAN_WORD_COMMAND,
     ADD_BAN_WORD_COMMAND,
     DELETE_BAN_WORD_COMMAND,
+    ADD_WHITELIST_COMMAND,
+    DELETE_WHITELIST_COMMAND,
 )
 from core.menu_manager import MENU_COMMAND
 import logger
@@ -240,6 +242,14 @@ class PrivateMessageHandler:
                 ADD_BAN_WORD_COMMAND.lower()
             ) or self.raw_message.lower().startswith(DELETE_BAN_WORD_COMMAND.lower()):
                 await group_ban_words.handle()
+                return
+
+            # 添加/删除白名单
+            if self.raw_message.lower().startswith(ADD_WHITELIST_COMMAND.lower()):
+                await group_ban_words.add_whitelist_user()
+                return
+            if self.raw_message.lower().startswith(DELETE_WHITELIST_COMMAND.lower()):
+                await group_ban_words.delete_whitelist_user()
                 return
 
             # 处理管理员解封 踢出
