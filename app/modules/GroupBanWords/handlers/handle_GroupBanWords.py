@@ -638,6 +638,7 @@ class GroupBanWordsHandler:
             self.message_id,
             self.raw_message,
             self.formatted_time,
+            self.card if self.card else self.nickname,
         )
 
     async def copy_ban_word(self):

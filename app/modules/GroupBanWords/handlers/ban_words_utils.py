@@ -30,6 +30,7 @@ async def check_and_handle_ban_words(
     message_id,
     raw_message,
     formatted_time=None,
+    user_name=None,
 ):
     """
     检测违禁词并处理相关逻辑
@@ -114,6 +115,7 @@ async def check_and_handle_ban_words(
             f"group_id={group_id}\n"
             f"group_name={get_group_name_by_id(group_id)}\n"
             f"user_id={user_id}\n"
+            f"user_name={user_name}\n"
             f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}"
         )
 
