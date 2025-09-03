@@ -103,8 +103,9 @@ async def check_and_handle_ban_words(
                 related_users = itrdm.get_related_invite_users(user_id)
                 if len(related_users) > 1:
                     invite_chain_info = (
-                        f"该用户邀请树相关人员: {'  '.join(map(str, related_users))}"
+                        f"该用户邀请树相关人员：\n {'  '.join(map(str, related_users))}"
                     )
+
         except Exception:
             pass
 
@@ -138,8 +139,6 @@ async def check_and_handle_ban_words(
             f"user_name={user_name}\n"
             f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}"
         )
-        if invite_chain_info:
-            common_content += f"\n{invite_chain_info}"
 
         admin_msg_content = (
             f"检测到违禁消息\n"
@@ -148,7 +147,8 @@ async def check_and_handle_ban_words(
             f"引用回复本消息【{UNBAN_WORD_COMMAND}】或【{KICK_BAN_WORD_COMMAND}】来处理用户"
         )
 
-        feishu_msg_content = f"{common_content}\n" f"raw_message={raw_message}"
+        feishu_msg_content = f"{common_content}\n"
+        feishu_msg_content += f"raw_message={raw_message}"
 
         await send_private_msg(
             websocket,
@@ -176,6 +176,13 @@ async def check_and_handle_ban_words(
             ],
             note="del_msg=1000",
         )
+
+        if invite_chain_info:
+            await asyncio.sleep(0.3)
+            await send_group_msg(
+                websocket, group_id, [generate_text_message(invite_chain_info)]
+            )
+
         return True
     else:
         # 检测用户状态
