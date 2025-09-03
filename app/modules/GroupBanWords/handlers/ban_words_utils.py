@@ -88,6 +88,26 @@ async def check_and_handle_ban_words(
     is_banned = total_weight >= BAN_WORD_WEIGHT_MAX
 
     if is_banned:
+        from ...InviteTreeRecord.handlers import (
+            data_manager as invite_tree_record_data_manager,
+        )
+
+        # 获取邀请树信息
+        invite_chain_info = ""
+        try:
+            # 伪造一个msg
+            fake_msg = {"group_id": group_id}
+            with invite_tree_record_data_manager.InviteTreeRecordDataManager(
+                websocket, fake_msg
+            ) as itrdm:
+                related_users = itrdm.get_related_invite_users(user_id)
+                if len(related_users) > 1:
+                    invite_chain_info = (
+                        f"该用户邀请树相关人员: {'  '.join(map(str, related_users))}"
+                    )
+        except Exception:
+            pass
+
         # 返回True，表示违规
         # 发送请求获取本群历史消息记录，以便于在回应处理函数中处理
         await get_group_msg_history(
@@ -118,6 +138,8 @@ async def check_and_handle_ban_words(
             f"user_name={user_name}\n"
             f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}"
         )
+        if invite_chain_info:
+            common_content += f"\n{invite_chain_info}"
 
         admin_msg_content = (
             f"检测到违禁消息\n"
