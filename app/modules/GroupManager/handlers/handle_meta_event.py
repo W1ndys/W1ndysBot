@@ -48,13 +48,23 @@ class MetaEventHandler:
                 pass
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理生命周期失败: {e}")
+
     async def handle_heartbeat(self):
         """
         处理心跳，检测宵禁时间并自动执行全员禁言操作
         """
         try:
             # 不发送宵禁通知的群号列表
-            no_notification_groups = ["531850420"]
+            no_notification_groups = [
+                "531850420",
+                "1058578539",
+                "273882385",
+                "491480719",
+                "497554955",
+                "695107331",
+                "788612679",
+                "916115517",
+            ]
 
             # 获取当前时间
             current_time = datetime.now()
