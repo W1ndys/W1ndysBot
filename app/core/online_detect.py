@@ -60,11 +60,11 @@ async def handle_events(websocket, message):
             else:
                 status_text = "重新上线" if current_online else "掉线"
 
-            # 发送通知（只在掉线时发送飞书通知）
+            # 发送通知
             logger.success(f"机器人状态变更: {status_text}")
 
-            # 只在掉线时发送飞书通知
-            if not current_online:
+            # 在掉线时或重新上线时发送飞书通知（排除初始化）
+            if not current_online or (current_online and is_online is not None):
                 title = f"机器人状态变更: {status_text}"
                 content = (
                     f"机器人ID: {message.get('self_id')}\n"
