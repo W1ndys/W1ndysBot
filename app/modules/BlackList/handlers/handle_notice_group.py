@@ -70,8 +70,8 @@ class GroupNoticeHandler:
         处理群聊成员增加 - 管理员邀请入群通知
         """
         try:
-            # 检查新入群用户是否在黑名单中
-            await self.check_and_kick_blacklisted_user()
+            # 检查新入群用户是否在黑名单中，如果是则踢出被邀请人和邀请人
+            await self.check_and_kick_blacklisted_user_and_inviter()
         except Exception as e:
             logger.error(
                 f"[{MODULE_NAME}]处理群聊成员增加 - 管理员邀请入群通知失败: {e}"
@@ -109,3 +109,42 @@ class GroupNoticeHandler:
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]检查并踢出黑名单用户失败: {e}")
+
+    async def check_and_kick_blacklisted_user_and_inviter(self):
+        """
+        检查被邀请用户是否在黑名单中（包括全局黑名单），如果在则踢出被邀请人和邀请人
+        """
+        try:
+            with BlackListDataManager() as data_manager:
+                if data_manager.is_user_blacklisted(self.group_id, self.user_id):
+                    # 判断是全局黑名单还是群黑名单
+                    is_global = data_manager.is_in_global_blacklist(self.user_id)
+                    blacklist_type = "全局黑名单" if is_global else "群黑名单"
+
+                    # 发送警告消息
+                    warning_at_invited = generate_at_message(self.user_id)
+                    warning_at_inviter = generate_at_message(self.operator_id)
+                    warning_msg = generate_text_message(
+                        f"检测到被邀请用户({self.user_id})是{blacklist_type}用户，将踢出被邀请人和邀请人"
+                    )
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [warning_at_invited, warning_at_inviter, warning_msg],
+                    )
+
+                    # 踢出被邀请用户
+                    await set_group_kick(
+                        self.websocket, self.group_id, self.user_id, True
+                    )
+
+                    # 踢出邀请人
+                    await set_group_kick(
+                        self.websocket, self.group_id, self.operator_id, False
+                    )
+
+                    logger.info(
+                        f"[{MODULE_NAME}]已踢出{blacklist_type}用户 {self.user_id} 和邀请人 {self.operator_id}"
+                    )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]检查并踢出黑名单用户和邀请人失败: {e}")
