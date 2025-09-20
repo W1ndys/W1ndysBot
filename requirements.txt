@@ -2,7 +2,7 @@ websockets
 requests
 beautifulsoup4
 cryptography
-colorlog
+loguru
 aiohttp
 python-dotenv
 numpy
