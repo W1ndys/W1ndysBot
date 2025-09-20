@@ -62,12 +62,15 @@ class Logger:
             colorize=True,
         )
 
-        # 添加文件处理器
+        # 添加文件处理器（带日志轮转）
         loguru_logger.add(
             sink=self.log_filename,
             format="{time:YYYY-MM-DD HH:mm:ss} [{level}]: {message}",
             level="DEBUG",
             encoding="utf-8",
+            rotation="10 MB",  # 当文件大小达到10MB时轮转
+            retention="30 days",  # 保留30天内的日志文件
+            compression="zip",  # 压缩轮转后的旧日志文件
         )
 
         self.success(f"初始化日志器，日志文件名: {self.log_filename}")
