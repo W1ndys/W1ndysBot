@@ -54,18 +54,25 @@ class Logger:
             self.logs_dir, f"{datetime.now(tz).strftime('%Y-%m-%d_%H-%M-%S')}.log"
         )
 
-        # 添加控制台处理器
+        # 添加控制台处理器 - 美化格式
         loguru_logger.add(
             sink=lambda msg: print(msg, end=""),
-            format="<level>{time:YYYY-MM-DD HH:mm:ss} [{level}]: {message}</level>",
+            format="<green>{time:MM-DD HH:mm:ss.SSS}</green> | "
+            "<level>{level: <8}</level> | "
+            "<cyan>{name}</cyan>:<cyan>{line}</cyan> | "
+            "<level>{message}</level>",
             level=self.console_level,
             colorize=True,
         )
 
-        # 添加文件处理器（带日志轮转）
+        # 添加文件处理器（带日志轮转） - 详细格式
         loguru_logger.add(
             sink=self.log_filename,
-            format="{time:YYYY-MM-DD HH:mm:ss} [{level}]: {message}",
+            format="{time:YYYY-MM-DD HH:mm:ss.SSS} | "
+            "{level: <8} | "
+            "{process.id}:{thread.id} | "
+            "{name}:{function}:{line} | "
+            "{message}",
             level="DEBUG",
             encoding="utf-8",
             rotation="10 MB",  # 当文件大小达到10MB时轮转
