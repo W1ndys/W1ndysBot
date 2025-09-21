@@ -48,10 +48,9 @@ class Logger:
         if not os.path.exists(self.logs_dir):
             os.makedirs(self.logs_dir)
 
-        # 以当前启动时间为文件名，使用东八区时间
-        tz = timezone(timedelta(hours=8))
+        # 设置日志文件名模式，支持轮转时自动命名
         self.log_filename = os.path.join(
-            self.logs_dir, f"{datetime.now(tz).strftime('%Y-%m-%d_%H-%M-%S')}.log"
+            self.logs_dir, "bot_{time:YYYY-MM-DD_HH-mm-ss}.log"
         )
 
         # 添加控制台处理器 - 美化格式
@@ -75,7 +74,7 @@ class Logger:
             "{message}",
             level="DEBUG",
             encoding="utf-8",
-            rotation="10 MB",  # 当文件大小达到10MB时轮转
+            rotation="1 MB",  # 当文件大小达到1MB时轮转
             retention="30 days",  # 保留30天内的日志文件
             compression="zip",  # 压缩轮转后的旧日志文件
         )
