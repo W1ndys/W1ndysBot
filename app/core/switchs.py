@@ -480,12 +480,14 @@ def copy_group_switches(source_group_id, target_group_id):
                 conn.close()
                 return False, [], []
 
-            # 获取目标群组现有的模块列表（用于统计保持不变的模块）
+            # 获取目标群组现有的模块列表和状态（用于统计保持不变的模块）
             cursor.execute(
-                "SELECT module_name FROM module_switches WHERE switch_type = 'group' AND group_id = ?",
+                "SELECT module_name, status FROM module_switches WHERE switch_type = 'group' AND group_id = ?",
                 (str(target_group_id),),
             )
-            target_existing_modules = {row[0] for row in cursor.fetchall()}
+            target_existing_data = cursor.fetchall()
+            target_existing_modules = {row[0] for row in target_existing_data}
+            target_modules_status = {row[0]: row[1] for row in target_existing_data}
 
             copied_modules = []
             source_module_names = set()
@@ -514,8 +516,13 @@ def copy_group_switches(source_group_id, target_group_id):
                 except Exception as e:
                     logger.error(f"复制模块 {module_name} 开关失败: {e}")
 
-            # 计算保持不变的模块（目标群有但源群没有的模块）
-            unchanged_modules = target_existing_modules - source_module_names
+            # 计算保持不变的模块（目标群有但源群没有的模块），包含状态信息
+            unchanged_module_names = target_existing_modules - source_module_names
+            unchanged_modules = []
+            for module_name in unchanged_module_names:
+                status = target_modules_status.get(module_name, 0)
+                status_text = "开启" if status else "关闭"
+                unchanged_modules.append(f"【{module_name}】- {status_text}")
 
             conn.commit()
             conn.close()
@@ -524,7 +531,7 @@ def copy_group_switches(source_group_id, target_group_id):
                 f"成功从群 {source_group_id} 复制 {len(copied_modules)} 个模块开关到群 {target_group_id}，"
                 f"{len(unchanged_modules)} 个模块保持原有配置"
             )
-            return True, copied_modules, list(unchanged_modules)
+            return True, copied_modules, unchanged_modules
 
         except Exception as e:
             logger.error(f"复制群开关数据失败: {e}")
@@ -680,8 +687,8 @@ async def handle_events(websocket, message):
                     # 如果有保持不变的模块，也显示出来
                     if unchanged_modules:
                         copy_text += f"\n\n🔒 保持原有配置的模块：\n"
-                        for i, module_name in enumerate(unchanged_modules, 1):
-                            copy_text += f"{i}. 【{module_name}】\n"
+                        for i, module_info in enumerate(unchanged_modules, 1):
+                            copy_text += f"{i}. {module_info}\n"
                         copy_text += (
                             f"\n共保持 {len(unchanged_modules)} 个模块的原有配置"
                         )
