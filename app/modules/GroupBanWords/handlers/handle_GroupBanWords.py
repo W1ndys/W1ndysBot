@@ -145,6 +145,25 @@ class GroupBanWordsHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]踢出用户失败: {e}")
 
+    def _check_word_containment(self, new_word, data_manager):
+        """
+        检查新词是否被现有违禁词包含
+        返回: (is_contained, containing_word, containing_weight)
+        """
+        try:
+            # 获取所有现有违禁词
+            existing_words = data_manager.get_all_words_and_weight()
+
+            for existing_word, weight in existing_words:
+                # 检查新词是否被现有词包含
+                if new_word != existing_word and new_word in existing_word:
+                    return True, existing_word, weight
+
+            return False, None, None
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]检查违禁词包含关系失败: {e}")
+            return False, None, None
+
     async def _handle_whitelist_command(
         self, command, action_func, success_msg_template, failure_msg_template
     ):
@@ -254,6 +273,17 @@ class GroupBanWordsHandler:
                     else:
                         results.append(f"格式错误: {line}")
                         continue
+
+                    # 检查新词是否被现有违禁词包含
+                    is_contained, containing_word, containing_weight = (
+                        self._check_word_containment(word, data_manager)
+                    )
+                    if is_contained:
+                        results.append(
+                            f"添加{word_type}失败: 【{word}】已被现有违禁词【{containing_word}】(权重:{containing_weight})包含"
+                        )
+                        continue
+
                     is_success = data_manager.add_word(word, weight)
                     if is_success:
                         results.append(f"添加{word_type}成功: {word} 权重: {weight}")
@@ -307,6 +337,31 @@ class GroupBanWordsHandler:
                             note="del_msg=10",
                         )
                     return
+
+                # 检查新词是否被现有违禁词包含
+                is_contained, containing_word, containing_weight = (
+                    self._check_word_containment(word, data_manager)
+                )
+                if is_contained:
+                    error_msg = f"添加{word_type}失败: 【{word}】已被现有违禁词【{containing_word}】(权重:{containing_weight})包含"
+                    if self.is_private:
+                        await send_private_msg(
+                            self.websocket,
+                            self.user_id,
+                            [generate_text_message(error_msg)],
+                        )
+                    else:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(error_msg),
+                            ],
+                            note="del_msg=10",
+                        )
+                    return
+
                 is_success = data_manager.add_word(word, weight)
                 if not is_success:
                     return
@@ -449,6 +504,17 @@ class GroupBanWordsHandler:
                     else:
                         results.append(f"格式错误: {line}")
                         continue
+
+                    # 检查新词是否被现有全局违禁词包含
+                    is_contained, containing_word, containing_weight = (
+                        self._check_word_containment(word, global_data_manager)
+                    )
+                    if is_contained:
+                        results.append(
+                            f"添加全局违禁词失败: 【{word}】已被现有全局违禁词【{containing_word}】(权重:{containing_weight})包含"
+                        )
+                        continue
+
                     is_success = global_data_manager.add_word(word, weight)
                     if is_success:
                         results.append(f"添加成功: {word} 权重: {weight}")
@@ -502,6 +568,31 @@ class GroupBanWordsHandler:
                             note="del_msg=10",
                         )
                     return
+
+                # 检查新词是否被现有全局违禁词包含
+                is_contained, containing_word, containing_weight = (
+                    self._check_word_containment(word, global_data_manager)
+                )
+                if is_contained:
+                    error_msg = f"添加全局违禁词失败: 【{word}】已被现有全局违禁词【{containing_word}】(权重:{containing_weight})包含"
+                    if self.is_private:
+                        await send_private_msg(
+                            self.websocket,
+                            self.user_id,
+                            [generate_text_message(error_msg)],
+                        )
+                    else:
+                        await send_group_msg(
+                            self.websocket,
+                            self.group_id,
+                            [
+                                generate_reply_message(self.message_id),
+                                generate_text_message(error_msg),
+                            ],
+                            note="del_msg=10",
+                        )
+                    return
+
                 is_success = global_data_manager.add_word(word, weight)
                 if not is_success:
                     return
