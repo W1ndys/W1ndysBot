@@ -458,10 +458,11 @@ def get_all_enabled_groups(MODULE_NAME):
 
 def copy_group_switches(source_group_id, target_group_id):
     """
-    复制源群组的开关数据到目标群组，覆盖目标群组原有数据
+    复制源群组的开关数据到目标群组，只覆盖源群存在的模块配置
+    源群没有的开关配置，目标群有的则保持不变
     source_group_id: 源群号
     target_group_id: 目标群号
-    返回值: (是否成功, 复制的模块列表)
+    返回值: (是否成功, 复制的模块列表, 保持不变的模块列表)
     """
     with db_lock:
         try:
@@ -477,18 +478,34 @@ def copy_group_switches(source_group_id, target_group_id):
 
             if not source_switches:
                 conn.close()
-                return False, []
+                return False, [], []
+
+            # 获取目标群组现有的模块列表（用于统计保持不变的模块）
+            cursor.execute(
+                "SELECT module_name FROM module_switches WHERE switch_type = 'group' AND group_id = ?",
+                (str(target_group_id),),
+            )
+            target_existing_modules = {row[0] for row in cursor.fetchall()}
 
             copied_modules = []
+            source_module_names = set()
 
-            # 复制每个模块的开关状态
+            # 复制每个模块的开关状态（只复制源群存在的模块）
             for module_name, status in source_switches:
+                source_module_names.add(module_name)
                 try:
-                    # 使用 INSERT OR REPLACE 来覆盖已存在的记录
+                    # 先尝试更新已存在的记录
                     cursor.execute(
-                        "INSERT OR REPLACE INTO module_switches (module_name, switch_type, group_id, status, created_at, updated_at) VALUES (?, 'group', ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
-                        (module_name, str(target_group_id), status),
+                        "UPDATE module_switches SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE module_name = ? AND switch_type = 'group' AND group_id = ?",
+                        (status, module_name, str(target_group_id)),
                     )
+
+                    # 如果没有更新任何记录，说明目标群没有该模块配置，则插入新记录
+                    if cursor.rowcount == 0:
+                        cursor.execute(
+                            "INSERT INTO module_switches (module_name, switch_type, group_id, status, created_at, updated_at) VALUES (?, 'group', ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                            (module_name, str(target_group_id), status),
+                        )
 
                     # 记录复制的模块信息
                     status_text = "开启" if status else "关闭"
@@ -497,17 +514,21 @@ def copy_group_switches(source_group_id, target_group_id):
                 except Exception as e:
                     logger.error(f"复制模块 {module_name} 开关失败: {e}")
 
+            # 计算保持不变的模块（目标群有但源群没有的模块）
+            unchanged_modules = target_existing_modules - source_module_names
+
             conn.commit()
             conn.close()
 
             logger.info(
-                f"成功从群 {source_group_id} 复制 {len(copied_modules)} 个模块开关到群 {target_group_id}"
+                f"成功从群 {source_group_id} 复制 {len(copied_modules)} 个模块开关到群 {target_group_id}，"
+                f"{len(unchanged_modules)} 个模块保持原有配置"
             )
-            return True, copied_modules
+            return True, copied_modules, list(unchanged_modules)
 
         except Exception as e:
             logger.error(f"复制群开关数据失败: {e}")
-            return False, []
+            return False, [], []
 
 
 async def handle_module_private_switch(MODULE_NAME, websocket, user_id, message_id):
@@ -646,13 +667,25 @@ async def handle_events(websocket, message):
                     return
 
                 # 执行复制操作
-                success, copied_modules = copy_group_switches(source_group_id, group_id)
+                success, copied_modules, unchanged_modules = copy_group_switches(
+                    source_group_id, group_id
+                )
 
                 if success and copied_modules:
-                    copy_text = f"✅ 成功从群 {source_group_id} 复制开关配置到本群（{group_id}）\n\n复制的模块开关：\n"
+                    copy_text = f"✅ 成功从群 {source_group_id} 复制开关配置到本群（{group_id}）\n\n📋 复制的模块开关：\n"
                     for i, module_info in enumerate(copied_modules, 1):
                         copy_text += f"{i}. {module_info}\n"
                     copy_text += f"\n共复制 {len(copied_modules)} 个模块开关"
+
+                    # 如果有保持不变的模块，也显示出来
+                    if unchanged_modules:
+                        copy_text += f"\n\n🔒 保持原有配置的模块：\n"
+                        for i, module_name in enumerate(unchanged_modules, 1):
+                            copy_text += f"{i}. 【{module_name}】\n"
+                        copy_text += (
+                            f"\n共保持 {len(unchanged_modules)} 个模块的原有配置"
+                        )
+
                 elif success and not copied_modules:
                     copy_text = f"ℹ️ 群 {source_group_id} 没有任何已配置的模块开关"
                 else:
