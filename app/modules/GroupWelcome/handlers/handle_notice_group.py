@@ -40,8 +40,8 @@ class GroupNoticeHandler:
                 await self.handle_group_ban()
             elif self.notice_type == "group_card":
                 await self.handle_group_card()
-            elif self.notice_type == "group_decrease":
-                await self.handle_group_decrease()
+            # elif self.notice_type == "group_decrease":
+            #     await self.handle_group_decrease()
             elif self.notice_type == "group_increase":
                 await self.handle_group_increase()
             elif self.notice_type == "group_recall":
