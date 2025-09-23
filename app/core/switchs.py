@@ -456,6 +456,60 @@ def get_all_enabled_groups(MODULE_NAME):
             return []
 
 
+def copy_group_switches(source_group_id, target_group_id):
+    """
+    复制源群组的开关数据到目标群组，覆盖目标群组原有数据
+    source_group_id: 源群号
+    target_group_id: 目标群号
+    返回值: (是否成功, 复制的模块列表)
+    """
+    with db_lock:
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # 获取源群组的所有开关数据
+            cursor.execute(
+                "SELECT module_name, status FROM module_switches WHERE switch_type = 'group' AND group_id = ?",
+                (str(source_group_id),),
+            )
+            source_switches = cursor.fetchall()
+
+            if not source_switches:
+                conn.close()
+                return False, []
+
+            copied_modules = []
+
+            # 复制每个模块的开关状态
+            for module_name, status in source_switches:
+                try:
+                    # 使用 INSERT OR REPLACE 来覆盖已存在的记录
+                    cursor.execute(
+                        "INSERT OR REPLACE INTO module_switches (module_name, switch_type, group_id, status, created_at, updated_at) VALUES (?, 'group', ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                        (module_name, str(target_group_id), status),
+                    )
+
+                    # 记录复制的模块信息
+                    status_text = "开启" if status else "关闭"
+                    copied_modules.append(f"【{module_name}】- {status_text}")
+
+                except Exception as e:
+                    logger.error(f"复制模块 {module_name} 开关失败: {e}")
+
+            conn.commit()
+            conn.close()
+
+            logger.info(
+                f"成功从群 {source_group_id} 复制 {len(copied_modules)} 个模块开关到群 {target_group_id}"
+            )
+            return True, copied_modules
+
+        except Exception as e:
+            logger.error(f"复制群开关数据失败: {e}")
+            return False, []
+
+
 async def handle_module_private_switch(MODULE_NAME, websocket, user_id, message_id):
     """
     处理模块私聊开关命令
@@ -501,15 +555,21 @@ async def handle_module_group_switch(MODULE_NAME, websocket, group_id, message_i
 
 async def handle_events(websocket, message):
     """
-    统一处理 switch 命令，支持群聊
-    用来扫描本群已开启的模块
+    统一处理 switch 命令和复制开关命令，支持群聊
+    支持命令：
+    1. switch - 扫描本群已开启的模块
+    2. 复制开关 群号 - 复制指定群号的开关配置到本群
     """
     try:
         # 只处理文本消息
         if message.get("post_type") != "message":
             return
-        raw_message = message.get("raw_message", "").lower()
-        if raw_message != SWITCH_COMMAND:
+        raw_message = message.get("raw_message", "")
+
+        # 检查是否是支持的命令
+        if not (
+            raw_message.lower() == SWITCH_COMMAND or raw_message.startswith("复制开关 ")
+        ):
             return
 
         # 获取基本信息
@@ -528,41 +588,123 @@ async def handle_events(websocket, message):
         reply_message = generate_reply_message(message_id)
 
         if message_type == "group":
-            # 扫描本群已开启的模块
-            enabled_modules = []
-            with db_lock:
-                try:
-                    conn = get_db_connection()
-                    cursor = conn.cursor()
-                    cursor.execute(
-                        "SELECT module_name FROM module_switches WHERE switch_type = 'group' AND group_id = ? AND status = 1",
-                        (str(group_id),),
+            # 处理复制开关命令
+            if raw_message.startswith("复制开关 "):
+                # 只有系统管理员才能执行复制开关操作
+                if not is_system_admin(user_id):
+                    text_message = generate_text_message(
+                        "⚠️ 只有系统管理员才能执行复制开关操作"
                     )
-                    results = cursor.fetchall()
-                    conn.close()
-                    enabled_modules = [row[0] for row in results]
-                except Exception as e:
-                    logger.error(f"查询群组 {group_id} 已开启模块失败: {e}")
-                    enabled_modules = []
+                    await send_group_msg(
+                        websocket,
+                        group_id,
+                        [reply_message, text_message],
+                        note="del_msg=10",
+                    )
+                    return
 
-            if enabled_modules:
-                switch_text = f"本群（{group_id}）已开启的模块：\n"
-                for i, module_name in enumerate(enabled_modules, 1):
-                    switch_text += f"{i}. 【{module_name}】\n"
-                switch_text += f"\n共计 {len(enabled_modules)} 个模块"
-            else:
-                switch_text = f"本群（{group_id}）暂未开启任何模块"
+                # 解析目标群号
+                parts = raw_message.split(" ", 1)
+                if len(parts) != 2:
+                    text_message = generate_text_message(
+                        "❌ 命令格式错误，请使用：复制开关 群号"
+                    )
+                    await send_group_msg(
+                        websocket,
+                        group_id,
+                        [reply_message, text_message],
+                        note="del_msg=10",
+                    )
+                    return
 
-            text_message = generate_text_message(switch_text)
-            await send_group_msg(
-                websocket,
-                group_id,
-                [reply_message, text_message],
-                note="del_msg=30",
-            )
+                source_group_id = parts[1].strip()
+
+                # 验证群号格式
+                if not source_group_id.isdigit():
+                    text_message = generate_text_message(
+                        "❌ 群号格式错误，请输入纯数字群号"
+                    )
+                    await send_group_msg(
+                        websocket,
+                        group_id,
+                        [reply_message, text_message],
+                        note="del_msg=10",
+                    )
+                    return
+
+                # 不能复制自己的开关
+                if source_group_id == group_id:
+                    text_message = generate_text_message(
+                        "❌ 不能复制本群的开关配置到本群"
+                    )
+                    await send_group_msg(
+                        websocket,
+                        group_id,
+                        [reply_message, text_message],
+                        note="del_msg=10",
+                    )
+                    return
+
+                # 执行复制操作
+                success, copied_modules = copy_group_switches(source_group_id, group_id)
+
+                if success and copied_modules:
+                    copy_text = f"✅ 成功从群 {source_group_id} 复制开关配置到本群（{group_id}）\n\n复制的模块开关：\n"
+                    for i, module_info in enumerate(copied_modules, 1):
+                        copy_text += f"{i}. {module_info}\n"
+                    copy_text += f"\n共复制 {len(copied_modules)} 个模块开关"
+                elif success and not copied_modules:
+                    copy_text = f"ℹ️ 群 {source_group_id} 没有任何已配置的模块开关"
+                else:
+                    copy_text = (
+                        f"❌ 复制失败，群 {source_group_id} 可能不存在或没有开关数据"
+                    )
+
+                text_message = generate_text_message(copy_text)
+                await send_group_msg(
+                    websocket,
+                    group_id,
+                    [reply_message, text_message],
+                    note="del_msg=60",
+                )
+
+            # 处理 switch 查询命令
+            elif raw_message.lower() == SWITCH_COMMAND:
+                # 扫描本群已开启的模块
+                enabled_modules = []
+                with db_lock:
+                    try:
+                        conn = get_db_connection()
+                        cursor = conn.cursor()
+                        cursor.execute(
+                            "SELECT module_name FROM module_switches WHERE switch_type = 'group' AND group_id = ? AND status = 1",
+                            (str(group_id),),
+                        )
+                        results = cursor.fetchall()
+                        conn.close()
+                        enabled_modules = [row[0] for row in results]
+                    except Exception as e:
+                        logger.error(f"查询群组 {group_id} 已开启模块失败: {e}")
+                        enabled_modules = []
+
+                if enabled_modules:
+                    switch_text = f"本群（{group_id}）已开启的模块：\n"
+                    for i, module_name in enumerate(enabled_modules, 1):
+                        switch_text += f"{i}. 【{module_name}】\n"
+                    switch_text += f"\n共计 {len(enabled_modules)} 个模块"
+                else:
+                    switch_text = f"本群（{group_id}）暂未开启任何模块"
+
+                text_message = generate_text_message(switch_text)
+                await send_group_msg(
+                    websocket,
+                    group_id,
+                    [reply_message, text_message],
+                    note="del_msg=30",
+                )
 
     except Exception as e:
-        logger.error(f"[SwitchManager]处理开关查询命令失败: {e}")
+        logger.error(f"[SwitchManager]处理开关命令失败: {e}")
 
 
 # 自动执行从JSON到SQLite的升级
