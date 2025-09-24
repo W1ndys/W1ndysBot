@@ -74,9 +74,9 @@ class Logger:
             "{message}",
             level="DEBUG",
             encoding="utf-8",
-            rotation="1 MB",  # 当文件大小达到1MB时轮转
+            rotation="1 day",  # 每天轮转一次，生成更大的日志文件
             retention="30 days",  # 保留30天内的日志文件
-            compression="zip",  # 压缩轮转后的旧日志文件
+            compression="gz",  # 使用gzip压缩，压缩率更好且更通用
         )
 
         self.success(f"初始化日志器，日志文件名: {self.log_filename}")
