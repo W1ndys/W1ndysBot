@@ -66,9 +66,9 @@ class MetaEventHandler:
                 "916115517",
             ]
 
-            # 获取当前时间
+            # 获取当前时间（使用HH:MM格式确保与数据库中存储的时间格式一致）
             current_time = datetime.now()
-            current_time_str = current_time.strftime("%H:%M")
+            current_time_str = current_time.strftime("%H:%M")  # 强制使用两位数小时格式
             current_datetime_str = current_time.strftime("%Y-%m-%d %H:%M")
 
             # 获取所有已启用宵禁的群
@@ -96,36 +96,12 @@ class MetaEventHandler:
                             )
                             await set_group_whole_ban(self.websocket, group_id, True)
 
-                            # 发送通知消息（特定群号不发通知）
-                            if group_id not in no_notification_groups:
-                                await send_group_msg(
-                                    self.websocket,
-                                    group_id,
-                                    [
-                                        generate_text_message(
-                                            f"🌙 宵禁时间开始({start_time})，晚安~"
-                                        )
-                                    ],
-                                )
-
                         elif action == "end":
                             # 宵禁结束
                             logger.info(
                                 f"[{MODULE_NAME}]群 {group_id} 宵禁结束({end_time})，解除全员禁言"
                             )
                             await set_group_whole_ban(self.websocket, group_id, False)
-
-                            # 发送通知消息（特定群号不发通知）
-                            if group_id not in no_notification_groups:
-                                await send_group_msg(
-                                    self.websocket,
-                                    group_id,
-                                    [
-                                        generate_text_message(
-                                            f"☀️ 宵禁时间结束({end_time})，早安~"
-                                        )
-                                    ],
-                                )
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳宵禁检测失败: {e}")

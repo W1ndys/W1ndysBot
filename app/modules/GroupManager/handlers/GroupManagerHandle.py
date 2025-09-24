@@ -323,9 +323,10 @@ class GroupManagerHandle:
         """
         处理设置宵禁
         格式：{command} 开始时间 结束时间（24小时制），如 {command} 23:00 06:00
+        支持输入格式：7:00 或 07:00，统一转换为 HH:MM 格式存储
         """
         try:
-            # 修改正则表达式以匹配起始时间和终止时间
+            # 修改正则表达式以匹配起始时间和终止时间，支持1-2位小时数
             pattern = r"设置宵禁\s+(\d{1,2}:\d{2})\s+(\d{1,2}:\d{2})"
             match = re.search(pattern, self.raw_message)
 
@@ -335,39 +336,45 @@ class GroupManagerHandle:
                     self.group_id,
                     [
                         generate_text_message(
-                            "❌ 格式错误！请使用：设置宵禁 开始时间 结束时间\n示例：设置宵禁 23:00 06:00"
+                            "❌ 格式错误！请使用：设置宵禁 开始时间 结束时间\n示例：设置宵禁 23:00 06:00 或 设置宵禁 7:00 8:30"
                         )
                     ],
                     note="del_msg=60",
                 )
                 return
 
-            start_time = match.group(1)  # 起始时间，如 "23:00"
-            end_time = match.group(2)  # 终止时间，如 "06:00"
+            start_time_input = match.group(1)  # 起始时间，如 "23:00" 或 "7:00"
+            end_time_input = match.group(2)  # 终止时间，如 "06:00" 或 "8:30"
 
-            # 验证时间格式是否正确
-            def validate_time(time_str):
+            # 验证时间格式是否正确并标准化为HH:MM格式
+            def validate_and_format_time(time_str):
                 try:
                     hour, minute = map(int, time_str.split(":"))
-                    return 0 <= hour <= 23 and 0 <= minute <= 59
+                    if 0 <= hour <= 23 and 0 <= minute <= 59:
+                        # 格式化为HH:MM格式（两位数小时和分钟）
+                        return f"{hour:02d}:{minute:02d}"
+                    return None
                 except ValueError:
-                    return False
+                    return None
 
-            if not validate_time(start_time) or not validate_time(end_time):
+            start_time = validate_and_format_time(start_time_input)
+            end_time = validate_and_format_time(end_time_input)
+
+            if not start_time or not end_time:
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
                     [
                         generate_reply_message(self.message_id),
                         generate_text_message(
-                            "❌ 时间格式错误！请使用24小时制，如：23:00"
+                            "❌ 时间格式错误！请使用24小时制，如：23:00 或 7:30"
                         ),
                     ],
                     note="del_msg=60",
                 )
                 return
 
-            # 保存宵禁设置到数据库
+            # 保存宵禁设置到数据库（使用标准化后的时间格式）
             with DataManager() as dm:
                 success = dm.set_curfew_settings(
                     self.group_id, start_time, end_time, True
@@ -379,7 +386,7 @@ class GroupManagerHandle:
                         self.group_id,
                         [
                             generate_text_message(
-                                f"✅ 宵禁时间设置成功！\n🕐 开始时间：{start_time}\n🕕 结束时间：{end_time}\n📋 状态：已启用"
+                                f"✅ 宵禁时间设置成功！\n🕐 开始时间：{start_time}\n🕕 结束时间：{end_time}\n📋 状态：已启用\n💡 时间已标准化为HH:MM格式"
                             )
                         ],
                         note="del_msg=60",
