@@ -15,9 +15,9 @@ class ResponseHandler:
 
     async def handle(self):
         try:
-            # 检测echo里是否包含“设为代办”
-            if self.echo.startswith("send_group_msg") and "设为代办" in self.echo:
-                # 在数据体提取消息id，调用设置代办接口
+            # 检测echo里是否包含“settodo”
+            if self.echo.startswith("send_group_msg") and "settodo" in self.echo:
+                # 在数据体提取消息id，调用设置待办接口
                 message_id = self.data.get("message_id")
                 # 在echo正则提取群号
                 group_id = re.search(r"group_id=(\d+)", self.echo)

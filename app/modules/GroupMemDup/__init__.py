@@ -42,4 +42,5 @@ COMMANDS = {
     VIEW_GROUPS_LIST_COMMAND: "查看群组，用法：查看群组",
     DELETE_GROUP_COMMAND: "删除群组，用法：删除群组 组名",
     SEND_MESSAGE_COMMAND: "群发，用法：群发 组名 消息",
+    "其他说明": "群发消息时，消息中可以包含settodo，表示设为待办，包含atall，表示@全体成员",
 }
