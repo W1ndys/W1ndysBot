@@ -174,13 +174,17 @@ async def check_and_handle_ban_words(
                     f"group_id={group_id}，user_id={user_id}"
                 ),
             ],
-            note="del_msg=1000",
         )
 
         if invite_chain_info:
             await asyncio.sleep(0.3)
             await send_group_msg(
                 websocket, group_id, [generate_text_message(invite_chain_info)]
+            )
+            await send_private_msg(
+                websocket,
+                OWNER_ID,
+                [generate_text_message(invite_chain_info)],
             )
 
         return True
