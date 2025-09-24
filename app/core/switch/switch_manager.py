@@ -343,3 +343,93 @@ class SwitchManager:
         except Exception as e:
             logger.error(f"复制群开关数据失败: {e}")
             return False, [], []
+
+    @staticmethod
+    def clean_invalid_group_switches(valid_group_ids):
+        """
+        清理不在有效群列表中的群开关数据
+
+        Args:
+            valid_group_ids: 有效的群号列表（字符串格式）
+
+        Returns:
+            tuple: (cleaned_count, error_count, cleaned_groups)
+                   清理的记录数量、出错数量、被清理的群号列表
+        """
+        try:
+            if not valid_group_ids:
+                logger.warning("[Switch]有效群列表为空，跳过清理群开关数据")
+                return 0, 0, []
+
+            # 获取所有群开关数据中的群号
+            results = db.execute_query(
+                "SELECT DISTINCT group_id FROM module_switches WHERE switch_type = 'group' AND group_id IS NOT NULL",
+                fetch_all=True,
+            )
+
+            if not results:
+                logger.info("[Switch]数据库中没有群开关数据，无需清理")
+                return 0, 0, []
+
+            stored_group_ids = [row[0] for row in results]
+
+            # 找出不在有效群列表中的群号
+            groups_to_clean = []
+            for stored_group_id in stored_group_ids:
+                if stored_group_id not in valid_group_ids:
+                    groups_to_clean.append(stored_group_id)
+
+            if not groups_to_clean:
+                logger.info("[Switch]所有群开关数据都对应有效群，无需清理")
+                return 0, 0, []
+
+            # 删除无效群的开关数据
+            cleaned_count = 0
+            error_count = 0
+            cleaned_groups = []
+
+            for group_id in groups_to_clean:
+                try:
+                    # 先查询该群有多少条开关记录
+                    count_result = db.execute_query(
+                        "SELECT COUNT(*) FROM module_switches WHERE switch_type = 'group' AND group_id = ?",
+                        (group_id,),
+                        fetch_one=True,
+                    )
+                    record_count = count_result[0] if count_result else 0
+
+                    if record_count > 0:
+                        # 删除该群的所有开关记录
+                        affected_rows = db.execute_update(
+                            "DELETE FROM module_switches WHERE switch_type = 'group' AND group_id = ?",
+                            (group_id,),
+                        )
+
+                        if affected_rows > 0:
+                            cleaned_count += affected_rows
+                            cleaned_groups.append(group_id)
+                            logger.info(
+                                f"[Switch]已清理群 {group_id} 的 {affected_rows} 条开关记录"
+                            )
+                        else:
+                            logger.warning(f"[Switch]群 {group_id} 的开关记录删除失败")
+                            error_count += 1
+                    else:
+                        logger.warning(f"[Switch]群 {group_id} 没有开关记录")
+
+                except Exception as e:
+                    error_count += 1
+                    logger.error(f"[Switch]清理群 {group_id} 的开关记录失败: {e}")
+
+            if cleaned_count > 0:
+                logger.success(
+                    f"[Switch]群开关数据清理完成，清理了 {len(cleaned_groups)} 个群的 {cleaned_count} 条记录"
+                )
+            if error_count > 0:
+                logger.error(f"[Switch]群开关数据清理过程中出现 {error_count} 个错误")
+
+            return cleaned_count, error_count, cleaned_groups
+
+        except Exception as e:
+            logger.error(f"[Switch]清理群开关数据失败: {e}")
+            return 0, 1, []

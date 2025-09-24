@@ -5,6 +5,7 @@ from api.message import send_private_msg
 import os
 import json
 import time
+from . import switchs
 
 DATA_DIR = os.path.join("data", "Core", "get_group_list.json")
 MEMBER_DATA_DIR = os.path.join("data", "Core", "group_member_list")
@@ -275,32 +276,55 @@ async def handle_events(websocket, msg):
                 # 保存data
                 save_group_list_to_file(msg.get("data", []))
                 logger.success(f"[Core]已保存群列表")
-                # 群列表更新后，清理不在群列表中的群成员数据
+                # 群列表更新后，清理不在群列表中的群成员数据和开关数据
                 try:
-                    cleaned_count, error_count = clean_old_group_member_data()
+                    # 获取当前有效的群号列表
+                    current_group_ids = get_all_group_ids()
+
+                    # 清理群成员数据
+                    member_cleaned_count, member_error_count = (
+                        clean_old_group_member_data()
+                    )
+
+                    # 清理群开关数据
+                    switch_cleaned_count, switch_error_count, switch_cleaned_groups = (
+                        switchs.clean_invalid_group_switches(current_group_ids)
+                    )
+
+                    # 统计总的清理结果
+                    total_cleaned = member_cleaned_count + switch_cleaned_count
+                    total_errors = member_error_count + switch_error_count
+
                     # 只在有清理操作或出现错误时才发送通知
-                    if cleaned_count > 0 or error_count > 0:
+                    if total_cleaned > 0 or total_errors > 0:
                         notification_parts = []
 
-                        if cleaned_count > 0:
+                        if member_cleaned_count > 0:
                             notification_parts.append(
-                                f"🗑️ 群成员数据清理完成，清理了 {cleaned_count} 个不再存在的群的数据文件"
+                                f"🗑️ 群成员数据清理：清理了 {member_cleaned_count} 个群的数据文件"
                             )
 
-                        if error_count > 0:
+                        if switch_cleaned_count > 0:
                             notification_parts.append(
-                                f"❌ 清理过程中出现 {error_count} 个错误"
+                                f"⚙️ 群开关数据清理：清理了 {len(switch_cleaned_groups)} 个群的 {switch_cleaned_count} 条开关记录"
+                            )
+
+                        if total_errors > 0:
+                            notification_parts.append(
+                                f"❌ 清理过程中出现 {total_errors} 个错误"
                             )
 
                         notification_msg = "\n".join(notification_parts)
                         await send_private_msg(
-                            websocket, OWNER_ID, f"[Core]{notification_msg}"
+                            websocket,
+                            OWNER_ID,
+                            f"[Core]数据清理完成\n{notification_msg}",
                         )
 
                 except Exception as e:
-                    logger.error(f"[Core]执行群成员数据清理时出错: {e}")
+                    logger.error(f"[Core]执行数据清理时出错: {e}")
                     await send_private_msg(
-                        websocket, OWNER_ID, f"[Core]执行群成员数据清理时出错: {e}"
+                        websocket, OWNER_ID, f"[Core]执行数据清理时出错: {e}"
                     )
     except Exception as e:
         logger.error(f"[Core]获取群列表失败: {e}")

@@ -54,6 +54,11 @@ def copy_group_switches(source_group_id, target_group_id):
     return SwitchManager.copy_group_switches(source_group_id, target_group_id)
 
 
+def clean_invalid_group_switches(valid_group_ids):
+    """清理不在有效群列表中的群开关数据"""
+    return SwitchManager.clean_invalid_group_switches(valid_group_ids)
+
+
 async def handle_module_private_switch(MODULE_NAME, websocket, user_id, message_id):
     """处理模块私聊开关命令"""
     return await SwitchCommandHandler.handle_module_private_switch(
@@ -82,6 +87,7 @@ __all__ = [
     "load_group_all_switch",
     "get_all_enabled_groups",
     "copy_group_switches",
+    "clean_invalid_group_switches",
     "handle_module_private_switch",
     "handle_module_group_switch",
     "handle_events",
