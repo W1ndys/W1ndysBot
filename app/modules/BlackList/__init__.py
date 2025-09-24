@@ -32,6 +32,7 @@ PRIVATE_BLACKLIST_ADD_COMMAND = "拉黑"  # 私聊中的拉黑命令（等同于
 PRIVATE_BLACKLIST_REMOVE_COMMAND = "解黑"  # 私聊中的解黑命令（等同于全局解黑）
 PRIVATE_BLACKLIST_LIST_COMMAND = "看黑"  # 私聊中的看黑命令（等同于全局看黑）
 PRIVATE_BLACKLIST_CLEAR_COMMAND = "清黑"  # 私聊中的清黑命令（等同于全局清黑）
+PRIVATE_BLACKLIST_SCAN_COMMAND = "扫黑"  # 私聊中的扫黑命令
 # ------------------------------------------------------------
 
 # 使用变量构建 COMMANDS，确保键的唯一性同时引用常量
@@ -52,4 +53,5 @@ COMMANDS = {
     f"私聊-{PRIVATE_BLACKLIST_REMOVE_COMMAND}": f"私聊中的解黑（等同于全局解黑），命令：{PRIVATE_BLACKLIST_REMOVE_COMMAND}",
     f"私聊-{PRIVATE_BLACKLIST_LIST_COMMAND}": f"私聊中的看黑（等同于全局看黑），命令：{PRIVATE_BLACKLIST_LIST_COMMAND}",
     f"私聊-{PRIVATE_BLACKLIST_CLEAR_COMMAND}": f"私聊中的清黑（等同于全局清黑），命令：{PRIVATE_BLACKLIST_CLEAR_COMMAND}",
+    f"私聊-{PRIVATE_BLACKLIST_SCAN_COMMAND}": f"私聊中的扫黑，命令：{PRIVATE_BLACKLIST_SCAN_COMMAND} 或 {PRIVATE_BLACKLIST_SCAN_COMMAND} 群号，扫描开启黑名单功能的群并踢出黑名单用户",
 }

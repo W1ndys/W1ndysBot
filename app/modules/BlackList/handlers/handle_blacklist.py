@@ -512,19 +512,103 @@ class BlackListHandle:
     async def scan_blacklist(self):
         """
         扫描群内黑名单用户并踢出
-        获取群成员列表，检查每个成员是否在黑名单中，如果在则踢出
+        使用等待+读文件的方式，逻辑简单直观
         """
         try:
+            # 导入必要模块
+            from core.get_group_member_list import get_group_member_user_ids
+            from api.group import set_group_kick
+            import asyncio
 
-            # 调用API获取群成员列表
+            # 先获取最新的群成员列表
             await get_group_member_list(
                 self.websocket,
                 self.group_id,
                 True,  # 不使用缓存
-                note=f"{MODULE_NAME}-{BLACKLIST_SCAN_COMMAND}-group_id={self.group_id}",
+                note=f"{MODULE_NAME}-update-member-list-{self.group_id}",
+            )
+
+            # 等待一下让数据更新
+            await asyncio.sleep(1)
+
+            # 获取群成员QQ号列表
+            member_ids = get_group_member_user_ids(self.group_id)
+
+            if not member_ids:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [generate_text_message("无法获取群成员列表，扫黑操作失败")],
+                    note="del_msg=10",
+                )
+                return False
+
+            logger.info(
+                f"[{MODULE_NAME}]开始扫描群 {self.group_id} 的 {len(member_ids)} 个成员"
+            )
+
+            # 检查每个成员是否在黑名单中
+            blacklisted_members = []
+            with BlackListDataManager() as data_manager:
+                for member_id in member_ids:
+                    if data_manager.is_user_blacklisted(self.group_id, member_id):
+                        blacklisted_members.append(member_id)
+
+            if not blacklisted_members:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [generate_text_message("扫描完成，未发现黑名单用户")],
+                    note="del_msg=10",
+                )
+                return True
+
+            # 发送发现黑名单用户的消息
+            discovery_message = (
+                f"发现 {len(blacklisted_members)} 个黑名单用户，正在踢出..."
+            )
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [generate_text_message(discovery_message)],
+                note="del_msg=10",
+            )
+
+            # 踢出黑名单用户
+            kicked_count = 0
+            kick_messages = []
+
+            for member_id in blacklisted_members:
+                try:
+                    # 踢出用户
+                    await set_group_kick(self.websocket, self.group_id, member_id)
+                    kicked_count += 1
+                    kick_messages.append(f"用户 {member_id}")
+                    await asyncio.sleep(0.5)  # 避免频繁操作
+                except Exception as e:
+                    logger.error(f"[{MODULE_NAME}]踢出用户 {member_id} 失败: {e}")
+
+            # 发送完成消息
+            if kicked_count > 0:
+                completion_message = f"扫黑完成！已踢出 {kicked_count} 个黑名单用户"
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [generate_text_message(completion_message)],
+                    note="del_msg=30",
+                )
+
+            logger.info(
+                f"[{MODULE_NAME}]群 {self.group_id} 扫黑完成，已踢出 {kicked_count} 个用户"
             )
 
             return True
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]扫描黑名单失败: {e}")
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [generate_text_message(f"扫黑操作失败：{str(e)}")],
+                note="del_msg=10",
+            )
             return False

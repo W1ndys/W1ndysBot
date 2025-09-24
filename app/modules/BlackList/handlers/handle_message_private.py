@@ -17,6 +17,7 @@ from .. import (
     PRIVATE_BLACKLIST_REMOVE_COMMAND,
     PRIVATE_BLACKLIST_LIST_COMMAND,
     PRIVATE_BLACKLIST_CLEAR_COMMAND,
+    PRIVATE_BLACKLIST_SCAN_COMMAND,
 )
 
 
@@ -108,6 +109,9 @@ class PrivateMessageHandler:
                     return
                 elif self.raw_message.startswith(PRIVATE_BLACKLIST_CLEAR_COMMAND):
                     await blacklist_handler.clear_global_blacklist()
+                    return
+                elif self.raw_message.startswith(PRIVATE_BLACKLIST_SCAN_COMMAND):
+                    await blacklist_handler.scan_blacklist_private()
                     return
 
                 if (
@@ -567,4 +571,215 @@ class BlackListHandlePrivate(BlackListHandle):
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]通过回复消息拉黑失败: {e}")
+            return False
+
+    async def scan_blacklist_private(self):
+        """
+        私聊中的扫黑命令
+        支持两种格式：
+        - 扫黑：扫描所有开启黑名单功能的群
+        - 扫黑 群号：扫描指定群
+        使用等待+读文件的方式，逻辑简单直观
+        """
+        try:
+            # 删除命令，获取参数
+            command_content = self.raw_message.replace(
+                PRIVATE_BLACKLIST_SCAN_COMMAND, ""
+            ).strip()
+
+            # 导入必要的模块
+            from core.switchs import get_all_enabled_groups
+            from api.group import get_group_member_list
+            from core.get_group_member_list import (
+                get_group_member_user_ids,
+                get_group_name_by_id,
+            )
+            from .data_manager import BlackListDataManager
+            from api.group import set_group_kick
+            from api.message import send_group_msg
+            from utils.generate import generate_text_message
+            import asyncio
+
+            if command_content:
+                # 扫描指定群
+                if command_content.isdigit():
+                    target_groups = [command_content]
+                    reply_message = f"开始扫描指定群 {command_content} 的黑名单用户..."
+                else:
+                    reply_message = "群号格式错误，请输入有效的群号"
+                    await send_private_msg(
+                        self.websocket,
+                        self.target_id,
+                        [
+                            generate_reply_message(reply_message),
+                            generate_text_message(reply_message),
+                        ],
+                    )
+                    return False
+            else:
+                # 扫描所有开启黑名单功能的群
+                target_groups = get_all_enabled_groups(MODULE_NAME)
+                if not target_groups:
+                    reply_message = "当前没有开启黑名单功能的群"
+                    await send_private_msg(
+                        self.websocket,
+                        self.target_id,
+                        [
+                            generate_reply_message(reply_message),
+                            generate_text_message(reply_message),
+                        ],
+                    )
+                    return True
+                reply_message = (
+                    f"开始扫描所有开启黑名单功能的群（共{len(target_groups)}个群）..."
+                )
+
+            # 发送开始扫描的消息
+            await send_private_msg(
+                self.websocket,
+                self.target_id,
+                [
+                    generate_reply_message(reply_message),
+                    generate_text_message(reply_message),
+                ],
+            )
+
+            # 扫描统计
+            total_kicked = 0
+            scan_results = []
+
+            for index, group_id in enumerate(target_groups, 1):
+                try:
+                    group_name = get_group_name_by_id(group_id) or f"群{group_id}"
+
+                    # 先获取最新的群成员列表
+                    await get_group_member_list(
+                        self.websocket,
+                        group_id,
+                        True,  # 不使用缓存
+                        note=f"{MODULE_NAME}-update-member-list-{group_id}",
+                    )
+
+                    # 等待一下让数据更新
+                    await asyncio.sleep(1)
+
+                    # 获取群成员QQ号列表
+                    member_ids = get_group_member_user_ids(group_id)
+
+                    if not member_ids:
+                        scan_results.append(
+                            f"群 {group_name}({group_id})：无法获取群成员列表"
+                        )
+                        # 发送进度消息
+                        progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：无法获取群成员列表"
+                        await send_private_msg(
+                            self.websocket,
+                            self.target_id,
+                            [generate_text_message(progress_msg)],
+                        )
+                        continue
+
+                    # 检查每个成员是否在黑名单中
+                    blacklisted_members = []
+                    with BlackListDataManager() as data_manager:
+                        for member_id in member_ids:
+                            if data_manager.is_user_blacklisted(group_id, member_id):
+                                blacklisted_members.append(member_id)
+
+                    if not blacklisted_members:
+                        scan_results.append(
+                            f"群 {group_name}({group_id})：未发现黑名单用户"
+                        )
+                        # 发送进度消息
+                        progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：未发现黑名单用户"
+                        await send_private_msg(
+                            self.websocket,
+                            self.target_id,
+                            [generate_text_message(progress_msg)],
+                        )
+                        continue
+
+                    # 踢出黑名单用户
+                    kicked_count = 0
+                    kick_messages = []
+
+                    for member_id in blacklisted_members:
+                        try:
+                            # 踢出用户
+                            await set_group_kick(self.websocket, group_id, member_id)
+                            kicked_count += 1
+                            kick_messages.append(f"用户 {member_id}")
+                            await asyncio.sleep(0.5)  # 避免频繁操作
+                        except Exception as e:
+                            logger.error(
+                                f"[{MODULE_NAME}]踢出用户 {member_id} 失败: {e}"
+                            )
+
+                    # 群内播报
+                    if kicked_count > 0:
+                        broadcast_message = (
+                            f"🚫 扫黑完成：发现并踢出 {kicked_count} 个黑名单用户\n"
+                            + "\n".join(kick_messages)
+                        )
+                        await send_group_msg(
+                            self.websocket,
+                            group_id,
+                            [generate_text_message(broadcast_message)],
+                            note="del_msg=30",
+                        )
+
+                    total_kicked += kicked_count
+                    scan_results.append(
+                        f"群 {group_name}({group_id})：踢出 {kicked_count} 个黑名单用户"
+                    )
+
+                    # 发送进度消息
+                    progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：踢出 {kicked_count} 个黑名单用户"
+                    await send_private_msg(
+                        self.websocket,
+                        self.target_id,
+                        [generate_text_message(progress_msg)],
+                    )
+
+                    await asyncio.sleep(1)  # 群间间隔
+
+                except Exception as e:
+                    logger.error(f"[{MODULE_NAME}]扫描群 {group_id} 失败: {e}")
+                    scan_results.append(f"群 {group_id}：扫描失败 - {str(e)}")
+                    # 发送错误进度消息
+                    error_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_id}：扫描失败 - {str(e)}"
+                    await send_private_msg(
+                        self.websocket,
+                        self.target_id,
+                        [generate_text_message(error_msg)],
+                    )
+
+            # 发送最终扫描结果
+            result_message = f"🔍 扫黑任务完成！\n\n"
+            result_message += f"扫描群数：{len(target_groups)}\n"
+            result_message += f"总计踢出：{total_kicked} 人\n\n"
+            result_message += "详细结果：\n" + "\n".join(scan_results)
+
+            await send_private_msg(
+                self.websocket,
+                self.target_id,
+                [
+                    generate_reply_message(result_message),
+                    generate_text_message(result_message),
+                ],
+            )
+
+            return True
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]私聊扫黑失败: {e}")
+            error_message = f"扫黑失败：{str(e)}"
+            await send_private_msg(
+                self.websocket,
+                self.target_id,
+                [
+                    generate_reply_message(error_message),
+                    generate_text_message(error_message),
+                ],
+            )
             return False
