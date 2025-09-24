@@ -142,16 +142,16 @@ class Core:
                 f"[{MODULE_NAME}]{self.user_id}处理群发命令: {group_name} {message}"
             )
 
-            # 把消息中的“艾特全体”转换为CQ码格式的全体成员
-            message = message.replace("艾特全体", "[CQ:at,qq=all]")
+            # 把消息中的“atall”转换为CQ码格式的全体成员
+            message = message.replace("atall", "[CQ:at,qq=all]")
 
             note = ""
-            # 检测消息中是否有“设为代办”
-            if "设为代办" in message:
+            # 检测消息中是否有“settodo”
+            if "settodo" in message:
                 # 定义note变量以便发消息接口使用
-                note = "设为代办"
-                # 去除消息里的设为代办
-                message = message.replace("设为代办", "").strip()
+                note = "settodo"
+                # 去除消息里的settodo
+                message = message.replace("settodo", "").strip()
 
             # 处理参数
             with DataManager() as dm:
