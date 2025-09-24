@@ -109,7 +109,6 @@ async def check_and_handle_ban_words(
         except Exception:
             pass
 
-        # 返回True，表示违规
         # 发送请求获取本群历史消息记录，以便于在回应处理函数中处理
         await get_group_msg_history(
             websocket,
@@ -133,10 +132,10 @@ async def check_and_handle_ban_words(
         # 构建共同的消息内容
         common_content = (
             f"时间: {formatted_time}\n"
-            f"group_id={group_id}\n"
             f"group_name={get_group_name_by_id(group_id)}\n"
-            f"user_id={user_id}\n"
+            f"group_id={group_id}\n"
             f"user_name={user_name}\n"
+            f"user_id={user_id}\n"
             f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}"
         )
 
@@ -170,8 +169,9 @@ async def check_and_handle_ban_words(
             [
                 generate_at_message(user_id),
                 generate_text_message(
-                    f"({user_id})请勿发送违禁消息，如误封请联系管理员\n"
-                    f"group_id={group_id}，user_id={user_id}"
+                    f"({user_id})\n请勿发送违禁消息，如误封请联系管理员\n"
+                    f"group_id={group_id}\n"
+                    f"user_id={user_id}"
                 ),
             ],
         )
