@@ -19,7 +19,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # 一个主命令，其余子命令都以主命令开头，便于不同模块的命令区分
 # ------------------------------------------------------------
 
-BASE_COMMAND = "/eqdf"  # 主命令
+BASE_COMMAND = "电费"  # 主命令
 # 绑定链接的命令
 BIND_COMMAND = f"{BASE_COMMAND}绑定"  # 绑定命令
 # 查询电费命令
