@@ -278,18 +278,25 @@ async def handle_events(websocket, msg):
                 # 群列表更新后，清理不在群列表中的群成员数据
                 try:
                     cleaned_count, error_count = clean_old_group_member_data()
-                    if cleaned_count > 0:
+                    # 只在有清理操作或出现错误时才发送通知
+                    if cleaned_count > 0 or error_count > 0:
+                        notification_parts = []
+
+                        if cleaned_count > 0:
+                            notification_parts.append(
+                                f"🗑️ 群成员数据清理完成，清理了 {cleaned_count} 个不再存在的群的数据文件"
+                            )
+
+                        if error_count > 0:
+                            notification_parts.append(
+                                f"❌ 清理过程中出现 {error_count} 个错误"
+                            )
+
+                        notification_msg = "\n".join(notification_parts)
                         await send_private_msg(
-                            websocket,
-                            OWNER_ID,
-                            f"[Core]群成员数据清理完成，清理了 {cleaned_count} 个不再存在的群的数据文件",
+                            websocket, OWNER_ID, f"[Core]{notification_msg}"
                         )
-                    if error_count > 0:
-                        await send_private_msg(
-                            websocket,
-                            OWNER_ID,
-                            f"[Core]群成员数据清理过程中出现 {error_count} 个错误",
-                        )
+
                 except Exception as e:
                     logger.error(f"[Core]执行群成员数据清理时出错: {e}")
                     await send_private_msg(
