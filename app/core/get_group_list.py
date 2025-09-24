@@ -7,6 +7,7 @@ import json
 import time
 
 DATA_DIR = os.path.join("data", "Core", "get_group_list.json")
+MEMBER_DATA_DIR = os.path.join("data", "Core", "group_member_list")
 
 # 全局变量，记录上次请求时间
 last_request_time = 0
@@ -140,6 +141,88 @@ def get_group_member_info_by_id(group_id):
         return None
 
 
+def clean_old_group_member_data():
+    """
+    清理不在当前群列表中的群成员数据文件
+
+    检查 group_member_list 目录中的所有文件，如果对应的群号不在当前群列表中，
+    则删除该群的成员数据文件（说明机器人已经不在该群了）
+
+    Returns:
+        tuple: (cleaned_count, error_count) 清理的文件数量和出错的文件数量
+    """
+    try:
+        # 获取当前所有群号
+        current_group_ids = get_all_group_ids()
+        if not current_group_ids:
+            logger.warning("[Core]当前群列表为空，跳过清理群成员数据")
+            return 0, 0
+
+        # 检查群成员数据目录是否存在
+        if not os.path.exists(MEMBER_DATA_DIR):
+            logger.info("[Core]群成员数据目录不存在，无需清理")
+            return 0, 0
+
+        # 获取所有群成员数据文件
+        member_data_files = []
+        try:
+            member_data_files = [
+                f for f in os.listdir(MEMBER_DATA_DIR) if f.endswith(".json")
+            ]
+        except Exception as e:
+            logger.error(f"[Core]读取群成员数据目录失败: {e}")
+            return 0, 1
+
+        if not member_data_files:
+            logger.info("[Core]群成员数据目录为空，无需清理")
+            return 0, 0
+
+        # 提取群号（去掉.json后缀）
+        stored_group_ids = [f.replace(".json", "") for f in member_data_files]
+
+        # 找出不在当前群列表中的群号
+        groups_to_clean = []
+        for stored_group_id in stored_group_ids:
+            if stored_group_id not in current_group_ids:
+                groups_to_clean.append(stored_group_id)
+
+        if not groups_to_clean:
+            logger.info("[Core]所有群成员数据都对应当前群列表，无需清理")
+            return 0, 0
+
+        # 删除不在群列表中的群成员数据文件
+        cleaned_count = 0
+        error_count = 0
+
+        for group_id in groups_to_clean:
+            try:
+                file_path = os.path.join(MEMBER_DATA_DIR, f"{group_id}.json")
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    cleaned_count += 1
+                    logger.info(f"[Core]已清理群 {group_id} 的成员数据文件")
+                else:
+                    logger.warning(
+                        f"[Core]群 {group_id} 的成员数据文件不存在: {file_path}"
+                    )
+            except Exception as e:
+                error_count += 1
+                logger.error(f"[Core]清理群 {group_id} 的成员数据文件失败: {e}")
+
+        if cleaned_count > 0:
+            logger.success(
+                f"[Core]群成员数据清理完成，清理了 {cleaned_count} 个群的数据文件"
+            )
+        if error_count > 0:
+            logger.error(f"[Core]群成员数据清理过程中出现 {error_count} 个错误")
+
+        return cleaned_count, error_count
+
+    except Exception as e:
+        logger.error(f"[Core]清理群成员数据失败: {e}")
+        return 0, 1
+
+
 async def handle_events(websocket, msg):
     """
     处理回应事件
@@ -192,6 +275,26 @@ async def handle_events(websocket, msg):
                 # 保存data
                 save_group_list_to_file(msg.get("data", []))
                 logger.success(f"[Core]已保存群列表")
+                # 群列表更新后，清理不在群列表中的群成员数据
+                try:
+                    cleaned_count, error_count = clean_old_group_member_data()
+                    if cleaned_count > 0:
+                        await send_private_msg(
+                            websocket,
+                            OWNER_ID,
+                            f"[Core]群成员数据清理完成，清理了 {cleaned_count} 个不再存在的群的数据文件",
+                        )
+                    if error_count > 0:
+                        await send_private_msg(
+                            websocket,
+                            OWNER_ID,
+                            f"[Core]群成员数据清理过程中出现 {error_count} 个错误",
+                        )
+                except Exception as e:
+                    logger.error(f"[Core]执行群成员数据清理时出错: {e}")
+                    await send_private_msg(
+                        websocket, OWNER_ID, f"[Core]执行群成员数据清理时出错: {e}"
+                    )
     except Exception as e:
         logger.error(f"[Core]获取群列表失败: {e}")
         await send_private_msg(websocket, OWNER_ID, f"[Core]获取群列表失败: {e}")
