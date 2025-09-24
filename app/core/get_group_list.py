@@ -301,12 +301,12 @@ async def handle_events(websocket, msg):
 
                         if member_cleaned_count > 0:
                             notification_parts.append(
-                                f"🗑️ 群成员数据清理：清理了 {member_cleaned_count} 个群的数据文件"
+                                f"🗑️ 群成员数据清理：清理了 {member_cleaned_count} 个Bot不在的群的数据文件"
                             )
 
                         if switch_cleaned_count > 0:
                             notification_parts.append(
-                                f"⚙️ 群开关数据清理：清理了 {len(switch_cleaned_groups)} 个群的 {switch_cleaned_count} 条开关记录"
+                                f"⚙️ 群开关数据清理：清理了 {len(switch_cleaned_groups)} 个Bot不在的群的 {switch_cleaned_count} 条开关记录"
                             )
 
                         if total_errors > 0:
