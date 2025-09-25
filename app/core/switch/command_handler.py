@@ -203,12 +203,106 @@ class SwitchCommandHandler:
             logger.error(f"处理复制开关命令失败: {e}")
 
     @staticmethod
+    async def handle_private_copy_switches_command(
+        websocket, user_id, message_id, source_group_id, target_group_id
+    ):
+        """
+        处理私聊复制开关命令
+
+        Args:
+            websocket: WebSocket连接
+            user_id: 用户ID
+            message_id: 消息ID
+            source_group_id: 源群ID
+            target_group_id: 目标群ID
+        """
+        try:
+            reply_message = generate_reply_message(message_id)
+
+            # 权限检查 - 只有系统管理员可以在私聊中执行复制开关操作
+            if not is_system_admin(user_id):
+                text_message = generate_text_message(
+                    "⚠️ 只有系统管理员才能执行复制开关操作"
+                )
+                await send_private_msg(
+                    websocket,
+                    user_id,
+                    [reply_message, text_message],
+                    note="del_msg=10",
+                )
+                return
+
+            # 验证群号格式
+            if not source_group_id.isdigit() or not target_group_id.isdigit():
+                text_message = generate_text_message(
+                    "❌ 群号格式错误，请输入纯数字群号"
+                )
+                await send_private_msg(
+                    websocket,
+                    user_id,
+                    [reply_message, text_message],
+                    note="del_msg=10",
+                )
+                return
+
+            # 不能复制相同的群
+            if source_group_id == target_group_id:
+                text_message = generate_text_message("❌ 源群和目标群不能是同一个群")
+                await send_private_msg(
+                    websocket,
+                    user_id,
+                    [reply_message, text_message],
+                    note="del_msg=10",
+                )
+                return
+
+            # 执行复制操作
+            success, copied_modules, unchanged_modules = (
+                SwitchManager.copy_group_switches(source_group_id, target_group_id)
+            )
+
+            # 构建回复消息
+            if success and copied_modules:
+                copy_text = f"✅ 成功从群 {source_group_id} 复制开关配置到群 {target_group_id}\n\n📋 复制的模块开关：\n"
+                for i, module_info in enumerate(copied_modules, 1):
+                    copy_text += f"{i}. {module_info}\n"
+                copy_text += f"\n共复制 {len(copied_modules)} 个模块开关"
+
+                # 如果有保持不变的模块，也显示出来
+                if unchanged_modules:
+                    copy_text += f"\n\n🔒 保持原有配置的模块：\n"
+                    for i, module_info in enumerate(unchanged_modules, 1):
+                        copy_text += f"{i}. {module_info}\n"
+                    copy_text += f"\n共保持 {len(unchanged_modules)} 个模块的原有配置"
+
+            elif success and not copied_modules:
+                copy_text = f"ℹ️ 群 {source_group_id} 没有任何已配置的模块开关"
+            else:
+                copy_text = (
+                    f"❌ 复制失败，群 {source_group_id} 可能不存在或没有开关数据"
+                )
+
+            text_message = generate_text_message(copy_text)
+            await send_private_msg(
+                websocket,
+                user_id,
+                [reply_message, text_message],
+                note="del_msg=60",
+            )
+
+        except Exception as e:
+            logger.error(f"处理私聊复制开关命令失败: {e}")
+
+    @staticmethod
     async def handle_events(websocket, message):
         """
-        统一处理 switch 命令和复制开关命令，支持群聊
+        统一处理 switch 命令和复制开关命令，支持群聊和私聊
         支持命令：
+        群聊中：
         1. switch - 扫描本群已开启的模块
         2. 复制开关 群号 - 复制指定群号的开关配置到本群
+        私聊中：
+        1. 复制开关 群1 群2 - 复制群1的开关配置到群2
 
         Args:
             websocket: WebSocket连接
@@ -266,6 +360,33 @@ class SwitchCommandHandler:
                 elif raw_message.lower() == SWITCH_COMMAND:
                     await SwitchCommandHandler.handle_switch_query(
                         websocket, group_id, message_id
+                    )
+
+            elif message_type == "private":
+                # 私聊中需要是系统管理员
+                if not is_system_admin(user_id):
+                    return
+
+                # 私聊中只支持复制开关命令
+                if raw_message.startswith("复制开关 "):
+                    parts = raw_message.split(" ")
+                    if len(parts) != 3:
+                        reply_message = generate_reply_message(message_id)
+                        text_message = generate_text_message(
+                            "❌ 命令格式错误，请使用：复制开关 群1 群2"
+                        )
+                        await send_private_msg(
+                            websocket,
+                            user_id,
+                            [reply_message, text_message],
+                            note="del_msg=10",
+                        )
+                        return
+
+                    source_group_id = parts[1].strip()
+                    target_group_id = parts[2].strip()
+                    await SwitchCommandHandler.handle_private_copy_switches_command(
+                        websocket, user_id, message_id, source_group_id, target_group_id
                     )
 
         except Exception as e:
