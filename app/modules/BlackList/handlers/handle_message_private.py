@@ -3,7 +3,11 @@ from core.menu_manager import MENU_COMMAND
 import logger
 from core.switchs import is_private_switch_on, handle_module_private_switch
 from api.message import send_private_msg, get_msg
-from utils.generate import generate_text_message, generate_reply_message
+from utils.generate import (
+    generate_text_message,
+    generate_reply_message,
+    generate_at_message,
+)
 from datetime import datetime
 from core.menu_manager import MenuManager
 from utils.auth import is_system_admin
@@ -687,9 +691,7 @@ class BlackListHandlePrivate(BlackListHandle):
                                 blacklisted_members.append(member_id)
 
                     if not blacklisted_members:
-                        scan_results.append(
-                            f"群 {group_name}({group_id})：未发现黑名单用户"
-                        )
+                        # 不再将无黑名单的群添加到扫描结果中
                         # 发送进度消息
                         progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：未发现黑名单用户"
                         await send_private_msg(
@@ -717,21 +719,30 @@ class BlackListHandlePrivate(BlackListHandle):
 
                     # 群内播报
                     if kicked_count > 0:
-                        broadcast_message = (
-                            f"🚫 扫黑完成：发现并踢出 {kicked_count} 个黑名单用户\n"
-                            + "\n".join(kick_messages)
-                        )
+                        # 播报头消息
+                        broadcast_message = [
+                            generate_text_message(
+                                f"🚫 扫黑完成：发现并踢出 {kicked_count} 个黑名单用户\n"
+                            )
+                        ]
+
+                        # 构建被踢成员汇总
+                        for member_id in kick_messages:
+                            broadcast_message += [
+                                generate_at_message(member_id),
+                                (generate_text_message(f"({member_id})\n")),
+                            ]
+
                         await send_group_msg(
-                            self.websocket,
-                            group_id,
-                            [generate_text_message(broadcast_message)],
-                            note="del_msg=30",
+                            self.websocket, group_id, broadcast_message
                         )
 
                     total_kicked += kicked_count
-                    scan_results.append(
-                        f"群 {group_name}({group_id})：踢出 {kicked_count} 个黑名单用户"
-                    )
+                    # 只有成功踢出黑名单用户的群才添加到扫描结果中
+                    if kicked_count > 0:
+                        scan_results.append(
+                            f"{group_name}({group_id})：踢出 {kicked_count} 个黑名单用户"
+                        )
 
                     # 发送进度消息
                     progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：踢出 {kicked_count} 个黑名单用户"
@@ -757,8 +768,13 @@ class BlackListHandlePrivate(BlackListHandle):
             # 发送最终扫描结果
             result_message = f"🔍 扫黑任务完成！\n\n"
             result_message += f"扫描群数：{len(target_groups)}\n"
+            result_message += f"发现黑名单群数：{len(scan_results)}\n"
             result_message += f"总计踢出：{total_kicked} 人\n\n"
-            result_message += "详细结果：\n" + "\n".join(scan_results)
+
+            if scan_results:
+                result_message += "详细结果：\n" + "\n".join(scan_results)
+            else:
+                result_message += "🎉 所有扫描的群都很干净，未发现黑名单用户！"
 
             await send_private_msg(
                 self.websocket,
