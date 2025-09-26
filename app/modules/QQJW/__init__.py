@@ -25,6 +25,9 @@ START_JW = "教务"
 ADD_ENABLE_GROUP = f"{START_JW}启用群"
 REMOVE_ENABLE_GROUP = f"{START_JW}禁用群"
 
+# 状态查询命令
+STATUS_COMMAND = "status"
+
 # 中转群群号常量（字符串类型）
 FORWARD_GROUP_ID = "1053432087"
 
@@ -32,4 +35,5 @@ FORWARD_GROUP_ID = "1053432087"
 COMMANDS = {
     ADD_ENABLE_GROUP: f"添加启用群，用法：{ADD_ENABLE_GROUP} 群号",
     REMOVE_ENABLE_GROUP: f"禁用启用群，用法：{REMOVE_ENABLE_GROUP} 群号",
+    STATUS_COMMAND: f"查看所有启用群状态，用法：{STATUS_COMMAND}（仅限中转群）",
 }
