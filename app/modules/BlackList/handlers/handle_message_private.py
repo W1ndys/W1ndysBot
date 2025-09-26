@@ -703,14 +703,14 @@ class BlackListHandlePrivate(BlackListHandle):
 
                     # 踢出黑名单用户
                     kicked_count = 0
-                    kick_messages = []
+                    kick_user_ids = []
 
                     for member_id in blacklisted_members:
                         try:
                             # 踢出用户
                             await set_group_kick(self.websocket, group_id, member_id)
                             kicked_count += 1
-                            kick_messages.append(f"用户 {member_id}")
+                            kick_user_ids.append(f"{member_id}")
                             await asyncio.sleep(0.5)  # 避免频繁操作
                         except Exception as e:
                             logger.error(
@@ -727,11 +727,13 @@ class BlackListHandlePrivate(BlackListHandle):
                         ]
 
                         # 构建被踢成员汇总
-                        for member_id in kick_messages:
+                        for kick_user_id in kick_user_ids:
                             broadcast_message += [
-                                generate_at_message(member_id),
-                                (generate_text_message(f"({member_id})\n")),
+                                generate_at_message(kick_user_id),
+                                (generate_text_message(f"({kick_user_id})\n")),
                             ]
+
+                        logger.debug(f"[{MODULE_NAME}]广播消息: {broadcast_message}")
 
                         await send_group_msg(
                             self.websocket, group_id, broadcast_message
