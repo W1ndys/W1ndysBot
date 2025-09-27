@@ -157,6 +157,16 @@ async def check_and_handle_ban_words(
             ],
         )
 
+        # 单独构建拉黑相关人员的命令给owner上报
+        related_users_msg = f"拉黑 {' '.join(map(str, related_users))}"
+        await send_private_msg(
+            websocket,
+            OWNER_ID,
+            [
+                generate_text_message(related_users_msg),
+            ],
+        )
+
         send_feishu_msg(
             title=f"检测到违禁词",
             content=feishu_msg_content,
@@ -165,8 +175,9 @@ async def check_and_handle_ban_words(
         # 修改群内播报格式
         group_msg_content = (
             f"检测到违禁消息！\n"
-            f"触发违禁词（{len(matched_words)}）个\n"
-            f"总权值（{total_weight}）点"
+            f"触发违禁词 {len(matched_words)} 个\n"
+            f"总权值 {total_weight} 点\n"
+            f"相关人员: {', '.join(map(str, related_users))}"
         )
 
         await send_group_msg(
