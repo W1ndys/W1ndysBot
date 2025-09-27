@@ -174,6 +174,7 @@ async def check_and_handle_ban_words(
             group_id,
             [
                 generate_at_message(user_id),
+                generate_text_message(f"({user_id})"),
                 generate_text_message(group_msg_content),
             ],
         )
