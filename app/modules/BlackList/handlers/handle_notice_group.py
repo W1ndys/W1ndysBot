@@ -4,8 +4,9 @@ from datetime import datetime
 from core.switchs import is_group_switch_on
 from .data_manager import BlackListDataManager
 from api.group import set_group_kick
-from api.message import send_group_msg
+from api.message import send_group_msg, send_private_msg
 from utils.generate import generate_text_message, generate_at_message
+from config import OWNER_ID
 
 
 class GroupNoticeHandler:
@@ -112,7 +113,7 @@ class GroupNoticeHandler:
 
     async def check_and_kick_blacklisted_user_and_inviter(self):
         """
-        检查被邀请用户是否在黑名单中（包括全局黑名单），如果在则踢出被邀请人和邀请人
+        检查被邀请用户是否在黑名单中（包括全局黑名单），如果在则踢出被邀请人和邀请人，并将邀请人拉黑上报owner
         """
         try:
             with BlackListDataManager() as data_manager:
@@ -125,7 +126,7 @@ class GroupNoticeHandler:
                     warning_at_invited = generate_at_message(self.user_id)
                     warning_at_inviter = generate_at_message(self.operator_id)
                     warning_msg = generate_text_message(
-                        f"检测到被邀请用户({self.user_id})是{blacklist_type}用户，将踢出被邀请人和邀请人"
+                        f"检测到被邀请用户({self.user_id})是{blacklist_type}用户，将踢出被邀请人和邀请人，并将邀请人拉黑"
                     )
                     await send_group_msg(
                         self.websocket,
@@ -143,8 +144,25 @@ class GroupNoticeHandler:
                         self.websocket, self.group_id, self.operator_id, False
                     )
 
+                    # 将邀请人添加到群黑名单
+                    inviter_added = data_manager.add_blacklist(
+                        self.group_id, self.operator_id
+                    )
+
+                    # 上报给owner
+                    if OWNER_ID:
+                        report_msg = generate_text_message(
+                            f"[{MODULE_NAME}]黑名单邀请警告\n"
+                            f"时间: {self.formatted_time}\n"
+                            f"群ID: {self.group_id}\n"
+                            f"被邀请用户: {self.user_id}({blacklist_type})\n"
+                            f"邀请人: {self.operator_id}\n"
+                            f"操作: 已踢出双方，邀请人{'已加入黑名单' if inviter_added else '已在黑名单中'}"
+                        )
+                        await send_private_msg(self.websocket, OWNER_ID, [report_msg])
+
                     logger.info(
-                        f"[{MODULE_NAME}]已踢出{blacklist_type}用户 {self.user_id} 和邀请人 {self.operator_id}"
+                        f"[{MODULE_NAME}]已踢出{blacklist_type}用户 {self.user_id} 和邀请人 {self.operator_id}，邀请人{'已加入' if inviter_added else '已在'}黑名单"
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]检查并踢出黑名单用户和邀请人失败: {e}")
