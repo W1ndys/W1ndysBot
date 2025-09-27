@@ -139,12 +139,11 @@ async def check_and_handle_ban_words(
             f"涉及违禁词: {', '.join(f'{word}（{weight}）' for word, weight in matched_words)}"
         )
 
-        admin_msg_content = (
-            f"检测到违禁消息\n"
-            f"{common_content}\n"
-            f"相关消息已通过飞书上报\n"
-            f"引用回复本消息【{UNBAN_WORD_COMMAND}】或【{KICK_BAN_WORD_COMMAND}】来处理用户"
-        )
+        # 如果有邀请树信息，添加到共同内容中
+        if invite_chain_info:
+            common_content += f"\n{invite_chain_info}"
+
+        admin_msg_content = f"检测到违禁消息\n" f"{common_content}\n"
 
         feishu_msg_content = f"{common_content}\n"
         feishu_msg_content += f"raw_message={raw_message}"
@@ -163,29 +162,21 @@ async def check_and_handle_ban_words(
             content=feishu_msg_content,
         )
 
+        # 修改群内播报格式
+        group_msg_content = (
+            f"检测到违禁消息！\n"
+            f"触发违禁词（{len(matched_words)}）个\n"
+            f"总权值（{total_weight}）点"
+        )
+
         await send_group_msg(
             websocket,
             group_id,
             [
                 generate_at_message(user_id),
-                generate_text_message(
-                    f"({user_id})\n请勿发送违禁消息，如误封请联系管理员\n"
-                    f"group_id={group_id}\n"
-                    f"user_id={user_id}"
-                ),
+                generate_text_message(group_msg_content),
             ],
         )
-
-        if invite_chain_info:
-            await asyncio.sleep(0.3)
-            await send_group_msg(
-                websocket, group_id, [generate_text_message(invite_chain_info)]
-            )
-            await send_private_msg(
-                websocket,
-                OWNER_ID,
-                [generate_text_message(invite_chain_info)],
-            )
 
         return True
     else:
