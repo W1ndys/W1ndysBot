@@ -651,6 +651,7 @@ class BlackListHandlePrivate(BlackListHandle):
             # 扫描统计
             total_kicked = 0
             scan_results = []
+            batch_results = []  # 用于存储批次处理结果
 
             for index, group_id in enumerate(target_groups, 1):
                 try:
@@ -674,12 +675,8 @@ class BlackListHandlePrivate(BlackListHandle):
                         scan_results.append(
                             f"{group_name}({group_id})：无法获取群成员列表"
                         )
-                        # 发送进度消息
-                        progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：无法获取群成员列表"
-                        await send_private_msg(
-                            self.websocket,
-                            self.target_id,
-                            [generate_text_message(progress_msg)],
+                        batch_results.append(
+                            f"{group_name}({group_id})：无法获取群成员列表"
                         )
                         continue
 
@@ -691,14 +688,9 @@ class BlackListHandlePrivate(BlackListHandle):
                                 blacklisted_members.append(member_id)
 
                     if not blacklisted_members:
-                        # 不再将无黑名单的群添加到扫描结果中
-                        # 发送进度消息
-                        # progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：未发现黑名单用户"
-                        # await send_private_msg(
-                        #     self.websocket,
-                        #     self.target_id,
-                        #     [generate_text_message(progress_msg)],
-                        # )
+                        batch_results.append(
+                            f"{group_name}({group_id})：未发现黑名单用户"
+                        )
                         continue
 
                     # 踢出黑名单用户
@@ -744,27 +736,46 @@ class BlackListHandlePrivate(BlackListHandle):
                         scan_results.append(
                             f"{group_name}({group_id})：踢出 {kicked_count} 个黑名单用户"
                         )
+                        batch_results.append(
+                            f"{group_name}({group_id})：踢出 {kicked_count} 个黑名单用户"
+                        )
+                    else:
+                        batch_results.append(
+                            f"{group_name}({group_id})：未发现黑名单用户"
+                        )
 
-                    # 发送进度消息
-                    progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：踢出 {kicked_count} 个黑名单用户"
-                    await send_private_msg(
-                        self.websocket,
-                        self.target_id,
-                        [generate_text_message(progress_msg)],
-                    )
+                    # 每10个群或最后一个群时发送进度消息
+                    if index % 10 == 0 or index == len(target_groups):
+                        batch_start = max(1, index - 9)
+                        progress_msg = f"🔍 扫黑进度 ({batch_start}-{index}/{len(target_groups)})\n\n"
+                        progress_msg += "\n".join(batch_results)
+
+                        await send_private_msg(
+                            self.websocket,
+                            self.target_id,
+                            [generate_text_message(progress_msg)],
+                        )
+                        batch_results = []  # 清空批次结果
 
                     # await asyncio.sleep(1)  # 群间间隔
 
                 except Exception as e:
                     logger.error(f"[{MODULE_NAME}]扫描群 {group_id} 失败: {e}")
-                    scan_results.append(f"群 {group_id}：扫描失败 - {str(e)}")
-                    # 发送错误进度消息
-                    error_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_id}：扫描失败 - {str(e)}"
-                    await send_private_msg(
-                        self.websocket,
-                        self.target_id,
-                        [generate_text_message(error_msg)],
-                    )
+                    scan_results.append(f"{group_id}：扫描失败 - {str(e)}")
+                    batch_results.append(f"{group_id}：扫描失败 - {str(e)}")
+
+                    # 每10个群或最后一个群时发送进度消息（包含错误信息）
+                    if index % 10 == 0 or index == len(target_groups):
+                        batch_start = max(1, index - 9)
+                        progress_msg = f"🔍 扫黑进度 ({batch_start}-{index}/{len(target_groups)})\n\n"
+                        progress_msg += "\n".join(batch_results)
+
+                        await send_private_msg(
+                            self.websocket,
+                            self.target_id,
+                            [generate_text_message(progress_msg)],
+                        )
+                        batch_results = []  # 清空批次结果
 
             # 发送最终扫描结果
             result_message = f"🔍 扫黑任务完成！\n\n"
