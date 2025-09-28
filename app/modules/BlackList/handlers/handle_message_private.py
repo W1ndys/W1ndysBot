@@ -672,7 +672,7 @@ class BlackListHandlePrivate(BlackListHandle):
 
                     if not member_ids:
                         scan_results.append(
-                            f"群 {group_name}({group_id})：无法获取群成员列表"
+                            f"{group_name}({group_id})：无法获取群成员列表"
                         )
                         # 发送进度消息
                         progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：无法获取群成员列表"
@@ -693,12 +693,12 @@ class BlackListHandlePrivate(BlackListHandle):
                     if not blacklisted_members:
                         # 不再将无黑名单的群添加到扫描结果中
                         # 发送进度消息
-                        progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：未发现黑名单用户"
-                        await send_private_msg(
-                            self.websocket,
-                            self.target_id,
-                            [generate_text_message(progress_msg)],
-                        )
+                        # progress_msg = f"🔍 扫黑进度 ({index}/{len(target_groups)})\n群 {group_name}({group_id})：未发现黑名单用户"
+                        # await send_private_msg(
+                        #     self.websocket,
+                        #     self.target_id,
+                        #     [generate_text_message(progress_msg)],
+                        # )
                         continue
 
                     # 踢出黑名单用户
@@ -711,7 +711,6 @@ class BlackListHandlePrivate(BlackListHandle):
                             await set_group_kick(self.websocket, group_id, member_id)
                             kicked_count += 1
                             kick_user_ids.append(f"{member_id}")
-                            await asyncio.sleep(0.5)  # 避免频繁操作
                         except Exception as e:
                             logger.error(
                                 f"[{MODULE_NAME}]踢出用户 {member_id} 失败: {e}"
@@ -754,7 +753,7 @@ class BlackListHandlePrivate(BlackListHandle):
                         [generate_text_message(progress_msg)],
                     )
 
-                    await asyncio.sleep(1)  # 群间间隔
+                    # await asyncio.sleep(1)  # 群间间隔
 
                 except Exception as e:
                     logger.error(f"[{MODULE_NAME}]扫描群 {group_id} 失败: {e}")
