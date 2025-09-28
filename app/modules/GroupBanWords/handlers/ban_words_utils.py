@@ -152,7 +152,6 @@ async def check_and_handle_ban_words(
             websocket,
             OWNER_ID,
             [
-                generate_text_message(f"[{MODULE_NAME}]"),
                 generate_text_message(admin_msg_content),
             ],
         )
@@ -185,7 +184,7 @@ async def check_and_handle_ban_words(
             group_id,
             [
                 generate_at_message(user_id),
-                generate_text_message(f"({user_id})"),
+                generate_text_message(f"({user_id})\n"),
                 generate_text_message(group_msg_content),
             ],
         )
