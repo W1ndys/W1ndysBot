@@ -666,7 +666,7 @@ class BlackListHandlePrivate(BlackListHandle):
                     )
 
                     # 等待一下让数据更新
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(0.5)
 
                     # 获取群成员QQ号列表
                     member_ids = get_group_member_user_ids(group_id)
