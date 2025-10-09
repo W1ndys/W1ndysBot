@@ -175,38 +175,28 @@ class GroupNoticeHandler:
     async def detect_user_in_other_group(self):
         """
         检测用户是否在其他群中
+        改动：若用户已在关联群中，踢出当前新进群（self.group_id），不再踢出原来的群。
         """
         try:
             user_group_ids, group_name = get_user_groups_in_associated_groups(
                 self.user_id, self.group_id
             )
             if user_group_ids:
-                for group_id in user_group_ids:
-                    await send_group_msg(
-                        self.websocket,
-                        group_id,
-                        [
-                            generate_at_message(self.user_id),
-                            generate_text_message(
-                                f"系统检测到你已在【{group_name}】组的多个关联群中，请勿重复加入。你将被自动移出本群（群号：{group_id}）"
-                            ),
-                        ],
-                        note="del_msg=300",
-                    )
-                    await set_group_kick(self.websocket, group_id, self.user_id)
-                logger.success(
-                    f"[{MODULE_NAME}]用户{self.user_id}在【{group_name}】组的多个关联群中被检测到，已执行自动移除操作。"
-                )
+                # 在当前新进群内提示并踢出
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
                     [
                         generate_at_message(self.user_id),
                         generate_text_message(
-                            f"系统检测到你已在【{group_name}】组的其他关联群中，为维护群组秩序，你将被自动移出相关群聊。如有疑问请联系管理员。"
+                            f"系统检测到你已在【{group_name}】组的其他关联群中，为维护群组秩序，你将被自动移出本群。"
                         ),
                     ],
                     note="del_msg=300",
+                )
+                await set_group_kick(self.websocket, self.group_id, self.user_id)
+                logger.success(
+                    f"[{MODULE_NAME}]检测到用户{self.user_id}已在【{group_name}】组的关联群中，已将其从新进群{self.group_id}移出。"
                 )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]检测用户是否在其他群中失败: {e}")
