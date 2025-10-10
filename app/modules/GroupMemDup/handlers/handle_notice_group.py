@@ -1,11 +1,11 @@
 from .. import MODULE_NAME
 import logger
 from datetime import datetime
-from core.switchs import is_group_switch_on
 from api.message import send_group_msg
 from utils.generate import generate_text_message, generate_at_message
 from api.group import set_group_kick
 from .core import get_user_groups_in_associated_groups
+import asyncio
 
 
 class GroupNoticeHandler:
@@ -194,6 +194,7 @@ class GroupNoticeHandler:
                     ],
                     note="del_msg=300",
                 )
+                await asyncio.sleep(1)  # 等待1秒以确保消息发送完成
                 await set_group_kick(self.websocket, self.group_id, self.user_id)
                 logger.success(
                     f"[{MODULE_NAME}]检测到用户{self.user_id}已在【{group_name}】组的关联群中，已将其从新进群{self.group_id}移出。"
