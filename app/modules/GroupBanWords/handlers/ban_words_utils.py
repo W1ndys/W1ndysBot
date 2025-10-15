@@ -179,17 +179,28 @@ async def check_and_handle_ban_words(
             f"相关人员: {', '.join(map(str, related_users))}"
         )
 
-        await send_group_msg(
-            websocket,
-            group_id,
-            [
-                generate_at_message(user_id),
-                generate_text_message(f"({user_id})\n"),
-                generate_text_message(group_msg_content),
-            ],
-        )
-
-        return True
+        if group_id in ["616745113"]:  # 需要主动撤回的群
+            await send_group_msg(
+                websocket,
+                group_id,
+                [
+                    generate_at_message(user_id),
+                    generate_text_message(f"({user_id})\n"),
+                    generate_text_message(group_msg_content),
+                ],
+                note="del_msg=60",
+            )
+        else:
+            await send_group_msg(
+                websocket,
+                group_id,
+                [
+                    generate_at_message(user_id),
+                    generate_text_message(f"({user_id})\n"),
+                    generate_text_message(group_msg_content),
+                ],
+            )
+            return True
     else:
         # 检测用户状态
         user_status = data_manager.get_user_status(user_id)
