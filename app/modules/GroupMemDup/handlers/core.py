@@ -164,7 +164,6 @@ class Core:
                             message,
                             note=f"{note}-group_id={group_id}",
                         )
-                        await asyncio.sleep(0.5)
                     await send_private_msg(
                         self.websocket,
                         self.user_id,
