@@ -34,7 +34,7 @@ class GroupNoticeHandler:
     群组通知处理器
     """
 
-    async def __init__(self, websocket, msg):
+    def __init__(self, websocket, msg):
         self.websocket = websocket
         self.msg = msg
         self.time = msg.get("time")
@@ -46,8 +46,6 @@ class GroupNoticeHandler:
         self.user_id = str(msg.get("user_id"))
         self.group_id = str(msg.get("group_id"))
         self.operator_id = str(msg.get("operator_id"))
-
-        await self._initialize_group_member_lists()
 
     async def _initialize_group_member_lists(self):
         """
@@ -77,6 +75,11 @@ class GroupNoticeHandler:
                         logger.info(
                             f"[{MODULE_NAME}]初始化：已复制群成员列表文件 {group_id}.json 到 {COPY_TO_DIR}"
                         )
+                        await send_private_msg(
+                            self.websocket,
+                            OWNER_ID,
+                            f"[{MODULE_NAME}]初始化：已复制群成员列表文件 {group_id}.json 到 {COPY_TO_DIR}",
+                        )
                     else:
                         logger.warning(
                             f"[{MODULE_NAME}]初始化警告：源文件 {source_path} 不存在，无法复制。"
@@ -89,6 +92,9 @@ class GroupNoticeHandler:
         处理群聊通知
         """
         try:
+            # 执行异步初始化
+            await self._initialize_group_member_lists()
+
             # 如果没开启群聊开关，则不处理
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
@@ -122,9 +128,19 @@ class GroupNoticeHandler:
                     logger.info(
                         f"[{MODULE_NAME}]已复制群成员列表文件：{self.group_id}.json 到 {COPY_TO_DIR} 目录"
                     )
+                    await send_private_msg(
+                        self.websocket,
+                        OWNER_ID,
+                        f"[{MODULE_NAME}]已复制群成员列表文件：{self.group_id}.json 到 {COPY_TO_DIR} 目录",
+                    )
                 else:
                     logger.warning(
                         f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。"
+                    )
+                    await send_private_msg(
+                        self.websocket,
+                        OWNER_ID,
+                        f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。",
                     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
