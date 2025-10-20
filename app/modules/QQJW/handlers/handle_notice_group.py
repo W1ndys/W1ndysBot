@@ -5,12 +5,13 @@ from core.switchs import is_group_switch_on
 from core.get_group_list import get_group_member_info_by_id
 from core.get_group_member_list import get_user_role_in_group
 from ..utils.data_manager import DataManager
-from api.message import send_group_msg
+from api.message import send_group_msg, send_private_msg
 from api.group import set_group_kick, get_group_member_list
 from utils.generate import generate_text_message, generate_at_message
 import asyncio
 import shutil
 from pathlib import Path
+from config import OWNER_ID
 
 # 群成员路径
 from core.get_group_member_list import DATA_DIR as GROUP_MEMBER_LIST_DIR
@@ -33,7 +34,7 @@ class GroupNoticeHandler:
     群组通知处理器
     """
 
-    def __init__(self, websocket, msg):
+    async def __init__(self, websocket, msg):
         self.websocket = websocket
         self.msg = msg
         self.time = msg.get("time")
@@ -46,9 +47,9 @@ class GroupNoticeHandler:
         self.group_id = str(msg.get("group_id"))
         self.operator_id = str(msg.get("operator_id"))
 
-        self._initialize_group_member_lists()
+        await self._initialize_group_member_lists()
 
-    def _initialize_group_member_lists(self):
+    async def _initialize_group_member_lists(self):
         """
         初始化检查：如果目标目录中缺少启用群的成员列表文件，则从源目录复制。
         """
@@ -59,6 +60,11 @@ class GroupNoticeHandler:
                 )
                 COPY_TO_DIR.mkdir(parents=True, exist_ok=True)
                 logger.info(f"[{MODULE_NAME}]已创建目标目录：{COPY_TO_DIR}")
+                await send_private_msg(
+                    self.websocket,
+                    OWNER_ID,
+                    f"[{MODULE_NAME}]目标目录不存在，已创建目标目录：{COPY_TO_DIR}\n如果目标目录有修改，请及时修改对应代码同步。",
+                )
 
             enable_groups = self._get_enable_groups_list()
             for group_id in enable_groups:
