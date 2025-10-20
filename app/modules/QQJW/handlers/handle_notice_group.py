@@ -10,13 +10,22 @@ from api.group import set_group_kick, get_group_member_list
 from utils.generate import generate_text_message, generate_at_message
 import asyncio
 import shutil
-import os
+from pathlib import Path
 
 # 群成员路径
 from core.get_group_member_list import DATA_DIR as GROUP_MEMBER_LIST_DIR
 
 # 复制后路径
-COPY_TO_DIR = "/root/Easy-QFNU-WeChat/app/data/group_member_list"
+# 获取当前文件所在目录的上五级目录，然后拼接目标路径
+# .../W1ndysBot/app/modules/QQJW/handlers/ -> .../W1ndysBot/
+# 假设 W1ndysBot 和 Easy-QFNU-WeChat 在同一目录下
+COPY_TO_DIR = (
+    Path(__file__).resolve().parents[4]
+    / "Easy-QFNU-WeChat"
+    / "app"
+    / "data"
+    / "group_member_list"
+)
 
 
 class GroupNoticeHandler:
@@ -44,17 +53,20 @@ class GroupNoticeHandler:
         初始化检查：如果目标目录中缺少启用群的成员列表文件，则从源目录复制。
         """
         try:
-            if not os.path.exists(COPY_TO_DIR):
-                os.makedirs(COPY_TO_DIR)
+            if not COPY_TO_DIR.exists():
+                logger.warning(
+                    f"[{MODULE_NAME}]目标目录不存在，将尝试创建：{COPY_TO_DIR}"
+                )
+                COPY_TO_DIR.mkdir(parents=True, exist_ok=True)
                 logger.info(f"[{MODULE_NAME}]已创建目标目录：{COPY_TO_DIR}")
 
             enable_groups = self._get_enable_groups_list()
             for group_id in enable_groups:
-                source_path = f"{GROUP_MEMBER_LIST_DIR}/{group_id}.json"
-                dest_path = f"{COPY_TO_DIR}/{group_id}.json"
+                source_path = Path(GROUP_MEMBER_LIST_DIR) / f"{group_id}.json"
+                dest_path = COPY_TO_DIR / f"{group_id}.json"
 
-                if not os.path.exists(dest_path):
-                    if os.path.exists(source_path):
+                if not dest_path.exists():
+                    if source_path.exists():
                         shutil.copyfile(source_path, dest_path)
                         logger.info(
                             f"[{MODULE_NAME}]初始化：已复制群成员列表文件 {group_id}.json 到 {COPY_TO_DIR}"
@@ -97,13 +109,17 @@ class GroupNoticeHandler:
                 await get_group_member_list(self.websocket, self.group_id)
                 # 等待0.5秒，把群成员列表文件复制到指定目录
                 await asyncio.sleep(0.5)
-                shutil.copyfile(
-                    f"{GROUP_MEMBER_LIST_DIR}/{self.group_id}.json",
-                    f"{COPY_TO_DIR}/{self.group_id}.json",
-                )
-                logger.info(
-                    f"[{MODULE_NAME}]已复制群成员列表文件：{self.group_id}.json 到 {COPY_TO_DIR} 目录"
-                )
+                source_path = Path(GROUP_MEMBER_LIST_DIR) / f"{self.group_id}.json"
+                dest_path = COPY_TO_DIR / f"{self.group_id}.json"
+                if source_path.exists():
+                    shutil.copyfile(source_path, dest_path)
+                    logger.info(
+                        f"[{MODULE_NAME}]已复制群成员列表文件：{self.group_id}.json 到 {COPY_TO_DIR} 目录"
+                    )
+                else:
+                    logger.warning(
+                        f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。"
+                    )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
             raise  # 增加错误抛出
