@@ -17,10 +17,10 @@ from core.get_group_member_list import DATA_DIR as GROUP_MEMBER_LIST_DIR
 
 # 复制后路径
 # 获取当前文件所在目录的上五级目录，然后拼接目标路径
-# .../W1ndysBot/app/modules/QQJW/handlers/ -> .../W1ndysBot/
+# .../W1ndysBot/app/modules/QQJW/handlers/ -> .../
 # 假设 W1ndysBot 和 Easy-QFNU-WeChat 在同一目录下
 COPY_TO_DIR = (
-    Path(__file__).resolve().parents[4]
+    Path(__file__).resolve().parents[5]
     / "Easy-QFNU-WeChat"
     / "app"
     / "data"
