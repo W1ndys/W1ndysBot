@@ -6,9 +6,17 @@ from core.get_group_list import get_group_member_info_by_id
 from core.get_group_member_list import get_user_role_in_group
 from ..utils.data_manager import DataManager
 from api.message import send_group_msg
-from api.group import set_group_kick
+from api.group import set_group_kick, get_group_member_list
 from utils.generate import generate_text_message, generate_at_message
 import asyncio
+import shutil
+import os
+
+# 群成员路径
+from core.get_group_member_list import DATA_DIR as GROUP_MEMBER_LIST_DIR
+
+# 复制后路径
+COPY_TO_DIR = "/root/Easy-QFNU-WeChat/app/data/group_member_list"
 
 
 class GroupNoticeHandler:
@@ -29,6 +37,35 @@ class GroupNoticeHandler:
         self.group_id = str(msg.get("group_id"))
         self.operator_id = str(msg.get("operator_id"))
 
+        self._initialize_group_member_lists()
+
+    def _initialize_group_member_lists(self):
+        """
+        初始化检查：如果目标目录中缺少启用群的成员列表文件，则从源目录复制。
+        """
+        try:
+            if not os.path.exists(COPY_TO_DIR):
+                os.makedirs(COPY_TO_DIR)
+                logger.info(f"[{MODULE_NAME}]已创建目标目录：{COPY_TO_DIR}")
+
+            enable_groups = self._get_enable_groups_list()
+            for group_id in enable_groups:
+                source_path = f"{GROUP_MEMBER_LIST_DIR}/{group_id}.json"
+                dest_path = f"{COPY_TO_DIR}/{group_id}.json"
+
+                if not os.path.exists(dest_path):
+                    if os.path.exists(source_path):
+                        shutil.copyfile(source_path, dest_path)
+                        logger.info(
+                            f"[{MODULE_NAME}]初始化：已复制群成员列表文件 {group_id}.json 到 {COPY_TO_DIR}"
+                        )
+                    else:
+                        logger.warning(
+                            f"[{MODULE_NAME}]初始化警告：源文件 {source_path} 不存在，无法复制。"
+                        )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]初始化群成员列表文件失败: {e}")
+
     async def handle_group_notice(self):
         """
         处理群聊通知
@@ -45,7 +82,6 @@ class GroupNoticeHandler:
             logger.error(f"[{MODULE_NAME}]处理群聊通知失败: {e}")
 
     # 群聊成员增加处理
-
     async def handle_group_increase(self):
         """
         处理群聊成员增加通知
@@ -54,6 +90,20 @@ class GroupNoticeHandler:
             if self.group_id == FORWARD_GROUP_ID:
                 # 处理Easy-QFNUJW模块进入中转群的事件
                 await self.handle_group_increase_forward_group()
+
+            # 如果群号是启用群
+            elif self.group_id in self._get_enable_groups_list():
+                # 发送获取群成员列表的API
+                await get_group_member_list(self.websocket, self.group_id)
+                # 等待0.5秒，把群成员列表文件复制到指定目录
+                await asyncio.sleep(0.5)
+                shutil.copyfile(
+                    f"{GROUP_MEMBER_LIST_DIR}/{self.group_id}.json",
+                    f"{COPY_TO_DIR}/{self.group_id}.json",
+                )
+                logger.info(
+                    f"[{MODULE_NAME}]已复制群成员列表文件：{self.group_id}.json 到 {COPY_TO_DIR} 目录"
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
             raise  # 增加错误抛出
@@ -100,7 +150,7 @@ class GroupNoticeHandler:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加 - 中转群通知失败: {e}")
             raise  # 增加错误抛出
 
-    def _get_enable_groups_list(self):
+    def _get_enable_groups_list(self) -> list[str]:
         """
         获取教务启用群列表
         """
