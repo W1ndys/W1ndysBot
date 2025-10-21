@@ -45,6 +45,7 @@ COMMANDS = {
     GROUP_ALL_BAN_COMMAND: "禁言全体成员",
     GROUP_ALL_UNBAN_COMMAND: "全员解禁",
     GROUP_RECALL_COMMAND: "撤回消息，回复需要撤回的消息并发送该命令",
+    "撤回 N [@或QQ号]": "撤回最近N条消息，可指定用户（支持@和QQ号）。例如：撤回 50 或 撤回 50 @xxx 或 撤回 50 123456",
     GROUP_BAN_ME_COMMAND: "封禁自己一段随机时间",
     GROUP_BAN_RANK_COMMAND: "查看禁言排行榜，展示个人和群内禁言记录",
     SCAN_INACTIVE_USER_COMMAND: "警告未活跃用户，格式：警告未活跃用户+天数。例如：警告未活跃用户 30",

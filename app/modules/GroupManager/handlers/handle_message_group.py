@@ -25,6 +25,7 @@ from datetime import datetime
 from utils.auth import is_group_admin, is_system_admin
 from .GroupManagerHandle import GroupManagerHandle
 from core.menu_manager import MenuManager
+import re
 
 
 class GroupMessageHandler:
@@ -116,6 +117,8 @@ class GroupMessageHandler:
                     await group_manager_handle.handle_kick()
                 elif GROUP_RECALL_COMMAND in self.raw_message:
                     await group_manager_handle.handle_recall()
+                elif re.match(r"^撤回\s+\d+", self.raw_message):
+                    await group_manager_handle.handle_recall_by_count()
                 elif self.raw_message.startswith(SCAN_INACTIVE_USER_COMMAND):
                     await group_manager_handle.handle_scan_inactive_user()
                 elif self.raw_message.startswith(GROUP_SET_CURFEW_COMMAND):

@@ -15,7 +15,7 @@ from api.group import (
     set_group_whole_ban,
     get_group_member_list,
 )
-from api.message import send_group_msg, delete_msg
+from api.message import send_group_msg, delete_msg, get_group_msg_history
 from utils.generate import (
     generate_text_message,
     generate_at_message,
@@ -23,7 +23,9 @@ from utils.generate import (
 )
 import re
 import random
+import asyncio
 from .data_manager import DataManager
+from .handle_response import TEMP_GROUP_HISTORY_CACHE
 
 
 class GroupManagerHandle:
@@ -229,6 +231,61 @@ class GroupManagerHandle:
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]撤回操作失败: {e}")
+
+    async def handle_recall_by_count(self):
+        """
+        撤回最近N条消息，支持指定用户：
+        撤回 50                -> 撤回最近50条消息
+        撤回 50 @xxx 123456    -> 仅撤回最近50条中由@xxx和QQ号123456发送的消息
+        """
+        try:
+            # 提取数量
+            count_match = re.search(r"撤回\s+(\d+)", self.raw_message)
+            if not count_match:
+                return
+            count = int(count_match.group(1))
+            # 做一下上限保护，避免一次请求过大
+            count = max(1, min(count, 200))
+
+            # 提取目标用户（@和纯QQ号）
+            targets = set()
+            # @ 提取
+            for m in re.finditer(r"\[CQ:at,qq=(\d+)\]", self.raw_message):
+                targets.add(m.group(1))
+            # 纯QQ号提取（至少5位，避免把数量匹配进去）
+            for m in re.finditer(r"\b(\d{5,12})\b", self.raw_message):
+                targets.add(m.group(1))
+            # 移除数量本身（如果误匹配到了）
+            targets.discard(str(count))
+
+            # 发送获取群历史消息请求，并通过echo做唯一标记
+            note = f"{MODULE_NAME}-recall-mid={self.message_id}"
+            echo_key = f"get_group_msg_history-{self.group_id}-{note}"
+            await get_group_msg_history(
+                self.websocket,
+                self.group_id,
+                count=count,
+                message_seq=0,
+                note=note,
+            )
+
+            # 异步等待响应处理器缓存数据
+            await asyncio.sleep(1)
+            messages = TEMP_GROUP_HISTORY_CACHE.pop(echo_key, None)
+            if not messages:
+                return
+
+            # 遍历并撤回
+            for msg in messages:
+                mid = str(msg.get("message_id", ""))
+                if not mid or mid == str(self.message_id):
+                    continue
+                sender_uid = str(msg.get("sender", {}).get("user_id", ""))
+                # 如果未指定targets，则直接撤回；否则仅撤回命中的消息
+                if not targets or sender_uid in targets:
+                    await delete_msg(self.websocket, mid)
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]批量撤回操作失败: {e}")
 
     async def handle_ban_me(self):
         """
