@@ -22,7 +22,7 @@ from core.get_group_member_list import DATA_DIR as GROUP_MEMBER_LIST_DIR
 # 假设 W1ndysBot 和 Easy-QFNU-WeChat 在同一目录下
 COPY_TO_DIR = (
     Path(__file__).resolve().parents[5]
-    / "Easy-QFNU-WeChat"
+    / "Easy-QFNU-WeRobot"
     / "app"
     / "data"
     / "group_member_list"
