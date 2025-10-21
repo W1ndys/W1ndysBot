@@ -5,6 +5,11 @@ from utils.generate import generate_text_message, generate_at_message
 from api.message import send_group_msg
 import re
 
+# 临时缓存：用于存储通过echo标识获取到的群历史消息
+# key: 完整的echo字符串（如 get_group_msg_history-{group_id}-{note}）
+# value: messages 列表
+TEMP_GROUP_HISTORY_CACHE = {}
+
 
 class ResponseHandler:
     """响应处理器"""
@@ -84,9 +89,34 @@ class ResponseHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]获取群成员列表失败: {e}")
 
+    async def handle_get_group_msg_history_for_recall(self):
+        """
+        处理获取群历史消息（用于批量撤回）的响应，将数据写入临时缓存
+        """
+        try:
+            # 仅缓存本模块发起且带有recall标记的请求
+            if (
+                isinstance(self.echo, str)
+                and self.echo.startswith("get_group_msg_history-")
+                and f"{MODULE_NAME}-recall" in self.echo
+            ):
+                messages = self.data.get("messages", [])
+                TEMP_GROUP_HISTORY_CACHE[self.echo] = messages
+                logger.info(
+                    f"[{MODULE_NAME}]已缓存群历史消息用于撤回，echo={self.echo}，条数={len(messages)}"
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理群历史消息响应失败: {e}")
+
     async def handle(self):
         try:
-            if self.echo.startswith("get_group_member_list"):
+            if isinstance(self.echo, str) and self.echo.startswith("get_group_member_list"):
                 await self.handle_get_group_member_list()
+            elif (
+                isinstance(self.echo, str)
+                and self.echo.startswith("get_group_msg_history-")
+                and f"{MODULE_NAME}-recall" in self.echo
+            ):
+                await self.handle_get_group_msg_history_for_recall()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理响应失败: {e}")
