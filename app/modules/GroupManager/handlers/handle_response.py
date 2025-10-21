@@ -10,6 +10,11 @@ import re
 # value: messages 列表
 TEMP_GROUP_HISTORY_CACHE = {}
 
+# 临时缓存：用于存储通过echo标识获取到的群成员列表（用于批量撤回时过滤管理员/群主）
+# key: 完整的echo字符串（如 get_group_member_list-group_id={group_id}-{note}）
+# value: 群成员列表数据
+TEMP_GROUP_MEMBERS_CACHE = {}
+
 
 class ResponseHandler:
     """响应处理器"""
@@ -86,6 +91,13 @@ class ResponseHandler:
                 # 发送消息
                 await send_group_msg(self.websocket, group_id, message)
 
+            # 缓存用于撤回的群成员列表（用于识别admin/owner）
+            elif (
+                isinstance(self.echo, str)
+                and self.echo.startswith("get_group_member_list-")
+                and f"{MODULE_NAME}-recall" in self.echo
+            ):
+                TEMP_GROUP_MEMBERS_CACHE[self.echo] = self.data
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]获取群成员列表失败: {e}")
 
