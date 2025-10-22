@@ -95,7 +95,7 @@ class GroupNoticeHandler:
             # 执行异步初始化
             await self._initialize_group_member_lists()
 
-            # 如果没开启群聊开关，则不处理
+            # 如果没开启总群开关，则不处理，也就是说，如果没开总群开关，是无法自动同步werobot群成员列表的
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
