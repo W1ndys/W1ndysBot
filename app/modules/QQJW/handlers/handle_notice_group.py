@@ -66,26 +66,50 @@ class GroupNoticeHandler:
 
             enable_groups = self._get_enable_groups_list()
             for group_id in enable_groups:
-                source_path = Path(GROUP_MEMBER_LIST_DIR) / f"{group_id}.json"
-                dest_path = COPY_TO_DIR / f"{group_id}.json"
-
-                if not dest_path.exists():
-                    if source_path.exists():
-                        shutil.copyfile(source_path, dest_path)
-                        logger.info(
-                            f"[{MODULE_NAME}]初始化：已复制群成员列表文件 {group_id}.json 到 {COPY_TO_DIR}"
-                        )
-                        await send_private_msg(
-                            self.websocket,
-                            OWNER_ID,
-                            f"[{MODULE_NAME}]初始化：已复制群成员列表文件 {group_id}.json 到 {COPY_TO_DIR}",
-                        )
-                    else:
-                        logger.warning(
-                            f"[{MODULE_NAME}]初始化警告：源文件 {source_path} 不存在，无法复制。"
-                        )
+                # 使用通用复制函数（若目标已存在则跳过）
+                await self._copy_group_member_list_file(group_id, skip_if_exists=True)
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]初始化群成员列表文件失败: {e}")
+
+    async def _copy_group_member_list_file(
+        self, group_id: str, skip_if_exists: bool = False
+    ):
+        """
+        通用：将源群成员列表文件复制到目标目录
+        - skip_if_exists: 若目标文件已存在则跳过复制
+        """
+        try:
+            if not COPY_TO_DIR.exists():
+                COPY_TO_DIR.mkdir(parents=True, exist_ok=True)
+
+            source_path = Path(GROUP_MEMBER_LIST_DIR) / f"{group_id}.json"
+            dest_path = COPY_TO_DIR / f"{group_id}.json"
+
+            if skip_if_exists and dest_path.exists():
+                logger.info(f"[{MODULE_NAME}]目标文件已存在，跳过复制：{dest_path}")
+                return
+
+            if source_path.exists():
+                shutil.copyfile(source_path, dest_path)
+                logger.info(
+                    f"[{MODULE_NAME}]已复制群成员列表文件：{group_id}.json 到 {COPY_TO_DIR} 目录"
+                )
+                await send_private_msg(
+                    self.websocket,
+                    OWNER_ID,
+                    f"[{MODULE_NAME}]已复制群成员列表文件：{group_id}.json 到 {COPY_TO_DIR} 目录",
+                )
+            else:
+                logger.warning(
+                    f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。"
+                )
+                await send_private_msg(
+                    self.websocket,
+                    OWNER_ID,
+                    f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。",
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]复制群成员列表文件失败: {e}")
 
     async def handle_group_notice(self):
         """
@@ -102,8 +126,31 @@ class GroupNoticeHandler:
             # 只处理群聊成员增加通知
             if self.notice_type == "group_increase":
                 await self.handle_group_increase()
+            elif self.notice_type == "group_decrease":
+                await self.handle_group_decrease()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊通知失败: {e}")
+
+    async def handle_group_decrease(self):
+        """
+        处理群聊成员减少通知
+        """
+        try:
+            # 仅对启用群做同步
+            if self.group_id in [
+                str(group_id) for group_id in self._get_enable_groups_list()
+            ]:
+                # 刷新群成员列表
+                await get_group_member_list(self.websocket, self.group_id)
+                await asyncio.sleep(0.5)
+                logger.info(
+                    f"[{MODULE_NAME}]已发送获取群成员列表的API(退群)：{self.group_id}"
+                )
+                # 复制群成员列表文件
+                await self._copy_group_member_list_file(self.group_id)
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理群聊成员减少通知失败: {e}")
+            raise
 
     # 群聊成员增加处理
     async def handle_group_increase(self):
@@ -126,29 +173,8 @@ class GroupNoticeHandler:
                 logger.info(
                     f"[{MODULE_NAME}]已发送获取群成员列表的API：{self.group_id}"
                 )
-                source_path = Path(GROUP_MEMBER_LIST_DIR) / f"{self.group_id}.json"
-                dest_path = COPY_TO_DIR / f"{self.group_id}.json"
-                if source_path.exists():
-                    shutil.copyfile(source_path, dest_path)
-                    logger.info(f"source_path: {source_path}")
-                    logger.info(f"dest_path: {dest_path}")
-                    logger.info(
-                        f"[{MODULE_NAME}]已复制群成员列表文件：{self.group_id}.json 到 {COPY_TO_DIR} 目录"
-                    )
-                    await send_private_msg(
-                        self.websocket,
-                        OWNER_ID,
-                        f"[{MODULE_NAME}]已复制群成员列表文件：{self.group_id}.json 到 {COPY_TO_DIR} 目录",
-                    )
-                else:
-                    logger.warning(
-                        f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。"
-                    )
-                    await send_private_msg(
-                        self.websocket,
-                        OWNER_ID,
-                        f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。",
-                    )
+                # 复制群成员列表文件
+                await self._copy_group_member_list_file(self.group_id)
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
