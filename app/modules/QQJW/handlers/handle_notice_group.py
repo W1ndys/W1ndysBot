@@ -67,16 +67,19 @@ class GroupNoticeHandler:
             enable_groups = self._get_enable_groups_list()
             for group_id in enable_groups:
                 # 使用通用复制函数（若目标已存在则跳过）
-                await self._copy_group_member_list_file(group_id, skip_if_exists=True)
+                await self._copy_group_member_list_file(
+                    group_id, skip_if_exists=True, user_id=None
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]初始化群成员列表文件失败: {e}")
 
     async def _copy_group_member_list_file(
-        self, group_id: str, skip_if_exists: bool = False
+        self, group_id: str, skip_if_exists: bool = False, user_id: str | None = None
     ):
         """
         通用：将源群成员列表文件复制到目标目录
         - skip_if_exists: 若目标文件已存在则跳过复制
+        - user_id: 触发事件的用户ID
         """
         try:
             if not COPY_TO_DIR.exists():
@@ -91,22 +94,26 @@ class GroupNoticeHandler:
 
             if source_path.exists():
                 shutil.copyfile(source_path, dest_path)
-                logger.info(
-                    f"[{MODULE_NAME}]已复制群成员列表文件：{group_id}.json 到 {COPY_TO_DIR} 目录"
-                )
+                log_msg = f"[{MODULE_NAME}]已复制群成员列表文件：{group_id}.json 到 {COPY_TO_DIR} 目录"
+                report_msg = log_msg
+                if user_id:
+                    report_msg += f"\n触发用户: {user_id}"
+                logger.info(log_msg)
                 await send_private_msg(
                     self.websocket,
                     OWNER_ID,
-                    f"[{MODULE_NAME}]已复制群成员列表文件：{group_id}.json 到 {COPY_TO_DIR} 目录",
+                    report_msg,
                 )
             else:
-                logger.warning(
-                    f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。"
-                )
+                log_msg = f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。"
+                report_msg = log_msg
+                if user_id:
+                    report_msg += f"\n触发用户: {user_id}"
+                logger.warning(log_msg)
                 await send_private_msg(
                     self.websocket,
                     OWNER_ID,
-                    f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。",
+                    report_msg,
                 )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]复制群成员列表文件失败: {e}")
@@ -147,7 +154,9 @@ class GroupNoticeHandler:
                     f"[{MODULE_NAME}]已发送获取群成员列表的API(退群)：{self.group_id}"
                 )
                 # 复制群成员列表文件
-                await self._copy_group_member_list_file(self.group_id)
+                await self._copy_group_member_list_file(
+                    self.group_id, user_id=self.user_id
+                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少通知失败: {e}")
             raise
@@ -174,7 +183,9 @@ class GroupNoticeHandler:
                     f"[{MODULE_NAME}]已发送获取群成员列表的API：{self.group_id}"
                 )
                 # 复制群成员列表文件
-                await self._copy_group_member_list_file(self.group_id)
+                await self._copy_group_member_list_file(
+                    self.group_id, user_id=self.user_id
+                )
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
