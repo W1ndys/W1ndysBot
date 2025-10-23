@@ -2,6 +2,7 @@ from logger import logger
 from . import MODULE_NAME
 from .handlers.handle_message import MessageHandler
 from .handlers.handle_notice import NoticeHandler
+from .handlers.handle_notice_group import GroupNoticeHandler  # 新增导入
 
 
 async def handle_events(websocket, msg):
@@ -24,6 +25,16 @@ async def handle_events(websocket, msg):
         # 处理通知事件（监听入群、群号引导）
         elif post_type == "notice":
             await NoticeHandler(websocket, msg).handle()
+
+        elif post_type == "meta_event":
+            # 在元事件（如心跳/连接建立）时执行群成员列表初始化复制
+            try:
+                await GroupNoticeHandler(
+                    websocket, msg
+                )._initialize_group_member_lists()
+                logger.info(f"[{MODULE_NAME}]meta_event 触发群成员列表初始化完成")
+            except Exception as e:
+                logger.error(f"[{MODULE_NAME}]meta_event 初始化群成员列表失败: {e}")
 
     except Exception as e:
         # 获取基本事件类型用于错误日志
