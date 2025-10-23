@@ -1,5 +1,5 @@
 from .. import MODULE_NAME
-import logger
+from logger import logger
 from datetime import datetime
 from api.group import set_group_whole_ban
 from .data_manager import DataManager

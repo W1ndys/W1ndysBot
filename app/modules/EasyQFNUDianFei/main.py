@@ -1,4 +1,4 @@
-import logger
+from logger import logger
 from . import MODULE_NAME
 from .handlers.handle_meta_event import MetaEventHandler
 from .handlers.handle_message import MessageHandler

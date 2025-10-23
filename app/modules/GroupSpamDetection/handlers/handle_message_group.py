@@ -1,5 +1,5 @@
 from .. import MODULE_NAME, SWITCH_NAME
-import logger
+from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from datetime import datetime
 from .GroupSpamDetectionHandle import GroupSpamDetectionHandle

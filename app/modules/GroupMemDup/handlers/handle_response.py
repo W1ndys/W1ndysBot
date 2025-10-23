@@ -1,5 +1,5 @@
 from .. import MODULE_NAME
-import logger
+from logger import logger
 from api.group import set_group_todo
 import re
 

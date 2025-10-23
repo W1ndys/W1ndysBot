@@ -1,6 +1,6 @@
 from collections import defaultdict
 from .. import MODULE_NAME
-import logger
+from logger import logger
 from api.group import set_group_ban
 from api.message import delete_msg, send_group_msg
 from utils.generate import generate_text_message, generate_at_message

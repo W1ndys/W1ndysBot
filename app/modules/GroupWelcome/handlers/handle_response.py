@@ -1,5 +1,5 @@
 from .. import MODULE_NAME
-import logger
+from logger import logger
 
 
 class ResponseHandler:

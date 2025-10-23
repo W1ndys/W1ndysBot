@@ -1,5 +1,5 @@
 from .. import MODULE_NAME
-import logger
+from logger import logger
 from datetime import datetime
 from api.message import send_group_msg
 from utils.generate import generate_text_message, generate_at_message
@@ -196,7 +196,7 @@ class GroupNoticeHandler:
                 )
                 await asyncio.sleep(1)  # 等待1秒以确保消息发送完成
                 await set_group_kick(self.websocket, self.group_id, self.user_id)
-                logger.success(
+                logger.info(
                     f"[{MODULE_NAME}]检测到用户{self.user_id}已在【{group_name}】组的关联群中，已将其从新进群{self.group_id}移出。"
                 )
         except Exception as e:

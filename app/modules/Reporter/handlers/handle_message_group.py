@@ -1,6 +1,6 @@
 from .. import MODULE_NAME, SWITCH_NAME, TEST_COMMAND
 from core.menu_manager import MENU_COMMAND
-import logger
+from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg, send_forward_msg
 from utils.generate import (

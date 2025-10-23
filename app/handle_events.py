@@ -1,6 +1,6 @@
 import json
 import asyncio
-import logger
+from logger import logger
 import os
 import importlib
 import inspect
@@ -43,7 +43,7 @@ class EventHandler:
         self._load_modules_dynamically()
 
         # 记录已加载的模块数量
-        logger.success(f"总共加载了 {len(self.handlers)} 个事件处理器")
+        logger.info(f"总共加载了 {len(self.handlers)} 个事件处理器")
 
         # 向管理员上报模块加载状况
         asyncio.create_task(self._report_loading_status())
@@ -84,7 +84,7 @@ class EventHandler:
                 self.handlers.append(handler)
                 # 记录成功加载的模块
                 self.loaded_modules.append(f"{module_path}.{handler_name}")
-                logger.success(f"已加载核心模块: {module_path}.{handler_name}")
+                logger.info(f"已加载核心模块: {module_path}.{handler_name}")
             except Exception as e:
                 # 记录加载失败的模块及原因
                 self.failed_modules.append((f"{module_path}.{handler_name}", str(e)))
@@ -132,7 +132,7 @@ class EventHandler:
                     self.handlers.append(module.handle_events)
                     # 记录成功加载的模块
                     self.loaded_modules.append(module_name)
-                    logger.success(f"已加载模块: {module_name}")
+                    logger.info(f"已加载模块: {module_name}")
                 else:
                     # 记录加载失败的模块及原因
                     self.failed_modules.append(

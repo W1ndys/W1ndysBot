@@ -1,5 +1,5 @@
 from .data_manager import DataManager
-import logger
+from logger import logger
 from .. import (
     MODULE_NAME,
     ADD_COMMAND,

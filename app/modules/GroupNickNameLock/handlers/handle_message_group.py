@@ -10,7 +10,7 @@ from .. import (
     CMD_GET_LOCK,
     CMD_DEL_LOCK,
 )
-import logger
+from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg
 from utils.generate import (

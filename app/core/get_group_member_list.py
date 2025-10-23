@@ -1,6 +1,6 @@
 import asyncio
 import re
-import logger
+from logger import logger
 from config import OWNER_ID
 from api.group import get_group_member_list
 from api.message import send_private_msg
@@ -184,7 +184,7 @@ async def handle_events(websocket, msg):
                         save_group_member_list_to_file(
                             group_id.group(1), msg.get("data", [])
                         )
-                        logger.success(f"[Core]已保存群 {group_id.group(1)} 的成员列表")
+                        logger.info(f"[Core]已保存群 {group_id.group(1)} 的成员列表")
                     else:
                         logger.warning(
                             f"[Core]群 {group_id.group(1)} 的成员列表为空，跳过保存，可能是机器人非管理员"

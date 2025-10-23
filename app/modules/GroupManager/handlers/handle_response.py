@@ -1,6 +1,6 @@
 import time
 from .. import MODULE_NAME, SCAN_INACTIVE_USER_COMMAND
-import logger
+from logger import logger
 from utils.generate import generate_text_message, generate_at_message
 from api.message import send_group_msg
 import re
@@ -122,7 +122,9 @@ class ResponseHandler:
 
     async def handle(self):
         try:
-            if isinstance(self.echo, str) and self.echo.startswith("get_group_member_list"):
+            if isinstance(self.echo, str) and self.echo.startswith(
+                "get_group_member_list"
+            ):
                 await self.handle_get_group_member_list()
             elif (
                 isinstance(self.echo, str)

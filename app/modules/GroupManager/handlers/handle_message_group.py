@@ -16,7 +16,7 @@ from .. import (
     GROUP_QUERY_CURFEW_COMMAND,
     GROUP_TOGGLE_AUTO_APPROVE_COMMAND,
 )
-import logger
+from logger import logger
 from core.menu_manager import MENU_COMMAND
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg

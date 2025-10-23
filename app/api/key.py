@@ -1,5 +1,5 @@
 import json
-import logger
+from logger import logger
 
 
 async def nc_get_rkey(websocket):

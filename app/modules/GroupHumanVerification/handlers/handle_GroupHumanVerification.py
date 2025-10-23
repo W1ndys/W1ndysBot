@@ -1,6 +1,6 @@
 from datetime import datetime
 import asyncio
-import logger
+from logger import logger
 from .data_manager import DataManager
 from .. import (
     MODULE_NAME,

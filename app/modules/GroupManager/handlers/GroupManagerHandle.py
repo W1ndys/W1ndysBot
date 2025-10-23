@@ -2,7 +2,7 @@
 群组管理模块
 """
 
-import logger
+from logger import logger
 from .. import (
     MODULE_NAME,
     GROUP_RECALL_COMMAND,

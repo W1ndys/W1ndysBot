@@ -1,5 +1,5 @@
 from .. import MODULE_NAME, FORWARD_MESSAGE_TO_OWNER
-import logger
+from logger import logger
 import re
 from api.user import set_friend_add_request, set_group_add_request
 from api.message import send_private_msg
@@ -132,7 +132,7 @@ class ResponseHandler:
                     original_message_id, forwarded_message_id
                 )
                 if update_result:
-                    logger.success(
+                    logger.info(
                         f"[{MODULE_NAME}]已成功更新消息映射关系：发送者ID={user_id}, 原始消息ID={original_message_id}, 转发消息ID={forwarded_message_id}"
                     )
                 else:

@@ -1,9 +1,8 @@
 import os
 import sys
 import asyncio
-from datetime import datetime, timezone, timedelta
 from loguru import logger as loguru_logger
-from api.message import send_private_msg
+
 from config import OWNER_ID
 
 
@@ -79,7 +78,7 @@ class Logger:
             compression="gz",  # 使用gzip压缩，压缩率更好且更通用
         )
 
-        self.success(f"初始化日志器，日志文件名: {self.log_filename}")
+        loguru_logger.info(f"初始化日志器，日志文件名: {self.log_filename}")
         return self.log_filename
 
     # 便捷日志方法
@@ -102,6 +101,8 @@ class Logger:
         # 异步发送私聊到OWNER_ID
         if OWNER_ID and self.websocket:
             try:
+                from api.message import send_private_msg
+
                 # 通过事件循环调度异步任务
                 loop = asyncio.get_event_loop()
                 # 兼容在协程和主线程下的调用
@@ -116,12 +117,6 @@ class Logger:
             except Exception as e:
                 loguru_logger.error(f"发送错误日志到OWNER_ID失败: {e}")
 
-    def critical(self, message):
-        loguru_logger.critical(message)
-
-    def success(self, message):
-        loguru_logger.log("SUCCESS", message)
-
     def set_console_level(self, level):
         """动态设置控制台日志级别"""
         self.console_level = level
@@ -135,28 +130,3 @@ class Logger:
 
 # 创建一个全局日志器实例
 logger = Logger()
-
-
-# 便捷函数，使调用更简单
-def debug(message):
-    logger.debug(message)
-
-
-def info(message):
-    logger.info(message)
-
-
-def warning(message):
-    logger.warning(message)
-
-
-def error(message):
-    logger.error(message)
-
-
-def critical(message):
-    logger.critical(message)
-
-
-def success(message):
-    logger.success(message)

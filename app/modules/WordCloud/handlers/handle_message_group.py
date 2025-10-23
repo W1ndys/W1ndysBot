@@ -7,7 +7,7 @@ from .. import (
     SUMMARIZE_YESTERDAY_CHAT,
 )
 from core.menu_manager import MENU_COMMAND
-import logger
+from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from api.message import send_group_msg, send_group_msg_with_cq
 from utils.generate import (

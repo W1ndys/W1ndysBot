@@ -2,7 +2,7 @@ from .. import MODULE_NAME, UNBAN_WORD_COMMAND, KICK_BAN_WORD_COMMAND
 from .handle_forward_message import ForwardMessageHandler
 from .handle_group_msg_history import GetGroupMsgHistoryHandler
 from .handle_get_msg import GetMsgHandler
-import logger
+from logger import logger
 
 
 class ResponseHandler:

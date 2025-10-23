@@ -1,5 +1,5 @@
 import json
-import logger
+from logger import logger
 
 
 async def set_qq_profile(websocket, nickname, personal_note, sex):

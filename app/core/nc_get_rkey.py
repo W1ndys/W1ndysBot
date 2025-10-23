@@ -1,4 +1,4 @@
-import logger
+from logger import logger
 from config import OWNER_ID
 from api.key import nc_get_rkey
 from api.message import send_private_msg
@@ -123,7 +123,7 @@ async def handle_events(websocket, msg):
                 data_list = msg.get("data", [])
                 # 保存到文件
                 save_rkey_to_file(data_list)
-                logger.success(f"获取到nc_get_rkey，已保存到文件")
+                logger.info(f"获取到nc_get_rkey，已保存到文件")
     except Exception as e:
         logger.error(f"自动刷新rkey失败: {e}")
         await send_private_msg(websocket, OWNER_ID, f"自动刷新rkey失败: {e}")

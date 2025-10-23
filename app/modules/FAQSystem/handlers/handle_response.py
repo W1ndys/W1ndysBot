@@ -1,5 +1,5 @@
 from .. import MODULE_NAME
-import logger
+from logger import logger
 from .db_manager import FAQDatabaseManager
 from api.message import send_group_msg
 from utils.generate import generate_reply_message, generate_text_message

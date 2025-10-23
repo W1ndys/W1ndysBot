@@ -2,7 +2,7 @@
 自动撤回自己发送的消息
 """
 
-import logger
+from logger import logger
 import re
 import asyncio
 from api.message import delete_msg
@@ -140,7 +140,7 @@ async def handle_events(websocket, msg):
 
                 if del_time > 120:  # 只对超过120秒的进行存储
                     add_del_msg_task(message_id, del_time)
-                    logger.success(f"[Core]待撤回消息已存储到本地: 消息 {message_id}")
+                    logger.info(f"[Core]待撤回消息已存储到本地: 消息 {message_id}")
 
                 # 无论是否存储，都创建撤回任务
                 asyncio.create_task(del_self_msg(websocket, message_id, del_time))

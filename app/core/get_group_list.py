@@ -1,4 +1,4 @@
-import logger
+from logger import logger
 from config import OWNER_ID
 from api.group import get_group_list
 from api.message import send_private_msg
@@ -84,7 +84,7 @@ def get_all_group_ids():
             str(group.get("group_id")) for group in group_list if group.get("group_id")
         ]
 
-        logger.success(f"[Core]获取到 {len(group_ids)} 个群号, 群号列表: {group_ids}")
+        logger.info(f"[Core]获取到 {len(group_ids)} 个群号, 群号列表: {group_ids}")
         return group_ids
 
     except Exception as e:
@@ -211,7 +211,7 @@ def clean_old_group_member_data():
                 logger.error(f"[Core]清理群 {group_id} 的成员数据文件失败: {e}")
 
         if cleaned_count > 0:
-            logger.success(
+            logger.info(
                 f"[Core]群成员数据清理完成，清理了 {cleaned_count} 个群的数据文件"
             )
         if error_count > 0:
@@ -275,7 +275,7 @@ async def handle_events(websocket, msg):
             if echo == "get_group_list":
                 # 保存data
                 save_group_list_to_file(msg.get("data", []))
-                logger.success(f"[Core]已保存群列表")
+                logger.info(f"[Core]已保存群列表")
                 # 群列表更新后，清理不在群列表中的群成员数据和开关数据
                 try:
                     # 获取当前有效的群号列表

@@ -3,7 +3,7 @@ import asyncio
 import os
 import json
 from .. import DIFY_API_KEY_FILE, MODULE_NAME
-import logger
+from logger import logger
 
 
 class DifyClient:

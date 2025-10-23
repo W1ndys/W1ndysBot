@@ -1,5 +1,5 @@
 from .. import MODULE_NAME, NOTE_CONDITION
-import logger
+from logger import logger
 from .data_manager import DataManager
 import re
 

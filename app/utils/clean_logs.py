@@ -6,7 +6,7 @@ import os
 import time
 from api.message import send_private_msg
 from config import OWNER_ID
-import logger
+from logger import logger
 
 LOGS_DIR = "logs"
 

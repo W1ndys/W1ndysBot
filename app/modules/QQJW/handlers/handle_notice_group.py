@@ -1,5 +1,5 @@
 from .. import MODULE_NAME, FORWARD_GROUP_ID
-import logger
+from logger import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
 from core.get_group_list import get_group_member_info_by_id

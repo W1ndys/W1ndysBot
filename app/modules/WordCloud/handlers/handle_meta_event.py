@@ -1,5 +1,5 @@
 from .. import MODULE_NAME
-import logger
+from logger import logger
 from datetime import datetime, timedelta
 from core.switchs import get_all_enabled_groups
 from api.message import send_group_msg, send_group_msg_with_cq

@@ -1,5 +1,5 @@
 import json
-import logger
+from logger import logger
 
 
 async def set_group_todo(websocket, group_id, message_id):

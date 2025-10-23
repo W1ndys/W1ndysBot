@@ -4,7 +4,7 @@ import hashlib
 import base64
 import requests
 import json
-import logger
+from logger import logger
 from config import FEISHU_BOT_URL, FEISHU_BOT_SECRET
 
 

@@ -1,5 +1,5 @@
 from .. import MODULE_NAME, DATA_DIR
-import logger
+from logger import logger
 from datetime import datetime
 import json
 import os

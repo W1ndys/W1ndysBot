@@ -2,7 +2,7 @@ from .data_manager import BlackListDataManager
 from api.message import send_group_msg
 from api.group import set_group_kick, get_group_member_list
 from utils.generate import generate_text_message, generate_reply_message
-import logger
+from logger import logger
 import re
 from .. import (
     MODULE_NAME,

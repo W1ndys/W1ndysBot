@@ -3,7 +3,7 @@ import json
 import asyncio
 import random
 from .. import MODULE_NAME, DATA_DIR
-import logger
+from logger import logger
 from utils.generate import generate_text_message
 from api.message import send_private_msg
 from config import OWNER_ID

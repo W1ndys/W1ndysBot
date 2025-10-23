@@ -129,7 +129,7 @@ class PreselectCourseDatabase:
                 )
                 self.conn.commit()
 
-                logger.success(
+                logger.info(
                     f"[{MODULE_NAME}]命中缓存: {search_keyword}, 查询次数: {query_count + 1}"
                 )
                 return True, json.loads(result_data)
@@ -207,7 +207,7 @@ class PreselectCourseDatabase:
             )
             verify_result = self.cursor.fetchone()
             if verify_result:
-                logger.success(
+                logger.info(
                     f"[{MODULE_NAME}]缓存写入验证成功: {search_keyword}, 存储时间: {verify_result[0]}"
                 )
             else:

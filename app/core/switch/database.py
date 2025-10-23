@@ -6,7 +6,7 @@
 import sqlite3
 import threading
 import os
-import logger
+from logger import logger
 from .config import DATABASE_PATH
 
 

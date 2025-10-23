@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from .. import MODULE_NAME, STATUS_UNVERIFIED, WARNING_COUNT
-import logger
+from logger import logger
 
 
 class DataManager:
@@ -291,7 +291,7 @@ class DataManager:
         rows = self.cursor.fetchall()
         result = {}
 
-        from datetime import datetime 
+        from datetime import datetime
 
         current_time = datetime.now()
 

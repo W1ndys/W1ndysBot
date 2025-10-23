@@ -1,5 +1,5 @@
 from .. import MODULE_NAME
-import logger
+from logger import logger
 from datetime import datetime
 from .handle_notice_friend import FriendNoticeHandler
 from .handle_notice_group import GroupNoticeHandler

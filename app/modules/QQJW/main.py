@@ -1,4 +1,4 @@
-import logger
+from logger import logger
 from . import MODULE_NAME
 from .handlers.handle_message import MessageHandler
 from .handlers.handle_notice import NoticeHandler

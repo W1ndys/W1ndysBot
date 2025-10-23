@@ -12,7 +12,7 @@ from .. import (
 import os
 import uuid
 import base64
-import logger
+from logger import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
 from api.group import set_group_ban

@@ -1,5 +1,5 @@
 from .. import MODULE_NAME
-import logger
+from logger import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
 from .data_manager import BlackListDataManager
@@ -70,7 +70,7 @@ class RequestHandler:
                     is_global = data_manager.is_in_global_blacklist(self.user_id)
                     blacklist_type = "全局黑名单" if is_global else "群黑名单"
                     reason = f"您在{blacklist_type}中，无法加入群聊"
-                    
+
                     await set_group_add_request(
                         self.websocket, self.flag, False, reason
                     )

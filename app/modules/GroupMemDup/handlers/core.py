@@ -138,7 +138,7 @@ class Core:
             group_name = parts[1]
             message = parts[2]  # 第二个空格后的所有内容，保持原样
 
-            logger.success(
+            logger.info(
                 f"[{MODULE_NAME}]{self.user_id}处理群发命令: {group_name} {message}"
             )
 

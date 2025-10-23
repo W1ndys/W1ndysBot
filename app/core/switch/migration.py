@@ -5,7 +5,7 @@
 
 import os
 import json
-import logger
+from logger import logger
 from .database import db
 from .config import DATA_ROOT_DIR
 

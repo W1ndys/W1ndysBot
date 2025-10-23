@@ -2,7 +2,7 @@ import re
 import os
 import json
 import asyncio
-import logger
+from logger import logger
 from .. import MODULE_NAME, AUTO_AGREE_FRIEND_VERIFY, DATA_DIR, FORWARD_MESSAGE_TO_OWNER
 from config import OWNER_ID
 from api.message import send_private_msg, send_private_msg_with_cq, get_msg
@@ -98,7 +98,7 @@ class MessageProcessor:
                         await send_private_msg_with_cq(
                             self.websocket, original_sender_id, message
                         )
-                        logger.success(
+                        logger.info(
                             f"[{MODULE_NAME}]已回复原始消息：发送者ID={original_sender_id}, 原始消息ID={original_message_id}, 回复内容={reply_content}"
                         )
             return True
@@ -193,7 +193,7 @@ class MessageProcessor:
             data_manager.add_original_message(
                 self.user_id, self.message_id, self.raw_message
             )
-            logger.success(
+            logger.info(
                 f"[{MODULE_NAME}]已存储上报消息映射：发送者ID={self.user_id}, 原始消息ID={self.message_id}"
             )
 

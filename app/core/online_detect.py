@@ -1,4 +1,4 @@
-import logger
+from logger import logger
 from config import OWNER_ID
 from api.message import send_private_msg
 from utils.feishu import send_feishu_msg
@@ -26,7 +26,7 @@ async def handle_events(websocket, message):
                 time.localtime(message.get("time", int(time.time()))),
             )
             connect_msg = f"W1ndysBot已上线！\n机器人ID: {message.get('self_id')}\n管理员ID: {OWNER_ID}\n上线时间: {current_time}"
-            logger.success(
+            logger.info(
                 f"机器人连接成功，当前在线状态: {is_online}，心跳间隔: {message.get('interval', 0)/1000}秒，机器人ID: {message.get('self_id')}，管理员ID: {OWNER_ID}"
             )
 
@@ -61,7 +61,7 @@ async def handle_events(websocket, message):
                 status_text = "重新上线" if current_online else "掉线"
 
             # 发送通知
-            logger.success(f"机器人状态变更: {status_text}")
+            logger.info(f"机器人状态变更: {status_text}")
 
             # 在掉线时或重新上线时发送飞书通知（排除初始化）
             if not current_online or (current_online and is_online is not None):

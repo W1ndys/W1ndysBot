@@ -11,7 +11,7 @@ from .. import (
     GLOBAL_BLACKLIST_CLEAR_COMMAND,
     SWITCH_NAME,
 )
-import logger
+from logger import logger
 from core.menu_manager import MENU_COMMAND
 from utils.auth import is_group_admin, is_system_admin
 from core.switchs import is_group_switch_on, handle_module_group_switch

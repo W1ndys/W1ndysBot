@@ -68,9 +68,7 @@ class MetaEventHandler:
 
                 for group_id in get_all_enabled_groups(MODULE_NAME):
                     await send_group_random_msg(self.websocket, group_id)
-                    logger.success(
-                        f"[{MODULE_NAME}]群{group_id}随机消息发送任务执行完成"
-                    )
+                    logger.info(f"[{MODULE_NAME}]群{group_id}随机消息发送任务执行完成")
                     await asyncio.sleep(1)
 
         except Exception as e:

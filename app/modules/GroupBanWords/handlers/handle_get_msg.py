@@ -1,5 +1,5 @@
 from .. import MODULE_NAME, UNBAN_WORD_COMMAND, KICK_BAN_WORD_COMMAND
-import logger
+from logger import logger
 import re
 from api.group import set_group_ban, set_group_kick
 from api.message import send_group_msg, send_private_msg

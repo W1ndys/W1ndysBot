@@ -1,6 +1,6 @@
 import sqlite3
 import os
-import logger
+from logger import logger
 from .. import MODULE_NAME
 
 

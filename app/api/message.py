@@ -1,6 +1,5 @@
-import asyncio
 import json
-import logger
+from logger import logger
 
 
 # 使用cq码发送群消息

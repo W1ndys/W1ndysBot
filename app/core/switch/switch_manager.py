@@ -3,7 +3,7 @@
 负责开关状态的查询、切换和管理逻辑
 """
 
-import logger
+from logger import logger
 from .database import db
 
 
@@ -422,7 +422,7 @@ class SwitchManager:
                     logger.error(f"[Switch]清理群 {group_id} 的开关记录失败: {e}")
 
             if cleaned_count > 0:
-                logger.success(
+                logger.info(
                     f"[Switch]群开关数据清理完成，清理了 {len(cleaned_groups)} 个群的 {cleaned_count} 条记录"
                 )
             if error_count > 0:

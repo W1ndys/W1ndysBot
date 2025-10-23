@@ -3,7 +3,7 @@ from .data_manager import BlackListDataManager
 from api.message import send_private_msg
 from config import OWNER_ID
 from utils.generate import generate_text_message
-import logger
+from logger import logger
 import re
 
 

@@ -1,7 +1,7 @@
 import os
 import sqlite3
 from .. import DATA_DIR
-import logger
+from logger import logger
 import shutil
 from datetime import datetime
 
