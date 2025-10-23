@@ -116,15 +116,22 @@ class GroupNoticeHandler:
                 await self.handle_group_increase_forward_group()
 
             # 如果群号是启用群
-            elif self.group_id in self._get_enable_groups_list():
+            elif self.group_id in [
+                str(group_id) for group_id in self._get_enable_groups_list()
+            ]:
                 # 发送获取群成员列表的API
                 await get_group_member_list(self.websocket, self.group_id)
                 # 等待0.5秒，把群成员列表文件复制到指定目录
                 await asyncio.sleep(0.5)
+                logger.info(
+                    f"[{MODULE_NAME}]已发送获取群成员列表的API：{self.group_id}"
+                )
                 source_path = Path(GROUP_MEMBER_LIST_DIR) / f"{self.group_id}.json"
                 dest_path = COPY_TO_DIR / f"{self.group_id}.json"
                 if source_path.exists():
                     shutil.copyfile(source_path, dest_path)
+                    logger.info(f"source_path: {source_path}")
+                    logger.info(f"dest_path: {dest_path}")
                     logger.info(
                         f"[{MODULE_NAME}]已复制群成员列表文件：{self.group_id}.json 到 {COPY_TO_DIR} 目录"
                     )
@@ -142,6 +149,7 @@ class GroupNoticeHandler:
                         OWNER_ID,
                         f"[{MODULE_NAME}]复制失败：源文件 {source_path} 不存在。",
                     )
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
             raise  # 增加错误抛出
@@ -154,7 +162,9 @@ class GroupNoticeHandler:
             # 定义需要忽略的群号列表（字符串类型）
             IGNORE_GROUP_IDS = ["118976506"]
 
-            enable_groups_list = self._get_enable_groups_list()
+            enable_groups_list = [
+                str(group_id) for group_id in self._get_enable_groups_list()
+            ]
             if not enable_groups_list:
                 logger.error(f"[{MODULE_NAME}]未获取到启用的教务群列表")
                 raise ValueError("未获取到启用的教务群列表")
@@ -162,7 +172,7 @@ class GroupNoticeHandler:
             filtered_enable_groups_list = [
                 group_id
                 for group_id in enable_groups_list
-                if str(group_id) not in IGNORE_GROUP_IDS
+                if group_id not in IGNORE_GROUP_IDS
             ]
             if not filtered_enable_groups_list:
                 logger.error(f"[{MODULE_NAME}]启用的教务群列表全部被忽略或为空")
@@ -199,10 +209,12 @@ class GroupNoticeHandler:
                     .get("data", {})
                     .get("group_list", [])
                 )
-                if not isinstance(group_list, list):
+                if not isinstance(group_list, list) or not all(
+                    isinstance(item, int) for item in group_list
+                ):
                     logger.error(f"[{MODULE_NAME}]获取到的群列表不是列表类型")
                     raise TypeError("获取到的群列表不是列表类型")
-                return group_list
+                return [str(group_id) for group_id in group_list]
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]获取教务启用群列表失败: {e}")
             raise
