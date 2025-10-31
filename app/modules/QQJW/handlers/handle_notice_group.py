@@ -143,20 +143,21 @@ class GroupNoticeHandler:
         处理群聊成员减少通知
         """
         try:
-            # 仅对启用群做同步
-            if self.group_id in [
-                str(group_id) for group_id in self._get_enable_groups_list()
-            ]:
-                # 刷新群成员列表
-                await get_group_member_list(self.websocket, self.group_id)
-                await asyncio.sleep(0.5)
-                logger.info(
-                    f"[{MODULE_NAME}]已发送获取群成员列表的API(退群)：{self.group_id}"
-                )
-                # 复制群成员列表文件
-                await self._copy_group_member_list_file(
-                    self.group_id, user_id=self.user_id
-                )
+            pass
+            # # 仅对启用群做同步
+            # if self.group_id in [
+            #     str(group_id) for group_id in self._get_enable_groups_list()
+            # ]:
+            #     # 刷新群成员列表
+            #     await get_group_member_list(self.websocket, self.group_id)
+            #     await asyncio.sleep(0.5)
+            #     logger.info(
+            #         f"[{MODULE_NAME}]已发送获取群成员列表的API(退群)：{self.group_id}"
+            #     )
+            #     # 复制群成员列表文件
+            #     await self._copy_group_member_list_file(
+            #         self.group_id, user_id=self.user_id
+            #     )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少通知失败: {e}")
             raise
@@ -171,21 +172,21 @@ class GroupNoticeHandler:
                 # 处理Easy-QFNUJW模块进入中转群的事件
                 await self.handle_group_increase_forward_group()
 
-            # 如果群号是启用群
-            elif self.group_id in [
-                str(group_id) for group_id in self._get_enable_groups_list()
-            ]:
-                # 发送获取群成员列表的API
-                await get_group_member_list(self.websocket, self.group_id)
-                # 等待0.5秒，把群成员列表文件复制到指定目录
-                await asyncio.sleep(0.5)
-                logger.info(
-                    f"[{MODULE_NAME}]已发送获取群成员列表的API：{self.group_id}"
-                )
-                # 复制群成员列表文件
-                await self._copy_group_member_list_file(
-                    self.group_id, user_id=self.user_id
-                )
+            # # 如果群号是启用群
+            # elif self.group_id in [
+            #     str(group_id) for group_id in self._get_enable_groups_list()
+            # ]:
+            #     # 发送获取群成员列表的API
+            #     await get_group_member_list(self.websocket, self.group_id)
+            #     # 等待0.5秒，把群成员列表文件复制到指定目录
+            #     await asyncio.sleep(0.5)
+            #     logger.info(
+            #         f"[{MODULE_NAME}]已发送获取群成员列表的API：{self.group_id}"
+            #     )
+            #     # 复制群成员列表文件
+            #     await self._copy_group_member_list_file(
+            #         self.group_id, user_id=self.user_id
+            #     )
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员增加通知失败: {e}")
