@@ -14,6 +14,8 @@ from api.group import (
     set_group_kick,
     set_group_whole_ban,
     get_group_member_list,
+    set_group_todo,
+    set_group_essence_msg,
 )
 from api.message import send_group_msg, delete_msg, get_group_msg_history
 from utils.generate import (
@@ -37,6 +39,65 @@ class GroupManagerHandle:
         self.role = msg.get("role", "")
         self.raw_message = msg.get("raw_message", "")
         self.message_id = msg.get("message_id", "")
+
+    async def handle_admin_keyword_actions(self):
+        """
+        处理群管理员关键字触发的操作
+        """
+        try:
+            lowered_message = (self.raw_message or "").lower()
+            if not lowered_message:
+                return
+
+            if not self.message_id:
+                logger.warning(f"[{MODULE_NAME}]未获取到消息ID，无法执行管理员关键字操作")
+                return
+
+            if "atall" in lowered_message:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_at_message("all"),
+                        generate_text_message("请全体成员关注该消息。"),
+                    ],
+                )
+
+            feedbacks = []
+            if "settodo" in lowered_message:
+                success = await set_group_todo(
+                    self.websocket,
+                    self.group_id,
+                    self.message_id,
+                )
+                if success:
+                    feedbacks.append("✅ 已将此消息添加为群待办。")
+                else:
+                    feedbacks.append("❌ 设置群待办失败，请稍后重试。")
+
+            if "setessence" in lowered_message:
+                success = await set_group_essence_msg(
+                    self.websocket,
+                    self.group_id,
+                    self.message_id,
+                )
+                if success:
+                    feedbacks.append("✅ 已将此消息标记为群精华。")
+                else:
+                    feedbacks.append("❌ 设置群精华消息失败，请稍后重试。")
+
+            if feedbacks:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message("\n".join(feedbacks)),
+                    ],
+                )
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]处理管理员关键字消息失败: {e}")
 
     async def handle_mute(self):
         """

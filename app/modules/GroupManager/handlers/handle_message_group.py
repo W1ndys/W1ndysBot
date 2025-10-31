@@ -87,6 +87,10 @@ class GroupMessageHandler:
             # 初始化群组管理器
             group_manager_handle = GroupManagerHandle(self.websocket, self.msg)
 
+            # 处理管理员特殊关键字操作
+            if is_group_admin(self.role):
+                await group_manager_handle.handle_admin_keyword_actions()
+
             # 处理禁言排行榜命令 - 所有用户都可使用
             if self.raw_message.startswith(GROUP_BAN_RANK_COMMAND):
                 await group_manager_handle.handle_mute_rank()
