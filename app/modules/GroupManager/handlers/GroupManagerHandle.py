@@ -15,7 +15,7 @@ from api.group import (
     set_group_whole_ban,
     get_group_member_list,
     set_group_todo,
-    set_group_essence_msg,
+    set_essence_msg,
 )
 from api.message import send_group_msg, delete_msg, get_group_msg_history
 from utils.generate import (
@@ -77,9 +77,8 @@ class GroupManagerHandle:
                     feedbacks.append("❌ 设置群待办失败，请稍后重试。")
 
             if "setessence" in lowered_message:
-                success = await set_group_essence_msg(
+                success = await set_essence_msg(
                     self.websocket,
-                    self.group_id,
                     self.message_id,
                 )
                 if success:
