@@ -248,15 +248,15 @@ async def set_group_admin(websocket, group_id, user_id, enable):
         return False
 
 
-async def set_group_essence_msg(websocket, group_id, message_id):
+async def set_essence_msg(websocket, message_id):
     """
     设置群精华消息
     """
     try:
         payload = {
-            "action": "set_group_essence_msg",
-            "params": {"group_id": group_id, "message_id": message_id},
-            "echo": "set_group_essence_msg",
+            "action": "set_essence_msg",
+            "params": {"message_id": message_id},
+            "echo": "set_essence_msg",
         }
         await websocket.send(json.dumps(payload))
         logger.info(f"[API]已执行设置群精华消息")
