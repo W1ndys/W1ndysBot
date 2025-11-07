@@ -43,6 +43,8 @@ class GroupManagerHandle:
     async def handle_admin_keyword_actions(self):
         """
         处理群管理员关键字触发的操作
+        如果消息是引用某消息发送的，则对被引用的消息进行处理
+        如果没有引用，则对当前消息进行处理
         """
         try:
             lowered_message = (self.raw_message or "").lower()
@@ -53,12 +55,19 @@ class GroupManagerHandle:
                 logger.warning(f"[{MODULE_NAME}]未获取到消息ID，无法执行管理员关键字操作")
                 return
 
+            # 检查消息是否为回复消息，如果是则提取被回复的消息ID
+            reply_pattern = r"\[CQ:reply,id=(\d+)\]"
+            reply_match = re.search(reply_pattern, self.raw_message)
+            
+            # 如果有回复，使用被回复的消息ID；否则使用当前消息ID
+            target_message_id = reply_match.group(1) if reply_match else self.message_id
+
             if "atall" in lowered_message:
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
                     [
-                        generate_reply_message(self.message_id),
+                        generate_reply_message(target_message_id),
                         generate_at_message("all"),
                         generate_text_message("请全体成员关注该消息。"),
                     ],
@@ -69,7 +78,7 @@ class GroupManagerHandle:
                 success = await set_group_todo(
                     self.websocket,
                     self.group_id,
-                    self.message_id,
+                    target_message_id,
                 )
                 if success:
                     feedbacks.append("✅ 已将此消息添加为群待办。")
@@ -79,7 +88,7 @@ class GroupManagerHandle:
             if "setessence" in lowered_message:
                 success = await set_essence_msg(
                     self.websocket,
-                    self.message_id,
+                    target_message_id,
                 )
                 if success:
                     feedbacks.append("✅ 已将此消息标记为群精华。")
