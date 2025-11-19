@@ -75,7 +75,6 @@ class GroupManagerHandle:
                     ],
                 )
 
-            feedbacks = []
             if "settodo" in lowered_message:
                 await set_group_todo(self.websocket, self.group_id, target_message_id)
 
