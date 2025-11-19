@@ -52,13 +52,15 @@ class GroupManagerHandle:
                 return
 
             if not self.message_id:
-                logger.warning(f"[{MODULE_NAME}]未获取到消息ID，无法执行管理员关键字操作")
+                logger.warning(
+                    f"[{MODULE_NAME}]未获取到消息ID，无法执行管理员关键字操作"
+                )
                 return
 
             # 检查消息是否为回复消息，如果是则提取被回复的消息ID
             reply_pattern = r"\[CQ:reply,id=(\d+)\]"
             reply_match = re.search(reply_pattern, self.raw_message)
-            
+
             # 如果有回复，使用被回复的消息ID；否则使用当前消息ID
             target_message_id = reply_match.group(1) if reply_match else self.message_id
 
@@ -73,37 +75,6 @@ class GroupManagerHandle:
                     ],
                 )
 
-            feedbacks = []
-            if "settodo" in lowered_message:
-                success = await set_group_todo(
-                    self.websocket,
-                    self.group_id,
-                    target_message_id,
-                )
-                if success:
-                    feedbacks.append("✅ 已将此消息添加为群待办。")
-                else:
-                    feedbacks.append("❌ 设置群待办失败，请稍后重试。")
-
-            if "setessence" in lowered_message:
-                success = await set_essence_msg(
-                    self.websocket,
-                    target_message_id,
-                )
-                if success:
-                    feedbacks.append("✅ 已将此消息标记为群精华。")
-                else:
-                    feedbacks.append("❌ 设置群精华消息失败，请稍后重试。")
-
-            if feedbacks:
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message("\n".join(feedbacks)),
-                    ],
-                )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理管理员关键字消息失败: {e}")
 
