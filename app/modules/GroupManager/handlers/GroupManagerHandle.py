@@ -75,6 +75,13 @@ class GroupManagerHandle:
                     ],
                 )
 
+            feedbacks = []
+            if "settodo" in lowered_message:
+                await set_group_todo(self.websocket, self.group_id, target_message_id)
+
+            if "setessence" in lowered_message:
+                await set_essence_msg(self.websocket, target_message_id)
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理管理员关键字消息失败: {e}")
 
