@@ -731,7 +731,10 @@ class BlackListHandlePrivate(BlackListHandle):
                                 )
 
                                 await send_group_msg(
-                                    self.websocket, group_id, broadcast_message
+                                    self.websocket,
+                                    group_id,
+                                    broadcast_message,
+                                    note="del_msg=86400",
                                 )
 
                             total_kicked += kicked_count

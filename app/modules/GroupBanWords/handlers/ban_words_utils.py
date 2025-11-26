@@ -199,6 +199,7 @@ async def check_and_handle_ban_words(
                     generate_text_message(f"({user_id})\n"),
                     generate_text_message(group_msg_content),
                 ],
+                note="del_msg=86400",
             )
             return True
     else:
