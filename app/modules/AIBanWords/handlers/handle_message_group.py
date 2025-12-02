@@ -95,8 +95,8 @@ class GroupMessageHandler:
             if is_group_admin(self.role) or is_system_admin(self.user_id):
                 return
 
-            # 长度检测：只检测长度超过30的消息
-            if len(self.raw_message) <= 30:
+            # 长度检测：只检测长度超过固定长度的消息
+            if len(self.raw_message) <= 10:
                 return
 
             # 只检测纯文本消息（这里简化判断，如果raw_message有内容且不是特殊格式）
