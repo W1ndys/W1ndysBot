@@ -147,7 +147,7 @@ class GroupMessageHandler:
                     # 尝试从data中获取一些信息，或者直接显示message
                     reply_text = f"❓ 无法解析查询意图"
                 else:
-                    count = data.get("classroom_count", 0)
+                    count = data.get("classroom_count")
                     url = data.get("html_url", "")
 
                     reply_text = (
@@ -155,9 +155,11 @@ class GroupMessageHandler:
                         f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')}) 第{parsed_params.get('week')}周\n"
                         f"🏫 教学楼：{parsed_params.get('building_display', parsed_params.get('building'))}\n"
                         f"⏰ 节次：{parsed_params.get('periods')}\n"
-                        f"📊 空闲教室：{count}间\n"
-                        f"🔗 详情链接：{url}"
                     )
+                    if count is not None:
+                        reply_text += f"📊 空闲教室：{count}间\n"
+
+                    reply_text += f"🔗 详情链接：{url}"
 
                 await send_group_msg(
                     self.websocket,
