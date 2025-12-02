@@ -108,7 +108,9 @@ class GroupMessageHandler:
                     )
                     return
 
-                result = await QFNUClassApiClient.query_free_classroom(query_text)
+                result = await QFNUClassApiClient.query_free_classroom(
+                    query_text, key="jwzjenpfjcqnodtilvgpi"
+                )
 
                 # 处理空结果（通常是网络层面的严重错误，api_client现在会返回错误字典，所以这里主要是防御性编程）
                 if not result:
@@ -190,7 +192,9 @@ class GroupMessageHandler:
                 # 根据任务描述 "检测到消息包含空教室命令或教室课命令就调用下面API查询"
                 # 且API文档中给出了 /api/classroom-schedule
 
-                result = await QFNUClassApiClient.query_classroom_schedule(query_text)
+                result = await QFNUClassApiClient.query_classroom_schedule(
+                    query_text, key="jwzjenpfjcqnodtilvgpi"
+                )
 
                 # 处理空结果
                 if not result:

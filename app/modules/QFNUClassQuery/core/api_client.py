@@ -35,21 +35,27 @@ class QFNUClassApiClient:
             return {"success": False, "error": f"系统异常: {str(e)}"}
 
     @classmethod
-    async def query_free_classroom(cls, query_text):
+    async def query_free_classroom(cls, query_text, key=None):
         """
         查询空教室
         :param query_text: 自然语言查询描述，如 "明天综合楼"
+        :param key: API鉴权key
         """
         endpoint = "/api/free-classroom"
         params = {"query": query_text}
+        if key:
+            params["key"] = key
         return await cls._request("GET", endpoint, params=params)
 
     @classmethod
-    async def query_classroom_schedule(cls, query_text):
+    async def query_classroom_schedule(cls, query_text, key=None):
         """
         查询教室课表
         :param query_text: 自然语言查询描述
+        :param key: API鉴权key
         """
         endpoint = "/api/classroom-schedule"
         params = {"query": query_text}
+        if key:
+            params["key"] = key
         return await cls._request("GET", endpoint, params=params)
