@@ -23,7 +23,29 @@ class QFNUClassApiClient:
                 async with response:
                     if response.status != 200:
                         try:
-                            error_text = await response.text()
+                            content = await response.text()
+                            import json
+
+                            try:
+                                data = json.loads(content)
+                                # 尝试解析常见错误结构
+                                if isinstance(data, dict):
+                                    error_obj = data.get("error")
+                                    if isinstance(error_obj, dict):
+                                        error_text = error_obj.get(
+                                            "message", str(error_obj)
+                                        )
+                                    elif error_obj:
+                                        error_text = str(error_obj)
+                                    else:
+                                        # 如果没有 error 字段，尝试直接使用 content，但做一下转码处理显示中文
+                                        error_text = json.dumps(
+                                            data, ensure_ascii=False
+                                        )
+                                else:
+                                    error_text = content
+                            except json.JSONDecodeError:
+                                error_text = content
                         except Exception:
                             error_text = "无法读取响应内容"
 
