@@ -212,3 +212,4 @@ ssh_remote_*.py
 update-submodules-push.sh
 *git*.bat
 upload_modules.sh
+SentimentAnalysis
