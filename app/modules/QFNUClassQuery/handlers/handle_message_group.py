@@ -123,14 +123,14 @@ class GroupMessageHandler:
                     return
 
                 # 处理错误返回
-                if result.get("code") != 200:
+                if not result.get("success"):
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"❌ 查询失败：{result.get('message', '未知错误')}"
+                                f"❌ 查询失败：{result.get('error', '未知错误')}"
                             ),
                         ],
                     )
@@ -138,20 +138,24 @@ class GroupMessageHandler:
 
                 # 处理成功返回
                 data = result.get("data", {})
-                if data.get("is_relevant"):
-                    count = data.get("count", 0)
-                    url = data.get("url", "")
-                    params = data.get("query_params", {})
+                parsed_params = data.get("parsed_params", {})
+
+                # 如果没有解析出参数，说明意图无关或解析失败
+                if not parsed_params:
+                    # 尝试从data中获取一些信息，或者直接显示message
+                    reply_text = f"❓ 无法解析查询意图"
+                else:
+                    count = data.get("classroom_count", 0)
+                    url = data.get("html_url", "")
+
                     reply_text = (
                         f"✅ 查询成功\n"
-                        f"📅 日期：{params.get('target_date')} ({params.get('weekday_cn')})\n"
-                        f"🏫 教学楼：{params.get('building_name')}\n"
-                        f"⏰ 节次：{params.get('start_lesson')}-{params.get('end_lesson')}\n"
+                        f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')})\n"
+                        f"🏫 教学楼：{parsed_params.get('building')}\n"
+                        f"⏰ 节次：{parsed_params.get('periods')}\n"
                         f"📊 空闲教室：{count}间\n"
                         f"🔗 详情链接：{url}"
                     )
-                else:
-                    reply_text = f"❓ 无法解析查询意图：{data.get('original_query')}"
 
                 await send_group_msg(
                     self.websocket,
@@ -201,14 +205,14 @@ class GroupMessageHandler:
                     return
 
                 # 处理错误返回
-                if result.get("code") != 200:
+                if not result.get("success"):
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"❌ 查询失败：{result.get('message', '未知错误')}"
+                                f"❌ 查询失败：{result.get('error', '未知错误')}"
                             ),
                         ],
                     )
@@ -216,21 +220,12 @@ class GroupMessageHandler:
 
                 # 处理成功返回
                 data = result.get("data", {})
-                # 如果有url则展示url，否则展示message
-                url = data.get("url")
+                url = data.get("html_url")
+
                 if url:
                     reply_text = f"✅ 查询成功，详情请点击链接查看：\n{url}"
                 else:
-                    # 尝试从data中获取一些信息，或者直接显示message
-                    reply_text = f"✅ 查询结果：{result.get('message', '成功')}"
-                    if (
-                        isinstance(data, dict)
-                        and "is_relevant" in data
-                        and not data["is_relevant"]
-                    ):
-                        reply_text = (
-                            f"❓ 无法解析查询意图：{data.get('original_query')}"
-                        )
+                    reply_text = "❓ 无法解析查询意图"
 
                 await send_group_msg(
                     self.websocket,
