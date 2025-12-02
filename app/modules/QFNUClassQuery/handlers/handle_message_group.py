@@ -120,6 +120,20 @@ class GroupMessageHandler:
                     )
                     return
 
+                # 处理错误返回
+                if result.get("code") != 200:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(
+                                f"❌ 查询失败：{result.get('message', '未知错误')}"
+                            ),
+                        ],
+                    )
+                    return
+
                 if result.get("code") == 200:
                     data = result.get("data", {})
                     if data.get("is_relevant"):
@@ -182,6 +196,20 @@ class GroupMessageHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message("查询失败，请稍后重试"),
+                        ],
+                    )
+                    return
+
+                # 处理错误返回
+                if result.get("code") != 200:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(
+                                f"❌ 查询失败：{result.get('message', '未知错误')}"
+                            ),
                         ],
                     )
                     return

@@ -20,11 +20,14 @@ class QFNUClassApiClient:
                         logger.error(
                             f"[{MODULE_NAME}] API请求失败: {url} status={response.status}"
                         )
-                        return None
+                        return {
+                            "code": response.status,
+                            "message": f"API请求失败: HTTP {response.status}",
+                        }
                     return await response.json()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}] API请求异常: {e}")
-            return None
+            return {"code": 500, "message": f"系统异常: {str(e)}"}
 
     @classmethod
     async def query_free_classroom(cls, query_text: str):
