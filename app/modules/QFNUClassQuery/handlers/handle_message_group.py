@@ -8,7 +8,7 @@ from core.menu_manager import MENU_COMMAND
 from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from utils.auth import is_system_admin
-from api.message import send_group_msg
+from api.message import send_group_msg, set_msg_emoji_like
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager import DataManager
@@ -108,6 +108,8 @@ class GroupMessageHandler:
                     )
                     return
 
+                await set_msg_emoji_like(self.websocket, self.message_id, "424", True)
+
                 result = await QFNUClassApiClient.query_free_classroom(
                     query_text, key="jwzjenpfjcqnodtilvgpi"
                 )
@@ -188,6 +190,8 @@ class GroupMessageHandler:
                         ],
                     )
                     return
+
+                await set_msg_emoji_like(self.websocket, self.message_id, "424", True)
 
                 # 这里虽然任务描述只给了空教室的详细返回示例，但API文档提到了教室课表查询API
                 # 假设返回结构类似或者直接返回结果，这里先做通用处理，后续根据实际返回调整
