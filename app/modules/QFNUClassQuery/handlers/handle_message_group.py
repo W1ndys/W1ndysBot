@@ -149,9 +149,9 @@ class GroupMessageHandler:
                     url = data.get("html_url", "")
 
                     reply_text = (
-                        f"✅ 查询成功\n"
-                        f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')})\n"
-                        f"🏫 教学楼：{parsed_params.get('building')}\n"
+                        f"✅ 空教室查询成功\n"
+                        f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')}) 第{parsed_params.get('week')}周\n"
+                        f"🏫 教学楼：{parsed_params.get('building_display', parsed_params.get('building'))}\n"
                         f"⏰ 节次：{parsed_params.get('periods')}\n"
                         f"📊 空闲教室：{count}间\n"
                         f"🔗 详情链接：{url}"
@@ -233,9 +233,9 @@ class GroupMessageHandler:
 
                     # 教室课表查询通常是针对具体教室，所以building可能是教室名
                     reply_text = (
-                        f"✅ 查询成功\n"
-                        f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')})\n"
-                        f"🏫 教室：{parsed_params.get('building')}\n"  # 这里字段名可能复用building，实际指教室
+                        f"✅ 课表查询成功\n"
+                        f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')}) 第{parsed_params.get('week')}周\n"
+                        f"🏫 地点：{parsed_params.get('building_display', parsed_params.get('building'))}\n"
                         f"🔗 详情链接：{url}"
                     )
 
