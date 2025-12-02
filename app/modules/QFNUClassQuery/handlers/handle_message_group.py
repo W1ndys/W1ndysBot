@@ -109,13 +109,15 @@ class GroupMessageHandler:
                     return
 
                 result = await QFNUClassApiClient.query_free_classroom(query_text)
+
+                # 处理空结果（通常是网络层面的严重错误，api_client现在会返回错误字典，所以这里主要是防御性编程）
                 if not result:
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message("查询失败，请稍后重试"),
+                            generate_text_message("查询失败：无法连接到API服务"),
                         ],
                     )
                     return
@@ -134,26 +136,22 @@ class GroupMessageHandler:
                     )
                     return
 
-                if result.get("code") == 200:
-                    data = result.get("data", {})
-                    if data.get("is_relevant"):
-                        count = data.get("count", 0)
-                        url = data.get("url", "")
-                        params = data.get("query_params", {})
-                        reply_text = (
-                            f"✅ 查询成功\n"
-                            f"📅 日期：{params.get('target_date')} ({params.get('weekday_cn')})\n"
-                            f"🏫 教学楼：{params.get('building_name')}\n"
-                            f"⏰ 节次：{params.get('start_lesson')}-{params.get('end_lesson')}\n"
-                            f"📊 空闲教室：{count}间\n"
-                            f"🔗 详情链接：{url}"
-                        )
-                    else:
-                        reply_text = (
-                            f"❓ 无法解析查询意图：{data.get('original_query')}"
-                        )
+                # 处理成功返回
+                data = result.get("data", {})
+                if data.get("is_relevant"):
+                    count = data.get("count", 0)
+                    url = data.get("url", "")
+                    params = data.get("query_params", {})
+                    reply_text = (
+                        f"✅ 查询成功\n"
+                        f"📅 日期：{params.get('target_date')} ({params.get('weekday_cn')})\n"
+                        f"🏫 教学楼：{params.get('building_name')}\n"
+                        f"⏰ 节次：{params.get('start_lesson')}-{params.get('end_lesson')}\n"
+                        f"📊 空闲教室：{count}间\n"
+                        f"🔗 详情链接：{url}"
+                    )
                 else:
-                    reply_text = f"❌ 查询出错：{result.get('message')}"
+                    reply_text = f"❓ 无法解析查询意图：{data.get('original_query')}"
 
                 await send_group_msg(
                     self.websocket,
@@ -189,13 +187,15 @@ class GroupMessageHandler:
                 # 且API文档中给出了 /api/classroom-schedule
 
                 result = await QFNUClassApiClient.query_classroom_schedule(query_text)
+
+                # 处理空结果
                 if not result:
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message("查询失败，请稍后重试"),
+                            generate_text_message("查询失败：无法连接到API服务"),
                         ],
                     )
                     return
@@ -214,27 +214,23 @@ class GroupMessageHandler:
                     )
                     return
 
-                # 假设教室课表返回结构与空教室类似，或者直接展示message/data
-                # 由于没有给出教室课表的具体响应示例，这里做一个通用的结果展示
-                if result.get("code") == 200:
-                    data = result.get("data", {})
-                    # 如果有url则展示url，否则展示message
-                    url = data.get("url")
-                    if url:
-                        reply_text = f"✅ 查询成功，详情请点击链接查看：\n{url}"
-                    else:
-                        # 尝试从data中获取一些信息，或者直接显示message
-                        reply_text = f"✅ 查询结果：{result.get('message', '成功')}"
-                        if (
-                            isinstance(data, dict)
-                            and "is_relevant" in data
-                            and not data["is_relevant"]
-                        ):
-                            reply_text = (
-                                f"❓ 无法解析查询意图：{data.get('original_query')}"
-                            )
+                # 处理成功返回
+                data = result.get("data", {})
+                # 如果有url则展示url，否则展示message
+                url = data.get("url")
+                if url:
+                    reply_text = f"✅ 查询成功，详情请点击链接查看：\n{url}"
                 else:
-                    reply_text = f"❌ 查询出错：{result.get('message')}"
+                    # 尝试从data中获取一些信息，或者直接显示message
+                    reply_text = f"✅ 查询结果：{result.get('message', '成功')}"
+                    if (
+                        isinstance(data, dict)
+                        and "is_relevant" in data
+                        and not data["is_relevant"]
+                    ):
+                        reply_text = (
+                            f"❓ 无法解析查询意图：{data.get('original_query')}"
+                        )
 
                 await send_group_msg(
                     self.websocket,
