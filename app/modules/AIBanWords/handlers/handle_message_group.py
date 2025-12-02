@@ -3,11 +3,16 @@ from core.menu_manager import MENU_COMMAND
 from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from utils.auth import is_system_admin
-from api.message import send_group_msg
-from utils.generate import generate_text_message, generate_reply_message
+from api.message import send_group_msg, delete_msg
+from utils.generate import (
+    generate_text_message,
+    generate_reply_message,
+    generate_at_message,
+)
 from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
+from .llm_client import check_message
 
 
 class GroupMessageHandler:
@@ -84,10 +89,42 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            # 示例：使用with语句块进行数据库操作
-            with DataManager() as dm:
-                # 这里可以进行数据库操作，如：dm.cursor.execute(...)
-                pass
+            # 长度检测：只检测长度超过30的消息
+            if len(self.raw_message) <= 30:
+                return
+
+            # 只检测纯文本消息（这里简化判断，如果raw_message有内容且不是特殊格式）
+            # 实际更严谨的判断可能需要遍历message chain，但raw_message通常包含了文本内容
+            # 简单过滤掉一些非文本消息，如图片等（图片通常在raw_message里会有CQ码）
+            if "[CQ:" in self.raw_message:
+                return
+
+            # 调用LLM检测
+            result = await check_message(self.raw_message)
+
+            if result.get("is_risky"):
+                reason = result.get("reason", "违规内容")
+                risk_type = result.get("type", "UNKNOWN")
+
+                logger.info(
+                    f"[{MODULE_NAME}] 检测到违规消息: {self.raw_message} | 原因: {reason} | 类型: {risk_type}"
+                )
+
+                # 撤回消息
+                await delete_msg(self.websocket, self.message_id)
+
+                # 发送警告
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_at_message(self.user_id),
+                        generate_text_message(
+                            f"\n⚠️ 您的消息被AI判定为违规，已自动撤回。\n原因: {reason}"
+                        ),
+                    ],
+                    note="del_msg=30",
+                )
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
