@@ -220,12 +220,24 @@ class GroupMessageHandler:
 
                 # 处理成功返回
                 data = result.get("data", {})
-                url = data.get("html_url")
+                parsed_params = data.get("parsed_params", {})
 
-                if url:
-                    reply_text = f"✅ 查询成功，详情请点击链接查看：\n{url}"
-                else:
+                # 如果没有解析出参数，说明意图无关或解析失败
+                if not parsed_params:
                     reply_text = "❓ 无法解析查询意图"
+                else:
+                    url = data.get("html_url", "")
+                    classroom_count = data.get(
+                        "classroom_count", 0
+                    )  # 课表查询可能不返回classroom_count，或者含义不同，这里保留以防万一，但主要展示参数
+
+                    # 教室课表查询通常是针对具体教室，所以building可能是教室名
+                    reply_text = (
+                        f"✅ 查询成功\n"
+                        f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')})\n"
+                        f"🏫 教室：{parsed_params.get('building')}\n"  # 这里字段名可能复用building，实际指教室
+                        f"🔗 详情链接：{url}"
+                    )
 
                 await send_group_msg(
                     self.websocket,
