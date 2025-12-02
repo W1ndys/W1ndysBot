@@ -2,7 +2,7 @@ from .. import MODULE_NAME, SWITCH_NAME
 from core.menu_manager import MENU_COMMAND
 from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
-from utils.auth import is_system_admin
+from utils.auth import is_system_admin, is_group_admin
 from api.message import send_group_msg, delete_msg
 from utils.generate import (
     generate_text_message,
@@ -87,6 +87,10 @@ class GroupMessageHandler:
 
             # 如果没开启群聊开关，则不处理
             if not is_group_switch_on(self.group_id, MODULE_NAME):
+                return
+
+            # 忽略管理员和群主的消息
+            if is_group_admin(self.role) or is_system_admin(self.user_id):
                 return
 
             # 长度检测：只检测长度超过30的消息
