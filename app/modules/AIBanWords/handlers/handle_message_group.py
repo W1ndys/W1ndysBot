@@ -13,6 +13,8 @@ from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
 from .llm_client import check_message
+from utils.feishu import send_feishu_msg
+from core.get_group_list import get_group_name_by_id
 
 
 class GroupMessageHandler:
@@ -129,6 +131,31 @@ class GroupMessageHandler:
                     ],
                     note="del_msg=30",
                 )
+
+                # 飞书上报
+                try:
+                    # 获取群名
+                    group_name = (
+                        get_group_name_by_id(self.group_id) or f"群{self.group_id}"
+                    )
+
+                    report_content = (
+                        f"检测到违规消息\n"
+                        f"群号: {self.group_id}\n"
+                        f"群名: {group_name}\n"
+                        f"发送者QQ: {self.user_id}\n"
+                        f"发送者昵称: {self.nickname}\n"
+                        f"发送者群名片: {self.card}\n"
+                        f"时间: {self.formatted_time}\n"
+                        f"违规类型: {risk_type}\n"
+                        f"违规原因: {reason}\n"
+                        f"消息内容: {self.raw_message}"
+                    )
+                    send_feishu_msg(
+                        f"AI违规消息告警 - 群{self.group_id}", report_content
+                    )
+                except Exception as e:
+                    logger.error(f"[{MODULE_NAME}] 飞书上报失败: {e}")
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")

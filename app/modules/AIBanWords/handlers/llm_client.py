@@ -9,7 +9,8 @@ SILICON_FLOW_API_KEY = os.getenv("SILICON_FLOW_API_KEY")
 BASE_URL = "https://api.siliconflow.cn/v1/chat/completions"
 
 
-async def check_message(text, model="Qwen/Qwen2.5-72B-Instruct"):
+# Qwen/Qwen2-7B-Instruct, Qwen/Qwen2.5-72B-Instruct
+async def check_message(text, model="Qwen/Qwen2-7B-Instruct"):
     """
     检测消息是否违规
     :param text: 待检测的文本
