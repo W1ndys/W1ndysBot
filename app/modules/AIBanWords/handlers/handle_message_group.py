@@ -124,7 +124,7 @@ class GroupMessageHandler:
                     [
                         generate_at_message(self.user_id),
                         generate_text_message(
-                            f"\n⚠️ 您的消息被AI判定为违规，已自动撤回。\n原因: {reason}"
+                            f"\n⚠️ 您的消息被AI判定为违规，已自动撤回，如有疑问请联系管理员。\n原因: {reason}"
                         ),
                     ],
                     note="del_msg=30",
