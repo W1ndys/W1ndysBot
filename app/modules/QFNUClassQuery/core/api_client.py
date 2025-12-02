@@ -22,12 +22,17 @@ class QFNUClassApiClient:
 
                 async with response:
                     if response.status != 200:
+                        try:
+                            error_text = await response.text()
+                        except Exception:
+                            error_text = "无法读取响应内容"
+
                         logger.error(
-                            f"[{MODULE_NAME}] API请求失败: {url} status={response.status}"
+                            f"[{MODULE_NAME}] API请求失败: {url} status={response.status} response={error_text}"
                         )
                         return {
                             "success": False,
-                            "error": f"API请求失败: HTTP {response.status}",
+                            "error": f"API请求失败: HTTP {response.status} - {error_text}",
                         }
                     return await response.json()
         except Exception as e:
