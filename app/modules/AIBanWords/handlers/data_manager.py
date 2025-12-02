@@ -19,7 +19,7 @@ class DataManager:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 group_id TEXT NOT NULL,
                 template_name TEXT NOT NULL,
-                template_content TEXT NOT NULL,
+                template_content TEXT NOT NULL
             )"""
         )
 
