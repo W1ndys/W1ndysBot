@@ -116,26 +116,32 @@ class GroupMessageHandler:
 
                 # 处理空结果（通常是网络层面的严重错误，api_client现在会返回错误字典，所以这里主要是防御性编程）
                 if not result:
+                    error_msg = "无法连接到API服务"
+                    logger.error(
+                        f"[{MODULE_NAME}]空教室查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message("查询失败：无法连接到API服务"),
+                            generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
                     )
                     return
 
                 # 处理错误返回
                 if not result.get("success"):
+                    error_msg = result.get("error", "未知错误")
+                    logger.error(
+                        f"[{MODULE_NAME}]空教室查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message(
-                                f"❌ 查询失败：{result.get('error', '未知错误')}"
-                            ),
+                            generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
                     )
                     return
@@ -204,26 +210,32 @@ class GroupMessageHandler:
 
                 # 处理空结果
                 if not result:
+                    error_msg = "无法连接到API服务"
+                    logger.error(
+                        f"[{MODULE_NAME}]教室课表查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message("查询失败：无法连接到API服务"),
+                            generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
                     )
                     return
 
                 # 处理错误返回
                 if not result.get("success"):
+                    error_msg = result.get("error", "未知错误")
+                    logger.error(
+                        f"[{MODULE_NAME}]教室课表查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
-                            generate_text_message(
-                                f"❌ 查询失败：{result.get('error', '未知错误')}"
-                            ),
+                            generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
                     )
                     return
