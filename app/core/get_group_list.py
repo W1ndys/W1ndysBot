@@ -305,8 +305,12 @@ async def handle_events(websocket, msg):
                             )
 
                         if switch_cleaned_count > 0:
+                            cleaned_groups_str = ", ".join(
+                                map(str, switch_cleaned_groups)
+                            )
                             notification_parts.append(
-                                f"⚙️ 群开关数据清理：清理了 {len(switch_cleaned_groups)} 个Bot不在的群的 {switch_cleaned_count} 条开关记录"
+                                f"⚙️ 群开关数据清理：清理了 {len(switch_cleaned_groups)} 个Bot不在的群的 {switch_cleaned_count} 条开关记录\n"
+                                f"涉及群号: {cleaned_groups_str}"
                             )
 
                         if total_errors > 0:
