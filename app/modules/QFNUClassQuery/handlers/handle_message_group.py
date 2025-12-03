@@ -8,13 +8,12 @@ from core.menu_manager import MENU_COMMAND
 from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from utils.auth import is_system_admin
-from api.message import send_group_msg, send_private_msg, set_msg_emoji_like
+from api.message import send_group_msg, set_msg_emoji_like
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
 from ..core.api_client import QFNUClassApiClient
-from config import OWNER_ID
 
 
 class GroupMessageHandler:
@@ -74,38 +73,6 @@ class GroupMessageHandler:
             return True
         return False
 
-    async def _report_error_to_admin(self, query_type: str, error_msg: str):
-        """
-        向管理员上报查询失败信息
-
-        Args:
-            query_type: 查询类型（空教室/教室课表）
-            error_msg: 错误信息
-        """
-        try:
-            # 检查管理员ID是否配置
-            if not OWNER_ID:
-                logger.warning(f"[{MODULE_NAME}]未配置管理员ID，无法上报{query_type}查询失败")
-                return
-
-            report_text = (
-                f"[{MODULE_NAME}] {query_type}查询失败\n"
-                f"时间：{self.formatted_time}\n"
-                f"群号：{self.group_id}\n"
-                f"用户：{self.user_id}\n"
-                f"昵称：{self.nickname}\n"
-                f"用户消息：{self.raw_message}\n"
-                f"错误信息：{error_msg}"
-            )
-            await send_private_msg(
-                self.websocket,
-                OWNER_ID,
-                [generate_text_message(report_text)],
-            )
-            logger.info(f"[{MODULE_NAME}]已向管理员上报{query_type}查询失败")
-        except Exception as e:
-            logger.error(f"[{MODULE_NAME}]向管理员上报{query_type}查询失败时出错: {e}")
-
     async def handle(self):
         """
         处理群消息
@@ -150,6 +117,9 @@ class GroupMessageHandler:
                 # 处理空结果（通常是网络层面的严重错误，api_client现在会返回错误字典，所以这里主要是防御性编程）
                 if not result:
                     error_msg = "无法连接到API服务"
+                    logger.error(
+                        f"[{MODULE_NAME}]空教室查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
@@ -158,12 +128,14 @@ class GroupMessageHandler:
                             generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
                     )
-                    await self._report_error_to_admin("空教室", error_msg)
                     return
 
                 # 处理错误返回
                 if not result.get("success"):
                     error_msg = result.get("error", "未知错误")
+                    logger.error(
+                        f"[{MODULE_NAME}]空教室查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
@@ -172,7 +144,6 @@ class GroupMessageHandler:
                             generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
                     )
-                    await self._report_error_to_admin("空教室", error_msg)
                     return
 
                 # 处理成功返回
@@ -240,6 +211,9 @@ class GroupMessageHandler:
                 # 处理空结果
                 if not result:
                     error_msg = "无法连接到API服务"
+                    logger.error(
+                        f"[{MODULE_NAME}]教室课表查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
@@ -248,12 +222,14 @@ class GroupMessageHandler:
                             generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
                     )
-                    await self._report_error_to_admin("教室课表", error_msg)
                     return
 
                 # 处理错误返回
                 if not result.get("success"):
                     error_msg = result.get("error", "未知错误")
+                    logger.error(
+                        f"[{MODULE_NAME}]教室课表查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
+                    )
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
@@ -262,7 +238,6 @@ class GroupMessageHandler:
                             generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
                     )
-                    await self._report_error_to_admin("教室课表", error_msg)
                     return
 
                 # 处理成功返回
