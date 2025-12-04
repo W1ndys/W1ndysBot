@@ -1322,7 +1322,7 @@ EMOJI_TO_ID = {
 }
 
 
-def get_emoji_id_from_unicode(emoji: str) -> str:
+def get_emoji_id_from_unicode(emoji: str) -> str | None:
     """
     将 emoji 字符转换为其 Unicode 码点（十进制）
 
@@ -1330,7 +1330,7 @@ def get_emoji_id_from_unicode(emoji: str) -> str:
         emoji: emoji 字符
 
     Returns:
-        str: emoji 的 Unicode 码点（十进制字符串）
+        str | None: emoji 的 Unicode 码点（十进制字符串），如果无法转换则返回 None
     """
     # 先尝试从映射表中获取
     if emoji in EMOJI_TO_ID:
@@ -1342,6 +1342,25 @@ def get_emoji_id_from_unicode(emoji: str) -> str:
         return str(ord(emoji[0]))
 
     return None
+
+
+# 预编译 emoji 正则表达式，避免在每次消息处理时重复编译
+EMOJI_PATTERN = re.compile(
+    "["
+    "\U0001F600-\U0001F64F"  # 表情符号（Emoticons）
+    "\U0001F300-\U0001F5FF"  # 杂项符号和图形（Miscellaneous Symbols and Pictographs）
+    "\U0001F680-\U0001F6FF"  # 交通和地图符号（Transport and Map Symbols）
+    "\U0001F1E0-\U0001F1FF"  # 旗帜（Flags）
+    "\U0001F900-\U0001F9FF"  # 补充表情符号（Supplemental Symbols and Pictographs）
+    "\U0001FA00-\U0001FA6F"  # 象棋符号（Chess Symbols）
+    "\U0001FA70-\U0001FAFF"  # 符号和图形扩展-A（Symbols and Pictographs Extended-A）
+    "\U00002702-\U000027B0"  # 装饰符号（Dingbats）
+    "\U00002600-\U000026FF"  # 杂项符号（Miscellaneous Symbols）
+    "\U0001F000-\U0001F02F"  # 麻将牌（Mahjong Tiles）
+    "\U0001F0A0-\U0001F0FF"  # 扑克牌（Playing Cards）
+    "]",
+    flags=re.UNICODE,
+)
 
 
 class GroupMessageHandler:
@@ -1390,27 +1409,8 @@ class GroupMessageHandler:
                             emoji_ids.append(str(face_id))
 
             # 2. 从原始消息中提取emoji
-            # 只匹配真正的emoji，不包括中文字符和其他特殊字符
-            # 使用更精确的emoji范围
-            emoji_pattern = re.compile(
-                "["
-                "\U0001F600-\U0001F64F"  # 表情符号（Emoticons）
-                "\U0001F300-\U0001F5FF"  # 杂项符号和图形（Miscellaneous Symbols and Pictographs）
-                "\U0001F680-\U0001F6FF"  # 交通和地图符号（Transport and Map Symbols）
-                "\U0001F1E0-\U0001F1FF"  # 旗帜（Flags）
-                "\U0001F900-\U0001F9FF"  # 补充表情符号（Supplemental Symbols and Pictographs）
-                "\U0001FA00-\U0001FA6F"  # 象棋符号（Chess Symbols）
-                "\U0001FA70-\U0001FAFF"  # 符号和图形扩展-A（Symbols and Pictographs Extended-A）
-                "\U00002702-\U000027B0"  # 装饰符号（Dingbats）
-                "\U00002600-\U000026FF"  # 杂项符号（Miscellaneous Symbols）
-                "\U0001F000-\U0001F02F"  # 麻将牌（Mahjong Tiles）
-                "\U0001F0A0-\U0001F0FF"  # 扑克牌（Playing Cards）
-                "]",
-                flags=re.UNICODE,
-            )
-
-            # 从raw_message中提取emoji（跳过变体选择器）
-            emojis = emoji_pattern.findall(self.raw_message)
+            # 使用预编译的正则表达式匹配 emoji
+            emojis = EMOJI_PATTERN.findall(self.raw_message)
             for emoji_char in emojis:
                 # 跳过变体选择器（Variation Selectors）
                 if "\uFE00" <= emoji_char <= "\uFE0F":
