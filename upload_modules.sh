@@ -9,7 +9,7 @@
 
 # --- 基础配置 ---
 # 本地源文件夹路径 (例如: /c/MyProject/dist)
-LOCAL_PATH="/d/Github-projects/W1ndys/W1ndysBot/app/modules"
+LOCAL_PATH="/d/Github/W1ndys/W1ndysBot/app/modules"
 
 # 远程服务器 IP 或域名
 REMOTE_HOST="192.168.137.75"
@@ -23,7 +23,7 @@ REMOTE_PATH="/root/bot/app/modules"
 
 # --- 密钥配置 ---
 # 标准 SSH 私钥文件路径 (例如 id_rsa)
-PRIVATE_KEY_PATH="/c/Users/W1ndys/.ssh/id_rsa"
+PRIVATE_KEY_PATH="/C/Users/W1ndysThinkPad/.ssh/id_ed25519"
 
 # --- 新增：上传后执行的命令 ---
 # 将此变量设置为您想在上传和解压成功后在远程服务器上执行的命令
