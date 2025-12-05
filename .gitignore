@@ -204,12 +204,4 @@ cython_debug/
 
 
 napcat/
-git-*.sh
-clean_pycache.sh
-copy_db.sh
-run_test*.sh
-ssh_remote_*.py
-update-submodules-push.sh
-*git*.bat
-upload_modules.sh
 SentimentAnalysis
