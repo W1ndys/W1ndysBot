@@ -127,6 +127,7 @@ class GroupMessageHandler:
                             generate_reply_message(self.message_id),
                             generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
+                        note="del_msg=30",
                     )
                     return
 
@@ -143,6 +144,7 @@ class GroupMessageHandler:
                             generate_reply_message(self.message_id),
                             generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
+                        note="del_msg=30",
                     )
                     return
 
