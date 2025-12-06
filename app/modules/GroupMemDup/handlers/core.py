@@ -9,6 +9,9 @@ from .. import (
     VIEW_GROUPS_COMMAND,
     VIEW_GROUPS_LIST_COMMAND,
     DELETE_GROUP_COMMAND,
+    ADD_WHITELIST_COMMAND,
+    REMOVE_WHITELIST_COMMAND,
+    VIEW_WHITELIST_COMMAND,
 )
 from .data_manager import DataManager
 from api.message import send_private_msg, send_group_msg_with_cq
@@ -268,6 +271,107 @@ class Core:
             )
             return False
 
+    async def _handle_add_whitelist_command(self):
+        """处理添加白名单命令"""
+        try:
+            parts = self.raw_message.split()
+            if len(parts) < 2:
+                await send_private_msg(
+                    self.websocket, self.user_id, "命令格式错误，请提供要添加的QQ号"
+                )
+                return False
+
+            user_ids = parts[1:]
+            success_count = 0
+            fail_messages = []
+
+            with DataManager() as dm:
+                for user_id in user_ids:
+                    result, message = dm.add_whitelist_user(user_id)
+                    if result:
+                        success_count += 1
+                    else:
+                        fail_messages.append(f"{user_id}: {message}")
+
+            response = f"成功添加 {success_count} 个用户到白名单"
+            if fail_messages:
+                response += f"\n失败信息：\n" + "\n".join(fail_messages)
+
+            await send_private_msg(self.websocket, self.user_id, response)
+            return True
+
+        except Exception as e:
+            logger.error(
+                f"[{MODULE_NAME}]{self.user_id}处理添加白名单命令时发生异常: {e}"
+            )
+            await send_private_msg(
+                self.websocket, self.user_id, "处理添加白名单命令时发生异常: " + str(e)
+            )
+            return False
+
+    async def _handle_remove_whitelist_command(self):
+        """处理删除白名单命令"""
+        try:
+            parts = self.raw_message.split()
+            if len(parts) < 2:
+                await send_private_msg(
+                    self.websocket, self.user_id, "命令格式错误，请提供要删除的QQ号"
+                )
+                return False
+
+            user_ids = parts[1:]
+            success_count = 0
+            fail_messages = []
+
+            with DataManager() as dm:
+                for user_id in user_ids:
+                    result, message = dm.remove_whitelist_user(user_id)
+                    if result:
+                        success_count += 1
+                    else:
+                        fail_messages.append(f"{user_id}: {message}")
+
+            response = f"成功从白名单移除 {success_count} 个用户"
+            if fail_messages:
+                response += f"\n失败信息：\n" + "\n".join(fail_messages)
+
+            await send_private_msg(self.websocket, self.user_id, response)
+            return True
+
+        except Exception as e:
+            logger.error(
+                f"[{MODULE_NAME}]{self.user_id}处理删除白名单命令时发生异常: {e}"
+            )
+            await send_private_msg(
+                self.websocket, self.user_id, "处理删除白名单命令时发生异常: " + str(e)
+            )
+            return False
+
+    async def _handle_view_whitelist_command(self):
+        """处理查看白名单命令"""
+        try:
+            with DataManager() as dm:
+                whitelist = dm.get_whitelist()
+                count = len(whitelist)
+
+                if whitelist:
+                    message = f"白名单用户列表（共 {count} 人）：\n"
+                    message += "\n".join([f"- {user_id}" for user_id in whitelist])
+                else:
+                    message = "白名单为空"
+
+                await send_private_msg(self.websocket, self.user_id, message)
+                return True
+
+        except Exception as e:
+            logger.error(
+                f"[{MODULE_NAME}]{self.user_id}处理查看白名单命令时发生异常: {e}"
+            )
+            await send_private_msg(
+                self.websocket, self.user_id, "处理查看白名单命令时发生异常: " + str(e)
+            )
+            return False
+
     async def handle(self):
         try:
             if self.raw_message.startswith(ASSOCIATE_GROUPS_COMMAND):
@@ -284,6 +388,12 @@ class Core:
                 await self._handle_view_groups_list_command()
             elif self.raw_message.startswith(DELETE_GROUP_COMMAND):
                 await self._handle_delete_group_command()
+            elif self.raw_message.startswith(ADD_WHITELIST_COMMAND):
+                await self._handle_add_whitelist_command()
+            elif self.raw_message.startswith(REMOVE_WHITELIST_COMMAND):
+                await self._handle_remove_whitelist_command()
+            elif self.raw_message.startswith(VIEW_WHITELIST_COMMAND):
+                await self._handle_view_whitelist_command()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]{self.user_id}处理私聊消息失败: {e}")
             await send_private_msg(

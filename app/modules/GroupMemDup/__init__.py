@@ -34,6 +34,11 @@ DELETE_GROUP_COMMAND = "删除群组"
 # 群发命令：向某个组群发消息
 SEND_MESSAGE_COMMAND = "群发"
 
+# 白名单管理命令
+ADD_WHITELIST_COMMAND = "gmd添加白名单"
+REMOVE_WHITELIST_COMMAND = "gmd删除白名单"
+VIEW_WHITELIST_COMMAND = "gmd查看白名单"
+
 COMMANDS = {
     ASSOCIATE_GROUPS_COMMAND: "关联群号，用法：关联群号 组名 群号1 群号2 ...",
     REMOVE_GROUPS_COMMAND: "删除群号，用法：删除群号 组名 群号1 群号2 ...",
@@ -42,5 +47,8 @@ COMMANDS = {
     VIEW_GROUPS_LIST_COMMAND: "查看群组，用法：查看群组",
     DELETE_GROUP_COMMAND: "删除群组，用法：删除群组 组名",
     SEND_MESSAGE_COMMAND: "群发，用法：群发 组名 消息",
+    ADD_WHITELIST_COMMAND: f"添加白名单，用法：{ADD_WHITELIST_COMMAND} QQ号1 QQ号2 ...",
+    REMOVE_WHITELIST_COMMAND: f"删除白名单，用法：{REMOVE_WHITELIST_COMMAND} QQ号1 QQ号2 ...",
+    VIEW_WHITELIST_COMMAND: f"查看白名单，用法：{VIEW_WHITELIST_COMMAND}",
     "其他说明": "群发消息时，消息中可以包含settodo，表示设为待办，包含atall，表示@全体成员",
 }

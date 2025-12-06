@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from datetime import datetime
 from .. import MODULE_NAME
 
 
@@ -36,6 +37,24 @@ class DataManager:
         self.cursor.execute(
             """
             CREATE INDEX IF NOT EXISTS idx_group_id ON group_associations(group_id)
+        """
+        )
+
+        # 创建白名单表，存储白名单用户
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS whitelist (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id TEXT NOT NULL UNIQUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """
+        )
+
+        # 创建白名单用户索引
+        self.cursor.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_whitelist_user_id ON whitelist(user_id)
         """
         )
 
@@ -433,3 +452,99 @@ class DataManager:
             list: 该群组下的所有群号列表，如果群组不存在则返回空列表
         """
         return self.get_group_info(group_name)
+
+    def _get_formatted_time(self):
+        """获取格式化时间字符串"""
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    def add_whitelist_user(self, user_id):
+        """
+        添加用户到白名单
+
+        Args:
+            user_id (str): 用户ID
+
+        Returns:
+            tuple: (success: bool, message: str)
+        """
+        try:
+            self.cursor.execute(
+                "INSERT INTO whitelist (user_id, created_at) VALUES (?, ?)",
+                (str(user_id), self._get_formatted_time()),
+            )
+            self.conn.commit()
+            return True, f"成功将用户 {user_id} 添加到白名单"
+        except sqlite3.IntegrityError:
+            return False, f"用户 {user_id} 已在白名单中"
+        except sqlite3.Error as e:
+            self.conn.rollback()
+            return False, f"数据库错误：{str(e)}"
+
+    def remove_whitelist_user(self, user_id):
+        """
+        从白名单移除用户
+
+        Args:
+            user_id (str): 用户ID
+
+        Returns:
+            tuple: (success: bool, message: str)
+        """
+        try:
+            self.cursor.execute(
+                "DELETE FROM whitelist WHERE user_id = ?",
+                (str(user_id),),
+            )
+            if self.cursor.rowcount > 0:
+                self.conn.commit()
+                return True, f"成功将用户 {user_id} 从白名单移除"
+            else:
+                return False, f"用户 {user_id} 不在白名单中"
+        except sqlite3.Error as e:
+            self.conn.rollback()
+            return False, f"数据库错误：{str(e)}"
+
+    def is_user_whitelisted(self, user_id):
+        """
+        检查用户是否在白名单中
+
+        Args:
+            user_id (str): 用户ID
+
+        Returns:
+            bool: 用户是否在白名单中
+        """
+        try:
+            self.cursor.execute(
+                "SELECT 1 FROM whitelist WHERE user_id = ?",
+                (str(user_id),),
+            )
+            return self.cursor.fetchone() is not None
+        except sqlite3.Error:
+            return False
+
+    def get_whitelist(self):
+        """
+        获取所有白名单用户
+
+        Returns:
+            list: 白名单用户ID列表
+        """
+        try:
+            self.cursor.execute("SELECT user_id FROM whitelist ORDER BY created_at")
+            return [row[0] for row in self.cursor.fetchall()]
+        except sqlite3.Error:
+            return []
+
+    def get_whitelist_count(self):
+        """
+        获取白名单用户数量
+
+        Returns:
+            int: 白名单用户数量
+        """
+        try:
+            self.cursor.execute("SELECT COUNT(*) FROM whitelist")
+            return self.cursor.fetchone()[0]
+        except sqlite3.Error:
+            return 0
