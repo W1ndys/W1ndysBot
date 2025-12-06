@@ -53,3 +53,8 @@ dependencies = [
     "xlrd==1.2.0",
     "yarl==1.20.1",
 ]
+
+[[tool.uv.index]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
