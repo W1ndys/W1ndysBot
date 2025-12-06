@@ -9,7 +9,7 @@
 
 # --- 基础配置 ---
 # 本地源文件夹路径 (例如: /c/MyProject/dist)
-LOCAL_PATH="/d/Github/W1ndys/W1ndysBot/app/modules"
+LOCAL_PATH="app/modules"
 
 # 远程服务器 IP 或域名
 REMOTE_HOST="192.168.137.75"
