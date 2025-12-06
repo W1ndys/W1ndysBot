@@ -5,6 +5,7 @@ from api.message import send_group_msg
 from utils.generate import generate_text_message, generate_at_message
 from api.group import set_group_kick
 from .core import get_user_groups_in_associated_groups
+from .data_manager import DataManager
 import asyncio
 
 
@@ -176,8 +177,17 @@ class GroupNoticeHandler:
         """
         检测用户是否在其他群中
         改动：若用户已在关联群中，踢出当前新进群（self.group_id），不再踢出原来的群。
+        新增：若用户在白名单中，跳过检测。
         """
         try:
+            # 检查用户是否在白名单中
+            with DataManager() as dm:
+                if dm.is_user_whitelisted(self.user_id):
+                    logger.info(
+                        f"[{MODULE_NAME}]用户{self.user_id}在白名单中，跳过去重检测"
+                    )
+                    return
+
             user_group_ids, group_name = get_user_groups_in_associated_groups(
                 self.user_id, self.group_id
             )
