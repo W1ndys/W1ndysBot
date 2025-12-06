@@ -287,6 +287,10 @@ class Core:
 
             with DataManager() as dm:
                 for user_id in user_ids:
+                    # 验证用户ID是否为有效的数字格式
+                    if not user_id.isdigit():
+                        fail_messages.append(f"{user_id}: QQ号格式无效，应为纯数字")
+                        continue
                     result, message = dm.add_whitelist_user(user_id)
                     if result:
                         success_count += 1
@@ -325,6 +329,10 @@ class Core:
 
             with DataManager() as dm:
                 for user_id in user_ids:
+                    # 验证用户ID是否为有效的数字格式
+                    if not user_id.isdigit():
+                        fail_messages.append(f"{user_id}: QQ号格式无效，应为纯数字")
+                        continue
                     result, message = dm.remove_whitelist_user(user_id)
                     if result:
                         success_count += 1
