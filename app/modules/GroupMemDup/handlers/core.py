@@ -125,8 +125,10 @@ class Core:
 
     async def _handle_send_message_command(self):
         try:
-            # 解析命令 - 限制分割次数，保留消息中的空格
-            parts = self.raw_message.split(" ", 2)  # 最多分割2次，得到3个部分
+            # 解析命令 - 使用split()自动处理多余空格，限制分割次数保留消息中的空格
+            parts = self.raw_message.split(
+                None, 2
+            )  # 使用None自动处理多个空格，最多分割2次
 
             if len(parts) < 3:
                 await send_private_msg(
