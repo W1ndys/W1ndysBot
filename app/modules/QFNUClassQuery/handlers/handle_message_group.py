@@ -127,6 +127,7 @@ class GroupMessageHandler:
                             generate_reply_message(self.message_id),
                             generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
+                        note="del_msg=30",
                     )
                     return
 
@@ -143,6 +144,7 @@ class GroupMessageHandler:
                             generate_reply_message(self.message_id),
                             generate_text_message(f"❌ 查询失败：{error_msg}"),
                         ],
+                        note="del_msg=30",
                     )
                     return
 
@@ -157,9 +159,18 @@ class GroupMessageHandler:
                 else:
                     count = data.get("classroom_count")
                     url = data.get("html_url", "")
+                    parse_method = data.get("parse_method", "")
+
+                    method_display = ""
+                    if parse_method == "ai":
+                        method_display = " (AI解析)"
+                    elif parse_method == "traditional":
+                        method_display = " (规则解析)"
+                    elif parse_method:
+                        method_display = f" ({parse_method})"
 
                     reply_text = (
-                        f"✅ 空教室查询成功\n"
+                        f"✅ 空教室查询成功{method_display}\n"
                         f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')}) 第{parsed_params.get('week')}周\n"
                         f"🏫 教学楼：{parsed_params.get('building_display', parsed_params.get('building'))}\n"
                         f"⏰ 节次：{parsed_params.get('periods')}\n"
@@ -252,10 +263,19 @@ class GroupMessageHandler:
                     classroom_count = data.get(
                         "classroom_count", 0
                     )  # 课表查询可能不返回classroom_count，或者含义不同，这里保留以防万一，但主要展示参数
+                    parse_method = data.get("parse_method", "")
+
+                    method_display = ""
+                    if parse_method == "ai":
+                        method_display = " (AI解析)"
+                    elif parse_method == "traditional":
+                        method_display = " (规则解析)"
+                    elif parse_method:
+                        method_display = f" ({parse_method})"
 
                     # 教室课表查询通常是针对具体教室，所以building可能是教室名
                     reply_text = (
-                        f"✅ 课表查询成功\n"
+                        f"✅ 课表查询成功{method_display}\n"
                         f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')}) 第{parsed_params.get('week')}周\n"
                         f"🏫 地点：{parsed_params.get('building_display', parsed_params.get('building'))}\n"
                         f"🔗 详情链接：{url}"
