@@ -180,6 +180,8 @@ class GroupMessageHandler:
 
                     reply_text += f"🔗 详情链接：{url}"
 
+                    reply_text += "【全网首发】曲阜师范大学2025-2026-1期末考试安排表来了！https://mp.weixin.qq.com/s/11vyGjqBoRYTz6btwpRLDw"
+
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
@@ -280,6 +282,8 @@ class GroupMessageHandler:
                         f"🏫 地点：{parsed_params.get('building_display', parsed_params.get('building'))}\n"
                         f"🔗 详情链接：{url}"
                     )
+
+                    reply_text += "【全网首发】曲阜师范大学2025-2026-1期末考试安排表来了！https://mp.weixin.qq.com/s/11vyGjqBoRYTz6btwpRLDw"
 
                 await send_group_msg(
                     self.websocket,
