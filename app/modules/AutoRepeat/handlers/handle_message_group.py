@@ -1517,7 +1517,7 @@ class GroupMessageHandler:
                 )
 
             # 检测消息中的表情并贴表情回复
-            await self.react_with_emojis()
+            # await self.react_with_emojis()
 
             # 忽略的字符数组单独摘出来
             ignore_words = [
