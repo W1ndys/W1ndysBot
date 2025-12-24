@@ -221,7 +221,7 @@ class GroupNoticeHandler:
                     [
                         generate_at_message(self.user_id),
                         generate_text_message(
-                            f"({self.user_id}) 本群禁止发布二维码，如误封请联系管理员处理"
+                            f"({self.user_id}) 本群禁止发布违禁信息，如误封请联系管理员处理"
                         ),
                     ],
                 )
