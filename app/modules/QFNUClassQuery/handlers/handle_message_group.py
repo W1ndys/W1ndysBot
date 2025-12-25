@@ -8,12 +8,11 @@ from core.menu_manager import MENU_COMMAND
 from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from utils.auth import is_system_admin
-from api.message import send_group_msg, set_msg_emoji_like
+from api.message import send_group_msg
 from utils.generate import generate_text_message, generate_reply_message
 from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
-from ..core.api_client import QFNUClassApiClient
 
 
 class GroupMessageHandler:
@@ -92,201 +91,28 @@ class GroupMessageHandler:
 
             # 检查是否包含空教室命令
             if EMPTY_CLASSROOM_COMMAND in self.raw_message:
-                query_text = self.raw_message.replace(
-                    EMPTY_CLASSROOM_COMMAND, ""
-                ).strip()
-                if not query_text:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(
-                                "请提供查询条件，例如：空教室 明天综合楼"
-                            ),
-                        ],
-                    )
-                    return
-
-                await set_msg_emoji_like(self.websocket, self.message_id, "424", True)
-
-                result = await QFNUClassApiClient.query_free_classroom(
-                    query_text, key="jwzjenpfjcqnodtilvgpi"
-                )
-
-                # 处理空结果（通常是网络层面的严重错误，api_client现在会返回错误字典，所以这里主要是防御性编程）
-                if not result:
-                    error_msg = "无法连接到API服务"
-                    logger.error(
-                        f"[{MODULE_NAME}]空教室查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
-                    )
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(f"❌ 查询失败：{error_msg}"),
-                        ],
-                        note="del_msg=30",
-                    )
-                    return
-
-                # 处理错误返回
-                if not result.get("success"):
-                    error_msg = result.get("error", "未知错误")
-                    logger.error(
-                        f"[{MODULE_NAME}]空教室查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
-                    )
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(f"❌ 查询失败：{error_msg}"),
-                        ],
-                        note="del_msg=30",
-                    )
-                    return
-
-                # 处理成功返回
-                data = result.get("data", {})
-                parsed_params = data.get("parsed_params", {})
-
-                # 如果没有解析出参数，说明意图无关或解析失败
-                if not parsed_params:
-                    # 尝试从data中获取一些信息，或者直接显示message
-                    reply_text = f"❓ 无法解析查询意图"
-                else:
-                    count = data.get("classroom_count")
-                    url = data.get("html_url", "")
-                    parse_method = data.get("parse_method", "")
-
-                    method_display = ""
-                    if parse_method == "ai":
-                        method_display = " (AI解析)"
-                    elif parse_method == "traditional":
-                        method_display = " (规则解析)"
-                    elif parse_method:
-                        method_display = f" ({parse_method})"
-
-                    reply_text = (
-                        f"✅ 空教室查询成功{method_display}\n"
-                        f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')}) 第{parsed_params.get('week')}周\n"
-                        f"🏫 教学楼：{parsed_params.get('building_display', parsed_params.get('building'))}\n"
-                        f"⏰ 节次：{parsed_params.get('periods')}\n"
-                    )
-                    if count is not None:
-                        reply_text += f"📊 空闲教室：{count}间\n"
-
-                    reply_text += f"🔗 详情链接：{url}"
-
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
                     [
                         generate_reply_message(self.message_id),
-                        generate_text_message(reply_text),
+                        generate_text_message(
+                            "查空教室功能已在新版曲奇教务（第三代）完成开发，带来更便捷的使用体验，请前往 https://easy-qfnu.top 继续使用"
+                        ),
                     ],
                 )
                 return
 
             # 检查是否包含教室课表命令
             if CLASS_SCHEDULE_COMMAND in self.raw_message:
-                query_text = self.raw_message.replace(
-                    CLASS_SCHEDULE_COMMAND, ""
-                ).strip()
-                if not query_text:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(
-                                "请提供查询条件，例如：教室课 明天综合楼101"
-                            ),
-                        ],
-                    )
-                    return
-
-                await set_msg_emoji_like(self.websocket, self.message_id, "424", True)
-
-                # 这里虽然任务描述只给了空教室的详细返回示例，但API文档提到了教室课表查询API
-                # 假设返回结构类似或者直接返回结果，这里先做通用处理，后续根据实际返回调整
-                # 根据任务描述 "检测到消息包含空教室命令或教室课命令就调用下面API查询"
-                # 且API文档中给出了 /api/classroom-schedule
-
-                result = await QFNUClassApiClient.query_classroom_schedule(
-                    query_text, key="jwzjenpfjcqnodtilvgpi"
-                )
-
-                # 处理空结果
-                if not result:
-                    error_msg = "无法连接到API服务"
-                    logger.error(
-                        f"[{MODULE_NAME}]教室课表查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
-                    )
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(f"❌ 查询失败：{error_msg}"),
-                        ],
-                    )
-                    return
-
-                # 处理错误返回
-                if not result.get("success"):
-                    error_msg = result.get("error", "未知错误")
-                    logger.error(
-                        f"[{MODULE_NAME}]教室课表查询失败，用户消息：{self.raw_message}，错误：{error_msg}"
-                    )
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(f"❌ 查询失败：{error_msg}"),
-                        ],
-                    )
-                    return
-
-                # 处理成功返回
-                data = result.get("data", {})
-                parsed_params = data.get("parsed_params", {})
-
-                # 如果没有解析出参数，说明意图无关或解析失败
-                if not parsed_params:
-                    reply_text = "❓ 无法解析查询意图"
-                else:
-                    url = data.get("html_url", "")
-                    classroom_count = data.get(
-                        "classroom_count", 0
-                    )  # 课表查询可能不返回classroom_count，或者含义不同，这里保留以防万一，但主要展示参数
-                    parse_method = data.get("parse_method", "")
-
-                    method_display = ""
-                    if parse_method == "ai":
-                        method_display = " (AI解析)"
-                    elif parse_method == "traditional":
-                        method_display = " (规则解析)"
-                    elif parse_method:
-                        method_display = f" ({parse_method})"
-
-                    # 教室课表查询通常是针对具体教室，所以building可能是教室名
-                    reply_text = (
-                        f"✅ 课表查询成功{method_display}\n"
-                        f"📅 日期：{parsed_params.get('target_date')} ({parsed_params.get('weekday')}) 第{parsed_params.get('week')}周\n"
-                        f"🏫 地点：{parsed_params.get('building_display', parsed_params.get('building'))}\n"
-                        f"🔗 详情链接：{url}"
-                    )
-
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
                     [
                         generate_reply_message(self.message_id),
-                        generate_text_message(reply_text),
+                        generate_text_message(
+                            "查空教室功能已在新版曲奇教务（第三代）完成开发，带来更便捷的使用体验，请前往 https://easy-qfnu.top 继续使用"
+                        ),
                     ],
                 )
                 return
