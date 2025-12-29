@@ -14,7 +14,10 @@ class QFNUClassApiClient:
         url = f"{API_BASE_URL}{endpoint}"
         try:
             timeout = ClientTimeout(total=10)
-            async with aiohttp.ClientSession(timeout=timeout) as session:
+            headers = {"W1NDYS": "W1NDYS"}
+            async with aiohttp.ClientSession(
+                timeout=timeout, headers=headers
+            ) as session:
                 if method.upper() == "GET":
                     response = await session.get(url, params=params)
                 else:
