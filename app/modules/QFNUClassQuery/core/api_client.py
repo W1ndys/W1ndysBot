@@ -3,7 +3,7 @@ from aiohttp import ClientTimeout
 from logger import logger
 from .. import MODULE_NAME
 
-API_BASE_URL = "http://localhost:8001"
+API_BASE_URL = "https://easy-qfnu.top"
 
 
 class QFNUClassApiClient:
@@ -62,27 +62,33 @@ class QFNUClassApiClient:
             return {"success": False, "error": f"系统异常: {str(e)}"}
 
     @classmethod
-    async def query_free_classroom(cls, query_text, key=None):
+    async def query_empty_classroom(
+        cls, building: str, start_section: int, end_section: int, date_offset: int = 0
+    ):
         """
         查询空教室
-        :param query_text: 自然语言查询描述，如 "明天综合楼"
-        :param key: API鉴权key
+
+        :param building: 教学楼名称（如 "1号教学楼"、"综合实验楼"）
+        :param start_section: 开始节次，范围 1-13
+        :param end_section: 结束节次，范围 1-13
+        :param date_offset: 日期偏移量，默认 0（今天），1 表示明天，-1 表示昨天
+        :return: API 响应数据
         """
-        endpoint = "/api/free-classroom"
-        params = {"query": query_text}
-        if key:
-            params["key"] = key
+        endpoint = "/api/empty-classroom/query"
+        params = {
+            "building": building,
+            "start_section": start_section,
+            "end_section": end_section,
+            "date_offset": date_offset,
+        }
         return await cls._request("GET", endpoint, params=params)
 
     @classmethod
-    async def query_classroom_schedule(cls, query_text, key=None):
+    async def get_semester_info(cls):
         """
-        查询教室课表
-        :param query_text: 自然语言查询描述
-        :param key: API鉴权key
+        获取当前学期和周次信息
+
+        :return: API 响应数据，包含 semester 和 week 字段
         """
-        endpoint = "/api/classroom-schedule"
-        params = {"query": query_text}
-        if key:
-            params["key"] = key
-        return await cls._request("GET", endpoint, params=params)
+        endpoint = "/api/empty-classroom/info"
+        return await cls._request("GET", endpoint)
