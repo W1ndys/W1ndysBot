@@ -69,18 +69,14 @@ def parse_empty_classroom_query(text: str) -> dict:
     # 第一部分：教学楼
     if len(parts) >= 1:
         building_text = parts[0].strip()
+        result["building"] = building_text
+
         # 解析教学楼（按长度降序匹配，避免部分匹配问题）
         sorted_aliases = sorted(BUILDING_ALIASES.keys(), key=len, reverse=True)
         for alias in sorted_aliases:
             if alias in building_text:
                 result["building"] = BUILDING_ALIASES[alias]
                 break
-
-    if not result["building"]:
-        result["error"] = (
-            "请指定教学楼名称，支持：1号楼/2号楼/3号楼/综合楼 等\n格式：空教室 教学楼 节次 日期偏移"
-        )
-        return result
 
     # 第二部分：节次范围（如果有）
     if len(parts) >= 2:
