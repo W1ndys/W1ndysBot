@@ -22,10 +22,10 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # ------------------------------------------------------------
 
 # 空教室命令
-EMPTY_CLASSROOM_COMMAND = "空教室"
+EMPTY_CLASSROOM_COMMAND = "查空教室"
 
 # 教室课闲忙命令
-CLASS_SCHEDULE_COMMAND = "教室课"
+CLASS_SCHEDULE_COMMAND = "查教室课"
 
 
 # 下方作废，不需要这个
