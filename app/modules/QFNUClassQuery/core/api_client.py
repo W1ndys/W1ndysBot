@@ -3,7 +3,7 @@ from aiohttp import ClientTimeout
 from logger import logger
 from .. import MODULE_NAME
 
-API_BASE_URL = "https://easy-qfnu.top"
+API_BASE_URL = "http://127.0.0.1:8000"
 
 
 class QFNUClassApiClient:
