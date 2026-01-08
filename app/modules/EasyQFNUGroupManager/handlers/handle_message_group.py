@@ -133,32 +133,33 @@ class GroupMessageHandler:
 
         # 构建响应消息
         message_parts = [generate_reply_message(self.message_id)]
-        result_lines = []
 
         if success_list:
-            result_lines.append(
-                f"✅ 验证通过 {len(success_list)} 人：{', '.join(success_list)}"
+            message_parts.append(
+                generate_text_message(f"✅ 验证通过 {len(success_list)} 人：")
             )
+            # 艾特验证通过的用户
+            for uid in success_list:
+                message_parts.append(generate_at_message(uid))
+                message_parts.append(generate_text_message(f"({uid}) "))
+            message_parts.append(generate_text_message("\n"))
+
         if already_verified_list:
-            result_lines.append(f"⚠️ 已验证过 {len(already_verified_list)} 人：")
-            message_parts.append(generate_text_message("\n".join(result_lines) + "\n"))
+            message_parts.append(
+                generate_text_message(f"⚠️ 已验证过 {len(already_verified_list)} 人：")
+            )
             # 艾特已验证的用户
             for uid in already_verified_list:
                 message_parts.append(generate_at_message(uid))
                 message_parts.append(generate_text_message(f"({uid}) "))
-            result_lines = []  # 清空，因为已经添加到消息中了
-        if not_found_list:
-            if result_lines:
-                message_parts.append(
-                    generate_text_message("\n".join(result_lines) + "\n")
-                )
-                result_lines = []
-            result_lines.append(
-                f"❌ 记录不存在 {len(not_found_list)} 人：{', '.join(not_found_list)}"
-            )
+            message_parts.append(generate_text_message("\n"))
 
-        if result_lines:
-            message_parts.append(generate_text_message("\n".join(result_lines)))
+        if not_found_list:
+            message_parts.append(
+                generate_text_message(
+                    f"❌ 记录不存在 {len(not_found_list)} 人：{', '.join(not_found_list)}"
+                )
+            )
 
         await send_group_msg(
             self.websocket,
