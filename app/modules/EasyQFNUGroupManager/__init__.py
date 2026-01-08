@@ -18,7 +18,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # ============ 配置参数 ============
 
 # 验证超时时间（小时）
-TIMEOUT_HOURS = 6
+TIMEOUT_HOURS = 3
 
 # 验证命令前缀
 VERIFY_COMMAND = "通过"
@@ -27,7 +27,7 @@ VERIFY_COMMAND = "通过"
 PENDING_LIST_COMMAND = "待验证"
 
 # 踢出通告消息
-KICK_NOTICE_MESSAGE = "由于您在入群后超过6小时未完成验证，现已被移出群聊。如有需要请重新申请加群。"
+KICK_NOTICE_MESSAGE = "由于您在入群后超过3小时未完成验证，现已被移出群聊。如有需要请重新申请加群。"
 
 
 # ============ 命令定义 ============
