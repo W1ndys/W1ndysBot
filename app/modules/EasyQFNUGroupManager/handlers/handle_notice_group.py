@@ -223,6 +223,7 @@ class GroupNoticeHandler:
                 self.group_id,
                 [
                     generate_at_message(self.user_id),
+                    generate_text_message(f"({self.user_id})\n"),
                     generate_text_message(f" {WELCOME_MESSAGE}"),
                 ],
             )
