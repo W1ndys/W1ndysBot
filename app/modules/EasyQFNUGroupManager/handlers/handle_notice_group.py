@@ -7,12 +7,17 @@ from utils.generate import generate_at_message, generate_text_message
 from .data_manager import DataManager
 
 # 欢迎消息模板，艾特新用户
-WELCOME_MESSAGE = """欢迎加入本群！
-请私聊群主提交能证明在校学生身份的证明（智慧曲园、教务系统截图、学信网等，需带有截图日期），并单独给群主发一条“通过+你的QQ号”的单条消息，方便快速通过，例如“通过10001”
+WELCOME_MESSAGE = """欢迎加入本群
+
+请私聊群主提交能证明在校学生身份的证明（智慧曲园、教务系统截图、学信网等，需带有截图日期）
+
+并单独给群主发一条“通过+你的QQ号”的单条消息，方便快速通过，例如“通过10001”
 
 经审核通过后解除状态，未经验证的用户将会在入群6小时后自动踢出
 
-若群主未回复，被踢出后重新进群即可，无自动拉黑机制"""
+若群主未回复，被踢出后重新进群即可
+
+相关内容都在群公告"""
 
 
 class GroupNoticeHandler:
@@ -226,7 +231,7 @@ class GroupNoticeHandler:
                 [
                     generate_at_message(self.user_id),
                     generate_text_message(f"({self.user_id})\n"),
-                    generate_text_message(f" {WELCOME_MESSAGE}"),
+                    generate_text_message(f"{WELCOME_MESSAGE}"),
                 ],
             )
             logger.info(
