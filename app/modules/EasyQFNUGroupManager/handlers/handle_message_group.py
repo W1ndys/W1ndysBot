@@ -118,37 +118,57 @@ class GroupMessageHandler:
 
         # 执行验证
         success_list = []
-        fail_list = []
+        already_verified_list = []
+        not_found_list = []
 
         with DataManager() as dm:
             for target_user_id in target_user_ids:
-                if dm.verify_user(target_user_id, self.group_id):
+                result = dm.verify_user(target_user_id, self.group_id)
+                if result == "success":
                     success_list.append(target_user_id)
-                else:
-                    fail_list.append(target_user_id)
+                elif result == "already_verified":
+                    already_verified_list.append(target_user_id)
+                else:  # not_found or error
+                    not_found_list.append(target_user_id)
 
         # 构建响应消息
-        result_parts = []
+        message_parts = [generate_reply_message(self.message_id)]
+        result_lines = []
+
         if success_list:
-            result_parts.append(
+            result_lines.append(
                 f"✅ 验证通过 {len(success_list)} 人：{', '.join(success_list)}"
             )
-        if fail_list:
-            result_parts.append(
-                f"❌ 验证失败 {len(fail_list)} 人（未找到记录或已验证）：{', '.join(fail_list)}"
+        if already_verified_list:
+            result_lines.append(f"⚠️ 已验证过 {len(already_verified_list)} 人：")
+            message_parts.append(generate_text_message("\n".join(result_lines) + "\n"))
+            # 艾特已验证的用户
+            for uid in already_verified_list:
+                message_parts.append(generate_at_message(uid))
+                message_parts.append(generate_text_message(f"({uid}) "))
+            result_lines = []  # 清空，因为已经添加到消息中了
+        if not_found_list:
+            if result_lines:
+                message_parts.append(
+                    generate_text_message("\n".join(result_lines) + "\n")
+                )
+                result_lines = []
+            result_lines.append(
+                f"❌ 记录不存在 {len(not_found_list)} 人：{', '.join(not_found_list)}"
             )
+
+        if result_lines:
+            message_parts.append(generate_text_message("\n".join(result_lines)))
 
         await send_group_msg(
             self.websocket,
             self.group_id,
-            [
-                generate_reply_message(self.message_id),
-                generate_text_message("\n".join(result_parts)),
-            ],
+            message_parts,
         )
 
         logger.info(
-            f"[{MODULE_NAME}]管理员 {self.user_id} 批量验证：成功 {len(success_list)} 人，失败 {len(fail_list)} 人"
+            f"[{MODULE_NAME}]管理员 {self.user_id} 批量验证：成功 {len(success_list)} 人，"
+            f"已验证 {len(already_verified_list)} 人，记录不存在 {len(not_found_list)} 人"
         )
         return True
 

@@ -85,7 +85,7 @@ class DataManager:
             logger.error(f"[{MODULE_NAME}]添加用户记录失败: {e}")
             return False
 
-    def verify_user(self, user_id: str, group_id: str) -> bool:
+    def verify_user(self, user_id: str, group_id: str) -> str:
         """
         验证用户通过
 
@@ -94,9 +94,30 @@ class DataManager:
             group_id: 群号
 
         Returns:
-            bool: 是否成功验证
+            str: 验证结果状态
+                - "success": 验证成功
+                - "already_verified": 已验证过
+                - "not_found": 记录不存在
+                - "error": 操作失败
         """
         try:
+            # 先检查用户记录是否存在
+            self.cursor.execute(
+                """SELECT verified FROM user_verification
+                   WHERE user_id = ? AND group_id = ?""",
+                (user_id, group_id),
+            )
+            row = self.cursor.fetchone()
+
+            if row is None:
+                logger.info(f"[{MODULE_NAME}]用户记录不存在: {user_id} 群: {group_id}")
+                return "not_found"
+
+            if row["verified"] == 1:
+                logger.info(f"[{MODULE_NAME}]用户已验证过: {user_id} 群: {group_id}")
+                return "already_verified"
+
+            # 执行验证
             verify_time = int(datetime.now().timestamp())
             self.cursor.execute(
                 """UPDATE user_verification
@@ -107,11 +128,11 @@ class DataManager:
             self.conn.commit()
             if self.cursor.rowcount > 0:
                 logger.info(f"[{MODULE_NAME}]用户验证通过: {user_id} 群: {group_id}")
-                return True
-            return False
+                return "success"
+            return "error"
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]验证用户失败: {e}")
-            return False
+            return "error"
 
     def get_unverified_users(self, timeout_hours: int = 6) -> list:
         """
