@@ -11,10 +11,9 @@
 # 本地源文件夹路径 (例如: /c/MyProject/dist)
 LOCAL_PATH="./app/modules"
 
-# 远程服务器 IP 或域名
-REMOTE_HOST="192.168.137.75"
-
-# 远程服务器 SSH 用户名
+# 远程服务器配置
+REMOTE_HOST="frp-mix.com"
+REMOTE_PORT="58089"
 REMOTE_USER="root"
 
 # 远程服务器的目标路径 (末尾不要带斜杠)
@@ -22,8 +21,8 @@ REMOTE_USER="root"
 REMOTE_PATH="/root/bot/app/modules"
 
 # --- 密钥配置 ---
-# 标准 SSH 私钥文件路径 (例如 id_rsa)
-PRIVATE_KEY_PATH="/C/Users/W1ndysThinkPad/.ssh/id_ed25519"
+# SSH 私钥文件路径 (Git Bash 格式)
+PRIVATE_KEY_PATH="/c/Users/W1ndys/.ssh/id_rsa"
 
 # --- 新增：上传后执行的命令 ---
 # 将此变量设置为您想在上传和解压成功后在远程服务器上执行的命令
@@ -94,6 +93,7 @@ fi
 
 
 echo "[INFO] 开始通过 tar 和 ssh 流式传输文件..."
+echo "[INFO] 连接到 $REMOTE_USER@$REMOTE_HOST:$REMOTE_PORT"
 echo "--------------------------------------------------"
 
 # --- 修改部分开始 ---
@@ -102,7 +102,8 @@ echo "--------------------------------------------------"
 # set -o pipefail 使得管道中任何一个命令失败，整个管道的退出码就为非零
 set -o pipefail
 # 在 tar 命令中加入 -v 标志以打印文件名
-(cd "$LOCAL_PATH" && tar $TAR_EXCLUDE_ARGS -cvf - . | ssh -i "$PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST" "$SSH_REMOTE_CMD")
+# 使用 -p 参数指定端口号
+(cd "$LOCAL_PATH" && tar $TAR_EXCLUDE_ARGS -cvf - . | ssh -p "$REMOTE_PORT" -i "$PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST" "$SSH_REMOTE_CMD")
 EXIT_CODE=$?
 set +o pipefail # 恢复默认行为
 
