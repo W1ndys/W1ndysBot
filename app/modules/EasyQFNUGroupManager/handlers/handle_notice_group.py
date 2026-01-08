@@ -168,6 +168,16 @@ class GroupNoticeHandler:
             # 用户退群时删除验证记录
             with DataManager() as dm:
                 dm.remove_user(self.user_id, self.group_id)
+
+            # 发送退群播报消息
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [generate_text_message(f"{self.user_id} 退群了")],
+            )
+            logger.info(
+                f"[{MODULE_NAME}]成员 {self.user_id} 退出群 {self.group_id}，已发送退群通知"
+            )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群聊成员减少 - 主动退群通知失败: {e}")
 
