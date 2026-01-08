@@ -130,9 +130,13 @@ class GroupMessageHandler:
         # 构建响应消息
         result_parts = []
         if success_list:
-            result_parts.append(f"✅ 验证通过 {len(success_list)} 人：{', '.join(success_list)}")
+            result_parts.append(
+                f"✅ 验证通过 {len(success_list)} 人：{', '.join(success_list)}"
+            )
         if fail_list:
-            result_parts.append(f"❌ 验证失败 {len(fail_list)} 人（未找到记录或已验证）：{', '.join(fail_list)}")
+            result_parts.append(
+                f"❌ 验证失败 {len(fail_list)} 人（未找到记录或已验证）：{', '.join(fail_list)}"
+            )
 
         await send_group_msg(
             self.websocket,
@@ -181,7 +185,7 @@ class GroupMessageHandler:
         lines = [f"📋 待验证用户列表（共 {len(pending_users)} 人）："]
         for user in pending_users:
             join_time = datetime.fromtimestamp(user["join_time"]).strftime(
-                "%m-%d %H:%M"
+                "%Y-%m-%d %H:%M"
             )
             lines.append(f"• {user['user_id']}（入群：{join_time}）")
 
