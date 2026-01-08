@@ -203,22 +203,25 @@ class GroupMessageHandler:
             return True
 
         # 构建消息
-        lines = [f"📋 待验证用户列表（共 {len(pending_users)} 人）："]
+        message_parts = [
+            generate_reply_message(self.message_id),
+            generate_text_message(
+                f"📋 待验证用户列表（共 {len(pending_users)} 人）：\n"
+            ),
+        ]
+
         for user in pending_users:
             join_time = datetime.fromtimestamp(user["join_time"]).strftime(
                 "%Y-%m-%d %H:%M:%S"
             )
-            lines.append(f"{user['user_id']}({join_time})")
+            message_parts.append(generate_at_message(user["user_id"]))
+            message_parts.append(generate_text_message(f"({join_time})\n"))
 
-        await send_group_msg(
-            self.websocket,
-            self.group_id,
-            [
-                generate_reply_message(self.message_id),
-                generate_text_message("\n".join(lines)),
-            ],
-            note="del_msg=60",
+        message_parts.append(
+            generate_text_message("\n请及时验证，入群3小时后自动踢出未验证用户")
         )
+
+        await send_group_msg(self.websocket, self.group_id, message_parts)
 
         logger.info(
             f"[{MODULE_NAME}]管理员 {self.user_id} 查看待验证列表，共 {len(pending_users)} 人"
