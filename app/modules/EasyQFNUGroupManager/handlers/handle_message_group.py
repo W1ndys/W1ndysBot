@@ -206,9 +206,9 @@ class GroupMessageHandler:
         lines = [f"📋 待验证用户列表（共 {len(pending_users)} 人）："]
         for user in pending_users:
             join_time = datetime.fromtimestamp(user["join_time"]).strftime(
-                "%Y-%m-%d %H:%M"
+                "%Y-%m-%d %H:%M:%S"
             )
-            lines.append(f"• {user['user_id']}（入群：{join_time}）")
+            lines.append(f"{user['user_id']}({join_time})")
 
         await send_group_msg(
             self.websocket,
