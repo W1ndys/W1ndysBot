@@ -1,4 +1,4 @@
-from .. import MODULE_NAME, SWITCH_NAME, VERIFY_COMMAND
+from .. import MODULE_NAME, SWITCH_NAME, VERIFY_COMMAND, PENDING_LIST_COMMAND
 from core.menu_manager import MENU_COMMAND
 from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
@@ -75,8 +75,8 @@ class GroupMessageHandler:
     async def _handle_verify_command(self):
         """
         处理验证通过命令
-        格式：通过+QQ号 或 通过+艾特
-        例如：通过123456 或 通过@用户
+        格式：通过+QQ号 或 通过+艾特 或 通过+多个QQ号（空格/换行等分隔）
+        例如：通过123456 或 通过@用户 或 通过123456 789012
         """
         # 检查权限：必须是管理员或系统管理员
         if not is_group_admin(self.role) and not is_system_admin(self.user_id):
@@ -86,27 +86,25 @@ class GroupMessageHandler:
         if not self.raw_message.startswith(VERIFY_COMMAND):
             return False
 
-        # 提取目标用户ID
-        target_user_id = None
+        # 收集目标用户ID列表
+        target_user_ids = []
 
         # 先检查是否有艾特消息
         for segment in self.message:
             if segment.get("type") == "at":
                 qq = segment.get("data", {}).get("qq")
                 if qq:
-                    target_user_id = str(qq)
-                    break
+                    target_user_ids.append(str(qq))
 
         # 如果没有艾特，尝试从消息中提取QQ号
-        if not target_user_id:
+        if not target_user_ids:
             # 提取"通过"后面的内容
             content = self.raw_message[len(VERIFY_COMMAND) :].strip()
-            # 使用正则匹配纯数字QQ号
-            match = re.match(r"^(\d{5,11})$", content)
-            if match:
-                target_user_id = match.group(1)
+            # 使用正则匹配所有QQ号（5-11位数字）
+            matches = re.findall(r"\d{5,11}", content)
+            target_user_ids = matches
 
-        if not target_user_id:
+        if not target_user_ids:
             await send_group_msg(
                 self.websocket,
                 self.group_id,
@@ -119,33 +117,87 @@ class GroupMessageHandler:
             return True
 
         # 执行验证
-        with DataManager() as dm:
-            if dm.verify_user(target_user_id, self.group_id):
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_at_message(target_user_id),
-                        generate_text_message(f"✅ 用户 {target_user_id} 验证通过"),
-                    ],
-                )
-                logger.info(
-                    f"[{MODULE_NAME}]管理员 {self.user_id} 验证通过用户 {target_user_id}"
-                )
-            else:
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(
-                            f"验证失败：用户 {target_user_id} 未找到待验证记录或已验证"
-                        ),
-                    ],
-                    note="del_msg=30",
-                )
+        success_list = []
+        fail_list = []
 
+        with DataManager() as dm:
+            for target_user_id in target_user_ids:
+                if dm.verify_user(target_user_id, self.group_id):
+                    success_list.append(target_user_id)
+                else:
+                    fail_list.append(target_user_id)
+
+        # 构建响应消息
+        result_parts = []
+        if success_list:
+            result_parts.append(f"✅ 验证通过 {len(success_list)} 人：{', '.join(success_list)}")
+        if fail_list:
+            result_parts.append(f"❌ 验证失败 {len(fail_list)} 人（未找到记录或已验证）：{', '.join(fail_list)}")
+
+        await send_group_msg(
+            self.websocket,
+            self.group_id,
+            [
+                generate_reply_message(self.message_id),
+                generate_text_message("\n".join(result_parts)),
+            ],
+        )
+
+        logger.info(
+            f"[{MODULE_NAME}]管理员 {self.user_id} 批量验证：成功 {len(success_list)} 人，失败 {len(fail_list)} 人"
+        )
+        return True
+
+    async def _handle_pending_list_command(self):
+        """
+        处理查看待验证列表命令
+        格式：待验证
+        """
+        # 检查权限：必须是管理员或系统管理员
+        if not is_group_admin(self.role) and not is_system_admin(self.user_id):
+            return False
+
+        # 检查消息是否为"待验证"
+        if self.raw_message.strip() != PENDING_LIST_COMMAND:
+            return False
+
+        # 获取待验证用户列表
+        with DataManager() as dm:
+            pending_users = dm.get_pending_users_by_group(self.group_id)
+
+        if not pending_users:
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_reply_message(self.message_id),
+                    generate_text_message("当前没有待验证的用户"),
+                ],
+                note="del_msg=30",
+            )
+            return True
+
+        # 构建消息
+        lines = [f"📋 待验证用户列表（共 {len(pending_users)} 人）："]
+        for user in pending_users:
+            join_time = datetime.fromtimestamp(user["join_time"]).strftime(
+                "%m-%d %H:%M"
+            )
+            lines.append(f"• {user['user_id']}（入群：{join_time}）")
+
+        await send_group_msg(
+            self.websocket,
+            self.group_id,
+            [
+                generate_reply_message(self.message_id),
+                generate_text_message("\n".join(lines)),
+            ],
+            note="del_msg=60",
+        )
+
+        logger.info(
+            f"[{MODULE_NAME}]管理员 {self.user_id} 查看待验证列表，共 {len(pending_users)} 人"
+        )
         return True
 
     async def handle(self):
@@ -167,6 +219,10 @@ class GroupMessageHandler:
 
             # 处理验证通过命令
             if await self._handle_verify_command():
+                return
+
+            # 处理查看待验证列表命令
+            if await self._handle_pending_list_command():
                 return
 
         except Exception as e:

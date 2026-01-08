@@ -23,6 +23,9 @@ TIMEOUT_HOURS = 6
 # 验证命令前缀
 VERIFY_COMMAND = "通过"
 
+# 查看待验证列表命令
+PENDING_LIST_COMMAND = "待验证"
+
 # 踢出通告消息
 KICK_NOTICE_MESSAGE = "由于您在入群后超过6小时未完成验证，现已被移出群聊。如有需要请重新申请加群。"
 
@@ -34,4 +37,6 @@ BASE_COMMAND = "通过"  # 主命令
 COMMANDS = {
     f"{BASE_COMMAND}+QQ号": "验证指定用户通过，例如：通过123456",
     f"{BASE_COMMAND}+@用户": "验证被艾特的用户通过",
+    f"{BASE_COMMAND}+多个QQ号": "批量验证通过，QQ号用空格/换行分隔",
+    "待验证": "查看当前群内待验证用户列表",
 }

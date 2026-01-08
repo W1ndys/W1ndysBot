@@ -240,3 +240,27 @@ class DataManager:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]获取用户信息失败: {e}")
             return None
+
+    def get_pending_users_by_group(self, group_id: str) -> list:
+        """
+        获取指定群内所有待验证用户列表
+
+        Args:
+            group_id: 群号
+
+        Returns:
+            list: 未验证用户列表 [{user_id, join_time}, ...]
+        """
+        try:
+            self.cursor.execute(
+                """SELECT user_id, join_time
+                   FROM user_verification
+                   WHERE group_id = ? AND verified = 0
+                   ORDER BY join_time DESC""",
+                (group_id,),
+            )
+            rows = self.cursor.fetchall()
+            return [dict(row) for row in rows]
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]获取群待验证用户失败: {e}")
+            return []
