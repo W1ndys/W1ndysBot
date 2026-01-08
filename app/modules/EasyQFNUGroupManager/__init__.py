@@ -1,0 +1,37 @@
+import os
+
+
+# 模块名称
+MODULE_NAME = "EasyQFNUGroupManager"
+
+# 模块开关名称
+SWITCH_NAME = "eqgm"
+
+# 模块描述
+MODULE_DESCRIPTION = "EasyQFNU群管理工具 - 入群验证管理"
+
+# 数据目录
+DATA_DIR = os.path.join("data", MODULE_NAME)
+os.makedirs(DATA_DIR, exist_ok=True)
+
+
+# ============ 配置参数 ============
+
+# 验证超时时间（小时）
+TIMEOUT_HOURS = 6
+
+# 验证命令前缀
+VERIFY_COMMAND = "通过"
+
+# 踢出通告消息
+KICK_NOTICE_MESSAGE = "由于您在入群后超过6小时未完成验证，现已被移出群聊。如有需要请重新申请加群。"
+
+
+# ============ 命令定义 ============
+
+BASE_COMMAND = "通过"  # 主命令
+
+COMMANDS = {
+    f"{BASE_COMMAND}+QQ号": "验证指定用户通过，例如：通过123456",
+    f"{BASE_COMMAND}+@用户": "验证被艾特的用户通过",
+}
