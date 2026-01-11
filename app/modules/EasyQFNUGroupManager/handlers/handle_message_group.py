@@ -164,9 +164,23 @@ class GroupMessageHandler:
         if not_found_list:
             message_parts.append(
                 generate_text_message(
-                    f"❌ 记录不存在 {len(not_found_list)} 人：{', '.join(not_found_list)}"
+                    f"❌ 记录不存在 {len(not_found_list)} 人：{', '.join(not_found_list)}\n"
                 )
             )
+
+        # 获取剩余未验证用户列表并艾特
+        with DataManager() as dm:
+            pending_users = dm.get_pending_users_by_group(self.group_id)
+
+        if pending_users:
+            message_parts.append(
+                generate_text_message(
+                    f"\n📢 剩余待验证用户（{len(pending_users)} 人）："
+                )
+            )
+            for user in pending_users:
+                message_parts.append(generate_at_message(user["user_id"]))
+                message_parts.append(generate_text_message(" "))
 
         await send_group_msg(
             self.websocket,
@@ -280,7 +294,9 @@ class GroupMessageHandler:
                 self.group_id,
                 [
                     generate_reply_message(self.message_id),
-                    generate_text_message("当前没有无记录的群成员（所有成员都在数据库中有记录）"),
+                    generate_text_message(
+                        "当前没有无记录的群成员（所有成员都在数据库中有记录）"
+                    ),
                 ],
                 note="del_msg=30",
             )
@@ -300,9 +316,7 @@ class GroupMessageHandler:
             message_parts.append(generate_text_message(f"({user_id})\n"))
 
         message_parts.append(
-            generate_text_message(
-                f"\n提示：可使用 通过+QQ号 命令为他们添加验证记录"
-            )
+            generate_text_message(f"\n提示：可使用 通过+QQ号 命令为他们添加验证记录")
         )
 
         await send_group_msg(self.websocket, self.group_id, message_parts)
