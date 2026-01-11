@@ -15,7 +15,11 @@ QFNUMonitor - 曲阜师范大学通知公告监控模块
 import os
 from dotenv import load_dotenv
 
-load_dotenv(".env")
+# 获取模块目录路径
+MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 从模块目录加载 .env
+load_dotenv(os.path.join(MODULE_DIR, ".env"))
 
 # 模块名称
 MODULE_NAME = "QFNUMonitor"
