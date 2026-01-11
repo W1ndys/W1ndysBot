@@ -100,7 +100,6 @@ class GroupMessageHandler:
 
         # 初始化数据管理器和客户端
         data_manager = DataManager()
-        client = QFNUClient()
 
         processed = False
         failed_count = 0
@@ -115,46 +114,48 @@ class GroupMessageHandler:
                 ],
                 note="del_msg=30"
             )
-        for url in urls[:3]:  # 最多处理3个链接
-            try:
-                # 检查缓存
-                cached_summary = data_manager.get_cached_summary(url)
-                if cached_summary:
-                    logger.info(f"[{MODULE_NAME}] 使用缓存的摘要: {url}")
-                    await self._send_summary_reply(url, cached_summary)
-                    processed = True
-                    continue
 
-                # 获取页面内容
-                content = await client.get_announcement_content(url)
-                if not content:
-                    logger.warning(f"[{MODULE_NAME}] 无法获取页面内容: {url}")
+        async with QFNUClient() as client:
+            for url in urls[:3]:  # 最多处理3个链接
+                try:
+                    # 检查缓存
+                    cached_summary = data_manager.get_cached_summary(url)
+                    if cached_summary:
+                        logger.info(f"[{MODULE_NAME}] 使用缓存的摘要: {url}")
+                        await self._send_summary_reply(url, cached_summary)
+                        processed = True
+                        continue
+
+                    # 获取页面内容
+                    content = await client.get_announcement_content(url)
+                    if not content:
+                        logger.warning(f"[{MODULE_NAME}] 无法获取页面内容: {url}")
+                        failed_count += 1
+                        continue
+
+                    # 生成摘要
+                    summary = await summary_api.summarize_url_content(
+                        title="",  # 可以从页面获取标题
+                        content=content,
+                        url=url,
+                    )
+
+                    if summary:
+                        # 缓存摘要
+                        data_manager.cache_summary(url, "", summary)
+                        # 发送摘要回复
+                        await self._send_summary_reply(url, summary)
+                        processed = True
+                    else:
+                        logger.warning(f"[{MODULE_NAME}] 生成摘要失败: {url}")
+                        failed_count += 1
+
+                except asyncio.TimeoutError:
+                    logger.error(f"[{MODULE_NAME}] 处理链接 {url} 超时")
                     failed_count += 1
-                    continue
-
-                # 生成摘要
-                summary = await summary_api.summarize_url_content(
-                    title="",  # 可以从页面获取标题
-                    content=content,
-                    url=url,
-                )
-
-                if summary:
-                    # 缓存摘要
-                    data_manager.cache_summary(url, "", summary)
-                    # 发送摘要回复
-                    await self._send_summary_reply(url, summary)
-                    processed = True
-                else:
-                    logger.warning(f"[{MODULE_NAME}] 生成摘要失败: {url}")
+                except Exception as e:
+                    logger.error(f"[{MODULE_NAME}] 处理链接 {url} 失败: {e}")
                     failed_count += 1
-
-            except asyncio.TimeoutError:
-                logger.error(f"[{MODULE_NAME}] 处理链接 {url} 超时")
-                failed_count += 1
-            except Exception as e:
-                logger.error(f"[{MODULE_NAME}] 处理链接 {url} 失败: {e}")
-                failed_count += 1
 
         data_manager.close()
 

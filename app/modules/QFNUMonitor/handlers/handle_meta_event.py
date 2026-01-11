@@ -68,65 +68,65 @@ class MetaEventHandler:
                 f"[{MODULE_NAME}] 开始检测公告，启用群聊数: {len(enabled_groups)}"
             )
 
-            # 获取公告列表
-            client = QFNUClient()
-            announcements = await client.get_announcements(max_count=10)
+            async with QFNUClient() as client:
+                # 获取公告列表
+                announcements = await client.get_announcements(max_count=10)
 
-            if not announcements:
-                logger.warning(f"[{MODULE_NAME}] 未获取到任何公告")
-                return
+                if not announcements:
+                    logger.warning(f"[{MODULE_NAME}] 未获取到任何公告")
+                    return
 
-            # 检测新公告
-            data_manager = DataManager()
-            new_announcements = []
+                # 检测新公告
+                data_manager = DataManager()
+                new_announcements = []
 
-            for ann in announcements:
-                if not data_manager.is_notified(ann.id):
-                    new_announcements.append(ann)
+                for ann in announcements:
+                    if not data_manager.is_notified(ann.id):
+                        new_announcements.append(ann)
 
-            if not new_announcements:
-                logger.debug(f"[{MODULE_NAME}] 没有新公告")
-                data_manager.close()
-                return
+                if not new_announcements:
+                    logger.debug(f"[{MODULE_NAME}] 没有新公告")
+                    data_manager.close()
+                    return
 
-            logger.info(
-                f"[{MODULE_NAME}] 检测到 {len(new_announcements)} 条新公告，准备推送"
-            )
-
-            # 初始化摘要生成器
-            summary_api = SiliconFlowAPI()
-
-            # 处理每条新公告
-            for ann in new_announcements:
-                # 尝试生成摘要
-                summary = ""
-                if summary_api.is_available():
-                    # 获取公告详情内容
-                    content = await client.get_announcement_content(ann.url)
-                    if content:
-                        summary = await summary_api.generate_summary(content)
-
-                # 构建推送消息
-                message = self._build_notification_message(ann, summary)
-
-                # 推送到所有启用的群聊
-                for group_id in enabled_groups:
-                    try:
-                        await send_group_msg(self.websocket, group_id, message)
-                        logger.info(
-                            f"[{MODULE_NAME}] 推送公告到群 {group_id}: {ann.title}"
-                        )
-                    except Exception as e:
-                        logger.error(
-                            f"[{MODULE_NAME}] 推送公告到群 {group_id} 失败: {e}"
-                        )
-
-                # 记录已通知
-                data_manager.add_notified(
-                    ann.id, ann.title, ann.url, ann.date, summary or ann.summary
+                logger.info(
+                    f"[{MODULE_NAME}] 检测到 {len(new_announcements)} 条新公告，准备推送"
                 )
 
-            data_manager.close()
+                # 初始化摘要生成器
+                summary_api = SiliconFlowAPI()
+
+                # 处理每条新公告
+                for ann in new_announcements:
+                    # 尝试生成摘要
+                    summary = ""
+                    if summary_api.is_available():
+                        # 获取公告详情内容
+                        content = await client.get_announcement_content(ann.url)
+                        if content:
+                            summary = await summary_api.generate_summary(content)
+
+                    # 构建推送消息
+                    message = self._build_notification_message(ann, summary)
+
+                    # 推送到所有启用的群聊
+                    for group_id in enabled_groups:
+                        try:
+                            await send_group_msg(self.websocket, group_id, message)
+                            logger.info(
+                                f"[{MODULE_NAME}] 推送公告到群 {group_id}: {ann.title}"
+                            )
+                        except Exception as e:
+                            logger.error(
+                                f"[{MODULE_NAME}] 推送公告到群 {group_id} 失败: {e}"
+                            )
+
+                    # 记录已通知
+                    data_manager.add_notified(
+                        ann.id, ann.title, ann.url, ann.date, summary or ann.summary
+                    )
+
+                data_manager.close()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}] 处理心跳失败: {e}")
