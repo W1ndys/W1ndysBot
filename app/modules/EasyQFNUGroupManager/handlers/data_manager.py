@@ -285,3 +285,24 @@ class DataManager:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]获取群待验证用户失败: {e}")
             return []
+
+    def get_all_recorded_user_ids(self, group_id: str) -> set:
+        """
+        获取指定群内所有已记录的用户ID集合
+
+        Args:
+            group_id: 群号
+
+        Returns:
+            set: 已记录的用户ID集合
+        """
+        try:
+            self.cursor.execute(
+                """SELECT user_id FROM user_verification WHERE group_id = ?""",
+                (group_id,),
+            )
+            rows = self.cursor.fetchall()
+            return {row["user_id"] for row in rows}
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]获取群已记录用户失败: {e}")
+            return set()

@@ -1,4 +1,10 @@
-from .. import MODULE_NAME, SWITCH_NAME, VERIFY_COMMAND, PENDING_LIST_COMMAND
+from .. import (
+    MODULE_NAME,
+    SWITCH_NAME,
+    VERIFY_COMMAND,
+    PENDING_LIST_COMMAND,
+    UNRECORDED_LIST_COMMAND,
+)
 from core.menu_manager import MENU_COMMAND
 from logger import logger
 from core.switchs import is_group_switch_on, handle_module_group_switch
@@ -12,6 +18,7 @@ from utils.generate import (
 from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
+from core.get_group_member_list import get_group_member_user_ids
 import re
 
 
@@ -228,6 +235,83 @@ class GroupMessageHandler:
         )
         return True
 
+    async def _handle_unrecorded_list_command(self):
+        """
+        处理查看无记录成员列表命令
+        格式：无记录
+        用于检测数据库内无记录但在群内的成员
+        """
+        # 检查权限：必须是管理员或系统管理员
+        if not is_group_admin(self.role) and not is_system_admin(self.user_id):
+            return False
+
+        # 检查消息是否为"无记录"
+        if self.raw_message.strip() != UNRECORDED_LIST_COMMAND:
+            return False
+
+        # 获取群成员列表（从Core数据目录）
+        group_member_ids = get_group_member_user_ids(self.group_id)
+
+        if not group_member_ids:
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_reply_message(self.message_id),
+                    generate_text_message("无法获取群成员列表，请稍后再试"),
+                ],
+                note="del_msg=30",
+            )
+            return True
+
+        # 获取数据库中已记录的用户ID集合
+        with DataManager() as dm:
+            recorded_user_ids = dm.get_all_recorded_user_ids(self.group_id)
+
+        # 找出在群内但数据库无记录的成员
+        unrecorded_users = []
+        for user_id in group_member_ids:
+            if user_id not in recorded_user_ids:
+                unrecorded_users.append(user_id)
+
+        if not unrecorded_users:
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_reply_message(self.message_id),
+                    generate_text_message("当前没有无记录的群成员（所有成员都在数据库中有记录）"),
+                ],
+                note="del_msg=30",
+            )
+            return True
+
+        # 构建消息
+        message_parts = [
+            generate_reply_message(self.message_id),
+            generate_text_message(
+                f"📋 无记录成员列表（共 {len(unrecorded_users)} 人）：\n"
+                f"以下成员在群内但数据库中无入群记录\n\n"
+            ),
+        ]
+
+        for user_id in unrecorded_users:
+            message_parts.append(generate_at_message(user_id))
+            message_parts.append(generate_text_message(f"({user_id})\n"))
+
+        message_parts.append(
+            generate_text_message(
+                f"\n提示：可使用 通过+QQ号 命令为他们添加验证记录"
+            )
+        )
+
+        await send_group_msg(self.websocket, self.group_id, message_parts)
+
+        logger.info(
+            f"[{MODULE_NAME}]管理员 {self.user_id} 查看无记录成员列表，共 {len(unrecorded_users)} 人"
+        )
+        return True
+
     async def handle(self):
         """
         处理群消息
@@ -251,6 +335,10 @@ class GroupMessageHandler:
 
             # 处理查看待验证列表命令
             if await self._handle_pending_list_command():
+                return
+
+            # 处理查看无记录成员列表命令
+            if await self._handle_unrecorded_list_command():
                 return
 
         except Exception as e:
