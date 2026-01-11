@@ -108,8 +108,9 @@ class GroupMessageHandler:
                 self.group_id,
                 [
                     generate_reply_message(self.message_id),
-                    generate_text_message("🤖 正在为检测到的曲师大链接生成摘要，请稍候..."),
+                    generate_text_message("🤖 正在为检测到的曲师大链接生成摘要，请稍候...")
                 ],
+                note="del_msg=10"
             )
         for url in urls[:3]:  # 最多处理3个链接
             try:
