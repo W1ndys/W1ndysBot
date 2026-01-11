@@ -4,6 +4,7 @@ QFNUMonitor 群消息处理器
 """
 
 import re
+import asyncio
 from .. import MODULE_NAME, SWITCH_NAME
 from core.menu_manager import MENU_COMMAND
 from logger import logger
@@ -102,6 +103,8 @@ class GroupMessageHandler:
         client = QFNUClient()
 
         processed = False
+        failed_count = 0
+
         # 发一个群消息提示处理中
         await send_group_msg(
                 self.websocket,
@@ -110,7 +113,7 @@ class GroupMessageHandler:
                     generate_reply_message(self.message_id),
                     generate_text_message("🤖 正在为检测到的曲师大链接生成摘要，请稍候...")
                 ],
-                note="del_msg=10"
+                note="del_msg=30"
             )
         for url in urls[:3]:  # 最多处理3个链接
             try:
@@ -126,6 +129,7 @@ class GroupMessageHandler:
                 content = await client.get_announcement_content(url)
                 if not content:
                     logger.warning(f"[{MODULE_NAME}] 无法获取页面内容: {url}")
+                    failed_count += 1
                     continue
 
                 # 生成摘要
@@ -143,12 +147,29 @@ class GroupMessageHandler:
                     processed = True
                 else:
                     logger.warning(f"[{MODULE_NAME}] 生成摘要失败: {url}")
+                    failed_count += 1
 
+            except asyncio.TimeoutError:
+                logger.error(f"[{MODULE_NAME}] 处理链接 {url} 超时")
+                failed_count += 1
             except Exception as e:
                 logger.error(f"[{MODULE_NAME}] 处理链接 {url} 失败: {e}")
+                failed_count += 1
 
         data_manager.close()
-        return processed
+
+        # 如果所有链接都处理失败，发送错误提示
+        if not processed and failed_count > 0:
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                [
+                    generate_reply_message(self.message_id),
+                    generate_text_message("❌ 摘要生成失败，可能是页面内容无法解析或API超时，请直接访问链接查看原文"),
+                ],
+            )
+
+        return processed or failed_count > 0
 
     async def _send_summary_reply(self, url: str, summary: str):
         """

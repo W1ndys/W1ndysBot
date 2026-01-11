@@ -16,7 +16,7 @@ class SiliconFlowAPI:
 
     API_URL = "https://api.siliconflow.cn/v1/chat/completions"
     DEFAULT_MODEL = "Qwen/Qwen2.5-7B-Instruct"
-    TIMEOUT = 60
+    TIMEOUT = 30  # 缩短超时时间
 
     def __init__(self):
         self.api_key = os.getenv("SILICONFLOW_API_KEY", "")
@@ -147,9 +147,9 @@ class SiliconFlowAPI:
         if not content:
             return None
 
-        # 截取内容
-        if len(content) > 3000:
-            content = content[:3000] + "..."
+        # 截取内容，更激进的截取以加快处理速度
+        if len(content) > 2000:
+            content = content[:2000] + "..."
 
         system_prompt = """你是一个专业的网页内容摘要助手。你的任务是将曲阜师范大学相关网页的内容进行简洁的摘要。
 要求：
