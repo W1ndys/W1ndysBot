@@ -175,7 +175,7 @@ class GroupMessageHandler:
         if pending_users:
             message_parts.append(
                 generate_text_message(
-                    f"\n📢 剩余待验证用户（{len(pending_users)} 人）："
+                    f"\n📢 没放群里发并且没回复就是没通过，或者看不到姓名学号，无法核实在校真实身份，剩余待验证用户（{len(pending_users)} 人）："
                 )
             )
             for user in pending_users:
