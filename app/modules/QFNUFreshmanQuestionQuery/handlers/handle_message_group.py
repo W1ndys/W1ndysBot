@@ -115,7 +115,7 @@ class GroupMessageHandler:
 
             # 格式化结果并添加署名
             reply_text = self._format_question_result(best_match)
-            reply_text += "\n\n技术支持：微信公众号《卷卷爱吃曲奇饼干》"
+            reply_text += "\n默认只会返回1个，若未找到请使用更长的关键词\n技术支持：微信公众号《卷卷爱吃曲奇饼干》"
 
             await send_group_msg(
                 self.websocket,
@@ -125,7 +125,9 @@ class GroupMessageHandler:
                     generate_text_message(reply_text),
                 ],
             )
-            logger.info(f"[{MODULE_NAME}]群{self.group_id}用户{self.user_id}查询题目: {keyword}")
+            logger.info(
+                f"[{MODULE_NAME}]群{self.group_id}用户{self.user_id}查询题目: {keyword}"
+            )
             return True
 
         return False
