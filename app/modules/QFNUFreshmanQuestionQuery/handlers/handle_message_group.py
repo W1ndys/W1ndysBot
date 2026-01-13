@@ -105,19 +105,17 @@ class GroupMessageHandler:
             return False
 
         with DataManager() as dm:
-            results = dm.search_questions(keyword, limit=3)
+            results = dm.search_questions(keyword, limit=10)
 
             if not results:
                 return False
 
-            # 格式化所有匹配结果
-            if len(results) == 1:
-                reply_text = self._format_question_result(results[0])
-            else:
-                reply_parts = [f"找到 {len(results)} 个匹配结果：\n"]
-                for i, result in enumerate(results, 1):
-                    reply_parts.append(f"【结果{i}】\n{self._format_question_result(result)}")
-                reply_text = "\n\n".join(reply_parts)
+            # 选择匹配长度最高的结果（题目与关键词重叠字符数最多）
+            best_match = max(results, key=lambda x: len(set(keyword) & set(x[2])))
+
+            # 格式化结果并添加署名
+            reply_text = self._format_question_result(best_match)
+            reply_text += "\n\n技术支持：微信公众号《卷卷爱吃曲奇饼干》"
 
             await send_group_msg(
                 self.websocket,
