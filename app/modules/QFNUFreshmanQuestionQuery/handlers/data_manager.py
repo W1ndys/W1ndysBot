@@ -78,12 +78,22 @@ class DataManager:
     def _calculate_similarity(self, keyword: str, question_text: str) -> float:
         """
         计算关键词与题目的相似度（TF-IDF + Jaccard混合）
+        对短关键词采用更严格的匹配策略
         """
         keyword_tokens = self._tokenize(keyword)
         question_tokens = self._tokenize(question_text)
 
         if not keyword_tokens or not question_tokens:
             return 0.0
+
+        # 清洗后的关键词（去除标点空白）
+        clean_keyword = re.sub(r"[^\u4e00-\u9fa5a-zA-Z0-9]", "", keyword)
+        clean_question = re.sub(r"[^\u4e00-\u9fa5a-zA-Z0-9]", "", question_text)
+
+        # 对于短关键词（<=4字符），必须完整包含在题目中才有效
+        if len(clean_keyword) <= 4:
+            if clean_keyword not in clean_question:
+                return 0.0  # 短关键词不完整包含则直接返回0
 
         keyword_set = set(keyword_tokens)
         question_set = set(question_tokens)
@@ -93,31 +103,42 @@ class DataManager:
         union = keyword_set | question_set
         jaccard = len(intersection) / len(union) if union else 0
 
-        # TF-IDF加权得分
+        # TF-IDF加权得分（降低单字符token权重）
         tfidf_score = 0.0
         for token in intersection:
             idf = DataManager._idf_cache.get(token, 1.0)
+            # 单字符token权重降低50%
+            if len(token) == 1:
+                idf *= 0.5
             # TF使用关键词中的词频
             tf = keyword_tokens.count(token) / len(keyword_tokens)
             tfidf_score += tf * idf
 
+        # 关键词覆盖率：关键词在题目中出现的比例
+        keyword_coverage = len(intersection) / len(keyword_set) if keyword_set else 0
+
         # 连续匹配加分（关键词作为子串出现）
         continuous_bonus = 0.0
-        if keyword in question_text:
-            continuous_bonus = 0.5  # 完全包含加分
+        if clean_keyword in clean_question:
+            continuous_bonus = 0.6  # 完全包含加分提高
         else:
-            # 检查关键词的连续子串匹配
-            for i in range(len(keyword), 1, -1):
-                for j in range(len(keyword) - i + 1):
-                    substr = keyword[j : j + i]
-                    if len(substr) >= 2 and substr in question_text:
+            # 检查关键词的连续子串匹配（至少3字符以上才有加分）
+            for i in range(len(clean_keyword), 2, -1):
+                for j in range(len(clean_keyword) - i + 1):
+                    substr = clean_keyword[j : j + i]
+                    if len(substr) >= 3 and substr in clean_question:
                         continuous_bonus = max(
-                            continuous_bonus, 0.3 * (i / len(keyword))
+                            continuous_bonus, 0.3 * (i / len(clean_keyword))
                         )
                         break
 
-        # 综合得分：Jaccard + TF-IDF + 连续匹配
-        final_score = jaccard * 0.3 + tfidf_score * 0.4 + continuous_bonus * 0.3
+        # 综合得分：Jaccard + TF-IDF + 连续匹配 + 覆盖率
+        final_score = (
+            jaccard * 0.2
+            + tfidf_score * 0.3
+            + continuous_bonus * 0.3
+            + keyword_coverage * 0.2
+        )
 
         return final_score
 
