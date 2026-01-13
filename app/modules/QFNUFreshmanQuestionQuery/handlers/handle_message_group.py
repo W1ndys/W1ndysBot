@@ -105,13 +105,13 @@ class GroupMessageHandler:
             return False
 
         with DataManager() as dm:
-            results = dm.search_questions(keyword, limit=10)
+            results = dm.search_questions(keyword, limit=1)
 
             if not results:
                 return False
 
-            # 选择匹配长度最高的结果（题目与关键词重叠字符数最多）
-            best_match = max(results, key=lambda x: len(set(keyword) & set(x[2])))
+            # 搜索结果已按相似度排序，直接取第一个
+            best_match = results[0]
 
             # 格式化结果并添加署名
             reply_text = self._format_question_result(best_match)
