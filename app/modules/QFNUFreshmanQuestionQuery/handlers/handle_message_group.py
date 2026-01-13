@@ -97,6 +97,14 @@ class GroupMessageHandler:
         """
         处理题目查询
         """
+        # 检查是否为纯文本消息（只包含text类型的消息段）
+        # 如果消息包含face、image等非文本类型，则不触发查询
+        if not self.message:
+            return False
+        for segment in self.message:
+            if segment.get("type") != "text":
+                return False
+
         # 消息内容作为搜索关键词
         keyword = self.raw_message.strip()
 
