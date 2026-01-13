@@ -111,13 +111,36 @@ class DataManager:
                 for j in range(len(keyword) - i + 1):
                     substr = keyword[j : j + i]
                     if len(substr) >= 2 and substr in question_text:
-                        continuous_bonus = max(continuous_bonus, 0.3 * (i / len(keyword)))
+                        continuous_bonus = max(
+                            continuous_bonus, 0.3 * (i / len(keyword))
+                        )
                         break
 
         # 综合得分：Jaccard + TF-IDF + 连续匹配
         final_score = jaccard * 0.3 + tfidf_score * 0.4 + continuous_bonus * 0.3
 
         return final_score
+
+    def _get_min_score_threshold(self, keyword: str) -> float:
+        """
+        根据关键词长度动态计算最小相似度阈值
+        短关键词要求更高的匹配度，长关键词可以适当放宽
+
+        Args:
+            keyword: 搜索关键词
+
+        Returns:
+            最小相似度阈值
+        """
+        keyword_len = len(keyword)
+        if keyword_len <= 4:
+            return 0.40  # 短关键词要求较高匹配度
+        elif keyword_len <= 8:
+            return 0.30  # 中等长度
+        elif keyword_len <= 15:
+            return 0.22  # 较长关键词
+        else:
+            return 0.15  # 长关键词可以更宽松
 
     def search_questions(self, keyword: str, limit: int = 5) -> list:
         """
@@ -136,6 +159,9 @@ class DataManager:
         if not keyword_tokens:
             return []
 
+        # 动态计算最小相似度阈值
+        min_score = self._get_min_score_threshold(keyword)
+
         # 使用倒排索引快速获取候选文档
         candidate_ids = set()
         for token in keyword_tokens:
@@ -143,22 +169,24 @@ class DataManager:
                 candidate_ids.update(DataManager._inverted_index[token])
 
         if not candidate_ids:
-            # 倒排索引无结果，回退到LIKE查询
-            self.cursor.execute(
-                """SELECT id, type, question, optionA, optionB, optionC, optionD, optionAnswer
-                   FROM questions
-                   WHERE question LIKE ?
-                   LIMIT ?""",
-                (f"%{keyword}%", limit),
-            )
-            return self.cursor.fetchall()
+            # 倒排索引无结果，回退到LIKE查询（仅当关键词较长时才回退）
+            if len(keyword) >= 6:
+                self.cursor.execute(
+                    """SELECT id, type, question, optionA, optionB, optionC, optionD, optionAnswer
+                       FROM questions
+                       WHERE question LIKE ?
+                       LIMIT ?""",
+                    (f"%{keyword}%", limit),
+                )
+                return self.cursor.fetchall()
+            return []
 
         # 计算相似度并排序
         scored_results = []
         for q_id in candidate_ids:
             question = DataManager._questions_cache[q_id]
             score = self._calculate_similarity(keyword, question[2])
-            if score > 0:
+            if score >= min_score:  # 使用动态阈值过滤低质量匹配
                 scored_results.append((score, question))
 
         # 按相似度降序排序
