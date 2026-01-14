@@ -134,6 +134,36 @@ class DataManager:
             logger.error(f"[{MODULE_NAME}]验证用户失败: {e}")
             return "error"
 
+    def add_and_verify_user(self, user_id: str, group_id: str) -> str:
+        """
+        添加用户记录并直接设为已验证状态（用于无记录用户直接通过）
+
+        Args:
+            user_id: QQ号
+            group_id: 群号
+
+        Returns:
+            str: 操作结果状态
+                - "success": 添加并验证成功
+                - "error": 操作失败
+        """
+        try:
+            current_time = int(datetime.now().timestamp())
+            self.cursor.execute(
+                """INSERT OR REPLACE INTO user_verification
+                   (user_id, group_id, join_time, verified, verify_time, notified)
+                   VALUES (?, ?, ?, 1, ?, 1)""",
+                (user_id, group_id, current_time, current_time),
+            )
+            self.conn.commit()
+            logger.info(
+                f"[{MODULE_NAME}]添加并验证用户: {user_id} 群: {group_id}"
+            )
+            return "success"
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]添加并验证用户失败: {e}")
+            return "error"
+
     def get_unverified_users(self, timeout_hours: int = 6) -> list:
         """
         获取超时未验证的用户列表

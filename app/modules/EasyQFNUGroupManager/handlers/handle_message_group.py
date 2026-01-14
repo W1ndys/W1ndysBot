@@ -18,7 +18,7 @@ from utils.generate import (
 from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
-from core.get_group_member_list import get_group_member_user_ids
+from core.get_group_member_list import get_group_member_user_ids, is_user_admin_or_owner
 import re
 
 
@@ -84,6 +84,7 @@ class GroupMessageHandler:
         处理验证通过命令
         格式：通过+QQ号 或 通过+艾特 或 通过+多个QQ号（空格/换行等分隔）
         例如：通过123456 或 通过@用户 或 通过123456 789012
+        支持无记录用户直接通过并自动添加记录
         """
         # 检查权限：必须是管理员或系统管理员
         if not is_group_admin(self.role) and not is_system_admin(self.user_id):
@@ -126,7 +127,7 @@ class GroupMessageHandler:
         # 执行验证
         success_list = []
         already_verified_list = []
-        not_found_list = []
+        added_and_verified_list = []  # 无记录用户直接添加并验证
 
         with DataManager() as dm:
             for target_user_id in target_user_ids:
@@ -135,8 +136,11 @@ class GroupMessageHandler:
                     success_list.append(target_user_id)
                 elif result == "already_verified":
                     already_verified_list.append(target_user_id)
-                else:  # not_found or error
-                    not_found_list.append(target_user_id)
+                elif result == "not_found":
+                    # 无记录用户，直接添加记录并设为通过状态
+                    add_result = dm.add_and_verify_user(target_user_id, self.group_id)
+                    if add_result == "success":
+                        added_and_verified_list.append(target_user_id)
 
         # 构建响应消息
         message_parts = [generate_reply_message(self.message_id)]
@@ -151,6 +155,18 @@ class GroupMessageHandler:
                 message_parts.append(generate_text_message(f"({uid}) "))
             message_parts.append(generate_text_message("\n"))
 
+        if added_and_verified_list:
+            message_parts.append(
+                generate_text_message(
+                    f"✅ 无记录用户已添加并验证 {len(added_and_verified_list)} 人："
+                )
+            )
+            # 艾特添加并验证的用户
+            for uid in added_and_verified_list:
+                message_parts.append(generate_at_message(uid))
+                message_parts.append(generate_text_message(f"({uid}) "))
+            message_parts.append(generate_text_message("\n"))
+
         if already_verified_list:
             message_parts.append(
                 generate_text_message(f"⚠️ 已验证过 {len(already_verified_list)} 人：")
@@ -161,26 +177,46 @@ class GroupMessageHandler:
                 message_parts.append(generate_text_message(f"({uid}) "))
             message_parts.append(generate_text_message("\n"))
 
-        if not_found_list:
-            message_parts.append(
-                generate_text_message(
-                    f"❌ 记录不存在 {len(not_found_list)} 人：{', '.join(not_found_list)}\n"
-                )
-            )
-
-        # 获取剩余未验证用户列表并艾特
+        # 获取剩余未验证用户列表（包括待验证和无记录用户）
         with DataManager() as dm:
             pending_users = dm.get_pending_users_by_group(self.group_id)
+            recorded_user_ids = dm.get_all_recorded_user_ids(self.group_id)
 
-        if pending_users:
+        # 获取群成员列表，找出无记录用户（排除管理员和群主）
+        group_member_ids = get_group_member_user_ids(self.group_id)
+        unrecorded_users = []
+        if group_member_ids:
+            for user_id in group_member_ids:
+                if user_id not in recorded_user_ids:
+                    # 忽略管理员和群主
+                    if not is_user_admin_or_owner(self.group_id, user_id):
+                        unrecorded_users.append(user_id)
+
+        # 显示剩余未验证用户（待验证 + 无记录）
+        total_unverified = len(pending_users) + len(unrecorded_users)
+        if total_unverified > 0:
             message_parts.append(
                 generate_text_message(
-                    f"\n📢 没放群里发并且没回复就是没通过，或者看不到姓名学号，无法核实在校真实身份，剩余待验证用户（{len(pending_users)} 人）："
+                    f"\n📢 没放群里发并且没回复就是没通过，或者看不到姓名学号，无法核实在校真实身份，剩余未验证用户（{total_unverified} 人）：\n"
                 )
             )
-            for user in pending_users:
-                message_parts.append(generate_at_message(user["user_id"]))
-                message_parts.append(generate_text_message(" "))
+            # 先显示待验证用户
+            if pending_users:
+                message_parts.append(
+                    generate_text_message(f"待验证（{len(pending_users)} 人）：")
+                )
+                for user in pending_users:
+                    message_parts.append(generate_at_message(user["user_id"]))
+                    message_parts.append(generate_text_message(" "))
+                message_parts.append(generate_text_message("\n"))
+            # 再显示无记录用户
+            if unrecorded_users:
+                message_parts.append(
+                    generate_text_message(f"无记录（{len(unrecorded_users)} 人）：")
+                )
+                for user_id in unrecorded_users:
+                    message_parts.append(generate_at_message(user_id))
+                    message_parts.append(generate_text_message(" "))
 
         await send_group_msg(
             self.websocket,
@@ -190,7 +226,8 @@ class GroupMessageHandler:
 
         logger.info(
             f"[{MODULE_NAME}]管理员 {self.user_id} 批量验证：成功 {len(success_list)} 人，"
-            f"已验证 {len(already_verified_list)} 人，记录不存在 {len(not_found_list)} 人"
+            f"无记录添加 {len(added_and_verified_list)} 人，"
+            f"已验证 {len(already_verified_list)} 人"
         )
         return True
 
@@ -282,11 +319,13 @@ class GroupMessageHandler:
         with DataManager() as dm:
             recorded_user_ids = dm.get_all_recorded_user_ids(self.group_id)
 
-        # 找出在群内但数据库无记录的成员
+        # 找出在群内但数据库无记录的成员（排除管理员和群主）
         unrecorded_users = []
         for user_id in group_member_ids:
             if user_id not in recorded_user_ids:
-                unrecorded_users.append(user_id)
+                # 忽略管理员和群主
+                if not is_user_admin_or_owner(self.group_id, user_id):
+                    unrecorded_users.append(user_id)
 
         if not unrecorded_users:
             await send_group_msg(
