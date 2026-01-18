@@ -65,8 +65,15 @@ class MetaEventHandler:
         """
         检测并踢出超时未验证的用户
         所有未验证用户按群分组，合并到同一条消息内艾特，避免大量消息导致风控
+        
+        每天0点到8点为免疫时间段，不进行超时检测
         """
         try:
+            # 检查是否在免疫时间段内（0点到8点）
+            current_hour = datetime.now().hour
+            if 0 <= current_hour < 8:
+                return  # 在免疫时间段内，跳过检测
+            
             # 获取所有开启了本模块的群
             enabled_groups = get_all_enabled_groups(MODULE_NAME)
             if not enabled_groups:
