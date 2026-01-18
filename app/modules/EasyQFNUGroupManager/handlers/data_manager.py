@@ -62,6 +62,8 @@ class DataManager:
     def add_user(self, user_id: str, group_id: str, join_time: int) -> bool:
         """
         添加入群用户记录
+        如果用户已有记录且已通过验证，则只更新入群时间，保留验证状态
+        如果用户未通过验证或无记录，则创建新的未验证记录
 
         Args:
             user_id: QQ号
@@ -72,14 +74,36 @@ class DataManager:
             bool: 是否成功添加
         """
         try:
+            # 先检查用户是否已有记录
             self.cursor.execute(
-                """INSERT OR REPLACE INTO user_verification
-                   (user_id, group_id, join_time, verified, verify_time, notified)
-                   VALUES (?, ?, ?, 0, NULL, 0)""",
-                (user_id, group_id, join_time),
+                """SELECT verified, verify_time FROM user_verification
+                   WHERE user_id = ? AND group_id = ?""",
+                (user_id, group_id),
             )
+            row = self.cursor.fetchone()
+
+            if row and row["verified"] == 1:
+                # 用户已通过验证，只更新入群时间，保留验证状态
+                self.cursor.execute(
+                    """UPDATE user_verification
+                       SET join_time = ?
+                       WHERE user_id = ? AND group_id = ?""",
+                    (join_time, user_id, group_id),
+                )
+                logger.info(
+                    f"[{MODULE_NAME}]更新已验证用户入群时间: {user_id} 群: {group_id}"
+                )
+            else:
+                # 用户未验证或无记录，创建/覆盖为未验证状态
+                self.cursor.execute(
+                    """INSERT OR REPLACE INTO user_verification
+                       (user_id, group_id, join_time, verified, verify_time, notified)
+                       VALUES (?, ?, ?, 0, NULL, 0)""",
+                    (user_id, group_id, join_time),
+                )
+                logger.info(f"[{MODULE_NAME}]添加用户记录: {user_id} 群: {group_id}")
+
             self.conn.commit()
-            logger.info(f"[{MODULE_NAME}]添加用户记录: {user_id} 群: {group_id}")
             return True
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]添加用户记录失败: {e}")
