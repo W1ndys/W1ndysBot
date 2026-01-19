@@ -121,6 +121,17 @@ class EventHandler:
                 continue
 
             try:
+                # 先导入模块的__init__.py检查MODULE_ENABLED开关
+                init_module_path = f"modules.{module_name}"
+                init_module = importlib.import_module(init_module_path)
+
+                # 检查模块是否启用（默认为True以保持向后兼容）
+                module_enabled = getattr(init_module, "MODULE_ENABLED", True)
+                if not module_enabled:
+                    self.failed_modules.append((module_name, "模块已禁用(MODULE_ENABLED=False)"))
+                    logger.info(f"模块 {module_name} 已禁用，已跳过")
+                    continue
+
                 # 动态导入模块
                 module_import_path = f"modules.{module_name}.main"
                 module = importlib.import_module(module_import_path)
