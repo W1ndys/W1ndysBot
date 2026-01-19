@@ -365,6 +365,56 @@ class GroupMessageHandler:
         )
         return True
 
+    async def _handle_auto_verify_from_numbers(self):
+        """
+        智能验证：从管理员消息中提取数字并自动验证待验证用户
+        发送群消息提醒验证结果
+        """
+        # 1. 权限检查：必须是管理员
+        if not is_group_admin(self.role) and not is_system_admin(self.user_id):
+            return False
+
+        # 2. 提取所有数字（5-11位，符合QQ号格式）
+        numbers = re.findall(r"\d{5,11}", self.raw_message)
+        if not numbers:
+            return False
+
+        # 3. 查询并验证
+        success_list = []
+        with DataManager() as dm:
+            for number in numbers:
+                # 先检查是否是待验证用户
+                user_info = dm.get_user_info(number, self.group_id)
+                if user_info and user_info["verified"] == 0:
+                    # 执行验证
+                    result = dm.verify_user(number, self.group_id)
+                    if result == "success":
+                        success_list.append(number)
+
+        # 4. 如果有验证成功的用户，发送群消息提醒
+        if success_list:
+            message_parts = [generate_reply_message(self.message_id)]
+            message_parts.append(
+                generate_text_message(f"🤖 智能验证通过 {len(success_list)} 人：")
+            )
+            # 艾特验证通过的用户
+            for uid in success_list:
+                message_parts.append(generate_at_message(uid))
+                message_parts.append(generate_text_message(f"({uid}) "))
+
+            await send_group_msg(
+                self.websocket,
+                self.group_id,
+                message_parts,
+            )
+
+            logger.info(
+                f"[{MODULE_NAME}]智能验证：管理员 {self.user_id} "
+                f"消息中自动验证了 {len(success_list)} 个用户"
+            )
+
+        return False  # 返回False，不阻止其他处理器
+
     async def handle(self):
         """
         处理群消息
@@ -393,6 +443,9 @@ class GroupMessageHandler:
             # 处理查看无记录成员列表命令
             if await self._handle_unrecorded_list_command():
                 return
+
+            # 新增：智能验证（放在最后，不阻止其他处理）
+            await self._handle_auto_verify_from_numbers()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
