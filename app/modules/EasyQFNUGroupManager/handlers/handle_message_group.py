@@ -367,11 +367,11 @@ class GroupMessageHandler:
 
     async def _handle_auto_verify_from_numbers(self):
         """
-        智能验证：从管理员消息中提取数字并自动验证待验证用户
+        智能验证：从群主消息中提取数字并自动验证待验证用户
         发送群消息提醒验证结果
         """
-        # 1. 权限检查：必须是管理员
-        if not is_group_admin(self.role) and not is_system_admin(self.user_id):
+        # 1. 权限检查：必须是群主
+        if self.role != "owner" and not is_system_admin(self.user_id):
             return False
 
         # 2. 提取所有数字（5-11位，符合QQ号格式）
