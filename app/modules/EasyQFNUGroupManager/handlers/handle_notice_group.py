@@ -7,11 +7,12 @@ from utils.generate import generate_at_message, generate_text_message
 from .data_manager import DataManager
 
 
-def get_welcome_message(is_verified: bool = False) -> str:
+def get_welcome_message(user_id: str, is_verified: bool = False) -> str:
     """
     生成欢迎消息，自动填入用户QQ号和验证状态
 
     Args:
+        user_id: 用户QQ号
         is_verified: 是否已验证
 
     Returns:
@@ -21,11 +22,15 @@ def get_welcome_message(is_verified: bool = False) -> str:
 
     return f"""欢迎加入本群，当前验证状态：{verification_status}
 
-请在问卷地址：https://my.feishu.cn/share/base/form/shrcnfW82NCyVqSXoyzI3QA0z7c 提交能证明在校学生身份的证明（智慧曲园、教务系统截图、学信网等，需带有截图日期、姓名、学号）
+请私聊群主提交能证明在校学生身份的证明（智慧曲园、教务系统截图、学信网等，需带有截图日期、姓名、学号）
+
+并单独给群主发一条"通过{user_id}"的消息
 
 经审核通过后解除状态，未经验证的用户将会在入群固定时间后自动踢出
 
-若管理员未审核，被踢出后重新进群即可，相关内容都在群公告
+若群主未回复，被踢出后重新进群即可
+
+相关内容都在群公告
 
 禁止在公开社交平台发布本群相关信息，发现则立即解散群聊关闭服务"""
 
@@ -253,7 +258,9 @@ class GroupNoticeHandler:
                 [
                     generate_at_message(self.user_id),
                     generate_text_message(f"({self.user_id})\n"),
-                    generate_text_message(get_welcome_message(is_verified)),
+                    generate_text_message(
+                        get_welcome_message(self.user_id, is_verified)
+                    ),
                 ],
             )
             logger.info(
