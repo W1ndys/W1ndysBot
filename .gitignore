@@ -204,7 +204,6 @@ cython_debug/
 
 
 napcat/
-SentimentAnalysis
 .spec-workflow
 .claude
 .serena
