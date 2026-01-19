@@ -24,6 +24,9 @@ load_dotenv(os.path.join(MODULE_DIR, ".env"))
 # 模块名称
 MODULE_NAME = "QFNUMonitor"
 
+
+# 模块是否启用（默认开启）
+MODULE_ENABLED = True
 # 模块开关名称
 SWITCH_NAME = "qfnum"
 
