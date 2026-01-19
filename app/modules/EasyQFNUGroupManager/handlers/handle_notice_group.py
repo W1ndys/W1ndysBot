@@ -18,9 +18,16 @@ def get_welcome_message(user_id: str, is_verified: bool = False) -> str:
     Returns:
         str: 格式化后的欢迎消息
     """
-    verification_status = "✅ 已验证" if is_verified else "❌ 未验证"
+    if is_verified:
+        # 已验证用户：简短欢迎消息
+        return """欢迎加入本群！✅ 你已通过验证
 
-    return f"""欢迎加入本群，当前验证状态：{verification_status}
+相关内容都在群公告
+
+禁止在公开社交平台发布本群相关信息，发现则立即解散群聊关闭服务"""
+    else:
+        # 未验证用户：完整验证提示消息
+        return f"""欢迎加入本群，当前验证状态：❌ 未验证
 
 请私聊群主提交能证明在校学生身份的证明（智慧曲园、教务系统截图、学信网等，需带有截图日期、姓名、学号）
 
