@@ -1,12 +1,63 @@
-from .. import MODULE_NAME, TIMEOUT_HOURS, KICK_NOTICE_MESSAGE
+from .. import (
+    MODULE_NAME,
+    TIMEOUT_HOURS,
+    KICK_NOTICE_MESSAGE,
+    IMMUNITY_START_HOUR,
+    IMMUNITY_END_HOUR,
+)
 from logger import logger
-from datetime import datetime
+from datetime import datetime, timedelta
 from core.switchs import get_all_enabled_groups
 from api.message import send_group_msg
 from api.group import set_group_kick
 from utils.generate import generate_at_message, generate_text_message
 from .data_manager import DataManager
 import asyncio
+
+
+def calculate_effective_hours(join_timestamp: int) -> float:
+    """
+    计算从入群时间到现在的有效时间（小时），排除每天0-8点的免疫时间段
+
+    Args:
+        join_timestamp: 入群时间戳
+
+    Returns:
+        float: 有效时间（小时）
+    """
+    join_time = datetime.fromtimestamp(join_timestamp)
+    now = datetime.now()
+
+    if now <= join_time:
+        return 0.0
+
+    # 计算总经过的秒数
+    total_seconds = (now - join_time).total_seconds()
+
+    # 计算需要排除的免疫时间（秒）
+    immunity_seconds = 0
+
+    # 从入群时间开始，逐天检查免疫时间段
+    current = join_time
+    while current < now:
+        # 当天的免疫时间段开始和结束
+        day_start = current.replace(hour=0, minute=0, second=0, microsecond=0)
+        immunity_start = day_start.replace(hour=IMMUNITY_START_HOUR)
+        immunity_end = day_start.replace(hour=IMMUNITY_END_HOUR)
+
+        # 计算与当前时间段的交集
+        overlap_start = max(current, immunity_start)
+        overlap_end = min(now, immunity_end)
+
+        if overlap_start < overlap_end:
+            immunity_seconds += (overlap_end - overlap_start).total_seconds()
+
+        # 移动到下一天
+        current = day_start + timedelta(days=1)
+
+    # 有效时间 = 总时间 - 免疫时间
+    effective_seconds = max(0, total_seconds - immunity_seconds)
+    return effective_seconds / 3600
 
 
 class MetaEventHandler:
@@ -65,33 +116,35 @@ class MetaEventHandler:
         """
         检测并踢出超时未验证的用户
         所有未验证用户按群分组，合并到同一条消息内艾特，避免大量消息导致风控
-        
-        每天0点到8点为免疫时间段，不进行超时检测
+
+        超时计算会排除每天0-8点的免疫时间段（管理员休息时间）
         """
         try:
-            # 检查是否在免疫时间段内（0点到8点）
-            current_hour = datetime.now().hour
-            if 0 <= current_hour < 8:
-                return  # 在免疫时间段内，跳过检测
-            
             # 获取所有开启了本模块的群
             enabled_groups = get_all_enabled_groups(MODULE_NAME)
             if not enabled_groups:
                 return
 
             with DataManager() as dm:
-                # 获取所有超时未验证的用户
-                unverified_users = dm.get_unverified_users(timeout_hours=TIMEOUT_HOURS)
+                # 获取所有未验证的用户（使用较长的时间确保获取到足够的候选用户）
+                # 这里使用24小时是为了获取候选列表，实际超时判断在下面用有效时间计算
+                unverified_users = dm.get_unverified_users(timeout_hours=1)
                 if not unverified_users:
                     return
 
-                # 按群分组
+                # 按群分组，同时过滤真正超时的用户（排除0-8点免疫时间）
                 groups_users = {}
                 for user in unverified_users:
                     group_id = user["group_id"]
                     # 只处理开启了模块的群
                     if group_id not in enabled_groups:
                         continue
+
+                    # 计算有效时间（排除0-8点免疫时间段）
+                    effective_hours = calculate_effective_hours(user["join_time"])
+                    if effective_hours < TIMEOUT_HOURS:
+                        continue  # 有效时间未超时，跳过
+
                     if group_id not in groups_users:
                         groups_users[group_id] = []
                     groups_users[group_id].append(user["user_id"])

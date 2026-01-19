@@ -20,8 +20,12 @@ os.makedirs(DATA_DIR, exist_ok=True)
 
 # ============ 配置参数 ============
 
-# 验证超时时间（小时）
-TIMEOUT_HOURS = 24
+# 验证超时时间（小时）- 指有效时间，0-8点的免疫时间不计入
+TIMEOUT_HOURS = 4
+
+# 免疫时间段（0点到8点，管理员休息时间不计入超时）
+IMMUNITY_START_HOUR = 0
+IMMUNITY_END_HOUR = 8
 
 # 验证命令前缀
 VERIFY_COMMAND = "通过"
@@ -32,8 +36,8 @@ PENDING_LIST_COMMAND = "待验证"
 # 查看无记录成员列表命令
 UNRECORDED_LIST_COMMAND = "无记录"
 
-# 踢出通告消息
-KICK_NOTICE_MESSAGE = f"由于您在入群后超过{TIMEOUT_HOURS}小时未完成验证，现已被移出群聊。如有需要请重新申请加群。"
+# 踢出通告消息（有效时间不包含0-8点免疫时段）
+KICK_NOTICE_MESSAGE = f"由于您在入群后超过{TIMEOUT_HOURS}小时（有效时间，晚上不计入）未完成验证，现已被移出群聊。如有需要请重新申请加群。"
 
 
 # ============ 命令定义 ============
