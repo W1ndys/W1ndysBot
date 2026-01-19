@@ -7,17 +7,22 @@ from utils.generate import generate_at_message, generate_text_message
 from .data_manager import DataManager
 
 
-def get_welcome_message(user_id: str) -> str:
+def get_welcome_message(user_id: str, is_verified: bool = False) -> str:
     """
-    生成欢迎消息，自动填入用户QQ号
+    生成欢迎消息，自动填入用户QQ号和验证状态
 
     Args:
         user_id: 用户QQ号
+        is_verified: 是否已验证
 
     Returns:
         str: 格式化后的欢迎消息
     """
+    verification_status = "✅ 已验证" if is_verified else "❌ 未验证"
+
     return f"""欢迎加入本群
+
+当前验证状态：{verification_status}
 
 请私聊群主提交能证明在校学生身份的证明（智慧曲园、教务系统截图、学信网等，需带有截图日期、姓名、学号）
 
@@ -242,9 +247,11 @@ class GroupNoticeHandler:
         2. 发送欢迎消息并艾特用户
         """
         try:
-            # 记录用户入群信息
+            # 记录用户入群信息并检查验证状态
             with DataManager() as dm:
                 dm.add_user(self.user_id, self.group_id, self.time)
+                # 获取用户验证状态
+                is_verified = dm.is_user_verified(self.user_id, self.group_id)
 
             # 发送欢迎消息，艾特新用户
             await send_group_msg(
@@ -253,11 +260,11 @@ class GroupNoticeHandler:
                 [
                     generate_at_message(self.user_id),
                     generate_text_message(f"({self.user_id})\n"),
-                    generate_text_message(get_welcome_message(self.user_id)),
+                    generate_text_message(get_welcome_message(self.user_id, is_verified)),
                 ],
             )
             logger.info(
-                f"[{MODULE_NAME}]新成员 {self.user_id} 入群 {self.group_id}，已发送欢迎消息"
+                f"[{MODULE_NAME}]新成员 {self.user_id} 入群 {self.group_id}，已发送欢迎消息（验证状态：{'已验证' if is_verified else '未验证'}）"
             )
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理新成员入群失败: {e}")
