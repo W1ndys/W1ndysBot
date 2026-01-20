@@ -369,29 +369,38 @@ class GroupMessageHandler:
         """
         智能验证：从群主消息中提取数字并自动验证待验证用户
         发送群消息提醒验证结果
+        新逻辑：先获取所有未验证用户的QQ号，然后检查这些QQ号是否被包含在群主消息的数字中
+        这样可以实现消息内无空格或者间隔符号也能智能匹配到
         """
         # 1. 权限检查：必须是群主
         if self.role != "owner" and not is_system_admin(self.user_id):
             return False
 
-        # 2. 提取所有数字（5-11位，符合QQ号格式）
-        numbers = re.findall(r"\d{5,11}", self.raw_message)
-        if not numbers:
+        # 2. 提取消息中的所有数字（去除非数字字符，合并成一个字符串）
+        all_digits = re.sub(r"\D", "", self.raw_message)
+        if not all_digits:
             return False
 
-        # 3. 查询并验证
+        # 3. 获取本群所有未验证用户的QQ号
+        with DataManager() as dm:
+            pending_users = dm.get_pending_users_by_group(self.group_id)
+
+        if not pending_users:
+            return False
+
+        # 4. 检查每个待验证用户的QQ号是否被包含在消息数字字符串中
         success_list = []
         with DataManager() as dm:
-            for number in numbers:
-                # 先检查是否是待验证用户
-                user_info = dm.get_user_info(number, self.group_id)
-                if user_info and user_info["verified"] == 0:
+            for user in pending_users:
+                user_id = user["user_id"]
+                # 检查该QQ号是否作为子串包含在消息的所有数字中
+                if user_id in all_digits:
                     # 执行验证
-                    result = dm.verify_user(number, self.group_id)
+                    result = dm.verify_user(user_id, self.group_id)
                     if result == "success":
-                        success_list.append(number)
+                        success_list.append(user_id)
 
-        # 4. 如果有验证成功的用户，发送群消息提醒
+        # 5. 如果有验证成功的用户，发送群消息提醒
         if success_list:
             message_parts = [generate_reply_message(self.message_id)]
             message_parts.append(
