@@ -4,6 +4,7 @@ from .. import (
     VERIFY_COMMAND,
     PENDING_LIST_COMMAND,
     UNRECORDED_LIST_COMMAND,
+    TIMEOUT_HOURS,
 )
 from core.menu_manager import MENU_COMMAND
 from logger import logger
@@ -276,7 +277,9 @@ class GroupMessageHandler:
             message_parts.append(generate_text_message(f"({join_time})\n"))
 
         message_parts.append(
-            generate_text_message("\n请及时验证，入群3小时后自动踢出未验证用户")
+            generate_text_message(
+                f"\n请及时验证，入群{TIMEOUT_HOURS}小时后自动踢出未验证用户"
+            )
         )
 
         await send_group_msg(self.websocket, self.group_id, message_parts)
