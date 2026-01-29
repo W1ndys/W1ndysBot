@@ -40,10 +40,34 @@ class DataManager:
                 verified INTEGER DEFAULT 0,
                 verify_time INTEGER DEFAULT NULL,
                 notified INTEGER DEFAULT 0,
+                last_remind_hour INTEGER DEFAULT 0,
                 UNIQUE(user_id, group_id)
             )"""
         )
         self.conn.commit()
+
+        # 检查并添加/迁移列（兼容旧数据库）
+        self.cursor.execute("PRAGMA table_info(user_verification)")
+        columns = [col[1] for col in self.cursor.fetchall()]
+
+        # 如果存在旧的 reminded 列，先迁移数据
+        if "reminded" in columns and "last_remind_hour" not in columns:
+            self.cursor.execute(
+                "ALTER TABLE user_verification ADD COLUMN last_remind_hour INTEGER DEFAULT 0"
+            )
+            # 将旧的 reminded=1 的记录迁移为 last_remind_hour=1
+            self.cursor.execute(
+                "UPDATE user_verification SET last_remind_hour = reminded WHERE reminded > 0"
+            )
+            self.conn.commit()
+            logger.info(f"[{MODULE_NAME}]数据库表迁移 reminded 到 last_remind_hour")
+        elif "last_remind_hour" not in columns:
+            self.cursor.execute(
+                "ALTER TABLE user_verification ADD COLUMN last_remind_hour INTEGER DEFAULT 0"
+            )
+            self.conn.commit()
+            logger.info(f"[{MODULE_NAME}]数据库表添加 last_remind_hour 列")
+
         logger.debug(f"[{MODULE_NAME}]表结构检查完成")
 
     def __enter__(self):
@@ -97,8 +121,8 @@ class DataManager:
                 # 用户未验证或无记录，创建/覆盖为未验证状态
                 self.cursor.execute(
                     """INSERT OR REPLACE INTO user_verification
-                       (user_id, group_id, join_time, verified, verify_time, notified)
-                       VALUES (?, ?, ?, 0, NULL, 0)""",
+                       (user_id, group_id, join_time, verified, verify_time, notified, last_remind_hour)
+                       VALUES (?, ?, ?, 0, NULL, 0, 0)""",
                     (user_id, group_id, join_time),
                 )
                 logger.info(f"[{MODULE_NAME}]添加用户记录: {user_id} 群: {group_id}")
@@ -175,8 +199,8 @@ class DataManager:
             current_time = int(datetime.now().timestamp())
             self.cursor.execute(
                 """INSERT OR REPLACE INTO user_verification
-                   (user_id, group_id, join_time, verified, verify_time, notified)
-                   VALUES (?, ?, ?, 1, ?, 1)""",
+                   (user_id, group_id, join_time, verified, verify_time, notified, last_remind_hour)
+                   VALUES (?, ?, ?, 1, ?, 1, 999)""",
                 (user_id, group_id, current_time, current_time),
             )
             self.conn.commit()
@@ -238,6 +262,76 @@ class DataManager:
             return True
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]标记用户已通知失败: {e}")
+            return False
+
+    def get_users_to_remind(self, start_hour: int = 2, timeout_hours: int = 5) -> list:
+        """
+        获取需要提醒的用户列表
+        当用户入群满整点小时数且大于上次提醒小时数时，需要提醒
+
+        Args:
+            start_hour: 开始提醒的小时数，默认2小时
+            timeout_hours: 超时踢出的小时数，用于过滤已超时用户
+
+        Returns:
+            list: 待提醒用户列表 [{user_id, group_id, join_time, last_remind_hour, current_hour}, ...]
+        """
+        try:
+            current_time = int(datetime.now().timestamp())
+            # 计算开始提醒的时间截止点
+            start_cutoff_time = current_time - start_hour * 3600
+            # 计算超时踢出的时间截止点（不提醒即将被踢的用户）
+            timeout_cutoff_time = current_time - timeout_hours * 3600
+
+            self.cursor.execute(
+                """SELECT user_id, group_id, join_time, last_remind_hour
+                   FROM user_verification
+                   WHERE verified = 0 AND notified = 0
+                   AND join_time <= ? AND join_time > ?""",
+                (start_cutoff_time, timeout_cutoff_time),
+            )
+            rows = self.cursor.fetchall()
+
+            # 筛选出当前整点小时数大于上次提醒小时数的用户
+            users_to_remind = []
+            for row in rows:
+                row_dict = dict(row)
+                # 计算入群已满的整点小时数
+                elapsed_seconds = current_time - row_dict["join_time"]
+                current_hour = elapsed_seconds // 3600
+                # 如果当前小时数大于上次提醒的小时数，需要提醒
+                if current_hour > row_dict["last_remind_hour"]:
+                    row_dict["current_hour"] = current_hour
+                    users_to_remind.append(row_dict)
+
+            return users_to_remind
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]获取待提醒用户失败: {e}")
+            return []
+
+    def update_last_remind_hour(self, user_id: str, group_id: str, hour: int) -> bool:
+        """
+        更新用户上次提醒的小时数
+
+        Args:
+            user_id: QQ号
+            group_id: 群号
+            hour: 当前入群的整点小时数
+
+        Returns:
+            bool: 是否成功
+        """
+        try:
+            self.cursor.execute(
+                """UPDATE user_verification
+                   SET last_remind_hour = ?
+                   WHERE user_id = ? AND group_id = ?""",
+                (hour, user_id, group_id),
+            )
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]更新用户提醒小时数失败: {e}")
             return False
 
     def remove_user(self, user_id: str, group_id: str) -> bool:
