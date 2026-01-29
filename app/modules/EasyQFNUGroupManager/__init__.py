@@ -23,6 +23,9 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # 验证超时时间（小时）
 TIMEOUT_HOURS = 5
 
+# 提醒开始时间（小时）- 入群多长时间后开始发送提醒
+REMIND_START_HOURS = 2
+
 # 验证命令前缀
 VERIFY_COMMAND = "通过"
 
@@ -34,6 +37,9 @@ UNRECORDED_LIST_COMMAND = "无记录"
 
 # 踢出通告消息
 KICK_NOTICE_MESSAGE = f"由于您在入群后超过{TIMEOUT_HOURS}小时未完成验证，现已被移出群聊。如有需要请重新申请加群。"
+
+# 提醒消息（使用{hours}占位符显示当前已入群小时数）
+REMIND_MESSAGE_TEMPLATE = "您已入群超过{hours}小时仍未完成验证，请尽快联系群主进行验证。如超过{timeout}小时未验证将被自动移出群聊。"
 
 
 # ============ 命令定义 ============
