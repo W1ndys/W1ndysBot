@@ -1,7 +1,9 @@
 from .. import (
     MODULE_NAME,
     TIMEOUT_HOURS,
+    REMIND_START_HOURS,
     KICK_NOTICE_MESSAGE,
+    REMIND_MESSAGE_TEMPLATE,
 )
 from logger import logger
 from datetime import datetime
@@ -58,12 +60,107 @@ class MetaEventHandler:
     async def handle_heartbeat(self):
         """
         处理心跳
-        每次心跳检测未验证用户，超时则通告并踢出
+        每次心跳检测未验证用户：
+        1. 入群超过REMIND_HOURS小时的用户发送提醒
+        2. 入群超过TIMEOUT_HOURS小时的用户通告并踢出
         """
         try:
+            # 先检查并提醒即将超时的用户
+            await self._check_and_remind_unverified_users()
+            # 再检查并踢出已超时的用户
             await self._check_and_kick_unverified_users()
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理心跳失败: {e}")
+
+    async def _check_and_remind_unverified_users(self):
+        """
+        检测并提醒入群超过整点小时数但仍未验证的用户
+        每满一个整点小时都会提醒一次，直到被踢出
+        所有待提醒用户按群分组，同一小时数的用户合并到同一条消息内艾特统一提醒
+        """
+        try:
+            # 获取所有开启了本模块的群
+            enabled_groups = get_all_enabled_groups(MODULE_NAME)
+            if not enabled_groups:
+                return
+
+            with DataManager() as dm:
+                # 获取所有待提醒的用户
+                users_to_remind = dm.get_users_to_remind(
+                    start_hour=REMIND_START_HOURS,
+                    timeout_hours=TIMEOUT_HOURS
+                )
+                if not users_to_remind:
+                    return
+
+                # 按群和小时数分组 {group_id: {hour: [user_info, ...]}}
+                groups_hours_users = {}
+                for user in users_to_remind:
+                    group_id = user["group_id"]
+                    # 只处理开启了模块的群
+                    if group_id not in enabled_groups:
+                        continue
+
+                    current_hour = user["current_hour"]
+                    if group_id not in groups_hours_users:
+                        groups_hours_users[group_id] = {}
+                    if current_hour not in groups_hours_users[group_id]:
+                        groups_hours_users[group_id][current_hour] = []
+                    groups_hours_users[group_id][current_hour].append(user)
+
+                # 对每个群的每个小时数进行提醒
+                for group_id, hours_users in groups_hours_users.items():
+                    for hour, users in hours_users.items():
+                        await self._remind_users(dm, group_id, users, hour)
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]检测待提醒用户失败: {e}")
+
+    async def _remind_users(self, dm, group_id: str, users: list, hour: int):
+        """
+        提醒一个群内同一入群小时数的所有待验证用户
+        合并到一条消息内艾特所有用户
+
+        Args:
+            dm: DataManager实例
+            group_id: 群号
+            users: 要提醒的用户信息列表 [{user_id, current_hour, ...}, ...]
+            hour: 当前入群的整点小时数
+        """
+        try:
+            if not users:
+                return
+
+            # 构建消息：艾特所有用户 + 提醒文本
+            message_segments = []
+            for user in users:
+                message_segments.append(generate_at_message(user["user_id"]))
+                message_segments.append(generate_text_message(" "))
+
+            # 使用模板生成提醒消息
+            remind_message = REMIND_MESSAGE_TEMPLATE.format(
+                hours=hour,
+                timeout=TIMEOUT_HOURS
+            )
+            message_segments.append(generate_text_message(f"\n{remind_message}"))
+
+            # 发送提醒消息
+            await send_group_msg(
+                self.websocket,
+                group_id,
+                message_segments,
+            )
+
+            logger.info(
+                f"[{MODULE_NAME}]群 {group_id} 提醒 {len(users)} 名入群满 {hour} 小时未验证用户"
+            )
+
+            # 更新每个用户的上次提醒小时数
+            for user in users:
+                dm.update_last_remind_hour(user["user_id"], group_id, hour)
+
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]提醒用户失败: {e}")
 
     async def _check_and_kick_unverified_users(self):
         """
