@@ -10,8 +10,8 @@
 $LOCAL_PATH = ".\app\modules"
 
 # 远程服务器配置
-$REMOTE_HOST = "frp-mix.com"
-$REMOTE_PORT = "58089"
+$REMOTE_HOST = "my.server"
+$REMOTE_PORT = "22"
 $REMOTE_USER = "root"
 
 # 远程服务器的目标路径 (末尾不要带斜杠)
