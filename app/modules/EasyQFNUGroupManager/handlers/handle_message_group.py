@@ -8,9 +8,11 @@ from .. import (
 )
 from core.menu_manager import MENU_COMMAND
 from logger import logger
+import asyncio
 from core.switchs import is_group_switch_on, handle_module_group_switch
 from utils.auth import is_system_admin, is_group_admin
 from api.message import send_group_msg
+from api.group import set_group_kick
 from utils.generate import (
     generate_text_message,
     generate_reply_message,
@@ -447,6 +449,26 @@ class GroupMessageHandler:
             # 如果没开启群聊开关，则不处理
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
+
+            # 检查黑名单用户发言
+            with DataManager() as dm:
+                if dm.is_blacklisted(self.user_id, self.group_id):
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_at_message(self.user_id),
+                            generate_text_message(
+                                "\n⚠️ 检测到黑名单用户发言，正在移除..."
+                            ),
+                        ],
+                    )
+                    await asyncio.sleep(1)  # 等待1秒以确保消息发送完成
+                    await set_group_kick(self.websocket, self.group_id, self.user_id)
+                    logger.info(
+                        f"[{MODULE_NAME}]黑名单用户 {self.user_id} 发言，已踢出"
+                    )
+                    return
 
             # 处理验证通过命令
             if await self._handle_verify_command():

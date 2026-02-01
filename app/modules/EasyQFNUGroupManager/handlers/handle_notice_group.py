@@ -1,8 +1,9 @@
-from .. import MODULE_NAME
+from .. import MODULE_NAME, TIMEOUT_HOURS
 from logger import logger
 from datetime import datetime
 from core.switchs import is_group_switch_on
 from api.message import send_group_msg
+from api.group import set_group_kick
 from utils.generate import generate_at_message, generate_text_message
 from .data_manager import DataManager
 
@@ -168,16 +169,48 @@ class GroupNoticeHandler:
         处理群聊成员减少 - 主动退群通知
         """
         try:
-            # 用户退群时删除验证记录
+            should_notify_blacklist = False
+
             with DataManager() as dm:
+                # 检查是否满足拉黑条件：未验证且在验证期内
+                user_info = dm.get_user_info(self.user_id, self.group_id)
+                if user_info:
+                    is_verified = user_info["verified"]
+                    join_time = user_info["join_time"]
+                    current_time = self.time  # 使用事件时间
+
+                    if not is_verified and (current_time - join_time) < (
+                        TIMEOUT_HOURS * 3600
+                    ):
+                        dm.add_blacklist(
+                            self.user_id, self.group_id, "voluntary_exit_unverified"
+                        )
+                        should_notify_blacklist = True
+                        logger.info(
+                            f"[{MODULE_NAME}]用户 {self.user_id} 验证期内退群，已拉黑"
+                        )
+
+                # 用户退群时删除验证记录
                 dm.remove_user(self.user_id, self.group_id)
 
-            # 发送退群播报消息
-            await send_group_msg(
-                self.websocket,
-                self.group_id,
-                [generate_text_message(f"{self.user_id} 退群了")],
-            )
+            if should_notify_blacklist:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_text_message(
+                            f"⚠️ 检测到用户 {self.user_id} 在验证期内主动退群，已自动拉黑。"
+                        )
+                    ],
+                )
+            else:
+                # 发送退群播报消息
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [generate_text_message(f"{self.user_id} 退群了")],
+                )
+
             logger.info(
                 f"[{MODULE_NAME}]成员 {self.user_id} 退出群 {self.group_id}，已发送退群通知"
             )
@@ -241,10 +274,32 @@ class GroupNoticeHandler:
     async def _handle_new_member(self):
         """
         处理新成员入群的公共逻辑
-        1. 记录用户入群信息到数据库
-        2. 发送欢迎消息并艾特用户
+        1. 检查黑名单，如果存在则踢出
+        2. 记录用户入群信息到数据库
+        3. 发送欢迎消息并艾特用户
         """
         try:
+            # 检查黑名单
+            with DataManager() as dm:
+                if dm.is_blacklisted(self.user_id, self.group_id):
+                    # 发送警告消息
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_at_message(self.user_id),
+                            generate_text_message(
+                                f"\n⚠️ 检测到您在黑名单中（曾验证期内逃跑），即将移除本群。"
+                            ),
+                        ],
+                    )
+                    # 踢出用户
+                    await set_group_kick(self.websocket, self.group_id, self.user_id)
+                    logger.info(
+                        f"[{MODULE_NAME}]黑名单用户 {self.user_id} 尝试加群，已踢出"
+                    )
+                    return
+
             # 记录用户入群信息并检查验证状态
             with DataManager() as dm:
                 dm.add_user(self.user_id, self.group_id, self.time)
