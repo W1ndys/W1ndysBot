@@ -68,6 +68,19 @@ class DataManager:
             self.conn.commit()
             logger.info(f"[{MODULE_NAME}]数据库表添加 last_remind_hour 列")
 
+        # 创建黑名单表
+        self.cursor.execute(
+            """CREATE TABLE IF NOT EXISTS user_blacklist (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id TEXT NOT NULL,
+                group_id TEXT NOT NULL,
+                blacklisted_time INTEGER NOT NULL,
+                reason TEXT DEFAULT NULL,
+                UNIQUE(user_id, group_id)
+            )"""
+        )
+        self.conn.commit()
+
         logger.debug(f"[{MODULE_NAME}]表结构检查完成")
 
     def __enter__(self):
@@ -204,9 +217,7 @@ class DataManager:
                 (user_id, group_id, current_time, current_time),
             )
             self.conn.commit()
-            logger.info(
-                f"[{MODULE_NAME}]添加并验证用户: {user_id} 群: {group_id}"
-            )
+            logger.info(f"[{MODULE_NAME}]添加并验证用户: {user_id} 群: {group_id}")
             return "success"
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]添加并验证用户失败: {e}")
@@ -454,3 +465,80 @@ class DataManager:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]获取群已记录用户失败: {e}")
             return set()
+
+    # ============ 黑名单相关操作 ============
+
+    def add_blacklist(self, user_id: str, group_id: str, reason: str = None) -> bool:
+        """
+        添加黑名单记录
+
+        Args:
+            user_id: QQ号
+            group_id: 群号
+            reason: 拉黑原因
+
+        Returns:
+            bool: 是否成功
+        """
+        try:
+            current_time = int(datetime.now().timestamp())
+            self.cursor.execute(
+                """INSERT OR REPLACE INTO user_blacklist
+                   (user_id, group_id, blacklisted_time, reason)
+                   VALUES (?, ?, ?, ?)""",
+                (user_id, group_id, current_time, reason),
+            )
+            self.conn.commit()
+            logger.info(f"[{MODULE_NAME}]添加黑名单: {user_id} 群: {group_id}")
+            return True
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]添加黑名单失败: {e}")
+            return False
+
+    def is_blacklisted(self, user_id: str, group_id: str) -> bool:
+        """
+        检查用户是否在黑名单中
+
+        Args:
+            user_id: QQ号
+            group_id: 群号
+
+        Returns:
+            bool: 是否在黑名单中
+        """
+        try:
+            self.cursor.execute(
+                """SELECT id FROM user_blacklist
+                   WHERE user_id = ? AND group_id = ?""",
+                (user_id, group_id),
+            )
+            return self.cursor.fetchone() is not None
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]检查黑名单失败: {e}")
+            return False
+
+    def remove_blacklist(self, user_id: str, group_id: str) -> bool:
+        """
+        移除黑名单记录
+
+        Args:
+            user_id: QQ号
+            group_id: 群号
+
+        Returns:
+            bool: 是否成功
+        """
+        try:
+            self.cursor.execute(
+                """DELETE FROM user_blacklist
+                   WHERE user_id = ? AND group_id = ?""",
+                (user_id, group_id),
+            )
+            self.conn.commit()
+            if self.cursor.rowcount > 0:
+                logger.info(f"[{MODULE_NAME}]移除黑名单: {user_id} 群: {group_id}")
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]移除黑名单失败: {e}")
+            return False
