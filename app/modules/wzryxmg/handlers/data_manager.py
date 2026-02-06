@@ -165,6 +165,25 @@ class DataManager:
         row = self.cursor.fetchone()
         return dict(row) if row else None
 
+    def get_global_highest_price_xmg(self) -> Optional[Dict[str, Any]]:
+        """
+        获取当天全库价格最高的小马糕（所有群）
+
+        Returns:
+            最高价格的小马糕记录字典，如果没有则返回None
+        """
+        store_date = datetime.now().strftime("%Y-%m-%d")
+        self.cursor.execute(
+            """SELECT id, group_id, user_id, nickname, full_message, price, store_date, created_at
+               FROM xmg_records 
+               WHERE store_date = ? 
+               ORDER BY price DESC, created_at ASC 
+               LIMIT 1""",
+            (store_date,),
+        )
+        row = self.cursor.fetchone()
+        return dict(row) if row else None
+
     def delete_by_xmg_code(self, group_id: str, xmg_code: str) -> bool:
         """
         根据小马糕代码删除记录（同一天内）

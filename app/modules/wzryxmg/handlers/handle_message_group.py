@@ -168,7 +168,7 @@ class GroupMessageHandler:
 
     async def _handle_high_price_query(self) -> bool:
         """
-        处理高价小马糕查询
+        处理高价小马糕查询（全库查询）
         返回True表示已处理
         """
         # 必须包含"高价小马糕"才触发查询
@@ -185,8 +185,8 @@ class GroupMessageHandler:
             if expired_count > 0:
                 logger.info(f"[{MODULE_NAME}]清理了{expired_count}条过期的小马糕记录")
 
-            # 查询当天最高价
-            record = dm.get_highest_price_xmg(self.group_id)
+            # 查询全库当天最高价（所有群）
+            record = dm.get_global_highest_price_xmg()
 
             if not record:
                 await send_group_msg(
