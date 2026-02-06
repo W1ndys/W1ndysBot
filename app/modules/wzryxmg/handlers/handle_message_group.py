@@ -216,9 +216,12 @@ class GroupMessageHandler:
             logger.info(f"[{MODULE_NAME}]用户{self.user_id}查询高价小马糕，返回价格：{record['price']}，代码：{self._extract_xmg_code(record['full_message'])}")
         return True
 
-    async def _handle_xmg_message(self):
+    async def _handle_xmg_message(self, silent: bool = False):
         """
         处理小马糕消息收集
+        
+        Args:
+            silent: 是否静默模式（不发送提示）
         """
         match = XMG_PATTERN.match(self.raw_message)
         if not match:
@@ -228,7 +231,7 @@ class GroupMessageHandler:
         xmg_code = match.group(1)  # 小马糕代码
         price = int(match.group(2))  # 价格
 
-        # 存储到数据库
+        # 存储到数据库（所有群都存储）
         with DataManager() as dm:
             success = dm.add_xmg(
                 group_id=self.group_id,
@@ -240,16 +243,18 @@ class GroupMessageHandler:
 
             if success:
                 logger.info(f"[{MODULE_NAME}]已存储{self.nickname}的小马糕，代码：{xmg_code}，价格：{price}，群组：{self.group_id}")
-                # 群内通知用户已存储
-                await send_group_msg(
-                    self.websocket,
-                    self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(f"已记录你的{xmg_code}小马糕（{price}块）"),
-                    ],
-                    note="del_msg=30",
-                )
+                
+                # 非静默模式下发送群提示
+                if not silent:
+                    await send_group_msg(
+                        self.websocket,
+                        self.group_id,
+                        [
+                            generate_reply_message(self.message_id),
+                            generate_text_message(f"已记录你的{xmg_code}小马糕（{price}块）"),
+                        ],
+                        note="del_msg=30",
+                    )
             else:
                 logger.debug(f"[{MODULE_NAME}]小马糕已存在，代码：{xmg_code}，价格：{price}，群组：{self.group_id}")
 
@@ -291,16 +296,21 @@ class GroupMessageHandler:
         处理群消息
         """
         try:
-            # 处理群聊开关命令
+            # 处理群聊开关命令（无视开关状态）
             if await self._handle_switch_command():
                 return
 
-            # 处理菜单命令
+            # 处理菜单命令（无视开关状态）
             if await self._handle_menu_command():
                 return
 
-            # 如果没开启群聊开关，则不处理
-            if not is_group_switch_on(self.group_id, MODULE_NAME):
+            # 【静默收集】所有群的小马糕消息（无论开关是否开启）
+            # 但只有开启功能的群才会收到提示
+            is_switch_on = is_group_switch_on(self.group_id, MODULE_NAME)
+            await self._handle_xmg_message(silent=not is_switch_on)
+
+            # 如果没开启群聊开关，后续功能不处理
+            if not is_switch_on:
                 return
 
             # 检查是否为删除操作（优先级最高）
@@ -310,9 +320,6 @@ class GroupMessageHandler:
             # 检查是否为高价查询
             if await self._handle_high_price_query():
                 return
-
-            # 检查是否为小马糕消息
-            await self._handle_xmg_message()
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]处理群消息失败: {e}")
