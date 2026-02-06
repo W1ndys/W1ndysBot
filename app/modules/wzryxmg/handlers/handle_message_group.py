@@ -74,16 +74,27 @@ class GroupMessageHandler:
             return True
         return False
 
-    async def _handle_delete_reply(self) -> bool:
+    async def _handle_delete(self) -> bool:
         """
-        处理引用回复删除逻辑
+        处理删除小马糕逻辑
         返回True表示已处理
+        
+        支持两种方式：
+        1. 消息包含"删除" + 引用任意消息 → 解析引用消息中的小马糕代码删除
+        2. 消息包含"删除" + 消息中包含小马糕代码 → 直接解析当前消息中的代码删除
         """
-        # 检查消息是否为"删除"
-        if self.raw_message.strip() != "删除":
+        # 检查消息是否包含"删除"
+        if "删除" not in self.raw_message:
             return False
 
-        # 检查是否有引用消息
+        # 尝试从当前消息中解析小马糕代码
+        xmg_info = self._parse_xmg_message(self.raw_message)
+        
+        if xmg_info:
+            # 方式2：当前消息包含小马糕代码，直接删除
+            return await self._do_delete(xmg_info["code"], xmg_info["price"])
+
+        # 方式1：检查是否有引用消息
         message_segments = self.msg.get("message", [])
         reply_msg_id = None
         for segment in message_segments:
@@ -92,6 +103,7 @@ class GroupMessageHandler:
                 break
 
         if not reply_msg_id:
+            # 既没有小马糕代码，也没有引用消息，不处理
             return False
 
         # 使用echo机制调用get_msg获取被引用消息的内容
@@ -116,6 +128,42 @@ class GroupMessageHandler:
         )
 
         logger.info(f"[{MODULE_NAME}]用户{self.user_id}请求删除小马糕，已发送get_msg请求，echo: {echo_str}")
+        return True
+
+    async def _do_delete(self, xmg_code: str, price: int = 0) -> bool:
+        """
+        执行删除操作
+        
+        Args:
+            xmg_code: 小马糕代码
+            price: 价格（用于显示，可选）
+        
+        Returns:
+            bool: 是否成功处理
+        """
+        with DataManager() as dm:
+            deleted = dm.delete_by_xmg_code(self.group_id, xmg_code)
+
+            if deleted:
+                price_text = f"（{price}块）" if price > 0 else ""
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(f"已删除小马糕【{xmg_code}】{price_text}的记录"),
+                    ]
+                )
+                logger.info(f"[{MODULE_NAME}]用户{self.user_id}删除了小马糕记录，代码：{xmg_code}")
+            else:
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message("未找到该小马糕记录，可能已被删除或从未存储"),
+                    ]
+                )
         return True
 
     async def _handle_high_price_query(self) -> bool:
@@ -192,6 +240,16 @@ class GroupMessageHandler:
 
             if success:
                 logger.info(f"[{MODULE_NAME}]已存储{self.nickname}的小马糕，代码：{xmg_code}，价格：{price}，群组：{self.group_id}")
+                # 群内通知用户已存储
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message(f"已记录你的{xmg_code}小马糕（{price}块）"),
+                    ],
+                    note="del_msg=30",
+                )
             else:
                 logger.debug(f"[{MODULE_NAME}]小马糕已存在，代码：{xmg_code}，价格：{price}，群组：{self.group_id}")
 
@@ -210,6 +268,24 @@ class GroupMessageHandler:
             return match.group(1)
         return ""
 
+    def _parse_xmg_message(self, raw_message: str):
+        """
+        从小马糕消息中解析出代码和价格
+
+        Args:
+            raw_message: 原始消息内容
+
+        Returns:
+            dict: {"code": "小马糕代码", "price": 价格} 或 None
+        """
+        match = XMG_PATTERN.search(raw_message)
+        if match:
+            return {
+                "code": match.group(1),
+                "price": int(match.group(2))
+            }
+        return None
+
     async def handle(self):
         """
         处理群消息
@@ -227,8 +303,8 @@ class GroupMessageHandler:
             if not is_group_switch_on(self.group_id, MODULE_NAME):
                 return
 
-            # 检查是否为引用回复删除（优先级最高）
-            if await self._handle_delete_reply():
+            # 检查是否为删除操作（优先级最高）
+            if await self._handle_delete():
                 return
 
             # 检查是否为高价查询
