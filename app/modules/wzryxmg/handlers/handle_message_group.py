@@ -123,7 +123,12 @@ class GroupMessageHandler:
         处理高价小马糕查询
         返回True表示已处理
         """
+        # 必须包含"高价小马糕"才触发查询
         if "高价小马糕" not in self.raw_message:
+            return False
+        
+        # 如果消息匹配小马糕存储格式，不触发查询（交给存储逻辑处理）
+        if XMG_PATTERN.match(self.raw_message):
             return False
 
         # 先清理过期数据
