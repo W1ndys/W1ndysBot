@@ -336,12 +336,9 @@ class GroupMessageHandler:
                 logger.debug(f"[{MODULE_NAME}]没有开启功能的群，跳过高价推送")
                 return
             
-            # 构造推送消息
+            # 构造推送消息（仅显示数量和原始文案）
             push_message = (
-                f"🎉 发现高价小马糕！\n"
-                f"代码：{xmg_code}\n"
-                f"价格：{price}块\n"
-                f"来自群：{self.group_id}\n"
+                f"🎉 发现高价小马糕！（{price}块）\n"
                 f"\n{self.raw_message}"
             )
             
