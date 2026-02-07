@@ -19,7 +19,7 @@ from config import OWNER_ID
 
 
 # 高价推送阈值
-HIGH_PRICE_THRESHOLD = 850
+HIGH_PRICE_THRESHOLD = 900
 
 # 有效价格范围
 VALID_PRICE_MIN = 100
