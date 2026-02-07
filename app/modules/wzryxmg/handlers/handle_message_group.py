@@ -1,15 +1,21 @@
 import re
 import uuid
 import time
+import asyncio
 from datetime import datetime
 from .. import MODULE_NAME, SWITCH_NAME, pending_get_msg
 from ..handlers.data_manager import DataManager
 from logger import logger
-from core.switchs import is_group_switch_on, handle_module_group_switch
+from core.switchs import is_group_switch_on, handle_module_group_switch, get_all_enabled_groups
 from utils.auth import is_system_admin
 from api.message import send_group_msg, get_msg
 from utils.generate import generate_text_message, generate_reply_message
 from core.menu_manager import MenuManager, MENU_COMMAND
+from config import OWNER_ID
+
+
+# 高价推送阈值
+HIGH_PRICE_THRESHOLD = 800
 
 
 # 小马糕消息正则表达式
@@ -41,11 +47,21 @@ class GroupMessageHandler:
 
     async def _handle_switch_command(self):
         """
-        处理群聊开关命令
+        处理群聊开关命令（仅owner可操作）
         """
         if self.raw_message.lower() == SWITCH_NAME.lower():
-            if not is_system_admin(self.user_id):
-                logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换群聊开关")
+            # 仅允许owner控制开关
+            if self.user_id != OWNER_ID:
+                logger.error(f"[{MODULE_NAME}]{self.user_id}无权限切换群聊开关，仅owner({OWNER_ID})可操作")
+                await send_group_msg(
+                    self.websocket,
+                    self.group_id,
+                    [
+                        generate_reply_message(self.message_id),
+                        generate_text_message("仅机器人主人可控制此开关"),
+                    ],
+                    note="del_msg=10",
+                )
                 return True
             await handle_module_group_switch(
                 MODULE_NAME,
@@ -255,6 +271,10 @@ class GroupMessageHandler:
                         ],
                         note="del_msg=30",
                     )
+                
+                # 高价小马糕推送：价格 >= 800时，推送到所有已开启功能的群
+                if price >= HIGH_PRICE_THRESHOLD:
+                    await self._push_high_price_xmg(xmg_code, price)
             else:
                 logger.debug(f"[{MODULE_NAME}]小马糕已存在，代码：{xmg_code}，价格：{price}，群组：{self.group_id}")
 
@@ -290,6 +310,61 @@ class GroupMessageHandler:
                 "price": int(match.group(2))
             }
         return None
+
+    async def _push_high_price_xmg(self, xmg_code: str, price: int):
+        """
+        推送高价小马糕到所有已开启功能的群
+        
+        Args:
+            xmg_code: 小马糕代码
+            price: 价格
+        """
+        try:
+            # 获取所有已开启功能的群
+            enabled_groups = get_all_enabled_groups(MODULE_NAME)
+            
+            if not enabled_groups:
+                logger.debug(f"[{MODULE_NAME}]没有开启功能的群，跳过高价推送")
+                return
+            
+            # 构造推送消息
+            push_message = (
+                f"🎉 发现高价小马糕！\n"
+                f"代码：{xmg_code}\n"
+                f"价格：{price}块\n"
+                f"来自群：{self.group_id}\n"
+                f"\n{self.raw_message}"
+            )
+            
+            # 推送到所有已开启的群（排除当前群，避免重复）
+            push_tasks = []
+            for group_id in enabled_groups:
+                if str(group_id) == self.group_id:
+                    continue  # 跳过当前群
+                push_tasks.append(
+                    send_group_msg(
+                        self.websocket,
+                        group_id,
+                        generate_text_message(push_message),
+                    )
+                )
+            
+            if push_tasks:
+                # 并发发送，不阻塞
+                asyncio.create_task(self._send_push_messages(push_tasks))
+                logger.info(f"[{MODULE_NAME}]检测到高价小马糕（{price}块），正在推送到{len(push_tasks)}个群")
+            
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]推送高价小马糕失败: {e}")
+    
+    async def _send_push_messages(self, tasks):
+        """
+        批量发送推送消息（后台执行，不阻塞主流程）
+        """
+        try:
+            await asyncio.gather(*tasks, return_exceptions=True)
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]批量发送推送消息失败: {e}")
 
     async def handle(self):
         """
