@@ -80,9 +80,9 @@ class ResponseHandler:
             del pending_get_msg[echo_str]
             return
 
-        # 根据小马糕代码删除记录
+        # 根据小马糕代码删除记录（全库范围）
         with DataManager() as dm:
-            deleted = dm.delete_by_xmg_code(group_id, xmg_info["code"])
+            deleted = dm.delete_by_xmg_code(xmg_info["code"])
 
             if deleted:
                 await send_group_msg(

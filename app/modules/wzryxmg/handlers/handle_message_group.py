@@ -132,7 +132,7 @@ class GroupMessageHandler:
 
     async def _do_delete(self, xmg_code: str, price: int = 0) -> bool:
         """
-        执行删除操作
+        执行删除操作（全库范围）
         
         Args:
             xmg_code: 小马糕代码
@@ -142,7 +142,7 @@ class GroupMessageHandler:
             bool: 是否成功处理
         """
         with DataManager() as dm:
-            deleted = dm.delete_by_xmg_code(self.group_id, xmg_code)
+            deleted = dm.delete_by_xmg_code(xmg_code)
 
             if deleted:
                 price_text = f"（{price}块）" if price > 0 else ""

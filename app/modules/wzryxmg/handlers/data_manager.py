@@ -184,12 +184,11 @@ class DataManager:
         row = self.cursor.fetchone()
         return dict(row) if row else None
 
-    def delete_by_xmg_code(self, group_id: str, xmg_code: str) -> bool:
+    def delete_by_xmg_code(self, xmg_code: str) -> bool:
         """
-        根据小马糕代码删除记录（同一天内）
+        根据小马糕代码删除记录（同一天内，全库范围）
 
         Args:
-            group_id: 群号
             xmg_code: 小马糕代码，如"东方不败1JGNNX"
 
         Returns:
@@ -200,8 +199,8 @@ class DataManager:
         pattern = f"%【{xmg_code}】%"
         self.cursor.execute(
             """DELETE FROM xmg_records 
-               WHERE group_id = ? AND store_date = ? AND full_message LIKE ?""",
-            (group_id, store_date, pattern),
+               WHERE store_date = ? AND full_message LIKE ?""",
+            (store_date, pattern),
         )
         return self.cursor.rowcount > 0
 
