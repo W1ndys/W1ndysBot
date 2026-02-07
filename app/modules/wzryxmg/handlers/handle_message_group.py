@@ -17,6 +17,10 @@ from config import OWNER_ID
 # 高价推送阈值
 HIGH_PRICE_THRESHOLD = 800
 
+# 有效价格范围
+VALID_PRICE_MIN = 100
+VALID_PRICE_MAX = 999
+
 
 # 小马糕消息正则表达式
 XMG_PATTERN = re.compile(
@@ -246,6 +250,11 @@ class GroupMessageHandler:
         # 提取信息
         xmg_code = match.group(1)  # 小马糕代码
         price = int(match.group(2))  # 价格
+
+        # 验证价格范围（100-999为有效范围）
+        if not (VALID_PRICE_MIN <= price <= VALID_PRICE_MAX):
+            logger.debug(f"[{MODULE_NAME}]小马糕价格{price}不在有效范围({VALID_PRICE_MIN}-{VALID_PRICE_MAX})内，忽略")
+            return
 
         # 存储到数据库（所有群都存储）
         with DataManager() as dm:
