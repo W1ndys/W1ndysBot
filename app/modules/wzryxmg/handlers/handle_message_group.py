@@ -368,6 +368,7 @@ class GroupMessageHandler:
                         self.websocket,
                         group_id,
                         generate_text_message(push_message),
+                        note="del_msg=300",
                     )
                 )
 
