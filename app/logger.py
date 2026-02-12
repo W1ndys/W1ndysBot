@@ -10,6 +10,7 @@ from config import OWNER_ID
 _logs_dir: Optional[str] = None
 _console_level: str = "INFO"
 _owner_ws = None
+_initialized: bool = False
 
 
 def _resolve_logs_dir(logs_dir: Optional[str]) -> str:
@@ -62,7 +63,7 @@ def setup_logging(
     - 文件输出，按天轮转、30 天保留、gz 压缩
     - 可选 ERROR 私信通知 sink
     """
-    global _logs_dir, _console_level, _owner_ws
+    global _logs_dir, _console_level, _owner_ws, _initialized
     _logs_dir = _resolve_logs_dir(logs_dir)
     _console_level = console_level
     _owner_ws = websocket
@@ -112,7 +113,15 @@ def setup_logging(
         backtrace=False,
     )
 
+    _initialized = True
     _logger.info(f"日志初始化完成，目录: {_logs_dir}")
+
+
+def _ensure_initialized():
+    """确保日志已初始化（自动初始化）"""
+    global _initialized
+    if not _initialized:
+        setup_logging()
 
 
 def set_level(level: str):
@@ -121,15 +130,33 @@ def set_level(level: str):
     setup_logging(websocket=_owner_ws, logs_dir=_logs_dir, console_level=level)
 
 
-# 直接导出 loguru 的 logger，业务方应这样用：
+# 包装类：自动初始化并转发所有调用
+class _AutoInitLogger:
+    """
+    自动初始化的 logger 包装器。
+    在第一次使用时自动调用 setup_logging() 初始化日志配置。
+    """
+
+    def __init__(self):
+        self._logger = _logger
+
+    def _ensure_init(self):
+        _ensure_initialized()
+
+    def __getattr__(self, name):
+        self._ensure_init()
+        return getattr(self._logger, name)
+
+
+# 导出自动初始化的 logger，业务方应这样用：
 # from app.logger import logger
 # logger.info("hello")
-logger = _logger
+logger = _AutoInitLogger()
 
 
 class AppLogger:
     """
-    极薄包装：如果你更喜欢“类”的使用方式，可以这样：
+    极薄包装：如果你更喜欢"类"的使用方式，可以这样：
         log = AppLogger(websocket=ws, logs_dir="logs", console_level="INFO")
         log.info("xxx")
     通过 opt(depth=1) 确保调用栈指向业务代码而非此文件。
