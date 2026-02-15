@@ -85,13 +85,27 @@ class ResponseHandler:
             deleted = dm.delete_by_xmg_code(xmg_info["code"])
 
             if deleted:
+                # 删除成功后，查询全库下一个最高价格的小马糕
+                next_highest = dm.get_global_highest_price_xmg()
+
+                # 构建回复消息
+                reply_messages = [
+                    generate_reply_message(delete_msg_id),
+                    generate_text_message(f"已删除小马糕【{xmg_info['code']}】（{xmg_info['price']}块）的记录"),
+                ]
+
+                # 如果有下一个最高价格的小马糕，追加到消息中
+                if next_highest:
+                    next_message = (
+                        f"\n\n下一个最高价格小马糕：\n"
+                        f"{next_highest['full_message']}"
+                    )
+                    reply_messages.append(generate_text_message(next_message))
+
                 await send_group_msg(
                     self.websocket,
                     group_id,
-                    [
-                        generate_reply_message(delete_msg_id),
-                        generate_text_message(f"已删除小马糕【{xmg_info['code']}】（{xmg_info['price']}块）的记录"),
-                    ]
+                    reply_messages
                 )
                 logger.info(f"[{MODULE_NAME}]用户{user_id}删除了小马糕记录，代码：{xmg_info['code']}，价格：{xmg_info['price']}")
             else:
