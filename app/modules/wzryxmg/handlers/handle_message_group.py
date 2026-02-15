@@ -158,7 +158,7 @@ class GroupMessageHandler:
 
     async def _do_delete(self, xmg_code: str, price: int = 0) -> bool:
         """
-        执行删除操作（全库范围）
+        执行删除操作（全库范围），删除后自动发送下一个最高价格的小马糕
 
         Args:
             xmg_code: 小马糕代码
@@ -172,15 +172,30 @@ class GroupMessageHandler:
 
             if deleted:
                 price_text = f"（{price}块）" if price > 0 else ""
+
+                # 删除成功后，查询全库下一个最高价格的小马糕
+                next_highest = dm.get_global_highest_price_xmg()
+
+                # 构建回复消息
+                reply_messages = [
+                    generate_reply_message(self.message_id),
+                    generate_text_message(
+                        f"已删除小马糕【{xmg_code}】{price_text}的记录"
+                    ),
+                ]
+
+                # 如果有下一个最高价格的小马糕，追加到消息中
+                if next_highest:
+                    next_message = (
+                        f"\n\n下一个最高价格小马糕：\n"
+                        f"{next_highest['full_message']}"
+                    )
+                    reply_messages.append(generate_text_message(next_message))
+
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
-                    [
-                        generate_reply_message(self.message_id),
-                        generate_text_message(
-                            f"已删除小马糕【{xmg_code}】{price_text}的记录"
-                        ),
-                    ],
+                    reply_messages,
                 )
                 logger.info(
                     f"[{MODULE_NAME}]用户{self.user_id}删除了小马糕记录，代码：{xmg_code}"
