@@ -189,11 +189,13 @@ class GroupMessageHandler:
                 )
 
                 # 如果有下一个最高价格的小马糕，单独发送便于复制
+                #  暂停1秒，确保删除消息先被处理，避免消息顺序混乱
+                await asyncio.sleep(1)
                 if next_highest:
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
-                        generate_text_message(next_highest['full_message']),
+                        generate_text_message(next_highest["full_message"]),
                     )
 
                 logger.info(
