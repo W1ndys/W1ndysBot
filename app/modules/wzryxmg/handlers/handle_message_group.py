@@ -31,6 +31,11 @@ XMG_PATTERN = re.compile(
     r"王者荣耀【(.+?)】我的小马糕今天(\d+)块，复制链接来我的市集出售，马年上分大吉！"
 )
 
+# 高级福气码消息正则表达式
+GAOJI_FUQMA_PATTERN = re.compile(
+    r"王者荣耀送限时点券【高级福气码.+?】高级福气码，使用可得(\d+)限时点券，复制口令传递心愿吧！"
+)
+
 
 class GroupMessageHandler:
     """群消息处理器"""
@@ -407,6 +412,71 @@ class GroupMessageHandler:
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]批量发送推送消息失败: {e}")
 
+    async def _handle_gaoji_fuqma_message(self):
+        """
+        处理高级福气码消息
+        监控到后自动推送到所有已开启功能的群
+        
+        Returns:
+            bool: 是否成功处理
+        """
+        match = GAOJI_FUQMA_PATTERN.match(self.raw_message)
+        if not match:
+            return False
+        
+        points = match.group(1)  # 点券数量
+        
+        logger.info(
+            f"[{MODULE_NAME}]检测到高级福气码消息，点券：{points}，来源群：{self.group_id}"
+        )
+        
+        # 推送到所有已开启功能的群
+        await self._push_gaoji_fuqma_message(points)
+        
+        return True
+    
+    async def _push_gaoji_fuqma_message(self, points: str):
+        """
+        推送高级福气码消息到所有已开启功能的群
+        
+        Args:
+            points: 点券数量
+        """
+        try:
+            # 获取所有已开启功能的群
+            enabled_groups = get_all_enabled_groups(MODULE_NAME)
+            
+            if not enabled_groups:
+                logger.debug(f"[{MODULE_NAME}]没有开启功能的群，跳过高级福气码推送")
+                return
+            
+            # 构造推送消息
+            push_message = f"🎁 发现高级福气码！（{points}点券）\n" f"\n{self.raw_message}"
+            
+            # 推送到所有已开启的群（排除当前群，避免重复）
+            push_tasks = []
+            for group_id in enabled_groups:
+                if str(group_id) == self.group_id:
+                    continue  # 跳过当前群
+                push_tasks.append(
+                    send_group_msg(
+                        self.websocket,
+                        group_id,
+                        generate_text_message(push_message),
+                        note="del_msg=300",
+                    )
+                )
+            
+            if push_tasks:
+                # 并发发送，不阻塞
+                asyncio.create_task(self._send_push_messages(push_tasks))
+                logger.info(
+                    f"[{MODULE_NAME}]检测到高级福气码（{points}点券），正在推送到{len(push_tasks)}个群"
+                )
+        
+        except Exception as e:
+            logger.error(f"[{MODULE_NAME}]推送高级福气码消息失败: {e}")
+
     async def handle(self):
         """
         处理群消息
@@ -424,6 +494,11 @@ class GroupMessageHandler:
             # 但只有开启功能的群才会收到提示
             is_switch_on = is_group_switch_on(self.group_id, MODULE_NAME)
             await self._handle_xmg_message(silent=not is_switch_on)
+
+            # 【高级福气码监控】所有群（无论开关是否开启）
+            # 监控到后自动推送到所有已开启功能的群
+            if await self._handle_gaoji_fuqma_message():
+                return
 
             # 如果没开启群聊开关，后续功能不处理
             if not is_switch_on:
