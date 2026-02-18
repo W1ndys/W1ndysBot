@@ -389,7 +389,6 @@ class GroupMessageHandler:
                         self.websocket,
                         group_id,
                         generate_text_message(push_message),
-                        note="del_msg=300",
                     )
                 )
 
@@ -416,43 +415,45 @@ class GroupMessageHandler:
         """
         处理高级福气码消息
         监控到后自动推送到所有已开启功能的群
-        
+
         Returns:
             bool: 是否成功处理
         """
         match = GAOJI_FUQMA_PATTERN.match(self.raw_message)
         if not match:
             return False
-        
+
         points = match.group(1)  # 点券数量
-        
+
         logger.info(
             f"[{MODULE_NAME}]检测到高级福气码消息，点券：{points}，来源群：{self.group_id}"
         )
-        
+
         # 推送到所有已开启功能的群
         await self._push_gaoji_fuqma_message(points)
-        
+
         return True
-    
+
     async def _push_gaoji_fuqma_message(self, points: str):
         """
         推送高级福气码消息到所有已开启功能的群
-        
+
         Args:
             points: 点券数量
         """
         try:
             # 获取所有已开启功能的群
             enabled_groups = get_all_enabled_groups(MODULE_NAME)
-            
+
             if not enabled_groups:
                 logger.debug(f"[{MODULE_NAME}]没有开启功能的群，跳过高级福气码推送")
                 return
-            
+
             # 构造推送消息
-            push_message = f"🎁 发现高级福气码！（{points}点券）\n" f"\n{self.raw_message}"
-            
+            push_message = (
+                f"🎁 发现高级福气码！（{points}点券）\n" f"\n{self.raw_message}"
+            )
+
             # 推送到所有已开启的群（排除当前群，避免重复）
             push_tasks = []
             for group_id in enabled_groups:
@@ -463,17 +464,16 @@ class GroupMessageHandler:
                         self.websocket,
                         group_id,
                         generate_text_message(push_message),
-                        note="del_msg=300",
                     )
                 )
-            
+
             if push_tasks:
                 # 并发发送，不阻塞
                 asyncio.create_task(self._send_push_messages(push_tasks))
                 logger.info(
                     f"[{MODULE_NAME}]检测到高级福气码（{points}点券），正在推送到{len(push_tasks)}个群"
                 )
-        
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]推送高级福气码消息失败: {e}")
 
