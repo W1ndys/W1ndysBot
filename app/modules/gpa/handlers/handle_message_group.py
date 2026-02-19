@@ -217,7 +217,7 @@ class GroupMessageHandler:
 
                 # 添加每个班级的结果
                 for result in results:
-                    reply_text += f"班级：{result['class_name']} | 位居比例：{result['rank_percent']}%\n"
+                    reply_text += f"班级：{result['class_name']}\n位居比例：{result['rank_percent']}%\n"
 
                 reply_text += (
                     f"━━━━━━━━━━━━━━━\n"
