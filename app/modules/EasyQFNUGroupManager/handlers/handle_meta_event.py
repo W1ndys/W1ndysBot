@@ -93,39 +93,39 @@ class MetaEventHandler:
                 if not users_to_remind:
                     return
 
-                # 按群和小时数分组 {group_id: {hour: [user_info, ...]}}
-                groups_hours_users = {}
+                # 按群和间隔数分组 {group_id: {interval: [user_info, ...]}}
+                groups_intervals_users = {}
                 for user in users_to_remind:
                     group_id = user["group_id"]
                     # 只处理开启了模块的群
                     if group_id not in enabled_groups:
                         continue
 
-                    current_hour = user["current_hour"]
-                    if group_id not in groups_hours_users:
-                        groups_hours_users[group_id] = {}
-                    if current_hour not in groups_hours_users[group_id]:
-                        groups_hours_users[group_id][current_hour] = []
-                    groups_hours_users[group_id][current_hour].append(user)
+                    current_interval = user["current_interval"]
+                    if group_id not in groups_intervals_users:
+                        groups_intervals_users[group_id] = {}
+                    if current_interval not in groups_intervals_users[group_id]:
+                        groups_intervals_users[group_id][current_interval] = []
+                    groups_intervals_users[group_id][current_interval].append(user)
 
-                # 对每个群的每个小时数进行提醒
-                for group_id, hours_users in groups_hours_users.items():
-                    for hour, users in hours_users.items():
-                        await self._remind_users(dm, group_id, users, hour)
+                # 对每个群的每个间隔数进行提醒
+                for group_id, intervals_users in groups_intervals_users.items():
+                    for interval, users in intervals_users.items():
+                        await self._remind_users(dm, group_id, users, interval)
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]检测待提醒用户失败: {e}")
 
-    async def _remind_users(self, dm, group_id: str, users: list, hour: int):
+    async def _remind_users(self, dm, group_id: str, users: list, interval: int):
         """
-        提醒一个群内同一入群小时数的所有待验证用户
+        提醒一个群内同一入群半小时间隔的所有待验证用户
         合并到一条消息内艾特所有用户
 
         Args:
             dm: DataManager实例
             group_id: 群号
-            users: 要提醒的用户信息列表 [{user_id, current_hour, ...}, ...]
-            hour: 当前入群的整点小时数
+            users: 要提醒的用户信息列表 [{user_id, current_interval, ...}, ...]
+            interval: 当前入群的半小时间隔数（1=半小时，2=1小时）
         """
         try:
             if not users:
@@ -137,9 +137,11 @@ class MetaEventHandler:
                 message_segments.append(generate_at_message(user["user_id"]))
                 message_segments.append(generate_text_message(" "))
 
+            # 将间隔数转换为小时数用于显示（interval * 0.5 = 小时）
+            display_hours = interval * 0.5
             # 使用模板生成提醒消息
             remind_message = REMIND_MESSAGE_TEMPLATE.format(
-                hours=hour,
+                hours=display_hours,
                 timeout=TIMEOUT_HOURS
             )
             message_segments.append(generate_text_message(f"\n{remind_message}"))
@@ -151,13 +153,19 @@ class MetaEventHandler:
                 message_segments,
             )
 
+            # 格式化显示时间
+            if interval == 1:
+                time_display = "半小时"
+            else:
+                time_display = f"{int(display_hours)}小时"
+
             logger.info(
-                f"[{MODULE_NAME}]群 {group_id} 提醒 {len(users)} 名入群满 {hour} 小时未验证用户"
+                f"[{MODULE_NAME}]群 {group_id} 提醒 {len(users)} 名入群满 {time_display} 未验证用户"
             )
 
-            # 更新每个用户的上次提醒小时数
+            # 更新每个用户的上次提醒间隔数
             for user in users:
-                dm.update_last_remind_hour(user["user_id"], group_id, hour)
+                dm.update_last_remind_hour(user["user_id"], group_id, interval)
 
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]提醒用户失败: {e}")
