@@ -232,7 +232,7 @@ class GroupMessageHandler:
                         generate_reply_message(self.message_id),
                         generate_text_message(reply_text),
                     ],
-                    note="",
+                    note="del_msg=120",
                 )
                 return True
 
