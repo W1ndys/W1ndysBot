@@ -238,6 +238,7 @@ class GroupMessageHandler:
         """
         处理查看待验证列表命令
         格式：待验证
+        同时显示待验证用户和无记录用户
         """
         # 检查权限：必须是管理员或系统管理员
         if not is_group_admin(self.role) and not is_system_admin(self.user_id):
@@ -247,17 +248,31 @@ class GroupMessageHandler:
         if self.raw_message.strip() != PENDING_LIST_COMMAND:
             return False
 
-        # 获取待验证用户列表
+        # 获取待验证用户列表和已记录用户ID集合
         with DataManager() as dm:
             pending_users = dm.get_pending_users_by_group(self.group_id)
+            recorded_user_ids = dm.get_all_recorded_user_ids(self.group_id)
 
-        if not pending_users:
+        # 获取群成员列表，找出无记录用户（排除管理员和群主）
+        group_member_ids = get_group_member_user_ids(self.group_id)
+        unrecorded_users = []
+        if group_member_ids:
+            for user_id in group_member_ids:
+                if user_id not in recorded_user_ids:
+                    # 忽略管理员和群主
+                    if not is_user_admin_or_owner(self.group_id, user_id):
+                        unrecorded_users.append(user_id)
+
+        # 计算总待验证人数
+        total_count = len(pending_users) + len(unrecorded_users)
+
+        if total_count == 0:
             await send_group_msg(
                 self.websocket,
                 self.group_id,
                 [
                     generate_reply_message(self.message_id),
-                    generate_text_message("当前没有待验证的用户"),
+                    generate_text_message("✅ 当前没有待验证的用户"),
                 ],
                 note="del_msg=30",
             )
@@ -267,31 +282,52 @@ class GroupMessageHandler:
         message_parts = [
             generate_reply_message(self.message_id),
             generate_text_message(
-                f"📋 待验证用户列表（共 {len(pending_users)} 人）：\n"
+                f"📋 待验证用户列表（共 {total_count} 人）：\n"
             ),
         ]
 
-        for user in pending_users:
-            join_time = datetime.fromtimestamp(user["join_time"]).strftime(
-                "%Y-%m-%d %H:%M:%S"
+        # 显示待验证用户（数据库中有记录但未验证）
+        if pending_users:
+            message_parts.append(
+                generate_text_message(f"\n⏳ 待验证（{len(pending_users)} 人）：\n")
             )
-            message_parts.append(generate_at_message(user["user_id"]))
-            message_parts.append(generate_text_message(f"({join_time})\n"))
+            for user in pending_users:
+                join_time = datetime.fromtimestamp(user["join_time"]).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+                message_parts.append(generate_at_message(user["user_id"]))
+                message_parts.append(generate_text_message(f"({join_time})\n"))
 
+        # 显示无记录用户（在群内但数据库无记录）
+        if unrecorded_users:
+            message_parts.append(
+                generate_text_message(f"\n❓ 无记录（{len(unrecorded_users)} 人）：\n")
+            )
+            for user_id in unrecorded_users:
+                message_parts.append(generate_at_message(user_id))
+                message_parts.append(generate_text_message(" "))
+            message_parts.append(generate_text_message("\n"))
+
+        # 添加验证引导提示信息（面向普通用户）
         message_parts.append(
             generate_text_message(
-                f"\n请及时验证，入群{TIMEOUT_HOURS}小时后自动踢出未验证用户\n"
-                "请私聊群主（私聊机器人看不到）提交：\n"
-                "1.能证明在校学生身份的证明（智慧曲园、教务系统截图、学信网等，需带有截图日期、姓名、学号）\n"
-                "2.你的QQ号(单条消息发送，勿合并发送，只发QQ号即可无需携带其他字符)\n\n"
-                "经审核通过后解除状态，未经验证的用户将会在入群固定时间后自动踢出。若群主未回复，被踢出后重新进群即可"
+                f"\n━━━━━━━━━━━━━━\n"
+                f"⏰ 入群{TIMEOUT_HOURS}小时后自动踢出未验证用户\n\n"
+                f"📌 如果你是上述待验证用户，请按以下步骤完成验证：\n\n"
+                f"1️⃣ 私聊群主（私聊机器人看不到）提交以下材料：\n"
+                f"   • 能证明在校学生身份的证明（智慧曲园、教务系统截图、学信网等）\n"
+                f"   • 截图需带有：截图日期、姓名、学号\n\n"
+                f"2️⃣ 单独发送你的QQ号（单条消息发送，勿合并发送，只发QQ号即可）\n\n"
+                f"✅ 审核通过后即可解除验证状态\n"
+                f"💡 若群主未回复，被踢出后重新进群即可"
             )
         )
 
         await send_group_msg(self.websocket, self.group_id, message_parts)
 
         logger.info(
-            f"[{MODULE_NAME}]管理员 {self.user_id} 查看待验证列表，共 {len(pending_users)} 人"
+            f"[{MODULE_NAME}]管理员 {self.user_id} 查看待验证列表，"
+            f"待验证 {len(pending_users)} 人，无记录 {len(unrecorded_users)} 人"
         )
         return True
 
