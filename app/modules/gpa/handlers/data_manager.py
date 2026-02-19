@@ -110,7 +110,7 @@ class DataManager:
             统计信息字典，包含 mean, std, max, min, count
         """
         if term == "all":
-            # 查询所有学期
+            # 查询 term='all' 的汇总数据
             self.cursor.execute(
                 """
                 SELECT 
@@ -119,7 +119,7 @@ class DataManager:
                     MIN(weighted_gpa) as min_gpa,
                     COUNT(*) as count
                 FROM gpa_ranking 
-                WHERE class_name = ?
+                WHERE class_name = ? AND term = 'all'
                 """,
                 (class_name,),
             )
@@ -146,7 +146,7 @@ class DataManager:
             self.cursor.execute(
                 """
                 SELECT weighted_gpa FROM gpa_ranking 
-                WHERE class_name = ?
+                WHERE class_name = ? AND term = 'all'
                 """,
                 (class_name,),
             )
@@ -194,7 +194,7 @@ class DataManager:
             self.cursor.execute(
                 """
                 SELECT * FROM gpa_ranking 
-                WHERE class_name = ?
+                WHERE class_name = ? AND term = 'all'
                 ORDER BY ABS(weighted_gpa - ?) ASC
                 LIMIT 1
                 """,
