@@ -213,11 +213,14 @@ class GroupMessageHandler:
                     f"━━━━━━━━━━━━━━━\n"
                     f"学期：{term_display} | 目标绩点：{target_gpa}\n"
                     f"━━━━━━━━━━━━━━━\n"
+                    f"班级-位居比例\n"
                 )
 
                 # 添加每个班级的结果
                 for result in results:
-                    reply_text += f"班级：{result['class_name']}\n位居比例：{result['rank_percent']}%\n"
+                    reply_text += (
+                        f"【{result['class_name']}】-【{result['rank_percent']}%】\n"
+                    )
 
                 reply_text += (
                     f"━━━━━━━━━━━━━━━\n"
