@@ -70,20 +70,20 @@ class GroupMessageHandler:
     async def _handle_gpa_percentile_command(self):
         """
         处理绩点百分比查询命令
-        
+
         格式：绩点百分比 班级名称 学期 目标绩点
         示例：绩点百分比 22网安 2024-2025-1 3.91
         示例：绩点百分比 24电子信息 all 3.64
         """
         raw = self.raw_message.strip()
-        
+
         # 检查是否以绩点百分比开头
         if not raw.startswith(BASE_COMMAND):
             return False
-        
+
         # 解析命令参数
         parts = raw.split()
-        
+
         # 检查参数数量
         if len(parts) < 4:
             await send_group_msg(
@@ -102,21 +102,22 @@ class GroupMessageHandler:
                 note="del_msg=30",
             )
             return True
-        
+
         # 提取参数
         # parts[0] = "绩点百分比"
         # parts[1] = 班级名称（可能包含空格，但这里我们假设没有空格）
         # parts[2] = 学期
         # parts[3] = 目标绩点
-        
+
         class_name_input = parts[1]
         term_input = parts[2]
         target_gpa_input = parts[3]
-        
+
         # 验证学期格式
         if term_input != "all":
             # 检查格式 xxxx-xxxx-x
             import re
+
             if not re.match(r"^\d{4}-\d{4}-\d$", term_input):
                 await send_group_msg(
                     self.websocket,
@@ -132,7 +133,7 @@ class GroupMessageHandler:
                     note="del_msg=30",
                 )
                 return True
-        
+
         # 验证目标绩点为数字
         try:
             target_gpa = float(target_gpa_input)
@@ -153,13 +154,13 @@ class GroupMessageHandler:
                 note="del_msg=30",
             )
             return True
-        
+
         # 查询数据库
         try:
             with DataManager() as dm:
                 # 模糊匹配班级名称
                 matched_classes = dm.find_class_by_fuzzy_name(class_name_input)
-                
+
                 if not matched_classes:
                     await send_group_msg(
                         self.websocket,
@@ -168,13 +169,13 @@ class GroupMessageHandler:
                             generate_reply_message(self.message_id),
                             generate_text_message(
                                 f"❌ 未找到班级：{class_name_input}\n"
-                                f"请检查班级名称是否正确，或尝试使用更简短的名称（如：22网安）"
+                                f"请检查班级名称是否是教务系统内标准的班级名称，支持子串查询无需使用完整名字，或尝试使用更简短的名称（如：22网安、01中文、24计1）"
                             ),
                         ],
                         note="del_msg=30",
                     )
                     return True
-                
+
                 # 查询所有匹配班级的百分位数据
                 results = []
                 for class_name in matched_classes:
@@ -182,12 +183,14 @@ class GroupMessageHandler:
                     available_terms = dm.get_available_terms(class_name)
                     if term_input != "all" and term_input not in available_terms:
                         continue
-                    
+
                     # 查询百分位
-                    result = dm.calculate_gpa_percentile(class_name, term_input, target_gpa)
+                    result = dm.calculate_gpa_percentile(
+                        class_name, term_input, target_gpa
+                    )
                     if result:
                         results.append(result)
-                
+
                 if not results:
                     await send_group_msg(
                         self.websocket,
@@ -195,34 +198,33 @@ class GroupMessageHandler:
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"❌ 未找到符合条件的班级数据\n"
-                                f"学期：{term_input}"
+                                f"❌ 未找到符合条件的班级数据\n" f"学期：{term_input}"
                             ),
                         ],
                         note="del_msg=30",
                     )
                     return True
-                
+
                 # 构建回复消息
                 term_display = "全部学期" if term_input == "all" else term_input
-                
+
                 reply_text = (
-                    f"📊 绩点百分位排名查询结果\n"
+                    f"📊 绩点百分位查询结果\n"
                     f"━━━━━━━━━━━━━━━\n"
                     f"学期：{term_display} | 目标绩点：{target_gpa}\n"
                     f"━━━━━━━━━━━━━━━\n"
                 )
-                
+
                 # 添加每个班级的结果
                 for result in results:
                     reply_text += f"班级：{result['class_name']} | 超过比例：{result['rank_percent']}%\n"
-                
+
                 reply_text += (
                     f"━━━━━━━━━━━━━━━\n"
                     f"💡 提示：超过比例表示该绩点超过班级百分比数量的同学\n"
                     f"结果基于正态分布的统计学估算模型生成，可参考性85%以上，仅供学业规划参考，不代表官方数据"
                 )
-                
+
                 await send_group_msg(
                     self.websocket,
                     self.group_id,
@@ -233,7 +235,7 @@ class GroupMessageHandler:
                     note="",
                 )
                 return True
-                
+
         except Exception as e:
             logger.error(f"[{MODULE_NAME}]查询绩点百分位失败: {e}")
             await send_group_msg(
