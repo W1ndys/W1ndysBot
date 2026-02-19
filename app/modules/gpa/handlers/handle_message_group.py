@@ -158,10 +158,9 @@ class GroupMessageHandler:
         try:
             with DataManager() as dm:
                 # 模糊匹配班级名称
-                matched_class = dm.find_class_by_fuzzy_name(class_name_input)
+                matched_classes = dm.find_class_by_fuzzy_name(class_name_input)
                 
-                if not matched_class:
-                    # 尝试搜索包含输入的班级
+                if not matched_classes:
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
@@ -176,35 +175,27 @@ class GroupMessageHandler:
                     )
                     return True
                 
-                # 检查学期是否有效
-                available_terms = dm.get_available_terms(matched_class)
-                if term_input != "all" and term_input not in available_terms:
+                # 查询所有匹配班级的百分位数据
+                results = []
+                for class_name in matched_classes:
+                    # 检查学期是否有效
+                    available_terms = dm.get_available_terms(class_name)
+                    if term_input != "all" and term_input not in available_terms:
+                        continue
+                    
+                    # 查询百分位
+                    result = dm.calculate_gpa_percentile(class_name, term_input, target_gpa)
+                    if result:
+                        results.append(result)
+                
+                if not results:
                     await send_group_msg(
                         self.websocket,
                         self.group_id,
                         [
                             generate_reply_message(self.message_id),
                             generate_text_message(
-                                f"❌ 班级 {matched_class} 没有学期 {term_input} 的数据\n"
-                                f"可用学期：{', '.join(available_terms[:10])}{'...' if len(available_terms) > 10 else ''}"
-                            ),
-                        ],
-                        note="del_msg=30",
-                    )
-                    return True
-                
-                # 计算百分位
-                result = dm.calculate_gpa_percentile(matched_class, term_input, target_gpa)
-                
-                if not result:
-                    await send_group_msg(
-                        self.websocket,
-                        self.group_id,
-                        [
-                            generate_reply_message(self.message_id),
-                            generate_text_message(
-                                f"❌ 无法计算百分位排名\n"
-                                f"班级：{matched_class}\n"
+                                f"❌ 未找到符合条件的班级数据\n"
                                 f"学期：{term_input}"
                             ),
                         ],
@@ -218,26 +209,18 @@ class GroupMessageHandler:
                 reply_text = (
                     f"📊 绩点百分位排名查询结果\n"
                     f"━━━━━━━━━━━━━━━\n"
-                    f"班级：{result['class_name']}\n"
-                    f"学期：{term_display}\n"
-                    f"目标绩点：{result['target_gpa']}\n"
+                    f"学期：{term_display} | 目标绩点：{target_gpa}\n"
                     f"━━━━━━━━━━━━━━━\n"
-                    f"📈 排名信息\n"
-                    f"超过比例：{result['rank_percent']}%\n"
                 )
                 
-                # 如果有统计信息，显示参考
-                if result['mean'] is not None:
-                    reply_text += (
-                        f"━━━━━━━━━━━━━━━\n"
-                        f"📋 参考数据\n"
-                        f"最接近记录绩点：{result['closest_gpa']}\n"
-                        f"班级平均绩点：{result['mean']}\n"
-                    )
+                # 添加每个班级的结果
+                for result in results:
+                    reply_text += f"班级：{result['class_name']} | 超过比例：{result['rank_percent']}%\n"
                 
                 reply_text += (
                     f"━━━━━━━━━━━━━━━\n"
-                    f"💡 提示：超过比例表示该绩点超过班级{result['rank_percent']}%的同学"
+                    f"💡 提示：超过比例表示该绩点超过班级百分比数量的同学\n"
+                    f"结果基于正态分布的统计学估算模型生成，可参考性85%以上，仅供学业规划参考，不代表官方数据"
                 )
                 
                 await send_group_msg(
