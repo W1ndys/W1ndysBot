@@ -255,7 +255,7 @@ class GroupMessageHandler:
 
             # 构造消息
             message_content = record["full_message"]
-            hint = "\n\n若该小马糕无额度，可回复本条消息删除该条数据"
+            hint = "\n\n若该小马糕无额度，可回复本条消息【删除】来删除该条数据"
 
             # 直接发送高价小马糕消息
             await send_group_msg(
