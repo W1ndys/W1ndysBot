@@ -21,10 +21,10 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # ============ 配置参数 ============
 
 # 验证超时时间（小时）
-TIMEOUT_HOURS = 5
+TIMEOUT_HOURS = 1
 
 # 提醒开始时间（小时）- 入群多长时间后开始发送提醒
-REMIND_START_HOURS = 2
+REMIND_START_HOURS = 0.5
 
 # 验证命令前缀
 VERIFY_COMMAND = "通过"
