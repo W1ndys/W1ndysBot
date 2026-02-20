@@ -275,22 +275,22 @@ class DataManager:
             logger.error(f"[{MODULE_NAME}]标记用户已通知失败: {e}")
             return False
 
-    def get_users_to_remind(self, start_hour: float = 0.5, timeout_hours: int = 1) -> list:
+    def get_users_to_remind(self, start_hour: int = 1, timeout_hours: int = 6) -> list:
         """
         获取需要提醒的用户列表
-        当用户入群满半小时间隔且大于上次提醒间隔数时，需要提醒
+        当用户入群满整点小时数且大于上次提醒小时数时，需要提醒
 
         Args:
-            start_hour: 开始提醒的小时数，默认0.5小时（半小时）
+            start_hour: 开始提醒的小时数，默认1小时
             timeout_hours: 超时踢出的小时数，用于过滤已超时用户
 
         Returns:
-            list: 待提醒用户列表 [{user_id, group_id, join_time, last_remind_hour, current_interval}, ...]
+            list: 待提醒用户列表 [{user_id, group_id, join_time, last_remind_hour, current_hour}, ...]
         """
         try:
             current_time = int(datetime.now().timestamp())
             # 计算开始提醒的时间截止点
-            start_cutoff_time = current_time - int(start_hour * 3600)
+            start_cutoff_time = current_time - start_hour * 3600
             # 计算超时踢出的时间截止点（不提醒即将被踢的用户）
             timeout_cutoff_time = current_time - timeout_hours * 3600
 
@@ -303,16 +303,16 @@ class DataManager:
             )
             rows = self.cursor.fetchall()
 
-            # 筛选出当前半小时间隔数大于上次提醒间隔数的用户
+            # 筛选出当前整点小时数大于上次提醒小时数的用户
             users_to_remind = []
             for row in rows:
                 row_dict = dict(row)
-                # 计算入群已满的半小时间隔数（1=半小时，2=1小时，以此类推）
+                # 计算入群已满的整点小时数
                 elapsed_seconds = current_time - row_dict["join_time"]
-                current_interval = elapsed_seconds // 1800  # 1800秒=半小时
-                # 如果当前间隔数大于上次提醒的间隔数，需要提醒
-                if current_interval > row_dict["last_remind_hour"]:
-                    row_dict["current_interval"] = current_interval
+                current_hour = elapsed_seconds // 3600
+                # 如果当前小时数大于上次提醒的小时数，需要提醒
+                if current_hour > row_dict["last_remind_hour"]:
+                    row_dict["current_hour"] = current_hour
                     users_to_remind.append(row_dict)
 
             return users_to_remind
