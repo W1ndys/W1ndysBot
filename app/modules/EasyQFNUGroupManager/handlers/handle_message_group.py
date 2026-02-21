@@ -22,6 +22,7 @@ from datetime import datetime
 from .data_manager import DataManager
 from core.menu_manager import MenuManager
 from core.get_group_member_list import get_group_member_user_ids, is_user_admin_or_owner
+from modules.BlackList.handlers.data_manager import BlackListDataManager
 import re
 
 
@@ -131,6 +132,7 @@ class GroupMessageHandler:
         success_list = []
         already_verified_list = []
         added_and_verified_list = []  # 无记录用户直接添加并验证
+        removed_from_blacklist_list = []  # 从黑名单中移出的用户
 
         with DataManager() as dm:
             for target_user_id in target_user_ids:
@@ -144,6 +146,14 @@ class GroupMessageHandler:
                     add_result = dm.add_and_verify_user(target_user_id, self.group_id)
                     if add_result == "success":
                         added_and_verified_list.append(target_user_id)
+                        # 检查并移出黑名单
+                        with BlackListDataManager() as bl_dm:
+                            if bl_dm.is_in_blacklist(self.group_id, target_user_id):
+                                bl_dm.remove_blacklist(self.group_id, target_user_id)
+                                removed_from_blacklist_list.append(target_user_id)
+                                logger.info(
+                                    f"[{MODULE_NAME}]用户 {target_user_id} 从黑名单中自动移除"
+                                )
 
         # 构建响应消息
         message_parts = [generate_reply_message(self.message_id)]
@@ -166,6 +176,18 @@ class GroupMessageHandler:
             )
             # 艾特添加并验证的用户
             for uid in added_and_verified_list:
+                message_parts.append(generate_at_message(uid))
+                message_parts.append(generate_text_message(f"({uid}) "))
+            message_parts.append(generate_text_message("\n"))
+
+        if removed_from_blacklist_list:
+            message_parts.append(
+                generate_text_message(
+                    f"🗑️ 已从黑名单移出 {len(removed_from_blacklist_list)} 人："
+                )
+            )
+            # 艾特从黑名单移出的用户
+            for uid in removed_from_blacklist_list:
                 message_parts.append(generate_at_message(uid))
                 message_parts.append(generate_text_message(f"({uid}) "))
             message_parts.append(generate_text_message("\n"))
@@ -230,7 +252,8 @@ class GroupMessageHandler:
         logger.info(
             f"[{MODULE_NAME}]管理员 {self.user_id} 批量验证：成功 {len(success_list)} 人，"
             f"无记录添加 {len(added_and_verified_list)} 人，"
-            f"已验证 {len(already_verified_list)} 人"
+            f"已验证 {len(already_verified_list)} 人，"
+            f"从黑名单移除 {len(removed_from_blacklist_list)} 人"
         )
         return True
 
