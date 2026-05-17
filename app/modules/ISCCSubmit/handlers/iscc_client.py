@@ -28,6 +28,7 @@ class ChallengeContext:
     submit_path: str
     challenge_ids: list[int]
     challenge_names: dict[int, str] = field(default_factory=dict)
+    challenge_categories: dict[int, str] = field(default_factory=dict)
 
 
 # 赛道标签 -> (未解题提交前缀 / referer 页面)
@@ -223,24 +224,36 @@ class ISCCClient:
         flag: str,
         prefetched_ids: dict[str, list[int]] | None = None,
         prefetched_names: dict[str, dict[int, str]] | None = None,
+        prefetched_categories: dict[str, dict[int, str]] | None = None,
+        category_filter: str | None = None,
     ) -> list[SubmitResult]:
         """对当前所有未解题目提交单个 flag。
 
         - `prefetched_ids` 传入 `{"练武题": [...], "擂台题": [...]}` 时，直接使用该列表，
           不再实时拉取。缓存未命中的赛道会回退到实时拉取（保持旧逻辑兼容）。
+        - `category_filter` 不为 None 时，仅向 category 匹配该过滤条件的题目提交，
+          匹配规则在客户端侧统一处理（不区分大小写、支持子串模糊匹配）。
         """
-        grouped = await self.submit_flags_to_unsolved([flag], prefetched_ids, prefetched_names)
+        grouped = await self.submit_flags_to_unsolved(
+            [(flag, category_filter)],
+            prefetched_ids,
+            prefetched_names,
+            prefetched_categories,
+        )
         # 保持老调用方签名：返回单个 flag 的结果列表。
         return grouped[0][1] if grouped else []
 
     async def submit_flags_to_unsolved(
         self,
-        flags: list[str],
+        flags: list[str] | list[tuple[str, str | None]],
         prefetched_ids: dict[str, list[int]] | None = None,
         prefetched_names: dict[str, dict[int, str]] | None = None,
+        prefetched_categories: dict[str, dict[int, str]] | None = None,
     ) -> list[tuple[str, list[SubmitResult]]]:
         """对当前所有未解题目并发提交一批 flag。
 
+        - `flags` 既兼容老的 `list[str]`，也支持新格式 `list[tuple[str, str | None]]`，
+          后者第二项为该 flag 的方向过滤条件（None 表示不过滤，即全量提交）。
         - 拿到"哪些题未解"只做一次（同一 session 下 prefetched 缺失的赛道才补拉）。
         - 各 flag 之间 `asyncio.gather` 并发；同一 flag 内部仍串行遍历题目，避免触发
           平台"提交过快"（status=3）与 nonce 冲突。
@@ -248,8 +261,18 @@ class ISCCClient:
         """
         prefetched_ids = prefetched_ids or {}
         prefetched_names = prefetched_names or {}
+        prefetched_categories = prefetched_categories or {}
         if not flags:
             return []
+
+        # 统一成 (flag, category_filter) 形式，向后兼容旧调用方
+        normalized: list[tuple[str, str | None]] = []
+        for item in flags:
+            if isinstance(item, tuple):
+                flag_text, cat_filter = item
+                normalized.append((flag_text, cat_filter))
+            else:
+                normalized.append((item, None))
 
         async with self._operation_session():
             contexts: list[ChallengeContext] = []
@@ -264,6 +287,7 @@ class ISCCClient:
                             TRACK_SUBMIT_PATH[track],
                             sorted(set(ids)),
                             prefetched_names.get(track, {}),
+                            prefetched_categories.get(track, {}),
                         )
                     )
                     continue
@@ -275,19 +299,43 @@ class ISCCClient:
                 except Exception as e:
                     shared_errors.append(SubmitResult(track, 0, "error", f"获取题目失败：{e}"))
 
-            async def submit_one(flag: str) -> list[SubmitResult]:
+            async def submit_one(flag: str, cat_filter: str | None) -> list[SubmitResult]:
                 results: list[SubmitResult] = []
                 for context in contexts:
-                    for challenge_id in context.challenge_ids:
+                    target_ids = self._filter_by_category(context, cat_filter)
+                    for challenge_id in target_ids:
                         results.append(
                             await self._submit_challenge(context, challenge_id, flag)
                         )
                 return [*shared_errors, *results]
 
             per_flag_results = await asyncio.gather(
-                *(submit_one(flag) for flag in flags)
+                *(submit_one(flag, cat_filter) for flag, cat_filter in normalized)
             )
-            return list(zip(flags, per_flag_results))
+            return list(zip([flag for flag, _ in normalized], per_flag_results))
+
+    @staticmethod
+    def _filter_by_category(
+        context: ChallengeContext, cat_filter: str | None
+    ) -> list[int]:
+        """根据方向过滤未解题目 id，规则：不区分大小写 + 子串模糊匹配。
+
+        - `cat_filter` 为 None 或空字符串时返回全部 challenge_ids。
+        - context.challenge_categories 为空（拉取阶段未取到分类）时按"无可匹配题目"
+          处理，返回空列表，避免误把全部题目当作匹配项。
+        """
+        if not cat_filter:
+            return list(context.challenge_ids)
+        needle = cat_filter.strip().lower()
+        if not needle:
+            return list(context.challenge_ids)
+        if not context.challenge_categories:
+            return []
+        return [
+            cid
+            for cid in context.challenge_ids
+            if needle in str(context.challenge_categories.get(cid, "")).lower()
+        ]
 
     async def fetch_unsolved_ids(self) -> dict[str, list[int]]:
         """拉取当前账号在两个赛道上的未解题 id，返回 `{"练武题": [...], "擂台题": [...]}`。
@@ -320,6 +368,46 @@ class ISCCClient:
                 },
             }
 
+    async def fetch_unsolved_challenges_detailed(
+        self,
+    ) -> dict[str, dict[str, dict[int, str]]]:
+        """拉取当前账号在两个赛道上的未解题 id、题目名以及题目方向（category）。
+
+        返回结构：
+        ```
+        {
+            REGULAR_TRACK: {"names": {cid: name}, "categories": {cid: category}},
+            ARENA_TRACK:   {"names": {cid: name}, "categories": {cid: category}},
+        }
+        ```
+        """
+        async with self._operation_session():
+            regular_ctx, arena_ctx = await asyncio.gather(
+                self._regular_context(), self._arena_context()
+            )
+            return {
+                REGULAR_TRACK: {
+                    "names": {
+                        cid: regular_ctx.challenge_names.get(cid, "")
+                        for cid in regular_ctx.challenge_ids
+                    },
+                    "categories": {
+                        cid: regular_ctx.challenge_categories.get(cid, "")
+                        for cid in regular_ctx.challenge_ids
+                    },
+                },
+                ARENA_TRACK: {
+                    "names": {
+                        cid: arena_ctx.challenge_names.get(cid, "")
+                        for cid in arena_ctx.challenge_ids
+                    },
+                    "categories": {
+                        cid: arena_ctx.challenge_categories.get(cid, "")
+                        for cid in arena_ctx.challenge_ids
+                    },
+                },
+            }
+
     async def _regular_context(self) -> ChallengeContext:
         html, challenge_ids = await asyncio.gather(
             self._request_text("GET", "/challenges", referer=f"{self.base_url}/"),
@@ -328,23 +416,25 @@ class ISCCClient:
         team_id = self._extract_team_id(html)
         solved_ids = await self._regular_solved_ids(team_id)
         unsolved_ids = sorted(challenge_ids - solved_ids)
-        challenge_names = await self._regular_challenge_names(unsolved_ids)
+        challenge_names, challenge_categories = await self._regular_challenge_details(unsolved_ids)
         return ChallengeContext(
             REGULAR_TRACK,
             TRACK_SUBMIT_PATH[REGULAR_TRACK],
             unsolved_ids,
             challenge_names,
+            challenge_categories,
         )
 
     async def _arena_context(self) -> ChallengeContext:
         challenge_ids, solved_ids = await asyncio.gather(self._arena_challenge_ids(), self._arena_solved_ids())
         unsolved_ids = sorted(challenge_ids - solved_ids)
-        challenge_names = await self._arena_challenge_names(unsolved_ids)
+        challenge_names, challenge_categories = await self._arena_challenge_details(unsolved_ids)
         return ChallengeContext(
             ARENA_TRACK,
             TRACK_SUBMIT_PATH[ARENA_TRACK],
             unsolved_ids,
             challenge_names,
+            challenge_categories,
         )
 
     async def _regular_solved_ids(self, team_id: str) -> set[int]:
@@ -363,7 +453,13 @@ class ISCCClient:
         return self._challenge_ids_from_payload(data)
 
     async def _regular_challenge_names(self, challenge_ids: list[int]) -> dict[int, str]:
-        return await self._fetch_challenge_names(
+        names, _ = await self._regular_challenge_details(challenge_ids)
+        return names
+
+    async def _regular_challenge_details(
+        self, challenge_ids: list[int]
+    ) -> tuple[dict[int, str], dict[int, str]]:
+        return await self._fetch_challenge_details(
             challenge_ids,
             detail_path="/chals/{id}",
             referer=f"{self.base_url}/challenges",
@@ -374,7 +470,13 @@ class ISCCClient:
         return self._challenge_ids_from_payload(data)
 
     async def _arena_challenge_names(self, challenge_ids: list[int]) -> dict[int, str]:
-        return await self._fetch_challenge_names(
+        names, _ = await self._arena_challenge_details(challenge_ids)
+        return names
+
+    async def _arena_challenge_details(
+        self, challenge_ids: list[int]
+    ) -> tuple[dict[int, str], dict[int, str]]:
+        return await self._fetch_challenge_details(
             challenge_ids,
             detail_path="/arenas/{id}",
             referer=f"{self.base_url}/arena",
@@ -386,7 +488,24 @@ class ISCCClient:
         detail_path: str,
         referer: str,
     ) -> dict[int, str]:
-        async def fetch_one(challenge_id: int) -> tuple[int, str]:
+        names, _ = await self._fetch_challenge_details(
+            challenge_ids, detail_path=detail_path, referer=referer
+        )
+        return names
+
+    async def _fetch_challenge_details(
+        self,
+        challenge_ids: list[int],
+        detail_path: str,
+        referer: str,
+    ) -> tuple[dict[int, str], dict[int, str]]:
+        """并发拉取 challenge 详情，返回 (names, categories) 两个 dict。
+
+        - 平台返回的 `category` 字段在不同部署里可能名为 `category`/`cat`/`tags`，
+          目前只取 `category`（ISCC 平台主流字段名）；取不到时返回空串。
+        - 任一请求失败时该题目仅保留可用字段，不影响其它题目。
+        """
+        async def fetch_one(challenge_id: int) -> tuple[int, str, str]:
             try:
                 data = await self._request_json(
                     "GET",
@@ -394,11 +513,20 @@ class ISCCClient:
                     referer=referer,
                 )
             except Exception:
-                return challenge_id, ""
-            return challenge_id, str(data.get("name") or "").strip()
+                return challenge_id, "", ""
+            name = str(data.get("name") or "").strip()
+            category = str(data.get("category") or data.get("cat") or "").strip()
+            return challenge_id, name, category
 
-        pairs = await asyncio.gather(*(fetch_one(cid) for cid in challenge_ids))
-        return {cid: name for cid, name in pairs if name}
+        triples = await asyncio.gather(*(fetch_one(cid) for cid in challenge_ids))
+        names: dict[int, str] = {}
+        categories: dict[int, str] = {}
+        for cid, name, category in triples:
+            if name:
+                names[cid] = name
+            if category:
+                categories[cid] = category
+        return names, categories
 
     @staticmethod
     def _challenge_ids_from_payload(data: dict) -> set[int]:

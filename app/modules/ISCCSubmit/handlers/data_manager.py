@@ -88,12 +88,14 @@ class DataManager:
                 track TEXT NOT NULL,
                 ids TEXT NOT NULL DEFAULT '',
                 names TEXT NOT NULL DEFAULT '{}',
+                categories TEXT NOT NULL DEFAULT '{}',
                 updated_at TEXT NOT NULL,
                 PRIMARY KEY (user_id, track)
             )
             """
         )
         self._ensure_unsolved_cache_names_column()
+        self._ensure_unsolved_cache_categories_column()
         self.conn.commit()
 
     def _ensure_unsolved_cache_names_column(self):
@@ -102,6 +104,14 @@ class DataManager:
         if "names" not in columns:
             self.cursor.execute(
                 "ALTER TABLE iscc_unsolved_cache ADD COLUMN names TEXT NOT NULL DEFAULT '{}'"
+            )
+
+    def _ensure_unsolved_cache_categories_column(self):
+        self.cursor.execute("PRAGMA table_info(iscc_unsolved_cache)")
+        columns = {row["name"] for row in self.cursor.fetchall()}
+        if "categories" not in columns:
+            self.cursor.execute(
+                "ALTER TABLE iscc_unsolved_cache ADD COLUMN categories TEXT NOT NULL DEFAULT '{}'"
             )
 
     def __enter__(self):
@@ -257,6 +267,27 @@ class DataManager:
             if str(cid).isdigit() and name
         }
 
+    def get_unsolved_categories(self, user_id: str, track: str) -> dict[int, str]:
+        """读取未解题缓存中的题目方向映射。旧缓存无方向时返回空 dict。"""
+        self.cursor.execute(
+            """
+            SELECT categories FROM iscc_unsolved_cache WHERE user_id = ? AND track = ?
+            """,
+            (user_id, track),
+        )
+        row = self.cursor.fetchone()
+        if row is None:
+            return {}
+        try:
+            raw = json.loads(row["categories"] or "{}")
+        except (TypeError, ValueError):
+            return {}
+        return {
+            int(cid): str(category)
+            for cid, category in raw.items()
+            if str(cid).isdigit() and category
+        }
+
     def get_unsolved_meta(self, user_id: str, track: str) -> Optional[dict]:
         self.cursor.execute(
             """
@@ -274,6 +305,7 @@ class DataManager:
         track: str,
         ids: list[int],
         names: dict[int, str] | None = None,
+        categories: dict[int, str] | None = None,
     ):
         """覆盖式保存未解题缓存。"""
         joined = ",".join(str(int(x)) for x in ids)
@@ -281,16 +313,25 @@ class DataManager:
             {str(int(cid)): str(name) for cid, name in (names or {}).items() if name},
             ensure_ascii=False,
         )
+        categories_payload = json.dumps(
+            {
+                str(int(cid)): str(category)
+                for cid, category in (categories or {}).items()
+                if category
+            },
+            ensure_ascii=False,
+        )
         self.cursor.execute(
             """
-            INSERT INTO iscc_unsolved_cache (user_id, track, ids, names, updated_at)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO iscc_unsolved_cache (user_id, track, ids, names, categories, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id, track)
             DO UPDATE SET ids = excluded.ids,
                           names = excluded.names,
+                          categories = excluded.categories,
                           updated_at = excluded.updated_at
             """,
-            (user_id, track, joined, names_payload, self._now_text()),
+            (user_id, track, joined, names_payload, categories_payload, self._now_text()),
         )
 
     def remove_unsolved_ids(self, user_id: str, track: str, removed_ids: list[int]):
@@ -304,11 +345,13 @@ class DataManager:
         if remaining == current:
             return
         names = self.get_unsolved_names(user_id, track)
+        categories = self.get_unsolved_categories(user_id, track)
         self.save_unsolved_ids(
             user_id,
             track,
             remaining,
             {cid: names[cid] for cid in remaining if cid in names},
+            {cid: categories[cid] for cid in remaining if cid in categories},
         )
 
     # ==================== 擂台赛监控 ====================
