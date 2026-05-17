@@ -161,6 +161,31 @@ class PrivateMessageHandler:
         # 优先用缓存；任一赛道缺缓存时，现场拉一次并落库，保证结果准。
         prefetched, prefetched_names, prefetched_categories = await self._resolve_unsolved_ids(client)
 
+        # 若用户带了方向过滤但缓存里没有任何 category（旧缓存未升级或拉取失败），
+        # 主动再拉一次明细，避免方向过滤把所有题目当成不匹配丢掉。
+        needs_categories = any(cat for _, cat in flags)
+        has_any_category = any(prefetched_categories.get(track) for track in prefetched_categories)
+        if needs_categories and not has_any_category:
+            try:
+                fresh = await client.fetch_unsolved_challenges_detailed()
+            except Exception as e:
+                logger.warning(f"[{MODULE_NAME}]按方向提交前补拉题目分类失败: {e}")
+            else:
+                prefetched = {}
+                prefetched_names = {}
+                prefetched_categories = {}
+                with DataManager() as dm:
+                    for track in (REGULAR_TRACK, ARENA_TRACK):
+                        track_data = fresh.get(track, {})
+                        names = track_data.get("names", {})
+                        categories = track_data.get("categories", {})
+                        prefetched_names[track] = names
+                        prefetched_categories[track] = categories
+                        prefetched[track] = list(names)
+                        dm.save_unsolved_ids(
+                            self.user_id, track, list(names), names, categories
+                        )
+
         flag_results = await client.submit_flags_to_unsolved(
             flags,
             prefetched_ids=prefetched,
