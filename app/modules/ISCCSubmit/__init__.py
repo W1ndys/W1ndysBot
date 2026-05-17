@@ -24,7 +24,9 @@ REFRESH_COMMAND = "iscc刷新"
 # 同时允许在 flag 后面跟一个空白 + 方向（题目分类），用于按方向批量提交，例如
 # `ISCC{xxxx} web` 表示该 flag 仅提交到 web 方向的未解题目。方向匹配在客户端
 # 侧不区分大小写，并采用子串模糊匹配。
-FLAG_PATTERN = r"ISCC\{[^{}]+\}(?:[ \t]+([^\s{}]+))?"
+# 方向 token 通过负向先行断言排除掉下一段 `ISCC{...}`，避免把"下一条 flag"误吞为
+# 上一条 flag 的方向。
+FLAG_PATTERN = r"ISCC\{[^{}]+\}(?:[ \t]+(?!ISCC\{)([^\s{}]+))?"
 
 # 每日自动刷新 session 的北京时间（24 小时制）
 DAILY_REFRESH_HOUR = 7
