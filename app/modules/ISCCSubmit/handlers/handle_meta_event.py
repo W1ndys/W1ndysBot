@@ -241,23 +241,24 @@ class MetaEventHandler:
     async def _refresh_unsolved_cache(
         self, user_id: str, client: ISCCClient
     ) -> tuple[int | None, int | None]:
-        """调用 client.fetch_unsolved_ids 并落库；失败返回 (None, None)。"""
+        """调用 client.fetch_unsolved_challenges_detailed 并落库；失败返回 (None, None)。"""
         try:
-            fresh = await client.fetch_unsolved_challenges()
+            fresh = await client.fetch_unsolved_challenges_detailed()
         except Exception as e:
             logger.warning(f"[{MODULE_NAME}]刷新未解题缓存失败: {e}")
             return None, None
         with DataManager() as dm:
-            dm.save_unsolved_ids(
-                user_id,
-                REGULAR_TRACK,
-                list(fresh.get(REGULAR_TRACK, {})),
-                fresh.get(REGULAR_TRACK, {}),
-            )
-            dm.save_unsolved_ids(
-                user_id,
-                ARENA_TRACK,
-                list(fresh.get(ARENA_TRACK, {})),
-                fresh.get(ARENA_TRACK, {}),
-            )
-        return len(fresh.get(REGULAR_TRACK, [])), len(fresh.get(ARENA_TRACK, []))
+            for track in (REGULAR_TRACK, ARENA_TRACK):
+                track_data = fresh.get(track, {})
+                names = track_data.get("names", {})
+                categories = track_data.get("categories", {})
+                dm.save_unsolved_ids(
+                    user_id,
+                    track,
+                    list(names),
+                    names,
+                    categories,
+                )
+        regular_n = len(fresh.get(REGULAR_TRACK, {}).get("names", {}))
+        arena_n = len(fresh.get(ARENA_TRACK, {}).get("names", {}))
+        return regular_n, arena_n

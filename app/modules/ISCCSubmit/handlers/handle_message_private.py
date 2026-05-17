@@ -129,7 +129,7 @@ class PrivateMessageHandler:
             msg_lines.append(f"未解题缓存建立失败：{err}")
         await self._reply("\n".join(msg_lines))
 
-    async def _handle_submit_flag(self, flags: list[str]):
+    async def _handle_submit_flag(self, flags: list[tuple[str, str | None]]):
         with DataManager() as dm:
             account = dm.get_account(self.user_id)
         if not account:
@@ -137,9 +137,20 @@ class PrivateMessageHandler:
             return
 
         if len(flags) == 1:
-            notice = f"已识别到 flag：{flags[0]}\n已开始提交，请等待结果。"
+            flag_text, cat_filter = flags[0]
+            if cat_filter:
+                notice = (
+                    f"已识别到 flag：{flag_text}\n"
+                    f"方向限定：{cat_filter}（不区分大小写、模糊匹配）\n"
+                    "已开始提交，请等待结果。"
+                )
+            else:
+                notice = f"已识别到 flag：{flag_text}\n已开始提交，请等待结果。"
         else:
-            bullet = "\n".join(f"- {flag}" for flag in flags)
+            bullet = "\n".join(
+                f"- {flag_text}" + (f"（方向：{cat}）" if cat else "")
+                for flag_text, cat in flags
+            )
             notice = (
                 f"已识别到 {len(flags)} 个 flag，将并发提交：\n{bullet}\n请等待结果。"
             )
@@ -148,37 +159,80 @@ class PrivateMessageHandler:
         client = await self._ensure_client(account)
 
         # 优先用缓存；任一赛道缺缓存时，现场拉一次并落库，保证结果准。
-        prefetched, prefetched_names = await self._resolve_unsolved_ids(client)
+        prefetched, prefetched_names, prefetched_categories = await self._resolve_unsolved_ids(client)
+
+        # 若用户带了方向过滤但缓存里没有任何 category（旧缓存未升级或拉取失败），
+        # 主动再拉一次明细，避免方向过滤把所有题目当成不匹配丢掉。
+        needs_categories = any(cat for _, cat in flags)
+        has_any_category = any(prefetched_categories.get(track) for track in prefetched_categories)
+        if needs_categories and not has_any_category:
+            try:
+                fresh = await client.fetch_unsolved_challenges_detailed()
+            except Exception as e:
+                logger.warning(f"[{MODULE_NAME}]按方向提交前补拉题目分类失败: {e}")
+            else:
+                prefetched = {}
+                prefetched_names = {}
+                prefetched_categories = {}
+                with DataManager() as dm:
+                    for track in (REGULAR_TRACK, ARENA_TRACK):
+                        track_data = fresh.get(track, {})
+                        names = track_data.get("names", {})
+                        categories = track_data.get("categories", {})
+                        prefetched_names[track] = names
+                        prefetched_categories[track] = categories
+                        prefetched[track] = list(names)
+                        dm.save_unsolved_ids(
+                            self.user_id, track, list(names), names, categories
+                        )
 
         flag_results = await client.submit_flags_to_unsolved(
-            flags, prefetched_ids=prefetched, prefetched_names=prefetched_names
+            flags,
+            prefetched_ids=prefetched,
+            prefetched_names=prefetched_names,
+            prefetched_categories=prefetched_categories,
         )
         await self._save_session(client.session_cookie)
         # 用所有 flag 的结果共同刷新缓存，避免被某个 flag 判对后其他 flag 再重复提交。
         merged_results = [item for _, results in flag_results for item in results]
         self._update_cache_after_submit(merged_results)
         await self._refresh_nonces(client, account)
-        await self._reply(self._format_multi_flag_results(flag_results))
+        await self._reply(self._format_multi_flag_results(flag_results, flags))
 
     @staticmethod
-    def _extract_flags(message: str) -> list[str]:
-        """提取消息中所有 ISCC{...} flag，保序去重。"""
-        seen: set[str] = set()
-        ordered: list[str] = []
-        for flag in re.findall(FLAG_PATTERN, message):
-            flag = html.unescape(flag)
-            if flag in seen:
+    def _extract_flags(message: str) -> list[tuple[str, str | None]]:
+        """提取消息中所有 ISCC{...} flag 与可选的方向限定，保序去重。
+
+        - 单条消息允许多次出现 `ISCC{...}` 或 `ISCC{...} <方向>`，按出现顺序返回。
+        - 去重 key 为 (flag, category_filter_lower)，避免同一 flag 同一方向重复提交，
+          但同一 flag 不同方向（或一带方向一不带）视为两次独立提交。
+        """
+        seen: set[tuple[str, str]] = set()
+        ordered: list[tuple[str, str | None]] = []
+        for match in re.finditer(FLAG_PATTERN, message):
+            # FLAG_PATTERN 形如：ISCC\{[^{}]+\}(?:[ \t]+([^\s{}]+))?
+            # group(1) 仅捕获方向 token；flag 主体需通过 `ISCC{...}` 子模式重新定位。
+            flag_match = re.match(r"ISCC\{[^{}]+\}", match.group(0))
+            if not flag_match:
                 continue
-            seen.add(flag)
-            ordered.append(flag)
+            flag_body = html.unescape(flag_match.group(0))
+            cat_token = match.group(1)
+            cat_filter = html.unescape(cat_token).strip() if cat_token else ""
+            cat_filter = cat_filter or None
+            key = (flag_body, (cat_filter or "").lower())
+            if key in seen:
+                continue
+            seen.add(key)
+            ordered.append((flag_body, cat_filter))
         return ordered
 
     async def _resolve_unsolved_ids(
         self, client: ISCCClient
-    ) -> tuple[dict[str, list[int]], dict[str, dict[int, str]]]:
-        """读取未解题缓存；缓存缺失时实时拉一次并落库。出错时返回空 dict 走兜底分支。"""
+    ) -> tuple[dict[str, list[int]], dict[str, dict[int, str]], dict[str, dict[int, str]]]:
+        """读取未解题缓存（id/name/category）；缓存缺失时实时拉一次并落库。出错时返回空 dict 走兜底分支。"""
         prefetched: dict[str, list[int]] = {}
         prefetched_names: dict[str, dict[int, str]] = {}
+        prefetched_categories: dict[str, dict[int, str]] = {}
         missing_tracks: list[str] = []
         with DataManager() as dm:
             for track in (REGULAR_TRACK, ARENA_TRACK):
@@ -188,30 +242,36 @@ class PrivateMessageHandler:
                 else:
                     prefetched[track] = ids
                     prefetched_names[track] = dm.get_unsolved_names(self.user_id, track)
+                    prefetched_categories[track] = dm.get_unsolved_categories(self.user_id, track)
 
         if not missing_tracks:
-            return prefetched, prefetched_names
+            return prefetched, prefetched_names, prefetched_categories
 
         try:
-            fresh = await client.fetch_unsolved_challenges()
+            fresh = await client.fetch_unsolved_challenges_detailed()
         except Exception as e:
             logger.warning(f"[{MODULE_NAME}]flag 提交前拉取未解题失败: {e}")
             # 让 submit_flag_to_unsolved 自己走兜底的实时拉路径，同时给已有缓存留着
-            return prefetched, prefetched_names
+            return prefetched, prefetched_names, prefetched_categories
 
         with DataManager() as dm:
             for track in (REGULAR_TRACK, ARENA_TRACK):
                 if track in fresh:
+                    names = fresh[track].get("names", {})
+                    categories = fresh[track].get("categories", {})
                     dm.save_unsolved_ids(
                         self.user_id,
                         track,
-                        list(fresh[track]),
-                        fresh[track],
+                        list(names),
+                        names,
+                        categories,
                     )
         for track in missing_tracks:
-            prefetched_names[track] = fresh.get(track, {})
+            track_data = fresh.get(track, {})
+            prefetched_names[track] = track_data.get("names", {})
+            prefetched_categories[track] = track_data.get("categories", {})
             prefetched[track] = list(prefetched_names[track])
-        return prefetched, prefetched_names
+        return prefetched, prefetched_names, prefetched_categories
 
     def _update_cache_after_submit(self, results: list[SubmitResult]):
         """把刚被判为"正确/已解决"的题目从未解缓存里摘掉。"""
@@ -229,27 +289,28 @@ class PrivateMessageHandler:
     async def _refresh_unsolved_cache(
         self, client: ISCCClient
     ) -> tuple[bool, int, int, str]:
-        """主动刷新未解题缓存，返回 (是否成功, 练武未解数, 擂台未解数, 错误信息)。"""
+        """主动刷新未解题缓存（id/name/category），返回 (是否成功, 练武未解数, 擂台未解数, 错误信息)。"""
         try:
-            fresh = await client.fetch_unsolved_challenges()
+            fresh = await client.fetch_unsolved_challenges_detailed()
         except Exception as e:
             logger.warning(f"[{MODULE_NAME}]刷新未解题缓存失败: {e}")
             return False, 0, 0, str(e)
         with DataManager() as dm:
-            dm.save_unsolved_ids(
-                self.user_id,
-                REGULAR_TRACK,
-                list(fresh.get(REGULAR_TRACK, {})),
-                fresh.get(REGULAR_TRACK, {}),
-            )
-            dm.save_unsolved_ids(
-                self.user_id,
-                ARENA_TRACK,
-                list(fresh.get(ARENA_TRACK, {})),
-                fresh.get(ARENA_TRACK, {}),
-            )
+            for track in (REGULAR_TRACK, ARENA_TRACK):
+                track_data = fresh.get(track, {})
+                names = track_data.get("names", {})
+                categories = track_data.get("categories", {})
+                dm.save_unsolved_ids(
+                    self.user_id,
+                    track,
+                    list(names),
+                    names,
+                    categories,
+                )
         await self._save_session(client.session_cookie)
-        return True, len(fresh.get(REGULAR_TRACK, [])), len(fresh.get(ARENA_TRACK, [])), ""
+        regular_n = len(fresh.get(REGULAR_TRACK, {}).get("names", {}))
+        arena_n = len(fresh.get(ARENA_TRACK, {}).get("names", {}))
+        return True, regular_n, arena_n, ""
 
     async def _handle_refresh_unsolved(self):
         with DataManager() as dm:
@@ -269,6 +330,8 @@ class PrivateMessageHandler:
                 arena_ids = dm.get_unsolved_ids(self.user_id, ARENA_TRACK) or []
                 regular_names = dm.get_unsolved_names(self.user_id, REGULAR_TRACK)
                 arena_names = dm.get_unsolved_names(self.user_id, ARENA_TRACK)
+                regular_categories = dm.get_unsolved_categories(self.user_id, REGULAR_TRACK)
+                arena_categories = dm.get_unsolved_categories(self.user_id, ARENA_TRACK)
             ts = (
                 regular_meta and regular_meta.get("updated_at")
             ) or (arena_meta and arena_meta.get("updated_at")) or "刚刚"
@@ -282,9 +345,25 @@ class PrivateMessageHandler:
                 lines.append("")
                 lines.append("未解题目：")
                 for cid in regular_ids:
-                    lines.append(f"- {self._format_unsolved_line(REGULAR_TRACK, cid, regular_names.get(cid, ''))}")
+                    lines.append(
+                        "- "
+                        + self._format_unsolved_line(
+                            REGULAR_TRACK,
+                            cid,
+                            regular_names.get(cid, ""),
+                            regular_categories.get(cid, ""),
+                        )
+                    )
                 for cid in arena_ids:
-                    lines.append(f"- {self._format_unsolved_line(ARENA_TRACK, cid, arena_names.get(cid, ''))}")
+                    lines.append(
+                        "- "
+                        + self._format_unsolved_line(
+                            ARENA_TRACK,
+                            cid,
+                            arena_names.get(cid, ""),
+                            arena_categories.get(cid, ""),
+                        )
+                    )
             await self._reply("\n".join(lines))
         else:
             await self._reply(f"刷新未解题缓存失败：{err}")
@@ -388,8 +467,12 @@ class PrivateMessageHandler:
             dm.save_session(self.user_id, session)
         return await client.fetch_nonces()
 
-    def _format_results(self, results: list[SubmitResult]) -> str:
+    def _format_results(
+        self, results: list[SubmitResult], cat_filter: str | None = None
+    ) -> str:
         if not results:
+            if cat_filter:
+                return f"ISCC 提交完成：当前没有匹配方向「{cat_filter}」的未解题目。"
             return "ISCC 提交完成：当前没有未解决题目。"
 
         accepted = [item for item in results if item.status == "1"]
@@ -413,15 +496,29 @@ class PrivateMessageHandler:
         return f"{item.track} #{item.challenge_id}"
 
     def _format_multi_flag_results(
-        self, flag_results: list[tuple[str, list[SubmitResult]]]
+        self,
+        flag_results: list[tuple[str, list[SubmitResult]]],
+        flag_specs: list[tuple[str, str | None]] | None = None,
     ) -> str:
         if not flag_results:
             return "ISCC 提交完成：未识别到有效 flag。"
 
+        # 用原始 specs 的方向信息为每个 flag 标注；按出现顺序与 flag_results 一一对应。
+        specs = list(flag_specs or [])
+
+        def _spec_for(idx: int, flag: str) -> tuple[str, str | None]:
+            if idx < len(specs):
+                return specs[idx]
+            return flag, None
+
         if len(flag_results) == 1:
             flag, results = flag_results[0]
-            body = self._format_results(results)
-            return f"flag：{flag}\n{body}"
+            _, cat_filter = _spec_for(0, flag)
+            body = self._format_results(results, cat_filter)
+            header = f"flag：{flag}"
+            if cat_filter:
+                header += f"\n方向限定：{cat_filter}"
+            return f"{header}\n{body}"
 
         all_results = [item for _, results in flag_results for item in results]
         total = len(all_results)
@@ -436,15 +533,22 @@ class PrivateMessageHandler:
             f"已解决：{already} 题",
             f"失败或跳过：{failed} 题",
         ]
-        for flag, results in flag_results:
+        for idx, (flag, results) in enumerate(flag_results):
+            _, cat_filter = _spec_for(idx, flag)
+            tag = f"[{flag}]" + (f"（方向：{cat_filter}）" if cat_filter else "")
             if not results:
-                lines.append(f"\n[{flag}] 当前没有未解决题目。")
+                if cat_filter:
+                    lines.append(
+                        f"\n{tag} 当前没有匹配方向「{cat_filter}」的未解题目。"
+                    )
+                else:
+                    lines.append(f"\n{tag} 当前没有未解决题目。")
                 continue
             flag_accepted = sum(1 for item in results if item.status == "1")
             flag_already = sum(1 for item in results if item.status == "2")
             flag_failed = len(results) - flag_accepted - flag_already
             lines.append(
-                f"\n[{flag}] 提交 {len(results)} 题，"
+                f"\n{tag} 提交 {len(results)} 题，"
                 f"成功 {flag_accepted}，已解决 {flag_already}，失败 {flag_failed}"
             )
             for item in results:
@@ -452,10 +556,15 @@ class PrivateMessageHandler:
         return "\n".join(lines)
 
     @staticmethod
-    def _format_unsolved_line(track: str, challenge_id: int, challenge_name: str) -> str:
+    def _format_unsolved_line(
+        track: str, challenge_id: int, challenge_name: str, category: str = ""
+    ) -> str:
+        parts = [track]
         if challenge_name:
-            return f"{track} {challenge_name} #{challenge_id}"
-        return f"{track} #{challenge_id}"
+            parts.append(challenge_name)
+        parts.append(f"#{challenge_id}")
+        head = " ".join(parts)
+        return f"{head} [{category}]" if category else head
 
     def _help_text(self) -> str:
         return (
@@ -463,6 +572,7 @@ class PrivateMessageHandler:
             "iscc：系统管理员开关模块\n"
             "iscc配置 <账号> <密码>：登录并保存账号、密码、session\n"
             "ISCC{xxxxx}：消息中包含一个或多个该形式即会被识别为 flag，多个 flag 会并发提交到所有未解题目\n"
+            "ISCC{xxxxx} <方向>：flag 后跟一个空格再跟方向（如 web、misc），表示只把该 flag 提交到匹配该方向的未解题，方向不区分大小写并支持模糊匹配\n"
             f"{SESSION_COMMAND}：查询当前 ISCC session\n"
             f"{NONCE_COMMAND}：查询当前练武题和擂台题 nonce\n"
             f"{REFRESH_COMMAND}：立即刷新练武题/擂台题未解题目缓存\n"
